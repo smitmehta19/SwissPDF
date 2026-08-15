@@ -1,0 +1,7 @@
+node_modules/
+dist/
+public/samples/
+*.log
+.DS_Store
+*.Zone.Identifier
+.vite/
