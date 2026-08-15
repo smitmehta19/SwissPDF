@@ -48,10 +48,12 @@ export function loadEngine(onProgress = () => {}) {
       }
       onProgress('downloading LibreOffice engine (one-time, ~200 MB — cached after)')
       // Runtime URL import (outside Vite's module graph — the vendored helper
-      // resolves its own zeta.js sibling via import.meta.url).
-      const helperUrl = new URL('/vendor/zetajs/zetaHelper.js', location.origin).toString()
+      // resolves its own zeta.js sibling via import.meta.url). BASE_URL makes
+      // the paths work both locally ('/') and on GitHub Pages ('/SwissPDF/').
+      const base = new URL(import.meta.env.BASE_URL, location.href)
+      const helperUrl = new URL('vendor/zetajs/zetaHelper.js', base).toString()
       const { ZetaHelperMain } = await import(/* @vite-ignore */ helperUrl)
-      const zHM = new ZetaHelperMain('/vendor/lo_thread.js', {
+      const zHM = new ZetaHelperMain(new URL('vendor/lo_thread.js', base).toString(), {
         threadJsType: 'module',
         wasmPkg: 'free',
         blockPageScroll: false,
