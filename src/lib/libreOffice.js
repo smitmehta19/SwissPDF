@@ -33,8 +33,23 @@ export function loadEngine(onProgress = () => {}) {
   if (!enginePromise) {
     enginePromise = (async () => {
       if (!engineAvailable()) {
+        // The isolation service worker takes control on a one-time reload; if it
+        // hasn't yet, do that reload now instead of failing.
+        if ('serviceWorker' in navigator && !sessionStorage.getItem('coiForcedReload')) {
+          try {
+            const reg = await navigator.serviceWorker.getRegistration()
+            if (reg) {
+              sessionStorage.setItem('coiForcedReload', '1')
+              location.reload()
+              // give the reload a moment; the thrown error below is a fallback
+              await new Promise((r) => setTimeout(r, 4000))
+            }
+          } catch {
+            /* fall through to the error */
+          }
+        }
         throw new Error(
-          'The high-fidelity engine needs cross-origin isolation (COOP/COEP headers). Restart the dev server after the config change, or serve with the isolation service worker.',
+          'High-fidelity mode needs the page to be cross-origin isolated. Reload this page once and try again — the isolation service worker takes effect after one reload. If it persists, use Quick mode.',
         )
       }
       // zetaHelper expects a #qtcanvas element even for headless use.

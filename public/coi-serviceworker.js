@@ -45,48 +45,30 @@ if (typeof window === 'undefined') {
   })
 } else {
   ;(() => {
-    const reloadedBySelf = window.sessionStorage.getItem('coiReloadedBySelf')
-    window.sessionStorage.removeItem('coiReloadedBySelf')
-    const coepDegrading = reloadedBySelf === 'coepdegrade'
-
-    const coi = {
-      shouldRegister: () => !reloadedBySelf,
-      shouldDeregister: () => false,
-      coepCredentialless: () => true,
-      coepDegrade: () => true,
-      doReload: () => window.location.reload(),
-      quiet: false,
-      ...window.coi,
-    }
-
+    const swUrl = window.document.currentScript.src
     const n = navigator
-    const controlling = n.serviceWorker && n.serviceWorker.controller
-    if (controlling && !window.crossOriginIsolated) {
-      window.sessionStorage.setItem('coiReloadedBySelf', 'coepdegrade')
-    }
-    if (controlling) {
-      n.serviceWorker.controller.postMessage({ type: 'coepCredentialless', value: coi.coepCredentialless() })
+    if (!('serviceWorker' in n) || !window.isSecureContext) return
+    if (window.crossOriginIsolated) return // already isolated (real headers)
+
+    // Tell an existing controller which COEP mode to use.
+    if (n.serviceWorker.controller) {
+      n.serviceWorker.controller.postMessage({ type: 'coepCredentialless', value: true })
     }
 
-    if (!window.crossOriginIsolated && coi.shouldRegister() && n.serviceWorker) {
-      n.serviceWorker
-        .register(window.document.currentScript.src)
-        .then((registration) => {
-          if (!coi.quiet) console.log('COOP/COEP Service Worker registered', registration.scope)
-          registration.addEventListener('updatefound', () => {
-            if (!coi.quiet) console.log('Reloading page to make use of updated COOP/COEP Service Worker.')
-            window.sessionStorage.setItem('coiReloadedBySelf', 'updatefound')
-            coi.doReload()
-          })
-          if (registration.active && !n.serviceWorker.controller) {
-            if (!coi.quiet) console.log('Reloading page to make use of COOP/COEP Service Worker.')
-            window.sessionStorage.setItem('coiReloadedBySelf', 'notcontrolling')
-            coi.doReload()
-          }
-        })
-        .catch((err) => {
-          if (!coi.quiet) console.error('COOP/COEP Service Worker failed to register:', err)
-        })
-    }
+    n.serviceWorker.register(swUrl).then(
+      async (registration) => {
+        console.log('COOP/COEP Service Worker registered', registration.scope)
+        // Guard against a reload loop: only reload once per session.
+        const alreadyReloaded = window.sessionStorage.getItem('coiReloaded')
+        // Wait until a worker is active, then take control by reloading.
+        await n.serviceWorker.ready
+        if (!n.serviceWorker.controller && !alreadyReloaded) {
+          window.sessionStorage.setItem('coiReloaded', '1')
+          console.log('Reloading once so the COOP/COEP Service Worker can isolate the page.')
+          window.location.reload()
+        }
+      },
+      (err) => console.error('COOP/COEP Service Worker failed to register:', err),
+    )
   })()
 }
