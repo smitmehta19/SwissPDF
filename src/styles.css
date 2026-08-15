@@ -2,50 +2,74 @@
    Hairline structure, one signal colour, monospace for every measurement. */
 
 :root {
-  --paper: #f7f7f5;
+  --paper: #f4f3f7;
   --surface: #ffffff;
-  --surface-2: #fbfbfa;
-  --ink: #16161a;
-  --ink-2: #3d3d45;
-  --muted: #74747e;
-  --line: #e5e5e1;
-  --line-strong: #d2d2cc;
-  --signal: #e8442c;
-  --signal-deep: #b8321f;
-  --ok: #0f7b4f;
-  --err: #b3261e;
+  --surface-2: #f8f7fc;
+  --ink: #17151f;
+  --ink-2: #3c3a48;
+  --muted: #6b6878;
+  --line: #e7e5f0;
+  --line-strong: #d6d3e4;
+  --signal: #5b4be6;
+  --signal-deep: #4838cf;
+  --ok: #0e9d63;
+  --err: #d63a45;
   --warn: #9a6700;
 
-  --r-sm: 8px;
-  --r-md: 12px;
-  --r-lg: 16px;
-  --shadow-1: 0 1px 2px rgba(22, 22, 26, 0.05);
-  --shadow-2: 0 8px 24px -12px rgba(22, 22, 26, 0.28);
+  --r-sm: 9px;
+  --r-md: 13px;
+  --r-lg: 18px;
+  --shadow-1: 0 1px 2px rgba(23, 21, 31, 0.06);
+  --shadow-2: 0 14px 34px -18px rgba(50, 40, 110, 0.34);
+  --glow: 0 0 0 4px color-mix(in srgb, var(--signal) 14%, transparent);
   --ease: cubic-bezier(0.2, 0, 0, 1);
-  --fast: 140ms var(--ease);
+  --fast: 150ms var(--ease);
 
   --sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI Variable Text', 'Segoe UI', Roboto,
     Helvetica, Arial, sans-serif;
   --mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+  color-scheme: light;
 }
 
+/* Dark palette: applied by the OS default, unless the user forced light;
+   and always when the user explicitly picks dark. */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #101013;
-    --surface: #17171b;
-    --surface-2: #1c1c21;
-    --ink: #f2f2f0;
-    --ink-2: #cfcfd4;
-    --muted: #9a9aa4;
-    --line: #2a2a31;
-    --line-strong: #3a3a43;
-    --signal: #ff5c40;
-    --signal-deep: #ff7a63;
-    --ok: #35c98a;
-    --err: #ff6b5e;
+  :root:not([data-theme='light']) {
+    --paper: #0d0c12;
+    --surface: #15141d;
+    --surface-2: #1b1a25;
+    --ink: #f1f0f6;
+    --ink-2: #cecdda;
+    --muted: #928fa2;
+    --line: #282634;
+    --line-strong: #3a3849;
+    --signal: #8f82ff;
+    --signal-deep: #a89dff;
+    --ok: #35d08e;
+    --err: #ff6b72;
     --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
-    --shadow-2: 0 10px 30px -14px rgba(0, 0, 0, 0.8);
+    --shadow-2: 0 16px 40px -20px rgba(0, 0, 0, 0.85);
+    color-scheme: dark;
   }
+}
+
+:root[data-theme='dark'] {
+  --paper: #0d0c12;
+  --surface: #15141d;
+  --surface-2: #1b1a25;
+  --ink: #f1f0f6;
+  --ink-2: #cecdda;
+  --muted: #928fa2;
+  --line: #282634;
+  --line-strong: #3a3849;
+  --signal: #8f82ff;
+  --signal-deep: #a89dff;
+  --ok: #35d08e;
+  --err: #ff6b72;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-2: 0 16px 40px -20px rgba(0, 0, 0, 0.85);
+  color-scheme: dark;
 }
 
 * {
@@ -149,6 +173,12 @@ kbd,
   height: 10px;
 }
 
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .local-chip {
   display: inline-flex;
   align-items: center;
@@ -161,6 +191,25 @@ kbd,
   background: var(--surface);
   padding: 5px 11px;
   border-radius: 999px;
+}
+
+.theme-btn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color var(--fast), border-color var(--fast), background var(--fast), transform var(--fast);
+}
+
+.theme-btn:hover {
+  color: var(--signal);
+  border-color: color-mix(in srgb, var(--signal) 34%, var(--line));
+  transform: rotate(-12deg);
 }
 
 .pulse {
@@ -180,20 +229,36 @@ kbd,
 
 /* ---------- hero ---------- */
 .hero {
-  padding: 26px 0 40px;
-  max-width: 760px;
+  padding: 34px 0 44px;
+  max-width: 780px;
+}
+
+.hero-eyebrow {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  color: var(--signal);
+  background: color-mix(in srgb, var(--signal) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--signal) 22%, transparent);
+  padding: 4px 11px;
+  border-radius: 999px;
+  margin-bottom: 20px;
 }
 
 .hero h1 {
-  font-size: clamp(2.1rem, 5.2vw, 3.4rem);
-  line-height: 1.03;
-  letter-spacing: -0.038em;
-  font-weight: 660;
+  font-size: clamp(2.2rem, 5.4vw, 3.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  font-weight: 680;
 }
 
 .hero h1 em {
   font-style: normal;
-  color: var(--muted);
+  background: linear-gradient(100deg, var(--signal), color-mix(in srgb, var(--signal) 55%, var(--ink)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .search {
@@ -338,9 +403,9 @@ kbd,
 }
 
 .card:hover {
-  border-color: var(--line-strong);
+  border-color: color-mix(in srgb, var(--signal) 30%, var(--line));
   box-shadow: var(--shadow-2);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
 .card:active {
@@ -384,9 +449,27 @@ kbd,
 
 .card-desc {
   grid-area: desc;
+  color: var(--ink-2);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  font-size: 0.82rem;
   color: var(--muted);
-  font-size: 0.85rem;
-  line-height: 1.4;
+}
+
+.foot span:first-child {
+  font-weight: 640;
+  color: var(--ink-2);
+  letter-spacing: -0.01em;
 }
 
 .io {
@@ -408,22 +491,43 @@ kbd,
   animation: rise 260ms var(--ease);
 }
 
-.back {
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.crumb {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   background: none;
   border: 0;
-  padding: 4px 0;
+  padding: 4px 8px 4px 0;
   color: var(--muted);
   cursor: pointer;
-  font-size: 0.86rem;
-  transition: color var(--fast), gap var(--fast);
+  border-radius: 6px;
+  transition: color var(--fast);
 }
 
-.back:hover {
+.crumb:hover {
+  color: var(--signal);
+}
+
+.crumb-sep {
+  color: var(--line-strong);
+}
+
+.crumb-current {
+  color: var(--muted);
+}
+
+.crumb-active {
   color: var(--ink);
-  gap: 9px;
+  font-weight: 560;
 }
 
 .tool-head {
@@ -668,20 +772,23 @@ select.text-input {
   color: var(--paper);
   border: 0;
   border-radius: var(--r-sm);
-  padding: 11px 20px;
+  padding: 11px 21px;
   font-size: 0.92rem;
-  font-weight: 560;
+  font-weight: 570;
   letter-spacing: -0.005em;
   cursor: pointer;
-  transition: background var(--fast), transform var(--fast), opacity var(--fast);
+  box-shadow: var(--shadow-1);
+  transition: background var(--fast), transform var(--fast), box-shadow var(--fast), opacity var(--fast);
 }
 
 .primary-btn:hover:not(:disabled) {
-  background: var(--signal);
+  background: color-mix(in srgb, var(--ink) 86%, var(--signal));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-2);
 }
 
 .primary-btn:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: translateY(0);
 }
 
 .primary-btn:disabled {

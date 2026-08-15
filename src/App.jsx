@@ -2,16 +2,66 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { TOOLS, CATEGORIES } from './tools/registry.js'
 import Icon from './components/Icon.jsx'
 
+const idFromHash = () => {
+  const id = window.location.hash.replace(/^#\/?/, '')
+  return TOOLS.some((t) => t.id === id) ? id : null
+}
+
+const THEMES = ['system', 'light', 'dark']
+const THEME_ICON = { system: 'auto', light: 'sun', dark: 'moon' }
+const THEME_LABEL = { system: 'System theme', light: 'Light theme', dark: 'Dark theme' }
+
 export default function App() {
-  const [activeToolId, setActiveToolId] = useState(null)
+  const [activeToolId, setActiveToolId] = useState(() => idFromHash())
   const [query, setQuery] = useState('')
+  const [theme, setTheme] = useState(() => localStorage.getItem('swiss-theme') || 'system')
   const searchRef = useRef(null)
   const activeTool = TOOLS.find((t) => t.id === activeToolId)
 
-  // "/" jumps to search from anywhere on the index.
+  // Hash-based history: opening a tool pushes an entry so the browser Back
+  // button returns to the index instead of leaving the site. Deep links get a
+  // synthetic home entry beneath them so Back still lands on home.
+  useEffect(() => {
+    const initial = idFromHash()
+    if (initial) {
+      history.replaceState({}, '', location.pathname + location.search)
+      history.pushState({ toolId: initial }, '', '#/' + initial)
+    }
+    const onPop = () => setActiveToolId(idFromHash())
+    window.addEventListener('popstate', onPop)
+    window.addEventListener('hashchange', onPop)
+    return () => {
+      window.removeEventListener('popstate', onPop)
+      window.removeEventListener('hashchange', onPop)
+    }
+  }, [])
+
+  // Apply the theme choice: data-theme wins over the OS preference in CSS.
+  useEffect(() => {
+    const root = document.documentElement
+    if (theme === 'system') root.removeAttribute('data-theme')
+    else root.setAttribute('data-theme', theme)
+    localStorage.setItem('swiss-theme', theme)
+  }, [theme])
+
+  const openTool = (id) => {
+    setActiveToolId(id)
+    history.pushState({ toolId: id }, '', '#/' + id)
+    window.scrollTo({ top: 0 })
+  }
+
+  const goHome = () => {
+    if (idFromHash()) history.back() // pops the tool entry → index
+    else setActiveToolId(null)
+  }
+
+  // "/" focuses search; Escape clears; on a tool page Escape/Backspace goes home.
   useEffect(() => {
     const onKey = (e) => {
-      if (activeTool) return
+      if (activeTool) {
+        if (e.key === 'Escape') goHome()
+        return
+      }
       if (e.key === '/' && document.activeElement !== searchRef.current) {
         e.preventDefault()
         searchRef.current?.focus()
@@ -22,7 +72,7 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [activeTool])
+  }, [activeTool]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -32,33 +82,41 @@ export default function App() {
     )
   }, [query])
 
-  const openTool = (id) => {
-    setActiveToolId(id)
-    window.scrollTo({ top: 0 })
-  }
+  const cycleTheme = () => setTheme((t) => THEMES[(THEMES.indexOf(t) + 1) % THEMES.length])
 
   return (
     <div className="app">
       <header className="topbar">
-        <button className="brand" onClick={() => setActiveToolId(null)}>
+        <button className="brand" onClick={goHome}>
           <span className="brand-mark" aria-hidden="true">
             <span />
             <span />
           </span>
           SwissPDF
         </button>
-        <span className="local-chip" title="Every tool runs in this browser">
-          <i className="pulse" />
-          Local only
-        </span>
+        <div className="topbar-right">
+          <span className="local-chip" title="Every tool runs in this browser">
+            <i className="pulse" />
+            Local only
+          </span>
+          <button className="theme-btn" onClick={cycleTheme} title={THEME_LABEL[theme]} aria-label={THEME_LABEL[theme]}>
+            <Icon name={THEME_ICON[theme]} size={17} />
+          </button>
+        </div>
       </header>
 
       {activeTool ? (
         <main className="tool-page" key={activeTool.id}>
-          <button className="back" onClick={() => setActiveToolId(null)}>
-            <Icon name="back" size={16} />
-            All tools
-          </button>
+          <nav className="crumbs">
+            <button className="crumb" onClick={goHome}>
+              <Icon name="home" size={14} />
+              All tools
+            </button>
+            <span className="crumb-sep">/</span>
+            <span className="crumb-current">{activeTool.category}</span>
+            <span className="crumb-sep">/</span>
+            <span className="crumb-active">{activeTool.name}</span>
+          </nav>
           <div className="tool-head">
             <span className="tool-head-icon">
               <Icon name={activeTool.icon} size={26} />
@@ -76,6 +134,7 @@ export default function App() {
       ) : (
         <main className="home">
           <section className="hero">
+            <span className="hero-eyebrow">{TOOLS.length} tools · works offline · no account</span>
             <h1>
               Every PDF tool.
               <br />
@@ -96,11 +155,6 @@ export default function App() {
               />
               <kbd>/</kbd>
             </div>
-            <p className="hero-meta">
-              <span>{TOOLS.length} tools</span>
-              <span>works offline</span>
-              <span>no account</span>
-            </p>
           </section>
 
           {query.trim() && matches.length === 0 && (
@@ -142,6 +196,11 @@ export default function App() {
               </section>
             )
           })}
+
+          <footer className="foot">
+            <span>SwissPDF</span>
+            <span>Runs entirely in your browser — files never uploaded.</span>
+          </footer>
         </main>
       )}
     </div>
