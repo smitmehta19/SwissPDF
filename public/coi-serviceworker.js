@@ -26,8 +26,13 @@ if (typeof window === 'undefined') {
       coepCredentialless && r.mode === 'no-cors'
         ? new Request(r, { credentials: 'omit' })
         : r
+    // Always revalidate the HTML document so its references to hashed JS/CSS
+    // chunks stay current after a redeploy (otherwise a 10-min cached index
+    // can point at deleted chunks → "failed to fetch dynamically imported
+    // module"). Hashed assets themselves remain cacheable.
+    const init = r.mode === 'navigate' ? { cache: 'no-cache' } : undefined
     event.respondWith(
-      fetch(request)
+      fetch(request, init)
         .then((response) => {
           if (response.status === 0) return response
           const newHeaders = new Headers(response.headers)
