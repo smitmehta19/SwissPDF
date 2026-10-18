@@ -1,0 +1,1288 @@
+{
+  "name": "c-negative",
+  "startedAt": "2026-10-17T16:36:18.070Z",
+  "finishedAt": "2026-10-17T16:36:39.713Z",
+  "durationMin": 0.4,
+  "command": "npm run test:corpus -- --layer ops --case ^c-(watermark|pagenumbers|sign|edit)-(c-rot180-origin|c-mixed|rot90-cropbox)(-45|-bottom-center|-p1|-p3)?$ --name c-negative",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 1,
+    "fail": 12,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "watermark",
+      "pass": 0,
+      "fail": 3,
+      "skip": 0,
+      "ms": 4295
+    },
+    {
+      "tool": "pagenumbers",
+      "pass": 0,
+      "fail": 3,
+      "skip": 0,
+      "ms": 3495
+    },
+    {
+      "tool": "sign",
+      "pass": 0,
+      "fail": 3,
+      "skip": 0,
+      "ms": 3580
+    },
+    {
+      "tool": "edit",
+      "pass": 1,
+      "fail": 3,
+      "skip": 0,
+      "ms": 4511
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "CONFIRMED",
+      "evidence": [
+        "c-watermark-rot90-cropbox-45: centred on the visible page at 45 deg as seen (p1 centre (0.63, 0.55) -45 deg; p2 centre (0.63, 0.55) -45 deg; p3 centre (0.63, 0.55) -45 deg)",
+        "c-watermark-c-rot180-origin-45: centred on the visible page at 45 deg as seen (p1 centre (0.72, 0.30) -135 deg; p2 centre (0.72, 0.30) -135 deg)",
+        "c-watermark-c-mixed-45: centred on the visible page at 45 deg as seen (p1 centre (0.55, 0.36) 45 deg; p2 centre (0.55, 0.25) 45 deg; p4 centre (0.33, 0.43) 135 deg)",
+        "c-pagenumbers-rot90-cropbox-bottom-center: number visible on every page (0 of 16)",
+        "c-pagenumbers-c-rot180-origin-bottom-center: number visible on every page (0 of 2)",
+        "c-pagenumbers-c-mixed-bottom-center: number visible on every page (4 of 5)",
+        "c-pagenumbers-c-mixed-bottom-center: number bottom-center of the visible page, upright (p4 (0.95, 0.50) 90 deg; p5 (0.96, 0.50) 90 deg)",
+        "c-sign-rot90-cropbox: signature at (50%, 85%) of page 1, upright (centre (0.09, 0.49))",
+        "c-sign-c-rot180-origin: signature at (50%, 85%) of page 1, upright (centre (0.78, -0.26))",
+        "c-sign-c-mixed: signature at (50%, 85%) of page 3, upright (centre (-0.03, 1.04))",
+        "c-edit-rot90-cropbox-p1: text exactly where placed, upright (origin (717.9, 10.0) -90 deg)",
+        "c-edit-rot90-cropbox-p1: image exactly where placed, upright (centre (646.9, 160.0))",
+        "c-edit-c-mixed-p3: text exactly where placed, upright (origin (588.0, 340.0) -90 deg)",
+        "c-edit-c-mixed-p3: image exactly where placed, upright (centre (517.0, 490.0))"
+      ],
+      "passedChecks": 4,
+      "reason": null
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "CDN pinning is a config review item; font fidelity not scored"
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no PAdES / multi-place API to call)"
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap"
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    }
+  ],
+  "results": [
+    {
+      "id": "c-watermark-rot90-cropbox-45",
+      "tool": "watermark",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "centred on the visible page at 45 deg as seen: p1 centre (0.63, 0.55) -45 deg; p2 centre (0.63, 0.55) -45 deg; p3 centre (0.63, 0.55) -45 deg",
+      "error": null,
+      "ms": 2244,
+      "opMs": 193,
+      "heapMB": 6,
+      "audit": null,
+      "checks": [
+        {
+          "name": "watermarked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "mark on every page",
+          "ok": true,
+          "detail": "16 of 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "centred on the visible page at 45 deg as seen",
+          "ok": false,
+          "detail": "p1 centre (0.63, 0.55) -45 deg; p2 centre (0.63, 0.55) -45 deg; p3 centre (0.63, 0.55) -45 deg",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "c-watermark-c-rot180-origin-45",
+      "tool": "watermark",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot180-origin.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "centred on the visible page at 45 deg as seen: p1 centre (0.72, 0.30) -135 deg; p2 centre (0.72, 0.30) -135 deg",
+      "error": null,
+      "ms": 1030,
+      "opMs": 35,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "watermarked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "mark on every page",
+          "ok": true,
+          "detail": "2 of 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "centred on the visible page at 45 deg as seen",
+          "ok": false,
+          "detail": "p1 centre (0.72, 0.30) -135 deg; p2 centre (0.72, 0.30) -135 deg",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "c-watermark-c-mixed-45",
+      "tool": "watermark",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-mixed.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "mark on every page: 4 of 5",
+      "error": null,
+      "ms": 1021,
+      "opMs": 56,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "watermarked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "mark on every page",
+          "ok": false,
+          "detail": "4 of 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "centred on the visible page at 45 deg as seen",
+          "ok": false,
+          "detail": "p1 centre (0.55, 0.36) 45 deg; p2 centre (0.55, 0.25) 45 deg; p4 centre (0.33, 0.43) 135 deg",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "c-pagenumbers-rot90-cropbox-bottom-center",
+      "tool": "pagenumbers",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "number visible on every page: 0 of 16",
+      "error": null,
+      "ms": 1448,
+      "opMs": 190,
+      "heapMB": 6,
+      "audit": null,
+      "checks": [
+        {
+          "name": "numbered.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "number visible on every page",
+          "ok": false,
+          "detail": "0 of 16",
+          "soft": false,
+          "audit": 8
+        },
+        {
+          "name": "number bottom-center of the visible page, upright",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "c-pagenumbers-c-rot180-origin-bottom-center",
+      "tool": "pagenumbers",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot180-origin.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "number visible on every page: 0 of 2",
+      "error": null,
+      "ms": 1022,
+      "opMs": 34,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "numbered.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "number visible on every page",
+          "ok": false,
+          "detail": "0 of 2",
+          "soft": false,
+          "audit": 8
+        },
+        {
+          "name": "number bottom-center of the visible page, upright",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "c-pagenumbers-c-mixed-bottom-center",
+      "tool": "pagenumbers",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-mixed.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "number visible on every page: 4 of 5",
+      "error": null,
+      "ms": 1025,
+      "opMs": 37,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "numbered.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "number visible on every page",
+          "ok": false,
+          "detail": "4 of 5",
+          "soft": false,
+          "audit": 8
+        },
+        {
+          "name": "number bottom-center of the visible page, upright",
+          "ok": false,
+          "detail": "p4 (0.95, 0.50) 90 deg; p5 (0.96, 0.50) 90 deg",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "c-sign-rot90-cropbox",
+      "tool": "sign",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "signature at (50%, 85%) of page 1, upright: centre (0.09, 0.49)",
+      "error": null,
+      "ms": 1517,
+      "opMs": 210,
+      "heapMB": 6,
+      "audit": null,
+      "checks": [
+        {
+          "name": "signed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signature image drawn",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signature at (50%, 85%) of page 1, upright",
+          "ok": false,
+          "detail": "centre (0.09, 0.49)",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "c-sign-c-rot180-origin",
+      "tool": "sign",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot180-origin.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "signature at (50%, 85%) of page 1, upright: centre (0.78, -0.26)",
+      "error": null,
+      "ms": 1033,
+      "opMs": 53,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "signed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signature image drawn",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signature at (50%, 85%) of page 1, upright",
+          "ok": false,
+          "detail": "centre (0.78, -0.26)",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "c-sign-c-mixed",
+      "tool": "sign",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-mixed.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "signature at (50%, 85%) of page 3, upright: centre (-0.03, 1.04)",
+      "error": null,
+      "ms": 1030,
+      "opMs": 44,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "signed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signature image drawn",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signature at (50%, 85%) of page 3, upright",
+          "ok": false,
+          "detail": "centre (-0.03, 1.04)",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "c-edit-rot90-cropbox-p1",
+      "tool": "edit",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "text exactly where placed, upright: origin (717.9, 10.0) -90 deg",
+      "error": null,
+      "ms": 1430,
+      "opMs": 229,
+      "heapMB": 6,
+      "audit": null,
+      "checks": [
+        {
+          "name": "edited.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text added",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text exactly where placed, upright",
+          "ok": false,
+          "detail": "origin (717.9, 10.0) -90 deg",
+          "soft": false,
+          "audit": 8
+        },
+        {
+          "name": "image exactly where placed, upright",
+          "ok": false,
+          "detail": "centre (646.9, 160.0)",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "c-edit-c-rot180-origin-p1",
+      "tool": "edit",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot180-origin.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "text added",
+      "error": null,
+      "ms": 1032,
+      "opMs": 61,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "edited.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text added",
+          "ok": false,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "c-edit-c-mixed-p1",
+      "tool": "edit",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-mixed.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 1017,
+      "opMs": 85,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "edited.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text added",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text exactly where placed, upright",
+          "ok": true,
+          "detail": "origin (50.0, 64.0) 0 deg",
+          "soft": false,
+          "audit": 8
+        },
+        {
+          "name": "image exactly where placed, upright",
+          "ok": true,
+          "detail": "centre (200.0, 135.0)",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "c-edit-c-mixed-p3",
+      "tool": "edit",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-mixed.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "text exactly where placed, upright: origin (588.0, 340.0) -90 deg",
+      "error": null,
+      "ms": 1032,
+      "opMs": 71,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "edited.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text added",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text exactly where placed, upright",
+          "ok": false,
+          "detail": "origin (588.0, 340.0) -90 deg",
+          "soft": false,
+          "audit": 8
+        },
+        {
+          "name": "image exactly where placed, upright",
+          "ok": false,
+          "detail": "centre (517.0, 490.0)",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    }
+  ]
+}

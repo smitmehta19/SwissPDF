@@ -1,9 +1,9 @@
 // OCR backed by Tesseract.js: renders each PDF page, recognizes the text, and
 // lays an INVISIBLE text layer over the original page — the document looks
 // identical but becomes searchable and selectable.
-import { PDFDocument, StandardFonts } from 'pdf-lib'
 import { renderPageToImage } from './pdfText.js'
 import { loadPdf } from './pdfOps.js'
+import { fontForText } from './fonts.js'
 
 let workerPromise = null
 async function getWorker(lang = 'eng') {
@@ -47,7 +47,6 @@ export async function ocrPdf(bytes, { lang = 'eng', onProgress = () => {} } = {}
   const RENDER_WIDTH = 1600
   const doc = await loadPdf(bytes)
   const pageCount = doc.getPageCount()
-  const font = await doc.embedFont(StandardFonts.Helvetica)
   const worker = await getWorker(lang)
 
   let totalWords = 0
@@ -79,6 +78,8 @@ export async function ocrPdf(bytes, { lang = 'eng', onProgress = () => {} } = {}
       const { x0, y0, x1, y1 } = word.bbox
       const boxH = (y1 - y0) * scaleY
       const size = Math.max(4, boxH * 0.9)
+      // Helvetica for Latin words, a Noto font for other scripts
+      const font = await fontForText(doc, word.text)
       page.drawText(word.text, {
         x: x0 * scaleX,
         y: ph - y1 * scaleY + boxH * 0.15,

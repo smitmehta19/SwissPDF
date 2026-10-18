@@ -39,6 +39,12 @@ export class ZetaHelperMain {
             modUrlDir,
         };
         Module.mainScriptUrlOrBlob = new Blob(["importScripts('" + (new URL('soffice.js', soffice_base_url)) + "');"], { type: 'text/javascript' });
+        // SwissPDF: run a soffice.js the caller already fetched and checked (Blob),
+        // in both the page and the pthread workers, instead of the CDN copy.
+        if (options.sofficeJs) {
+            Module.mainScriptUrlOrBlob = options.sofficeJs;
+            this.sofficeJsUrl = URL.createObjectURL(options.sofficeJs);
+        }
         let lastDevicePixelRatio = window.devicePixelRatio;
         addEventListener('resize', () => {
             // Workaround to inform Qt5 about changed browser zoom.
@@ -73,7 +79,7 @@ export class ZetaHelperMain {
     start(app_init) {
         const zHM = this;
         const soffice_js = document.createElement("script");
-        soffice_js.src = zHM.soffice_base_url + "soffice.js";
+        soffice_js.src = zHM.sofficeJsUrl || zHM.soffice_base_url + "soffice.js";
         // "onload" runs after the loaded script has run.
         soffice_js.onload = () => {
             console.log('zetaHelper: Configuring Module');

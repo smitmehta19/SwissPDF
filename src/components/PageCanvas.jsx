@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { renderPageImage } from '../lib/pdfText.js'
 
-// Renders one PDF page and maps pointer events to PDF points (y from top).
-// Children are drawn as overlays positioned in the same coordinate space.
+// Renders one PDF page and maps pointer events to points on the visible page
+// (y from top). pageSize must be the visible size (pageFrame.js viewSizes),
+// which is what pdf.js renders. Children are overlays in the same space.
 export default function PageCanvas({
   bytes,
   pageNum,

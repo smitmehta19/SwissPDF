@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>LibreOffice engine</title>
+    <!-- Hidden frame that hosts the LibreOffice engine. Removing the frame kills
+         the engine and all its threads, so a hung engine can be restarted. -->
+    <script type="module" src="./lo_frame.js"></script>
+  </head>
+  <body>
+    <canvas id="qtcanvas" width="4" height="4"></canvas>
+  </body>
+</html>

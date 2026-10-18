@@ -410,14 +410,20 @@ export async function runSelfTest(onProgress = () => {}) {
 
   await check('PDF to PowerPoint (.pptx)', async () => {
     const { pdfToPptx } = await import('./officeOps.js')
-    const bytes = await pdfToPptx(a, 3)
     const JSZip = (await import('jszip')).default
-    const zip = await JSZip.loadAsync(bytes)
+    // default: editable text boxes, the page text is in each slide's XML
+    const zip = await JSZip.loadAsync(await pdfToPptx(a, 3))
     const slides = Object.keys(zip.files).filter((f) => /^ppt\/slides\/slide\d+\.xml$/.test(f))
     expectEqual(slides.length, 3, 'one slide per page')
-    const media = Object.keys(zip.files).filter((f) => f.startsWith('ppt/media/'))
-    if (media.length < 3) throw new Error('slide images missing')
-    return 'valid .pptx with 3 image slides'
+    for (let i = 1; i <= 3; i++) {
+      const xml = await zip.file(`ppt/slides/slide${i}.xml`).async('string')
+      if (!xml.includes(`A-P${i}`)) throw new Error(`slide ${i} has no editable "A-P${i}" text`)
+    }
+    // picture mode still gives one image per slide
+    const picZip = await JSZip.loadAsync(await pdfToPptx(a, 3, () => {}, { editable: false }))
+    const media = Object.keys(picZip.files).filter((f) => f.startsWith('ppt/media/'))
+    if (media.length < 3) throw new Error('picture-mode slide images missing')
+    return 'valid .pptx: 3 slides with editable text; picture mode has 3 image slides'
   })
 
   await check('PDF table detection (ruled table → real cells)', async () => {

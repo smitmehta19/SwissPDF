@@ -1,0 +1,419 @@
+/* Edit-group page canvas (edit, sign, crop, redact, forms, page numbers).
+   Tokens from src/styles.css :root, see docs/design/DESIGN.md. */
+
+.g3-file-name {
+  font-size: var(--t-sm);
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.g3-hint {
+  margin: 0;
+}
+
+.g3-stage-wrap {
+  padding: var(--s-4);
+  overflow: auto;
+}
+
+.g3-stage {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  user-select: none;
+  touch-action: none;
+  background: #fff;
+  box-shadow: var(--shadow-2);
+  line-height: 0;
+}
+
+.g3-stage > img {
+  display: block;
+  max-width: 100%;
+  max-height: none;
+  box-shadow: none;
+}
+
+.g3-ov {
+  position: absolute;
+  box-sizing: border-box;
+  line-height: normal;
+}
+
+/* drag preview and selection boxes */
+.g3-draft {
+  border: 1.5px dashed var(--signal);
+  background: color-mix(in srgb, var(--signal) 12%, transparent);
+  pointer-events: none;
+}
+
+.g3-crop {
+  border: 2px solid var(--signal);
+  box-shadow: 0 0 0 9999px rgb(23 21 31 / 0.45);
+  pointer-events: none;
+}
+
+.g3-redact {
+  background: #000;
+  border: 1px solid #000;
+}
+
+.g3-redact-hit {
+  background: rgb(0 0 0 / 0.72);
+  outline: 1.5px solid var(--err);
+  pointer-events: none;
+}
+
+.g3-redact-page {
+  inset: 0;
+  background: rgb(0 0 0 / 0.82);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.g3-remove {
+  position: absolute;
+  top: -11px;
+  right: -11px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  line-height: 0;
+}
+
+.g3-remove:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+/* placed signature, initials, date */
+.g3-stamp {
+  transform: translate(-50%, -50%);
+  border: 1px dashed transparent;
+  cursor: grab;
+}
+
+.g3-stamp:hover,
+.g3-stamp.is-on {
+  border-color: var(--signal);
+}
+
+.g3-stamp img {
+  display: block;
+  width: 100%;
+  pointer-events: none;
+}
+
+.g3-stamp-text {
+  white-space: nowrap;
+  color: #101828;
+  font-size: calc(var(--pt) * 12);
+  padding: 0 2px;
+}
+
+.g3-stamp-all {
+  position: absolute;
+  left: 0;
+  bottom: -18px;
+  font-size: 11px;
+  line-height: 14px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--signal);
+  color: var(--on-signal);
+  white-space: nowrap;
+}
+
+/* page number preview */
+.g3-number {
+  font-size: calc(var(--pt) * var(--size, 11));
+  white-space: nowrap;
+  color: var(--num-color, #1c2333);
+  outline: 1px dashed var(--signal);
+  outline-offset: 2px;
+  pointer-events: none;
+}
+
+/* edit elements */
+.g3-el-text {
+  white-space: pre;
+  font-family: Helvetica, Arial, sans-serif;
+  line-height: 1;
+}
+
+.g3-el-box {
+  border-style: solid;
+}
+
+.g3-el-svg {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.g3-el-img {
+  display: block;
+}
+
+.g3-el.is-on {
+  outline: 1.5px solid var(--signal);
+  outline-offset: 1px;
+}
+
+/* form fields on the page */
+.g3-field {
+  font-size: calc(var(--pt) * 9);
+  border: 1px solid color-mix(in srgb, var(--signal) 55%, transparent);
+  background: color-mix(in srgb, var(--signal) 9%, #fff);
+  color: #101828;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+.g3-field:focus {
+  outline: 2px solid var(--signal);
+  outline-offset: 0;
+  background: #fff;
+}
+
+.g3-field-check {
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.g3-field-check input {
+  width: 80%;
+  height: 80%;
+  margin: 0;
+}
+
+.g3-field-new {
+  border-style: dashed;
+  border-color: var(--signal);
+}
+
+/* option panel bits */
+.g3-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-1);
+}
+
+.g3-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 36px;
+  padding: 0 0 0 var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font-size: var(--t-sm);
+}
+
+.g3-list-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.g3-list-meta {
+  color: var(--muted);
+}
+
+.g3-pad {
+  display: block;
+  width: 100%;
+  height: 120px;
+  border: 1.5px dashed var(--edge);
+  border-radius: var(--r-sm);
+  background: #fff;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.g3-typed {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-2);
+}
+
+.g3-typed button {
+  min-height: 56px;
+  padding: var(--s-1) var(--s-2);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-sm);
+  background: #fff;
+  color: #101828;
+  font-size: 22px;
+  line-height: 1.1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.g3-typed button.is-on {
+  border-color: var(--signal);
+  box-shadow: var(--glow);
+}
+
+.g3-preview {
+  display: grid;
+  place-items: center;
+  min-height: 64px;
+  padding: var(--s-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: #fff;
+}
+
+.g3-preview img {
+  max-width: 100%;
+  max-height: 72px;
+}
+
+.g3-note {
+  margin: 0;
+  padding: var(--s-3);
+  border-radius: var(--r-sm);
+  background: var(--signal-wash);
+  color: var(--ink);
+  font-size: var(--t-sm);
+}
+
+.g3-tools {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-1);
+}
+
+.g3-tools button {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-height: 52px;
+  padding: var(--s-1);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--t-xs);
+  cursor: pointer;
+}
+
+.g3-tools button.is-on {
+  border-color: var(--signal);
+  background: var(--signal-wash);
+  color: var(--signal);
+}
+
+.g3-tools button:focus-visible,
+.g3-typed button:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+@media (max-width: 759px) {
+  .g3-stage-wrap {
+    padding: var(--s-2);
+  }
+  .g3-typed {
+    grid-template-columns: 1fr;
+  }
+}
+
+.g3-margins {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-2);
+}
+
+.g3-margins .field-label {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.g3-textarea {
+  height: auto;
+  min-height: 72px;
+  padding: var(--s-2) var(--s-3);
+  resize: vertical;
+  font: inherit;
+}
+
+.g3-details {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.g3-details summary {
+  cursor: pointer;
+  font-size: var(--t-sm);
+  font-weight: 600;
+}
+
+.g3-details[open] summary {
+  margin-bottom: var(--s-3);
+}
+
+.g3-details > .field + .check-line,
+.g3-details > .check-line + .check-line {
+  margin-top: var(--s-2);
+}
+
+.btn.is-on {
+  border-color: var(--signal);
+  color: var(--signal);
+  background: var(--signal-wash);
+}
+
+.g3-fill {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0 2px;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+}
+
+.g3-field-tag {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  color: var(--signal);
+}
+
+.g3-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+
+.g3-pair .input {
+  width: 100%;
+}

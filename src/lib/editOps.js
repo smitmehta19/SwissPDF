@@ -1,8 +1,11 @@
 // Free-form PDF editing: text, images, shapes, highlights and freehand ink
-// drawn onto existing pages. All coordinates are PDF points with y measured
-// from the TOP of the page, matching what the on-screen editor uses.
-import { PDFDocument, StandardFonts, rgb, degrees } from 'pdf-lib'
+// drawn onto existing pages. All coordinates are points on the visible page
+// as displayed (rotation and CropBox applied), y measured from the TOP,
+// matching what the on-screen editor uses.
+import { StandardFonts, rgb, degrees } from 'pdf-lib'
 import { loadPdf } from './pdfOps.js'
+import { pageFrame, placeAt, placeBox } from './pageFrame.js'
+import { layoutText, drawRuns } from './fonts.js'
 
 function toColor(hex) {
   const m = /^#?([0-9a-f]{6})$/i.exec(hex ?? '')
@@ -28,34 +31,29 @@ const FONTS = {
 //   image     { x, y, w, h, bytes, imgType: 'png'|'jpeg', opacity }
 export async function applyEdits(bytes, elements) {
   const doc = await loadPdf(bytes)
-  const fontCache = new Map()
-  const getFont = async (key) => {
-    const name = FONTS[key] ?? StandardFonts.Helvetica
-    if (!fontCache.has(name)) fontCache.set(name, await doc.embedFont(name))
-    return fontCache.get(name)
+  const frames = new Map()
+  const frameOf = (page) => {
+    if (!frames.has(page)) frames.set(page, pageFrame(page))
+    return frames.get(page)
   }
 
   for (const el of elements) {
     const page = doc.getPage(el.pageIndex)
-    const H = page.getHeight()
+    const frame = frameOf(page)
+    const pt = (x, y) => frame.toUser(x, y)
     const color = toColor(el.color)
     switch (el.type) {
       case 'text': {
-        const font = await getFont(el.font)
-        page.drawText(el.text ?? '', {
-          x: el.x,
-          y: H - el.y - (el.size ?? 14),
-          size: el.size ?? 14,
-          font,
-          color,
-          rotate: degrees(el.rotate ?? 0),
-        })
+        const size = el.size ?? 14
+        const runs = await layoutText(doc, el.text ?? '', { standard: FONTS[el.font] ?? StandardFonts.Helvetica })
+        // el.y is the top of the text; the baseline sits one size below it
+        const at = placeAt(frame, el.x, el.y, 0, size, el.rotate ?? 0)
+        drawRuns(page, runs, { x: at.x, y: at.y, size, rotate: at.rotate, color })
         break
       }
       case 'rect':
         page.drawRectangle({
-          x: el.x,
-          y: H - el.y - el.h,
+          ...placeBox(frame, el.x, el.y, el.w, el.h),
           width: el.w,
           height: el.h,
           borderColor: color,
@@ -67,10 +65,10 @@ export async function applyEdits(bytes, elements) {
         break
       case 'ellipse':
         page.drawEllipse({
-          x: el.x + el.w / 2,
-          y: H - el.y - el.h / 2,
+          ...pt(el.x + el.w / 2, el.y + el.h / 2),
           xScale: el.w / 2,
           yScale: el.h / 2,
+          rotate: degrees(frame.rotation),
           borderColor: color,
           borderWidth: el.borderWidth ?? 1.5,
           color: el.fill ? toColor(el.fill) : undefined,
@@ -80,8 +78,8 @@ export async function applyEdits(bytes, elements) {
         break
       case 'line':
         page.drawLine({
-          start: { x: el.x, y: H - el.y },
-          end: { x: el.x2, y: H - el.y2 },
+          start: pt(el.x, el.y),
+          end: pt(el.x2, el.y2),
           thickness: el.borderWidth ?? 2,
           color,
           opacity: el.opacity ?? 1,
@@ -89,8 +87,7 @@ export async function applyEdits(bytes, elements) {
         break
       case 'highlight':
         page.drawRectangle({
-          x: el.x,
-          y: H - el.y - el.h,
+          ...placeBox(frame, el.x, el.y, el.w, el.h),
           width: el.w,
           height: el.h,
           color: toColor(el.color ?? '#ffe066'),
@@ -103,8 +100,8 @@ export async function applyEdits(bytes, elements) {
           const a = el.points[i - 1]
           const b = el.points[i]
           page.drawLine({
-            start: { x: a.x, y: H - a.y },
-            end: { x: b.x, y: H - b.y },
+            start: pt(a.x, a.y),
+            end: pt(b.x, b.y),
             thickness: el.borderWidth ?? 2,
             color,
             opacity: el.opacity ?? 1,
@@ -116,8 +113,7 @@ export async function applyEdits(bytes, elements) {
         const img =
           el.imgType === 'jpeg' ? await doc.embedJpg(el.bytes) : await doc.embedPng(el.bytes)
         page.drawImage(img, {
-          x: el.x,
-          y: H - el.y - el.h,
+          ...placeBox(frame, el.x, el.y, el.w, el.h),
           width: el.w,
           height: el.h,
           opacity: el.opacity ?? 1,

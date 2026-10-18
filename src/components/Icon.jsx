@@ -36,9 +36,23 @@ const P = {
   moon: 'M20 14.5A8 8 0 0 1 9.5 4a7 7 0 1 0 10.5 10.5z',
   auto: 'M12 3a9 9 0 0 0 0 18zM12 3a9 9 0 0 1 0 18',
   home: 'M4 11l8-7 8 7M6 10v9h12v-9',
+  check: 'M5 12.5l4.5 4.5L19 7.5',
+  star: 'M12 3.8l2.5 5.2 5.7.8-4.1 4 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4.1-4 5.7-.8z',
+  menu: 'M4 7h16M4 12h16M4 17h16',
+  plus: 'M12 5v14M5 12h14',
+  files: 'M8 3h8l4 4v10H8zM16 3v4h4M4 7v14h12',
+  viewer: 'M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6zM12 14.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+  pages: 'M4 4h7v9H4zM13 4h7v9h-7zM4 15h7v5H4zM13 15h7v5h-7z',
+  download: 'M12 4v11M7 10l5 5 5-5M5 20h14',
+  undo: 'M9 7L4 12l5 5M4 12h11a5 5 0 0 1 0 10h-3',
+  left: 'M15 6l-6 6 6 6',
+  right: 'M9 6l6 6-6 6',
+  trash: 'M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13',
+  duplicate: 'M8 8h11v12H8zM5 16V4h11',
+  blank: 'M6 3h9l4 4v14H6zM12 11v6M9 14h6',
 }
 
-export default function Icon({ name, size = 22, className = '' }) {
+export default function Icon({ name, size = 22, className = '', filled = false }) {
   const d = P[name] ?? P.shield
   return (
     <svg
@@ -46,7 +60,7 @@ export default function Icon({ name, size = 22, className = '' }) {
       width={size}
       height={size}
       viewBox="0 0 24 24"
-      fill="none"
+      fill={filled ? 'currentColor' : 'none'}
       stroke="currentColor"
       strokeWidth="1.6"
       strokeLinecap="round"

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Quarterly Operations Report</title>
+    <!-- remote resources: must be stripped, never fetched -->
+    <link rel="stylesheet" href="https://example.com/theme.css" />
+    <style>
+      @import url('https://fonts.example.com/css?family=Inter');
+      body { font-family: Arial, Helvetica, sans-serif; color: #222; font-size: 11pt; }
+      h1 { color: rgb(220, 0, 0); font-size: 24pt; border-bottom: 2px solid #c00; }
+      h2 { color: #1f3a93; font-size: 15pt; margin-top: 18pt; }
+      .lead { font-size: 12pt; color: #444; }
+      table.data { border-collapse: collapse; width: 100%; }
+      table.data th { background: #1f3a93; color: #fff; padding: 4pt; text-align: left; }
+      table.data td { border: 1px solid #999; padding: 4pt; }
+      .num { text-align: right; }
+      .note { background: #fff6d5; border-left: 4px solid #e0a800; padding: 6pt; }
+      .banner { background: url('https://tracker.example.com/pixel.gif'); }
+    </style>
+  </head>
+  <body>
+    <h1>Quarterly Operations Report</h1>
+    <p class="lead">Northwind Logistics, third quarter. Prepared by the regional operations office for the board review.</p>
+    <img src="https://tracker.example.com/logo.png" alt="Northwind logo" />
+    <img alt="status dot" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAFklEQVR4nGOQX2BFEmIY1TCqYfhqAABGY/kBWUDFoQAAAABJRU5ErkJggg==" width="16" height="16" />
+
+    <h2>1. Summary</h2>
+    <p>Shipments grew steadily across all three regions. On-time delivery improved to ninety-four percent, while average handling cost per parcel fell for the second quarter in a row. Warehouse utilisation stayed below the planned ceiling.</p>
+    <ul>
+      <li>Total shipments: 182,450 parcels</li>
+      <li>On-time delivery: 94.2 percent</li>
+      <li>Customer complaints down by eleven percent</li>
+    </ul>
+
+    <h2>2. Regional figures</h2>
+    <table class="data">
+      <thead>
+        <tr><th>Region</th><th>Shipments</th><th>On time</th><th>Cost per parcel</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>North</td><td class="num">61,200</td><td class="num">95.1%</td><td class="num">EUR 3.42</td></tr>
+        <tr><td>Central</td><td class="num">74,830</td><td class="num">93.6%</td><td class="num">EUR 3.18</td></tr>
+        <tr><td>South</td><td class="num">46,420</td><td class="num">93.9%</td><td class="num">EUR 3.77</td></tr>
+        <tr><td><b>Total</b></td><td class="num"><b>182,450</b></td><td class="num"><b>94.2%</b></td><td class="num"><b>EUR 3.41</b></td></tr>
+      </tbody>
+    </table>
+
+    <h2>3. Risks and actions</h2>
+    <div class="note">Fuel surcharges are expected to rise next quarter. Procurement will renegotiate the carrier contracts before renewal.</div>
+    <ol>
+      <li>Open the second sorting line in Central by November.</li>
+      <li>Replace the handheld scanners in the South depots.</li>
+      <li>Review overtime rules with the works council.</li>
+    </ol>
+    <p onclick="alert(1)">Contact: operations office, extension 4410. <a href="https://example.com/ops">Operations portal</a></p>
+    <script>document.body.innerHTML = 'script ran'</script>
+  </body>
+</html>

@@ -1,11 +1,30 @@
 import { useEffect, useState } from 'react'
-import { renderThumbnails } from '../lib/pdfText.js'
+import { onPdfReleased, renderThumbnails } from '../lib/pdfText.js'
 
 // Thumbnails render in batches so a huge PDF can't overwhelm the page; the
-// user explicitly loads the next batch. Cached per file across all tools.
+// user explicitly loads the next batch. Cached per file across all tools as
+// object URLs; an entry is dropped (rendering stopped, URLs revoked) when its
+// file's bytes are released, i.e. the file was removed.
 export const THUMB_BATCH = 100
 
 const cache = new Map() // fileId -> entry
+
+const sameBytes = (a, b) =>
+  a === b || (a?.buffer === b?.buffer && a?.byteOffset === b?.byteOffset && a?.byteLength === b?.byteLength)
+
+// Stops rendering and frees the thumbnails of one file.
+export function dropThumbs(fileId) {
+  const entry = cache.get(fileId)
+  if (!entry) return
+  cache.delete(fileId)
+  entry.controller.abort()
+  entry.thumbs.forEach((u) => u && URL.revokeObjectURL(u))
+  entry.thumbs = []
+}
+
+onPdfReleased((bytes) => {
+  for (const [id, entry] of cache) if (sameBytes(entry.bytes, bytes)) dropThumbs(id)
+})
 
 function notify(entry) {
   const snapshot = {
@@ -19,7 +38,7 @@ function notify(entry) {
 }
 
 function pump(entry) {
-  if (entry.busy || entry.error || entry.loadedTo >= entry.target) return
+  if (entry.busy || entry.error || entry.loadedTo >= entry.target || entry.controller.signal.aborted) return
   entry.busy = true
   const from = entry.loadedTo + 1
   const to = entry.target
@@ -32,6 +51,7 @@ function pump(entry) {
     },
     from,
     to,
+    { signal: entry.controller.signal, objectUrls: true },
   ).then(
     () => {
       entry.loadedTo = to
@@ -40,8 +60,9 @@ function pump(entry) {
       pump(entry) // target may have grown while we rendered
     },
     (err) => {
-      entry.error = err.message
       entry.busy = false
+      if (err.name === 'AbortError') return
+      entry.error = err.message
       notify(entry)
     },
   )
@@ -49,6 +70,10 @@ function pump(entry) {
 
 export function subscribeThumbs(fileId, bytes, pageCount, cb) {
   let entry = cache.get(fileId)
+  if (entry && !sameBytes(entry.bytes, bytes)) {
+    dropThumbs(fileId)
+    entry = null
+  }
   if (!entry) {
     entry = {
       bytes,
@@ -59,6 +84,7 @@ export function subscribeThumbs(fileId, bytes, pageCount, cb) {
       busy: false,
       error: null,
       listeners: new Set(),
+      controller: new AbortController(),
     }
     cache.set(fileId, entry)
     pump(entry)

@@ -1,0 +1,2402 @@
+{
+  "name": "G1-tools",
+  "startedAt": "2026-10-17T20:08:25.846Z",
+  "finishedAt": "2026-10-17T20:09:26.636Z",
+  "durationMin": 1,
+  "command": "npm run test:corpus -- --tool split,extract,remove,organize,rotate,merge --shards 4 --name G1-tools",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 27,
+    "fail": 0,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "merge",
+      "pass": 9,
+      "fail": 0,
+      "skip": 0,
+      "ms": 26985
+    },
+    {
+      "tool": "split",
+      "pass": 8,
+      "fail": 0,
+      "skip": 0,
+      "ms": 58742
+    },
+    {
+      "tool": "extract",
+      "pass": 3,
+      "fail": 0,
+      "skip": 0,
+      "ms": 4244
+    },
+    {
+      "tool": "remove",
+      "pass": 2,
+      "fail": 0,
+      "skip": 0,
+      "ms": 4955
+    },
+    {
+      "tool": "rotate",
+      "pass": 3,
+      "fail": 0,
+      "skip": 0,
+      "ms": 3489
+    },
+    {
+      "tool": "organize",
+      "pass": 2,
+      "fail": 0,
+      "skip": 0,
+      "ms": 2419
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "merge-owner-only: passed"
+      ],
+      "passedChecks": 1,
+      "reason": null
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no per-render copy counter; large scans now render (JPX fixed in U1), see time and heap on pdf2img-bible-62MB, pdf2img-crooked-104MB, split-911-large"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "merge-damaged-xref: passed"
+      ],
+      "passedChecks": 1,
+      "reason": null
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "merge-outlines: bookmarks kept",
+        "merge-forms: form fields kept",
+        "merge-forms: field names unique",
+        "merge-forms: fields work: one per part filled and read back",
+        "split-budget-bookmarks: bookmarks kept in parts",
+        "split-form-f1040: form fields kept in parts"
+      ],
+      "passedChecks": 6,
+      "reason": null
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "CDN pinning is a config review item; font fidelity not scored"
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no PAdES / multi-place API to call)"
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap"
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    }
+  ],
+  "results": [
+    {
+      "id": "merge-reports",
+      "tool": "merge",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf",
+        "reports/arxiv-1810.04805-bert.pdf",
+        "reports/arxiv-1512.03385-resnet.pdf"
+      ],
+      "result": "PASS",
+      "detail": "42 pages, 2.2 MB",
+      "error": null,
+      "ms": 3805,
+      "opMs": 975,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "merged.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page count",
+          "ok": true,
+          "detail": "got 42, want 42",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 42 vs MuPDF 42",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and page size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page text in order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "merge-rotated",
+      "tool": "merge",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf",
+        "quirks/pdfjs-hello_world_rotated.pdf",
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "23 pages, 648 KB",
+      "error": null,
+      "ms": 2758,
+      "opMs": 240,
+      "heapMB": 7,
+      "audit": null,
+      "checks": [
+        {
+          "name": "merged.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page count",
+          "ok": true,
+          "detail": "got 23, want 23",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 23 vs MuPDF 23",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and page size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page text in order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "merge-outlines",
+      "tool": "merge",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-nested_outline.pdf",
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "193 pages, 1.9 MB",
+      "error": null,
+      "ms": 3030,
+      "opMs": 2241,
+      "heapMB": 37,
+      "audit": null,
+      "checks": [
+        {
+          "name": "merged.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page count",
+          "ok": true,
+          "detail": "got 193, want 193",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 193 vs MuPDF 193",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and page size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page text in order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bookmarks kept",
+          "ok": true,
+          "detail": "38 of 36 outline items",
+          "soft": false,
+          "audit": 12
+        }
+      ]
+    },
+    {
+      "id": "merge-forms",
+      "tool": "merge",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf",
+        "forms/irs-f1040sa.pdf"
+      ],
+      "result": "PASS",
+      "detail": "7 pages, 89 KB",
+      "error": null,
+      "ms": 3516,
+      "opMs": 789,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "merged.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page count",
+          "ok": true,
+          "detail": "got 7, want 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 7 vs MuPDF 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and page size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page text in order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "form fields kept",
+          "ok": true,
+          "detail": "56 of 56 fields",
+          "soft": false,
+          "audit": 12
+        },
+        {
+          "name": "field names unique",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 12
+        },
+        {
+          "name": "fields work: one per part filled and read back",
+          "ok": true,
+          "detail": "topmostSubform[0].Page1[0].f1_01[0] = FILL1; form1[0].Page1[0].f1_1[0] = FILL2",
+          "soft": false,
+          "audit": 12
+        }
+      ]
+    },
+    {
+      "id": "merge-large",
+      "tool": "merge",
+      "layer": "ops",
+      "category": "large",
+      "files": [
+        "large/911-commission-report.pdf",
+        "reports/us-economic-report-president-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1072 pages, 7.0 MB",
+      "error": null,
+      "ms": 7019,
+      "opMs": 3821,
+      "heapMB": 61,
+      "audit": null,
+      "checks": [
+        {
+          "name": "merged.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page count",
+          "ok": true,
+          "detail": "got 1072, want 1072",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1072 vs MuPDF 1072",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and page size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page text in order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "merge-owner-only",
+      "tool": "merge",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/owner-only-tracemonkey.pdf",
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "37 pages, 1.5 MB",
+      "error": null,
+      "ms": 1304,
+      "opMs": 680,
+      "heapMB": 22,
+      "audit": 1,
+      "checks": [
+        {
+          "name": "merged.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page count",
+          "ok": true,
+          "detail": "got 37, want 37",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 37 vs MuPDF 37",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and page size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page text in order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "merge-damaged-xref",
+      "tool": "merge",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-xref_command_missing.pdf",
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "15 pages, 940 KB",
+      "error": null,
+      "ms": 561,
+      "opMs": 274,
+      "heapMB": 16,
+      "audit": 7,
+      "checks": [
+        {
+          "name": "merged.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page count",
+          "ok": true,
+          "detail": "got 15, want 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and page size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page text in order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "merge-pdf20",
+      "tool": "merge",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdf20-simple.pdf",
+        "quirks/pdf20-offset-start.pdf",
+        "quirks/pdf20-incremental-save.pdf"
+      ],
+      "result": "PASS",
+      "detail": "3 pages, 5 KB",
+      "error": null,
+      "ms": 227,
+      "opMs": 21,
+      "heapMB": 28,
+      "audit": null,
+      "checks": [
+        {
+          "name": "merged.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page count",
+          "ok": true,
+          "detail": "got 3, want 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and page size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page text in order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "split-tracemonkey",
+      "tool": "split",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 pages -> 7 + 7",
+      "error": null,
+      "ms": 1403,
+      "opMs": 499,
+      "heapMB": 7,
+      "audit": null,
+      "checks": [
+        {
+          "name": "part1.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page count",
+          "ok": true,
+          "detail": "got 7, want 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 7 vs MuPDF 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page count",
+          "ok": true,
+          "detail": "got 7, want 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 7 vs MuPDF 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and visible size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part 2 starts at the cut page",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "split-budget-bookmarks",
+      "tool": "split",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "184 pages -> 92 + 92",
+      "error": null,
+      "ms": 6642,
+      "opMs": 5357,
+      "heapMB": 48,
+      "audit": null,
+      "checks": [
+        {
+          "name": "part1.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page count",
+          "ok": true,
+          "detail": "got 92, want 92",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 92 vs MuPDF 92",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page count",
+          "ok": true,
+          "detail": "got 92, want 92",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 92 vs MuPDF 92",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and visible size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part 2 starts at the cut page",
+          "ok": true,
+          "detail": "coverage undefined",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bookmarks kept in parts",
+          "ok": true,
+          "detail": "12 in part 1, 27 in source",
+          "soft": true,
+          "audit": 12
+        }
+      ]
+    },
+    {
+      "id": "split-911-large",
+      "tool": "split",
+      "layer": "ops",
+      "category": "large",
+      "files": [
+        "large/911-commission-report.pdf"
+      ],
+      "result": "PASS",
+      "detail": "585 pages -> 292 + 293",
+      "error": null,
+      "ms": 6141,
+      "opMs": 3399,
+      "heapMB": 21,
+      "audit": null,
+      "checks": [
+        {
+          "name": "part1.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page count",
+          "ok": true,
+          "detail": "got 292, want 292",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 292 vs MuPDF 292",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page count",
+          "ok": true,
+          "detail": "got 293, want 293",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 293 vs MuPDF 293",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and visible size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part 2 starts at the cut page",
+          "ok": true,
+          "detail": "coverage undefined",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "split-rot90-cropbox",
+      "tool": "split",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "16 pages -> 8 + 8",
+      "error": null,
+      "ms": 736,
+      "opMs": 211,
+      "heapMB": 40,
+      "audit": null,
+      "checks": [
+        {
+          "name": "part1.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page count",
+          "ok": true,
+          "detail": "got 8, want 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 8 vs MuPDF 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page count",
+          "ok": true,
+          "detail": "got 8, want 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 8 vs MuPDF 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and visible size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part 2 starts at the cut page",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "split-form-f1040",
+      "tool": "split",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-f1040.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2 pages -> 1 + 1",
+      "error": null,
+      "ms": 546,
+      "opMs": 412,
+      "heapMB": 18,
+      "audit": null,
+      "checks": [
+        {
+          "name": "part1.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and visible size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part 2 starts at the cut page",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "form fields kept in parts",
+          "ok": true,
+          "detail": "128 in part 1, 199 in source",
+          "soft": true,
+          "audit": 12
+        }
+      ]
+    },
+    {
+      "id": "split-crooked-104MB",
+      "tool": "split",
+      "layer": "ops",
+      "category": "large",
+      "files": [
+        "large/crooked-paths-1648-104MB.pdf"
+      ],
+      "result": "PASS",
+      "detail": "255 pages -> 127 + 128",
+      "error": null,
+      "ms": 25523,
+      "opMs": 20840,
+      "heapMB": 15,
+      "audit": null,
+      "checks": [
+        {
+          "name": "part1.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page count",
+          "ok": true,
+          "detail": "got 127, want 127",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 127 vs MuPDF 127",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page count",
+          "ok": true,
+          "detail": "got 128, want 128",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 128 vs MuPDF 128",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and visible size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part 2 starts at the cut page",
+          "ok": true,
+          "detail": "coverage undefined",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "split-bible-956p-62MB",
+      "tool": "split",
+      "layer": "ops",
+      "category": "large",
+      "files": [
+        "large/explorations-bible-lands-956pp-62MB.pdf"
+      ],
+      "result": "PASS",
+      "detail": "956 pages -> 478 + 478",
+      "error": null,
+      "ms": 14215,
+      "opMs": 10488,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "part1.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page count",
+          "ok": true,
+          "detail": "got 478, want 478",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 478 vs MuPDF 478",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page count",
+          "ok": true,
+          "detail": "got 478, want 478",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 478 vs MuPDF 478",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and visible size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part 2 starts at the cut page",
+          "ok": true,
+          "detail": "coverage undefined",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "extract-budget-1-3-5",
+      "tool": "extract",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "3 pages out",
+      "error": null,
+      "ms": 3389,
+      "opMs": 1852,
+      "heapMB": 17,
+      "audit": null,
+      "checks": [
+        {
+          "name": "extracted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "extracted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "extracted.pdf: page count",
+          "ok": true,
+          "detail": "got 3, want 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "extracted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "extracted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "right pages in the right order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "extract-rotation-2",
+      "tool": "extract",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 pages out",
+      "error": null,
+      "ms": 117,
+      "opMs": 20,
+      "heapMB": 28,
+      "audit": null,
+      "checks": [
+        {
+          "name": "extracted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "extracted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "extracted.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "extracted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "extracted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "right pages in the right order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation applied",
+          "ok": true,
+          "detail": "got 90, want 90",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "extract-darwin-scan",
+      "tool": "extract",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/darwin-origin-of-species-ia.pdf"
+      ],
+      "result": "PASS",
+      "detail": "3 pages out",
+      "error": null,
+      "ms": 738,
+      "opMs": 270,
+      "heapMB": 28,
+      "audit": null,
+      "checks": [
+        {
+          "name": "extracted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "extracted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "extracted.pdf: page count",
+          "ok": true,
+          "detail": "got 3, want 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "extracted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "extracted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "remove-tracemonkey-p1",
+      "tool": "remove",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "13 pages out",
+      "error": null,
+      "ms": 1990,
+      "opMs": 346,
+      "heapMB": 7,
+      "audit": null,
+      "checks": [
+        {
+          "name": "removed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "removed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "removed.pdf: page count",
+          "ok": true,
+          "detail": "got 13, want 13",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "removed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "removed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 13 vs MuPDF 13",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "right pages in the right order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "remove-911-first10",
+      "tool": "remove",
+      "layer": "ops",
+      "category": "large",
+      "files": [
+        "large/911-commission-report.pdf"
+      ],
+      "result": "PASS",
+      "detail": "575 pages out",
+      "error": null,
+      "ms": 2965,
+      "opMs": 1592,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "removed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "removed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "removed.pdf: page count",
+          "ok": true,
+          "detail": "got 575, want 575",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "removed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "removed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 575 vs MuPDF 575",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "rotate-rotation-quirk",
+      "tool": "rotate",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2 pages out",
+      "error": null,
+      "ms": 1259,
+      "opMs": 34,
+      "heapMB": 7,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation applied",
+          "ok": true,
+          "detail": "got 90,180, want 90,180",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "rotate-rot90-cropbox",
+      "tool": "rotate",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "16 pages out",
+      "error": null,
+      "ms": 2103,
+      "opMs": 203,
+      "heapMB": 7,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation applied",
+          "ok": true,
+          "detail": "got 180,180,180,180,180,180, want 180,180,180,180,180,180",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "rotate-hello-rotated",
+      "tool": "rotate",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-hello_world_rotated.pdf"
+      ],
+      "result": "PASS",
+      "detail": "5 pages out",
+      "error": null,
+      "ms": 127,
+      "opMs": 15,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation applied",
+          "ok": true,
+          "detail": "got 0,0,0,0,0, want 0,0,0,0,0",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "organize-reverse-tracemonkey",
+      "tool": "organize",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 pages out",
+      "error": null,
+      "ms": 1207,
+      "opMs": 441,
+      "heapMB": 7,
+      "audit": null,
+      "checks": [
+        {
+          "name": "reversed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "reversed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "reversed.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "reversed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "reversed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "right pages in the right order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "organize-reverse-fw4",
+      "tool": "organize",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw4.pdf"
+      ],
+      "result": "PASS",
+      "detail": "5 pages out",
+      "error": null,
+      "ms": 1212,
+      "opMs": 520,
+      "heapMB": 7,
+      "audit": null,
+      "checks": [
+        {
+          "name": "reversed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "reversed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "reversed.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "reversed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "reversed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "right pages in the right order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "flow-merge",
+      "tool": "merge",
+      "layer": "flow",
+      "category": "flow",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf",
+        "reports/arxiv-1810.04805-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "ready 2.3s, click to download 1.3s: merged.pdf: 30 pages, 1.55 MB",
+      "error": null,
+      "ms": 4765,
+      "opMs": null,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "merged.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page count",
+          "ok": true,
+          "detail": "got 30, want 30",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 30 vs MuPDF 30",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "second file starts at page 15",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "flow-split",
+      "tool": "split",
+      "layer": "flow",
+      "category": "flow",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "ready 1.7s, click to download 1.7s: 2 PDFs, 14 pages in total",
+      "error": null,
+      "ms": 3536,
+      "opMs": null,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "zip holds 2 PDFs",
+          "ok": true,
+          "detail": "pdfjs-tracemonkey_1-3.pdf, pdfjs-tracemonkey_4-14.pdf",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "parts have 3 and 11 pages",
+          "ok": true,
+          "detail": "3, 11",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    }
+  ]
+}

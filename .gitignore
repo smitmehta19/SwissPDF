@@ -5,3 +5,6 @@ public/samples/
 .DS_Store
 *.Zone.Identifier
 .vite/
+test-corpus/
+.claude/worktrees/
+.claude/snapshots/

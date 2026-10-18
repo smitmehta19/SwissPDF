@@ -1,0 +1,2340 @@
+{
+  "name": "U4-H",
+  "startedAt": "2026-10-17T19:42:49.634Z",
+  "finishedAt": "2026-10-17T19:45:03.138Z",
+  "durationMin": 2.2,
+  "command": "npm run test:corpus -- --tool pdf2word,pdf2excel,pdf2ppt,pdf2md --shards 4 --name U4-H",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 53,
+    "fail": 0,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "pdf2word",
+      "pass": 23,
+      "fail": 0,
+      "skip": 0,
+      "ms": 122192
+    },
+    {
+      "tool": "pdf2excel",
+      "pass": 12,
+      "fail": 0,
+      "skip": 0,
+      "ms": 28698
+    },
+    {
+      "tool": "pdf2ppt",
+      "pass": 6,
+      "fail": 0,
+      "skip": 0,
+      "ms": 19163
+    },
+    {
+      "tool": "pdf2md",
+      "pass": 12,
+      "fail": 0,
+      "skip": 0,
+      "ms": 18803
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no per-render copy counter; large scans now render (JPX fixed in U1), see time and heap on pdf2img-bible-62MB, pdf2img-crooked-104MB, split-911-large"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "CONFIRMED",
+      "evidence": [
+        "pdf2word-tracemonkey-2col: column lines stay in reading order (30 of 43 line joins kept)",
+        "pdf2word-bert-2col: column lines stay in reading order (35 of 59 line joins kept)"
+      ],
+      "passedChecks": 36,
+      "reason": null
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "CONFIRMED",
+      "evidence": [
+        "pdf2excel-aws-invoice: leading-zero / long ids kept as text (lost 0000)"
+      ],
+      "passedChecks": 20,
+      "reason": null
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "CONFIRMED",
+      "evidence": [
+        "pdf2ppt-rotation-mixed: mixed page shapes each fit their slide (2 page aspects, one slide size)"
+      ],
+      "passedChecks": 13,
+      "reason": null
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "CDN pinning is a config review item; font fidelity not scored"
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "pdf2md-noembed-sjis: words carried over (85%+)",
+        "pdf2md-noembed-eucjp: words carried over (85%+)",
+        "pdf2md-vertical: words carried over (85%+)"
+      ],
+      "passedChecks": 3,
+      "reason": null
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no PAdES / multi-place API to call)"
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap"
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    }
+  ],
+  "results": [
+    {
+      "id": "pdf2word-tracemonkey-2col",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "coverage 0.94, 11 tables, 88 images; warn: column lines stay in reading order (30 of 43 line joins kept)",
+      "error": null,
+      "ms": 11476,
+      "opMs": 9046,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "docx has a document part",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 0.94 of 1852 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "column lines stay in reading order",
+          "ok": false,
+          "detail": "30 of 43 line joins kept",
+          "soft": true,
+          "audit": 15
+        }
+      ]
+    },
+    {
+      "id": "pdf2word-bert-2col",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1810.04805-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "coverage 0.86, 14 tables, 38 images; warn: column lines stay in reading order (35 of 59 line joins kept)",
+      "error": null,
+      "ms": 3257,
+      "opMs": 3005,
+      "heapMB": 34,
+      "audit": null,
+      "checks": [
+        {
+          "name": "docx has a document part",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 0.86 of 1676 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "column lines stay in reading order",
+          "ok": false,
+          "detail": "35 of 59 line joins kept",
+          "soft": true,
+          "audit": 15
+        }
+      ]
+    },
+    {
+      "id": "pdf2word-fdic",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/fdic-quarterly-banking-profile-2023q4.pdf"
+      ],
+      "result": "PASS",
+      "detail": "coverage 0.98, 60 tables, 43 images",
+      "error": null,
+      "ms": 10524,
+      "opMs": 8119,
+      "heapMB": 19,
+      "audit": null,
+      "checks": [
+        {
+          "name": "docx has a document part",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 0.98 of 1276 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2word-aws-invoice",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "coverage 1.00, 3 tables, 1 images",
+      "error": null,
+      "ms": 7426,
+      "opMs": 4938,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "docx has a document part",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00 of 93 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2word-aws-invoice-exact",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "coverage 1.00, 0 tables, 1 images",
+      "error": null,
+      "ms": 638,
+      "opMs": 478,
+      "heapMB": 48,
+      "audit": null,
+      "checks": [
+        {
+          "name": "docx has a document part",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00 of 93 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2word-flipkart",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/flipkart-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "coverage 1.00, 1 tables, 6 images",
+      "error": null,
+      "ms": 446,
+      "opMs": 312,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "docx has a document part",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00 of 122 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2word-arabic",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-arabic.pdf"
+      ],
+      "result": "PASS",
+      "detail": "coverage 1.00, 0 tables, 0 images",
+      "error": null,
+      "ms": 1264,
+      "opMs": 1018,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "docx has a document part",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00 of 22 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2word-chinese",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-chinese-simplified.pdf"
+      ],
+      "result": "PASS",
+      "detail": "coverage 1.00, 0 tables, 0 images",
+      "error": null,
+      "ms": 686,
+      "opMs": 510,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "docx has a document part",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00 of 511 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2word-scanned-fax",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 680,
+      "opMs": 471,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "docx has a document part",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text from OCR fallback",
+          "ok": true,
+          "detail": "2823 chars",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2word-911-large",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "large",
+      "files": [
+        "large/911-commission-report.pdf"
+      ],
+      "result": "PASS",
+      "detail": "coverage 0.97, 16 tables, 34 images",
+      "error": null,
+      "ms": 12586,
+      "opMs": 11563,
+      "heapMB": 199,
+      "audit": null,
+      "checks": [
+        {
+          "name": "docx has a document part",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 0.97 of 2813 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-word-tracemonkey-columns",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "108/109 joins, 2 broken hyphens, 11 tables, 2965 ms",
+      "error": null,
+      "ms": 3168,
+      "opMs": 3010,
+      "heapMB": 204,
+      "audit": null,
+      "checks": [
+        {
+          "name": "column lines stay in reading order (90%+)",
+          "ok": true,
+          "detail": "108 of 109 line joins kept; missed \"VMs. In ıve implementation,\"",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "line-end hyphens joined (<= 5 \"com- laboration\")",
+          "ok": true,
+          "detail": "2 left",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "paragraph alignment carried (justified)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "font family carried",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-word-bert-columns",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1810.04805-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "127/135 joins, 3 broken hyphens, 14 tables, 2073 ms",
+      "error": null,
+      "ms": 2173,
+      "opMs": 2110,
+      "heapMB": 44,
+      "audit": null,
+      "checks": [
+        {
+          "name": "column lines stay in reading order (90%+)",
+          "ok": true,
+          "detail": "127 of 135 line joins kept; missed \"to pre- train deep\"",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "line-end hyphens joined (<= 5 \"com- laboration\")",
+          "ok": true,
+          "detail": "3 left",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "paragraph alignment carried (justified)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "font family carried",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-word-attention-columns",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "48/50 joins, 4 broken hyphens, 9 tables, 1809 ms",
+      "error": null,
+      "ms": 2200,
+      "opMs": 1850,
+      "heapMB": 44,
+      "audit": null,
+      "checks": [
+        {
+          "name": "column lines stay in reading order (90%+)",
+          "ok": true,
+          "detail": "48 of 50 line joins kept; missed \"of the best models\"",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "line-end hyphens joined (<= 5 \"com- laboration\")",
+          "ok": true,
+          "detail": "4 left",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "paragraph alignment carried (justified)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "font family carried",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-word-resnet-columns",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1512.03385-resnet.pdf"
+      ],
+      "result": "PASS",
+      "detail": "110/110 joins, 4 broken hyphens, 24 tables, 1222 ms",
+      "error": null,
+      "ms": 1421,
+      "opMs": 1253,
+      "heapMB": 23,
+      "audit": null,
+      "checks": [
+        {
+          "name": "column lines stay in reading order (90%+)",
+          "ok": true,
+          "detail": "110 of 110 line joins kept",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "line-end hyphens joined (<= 5 \"com- laboration\")",
+          "ok": true,
+          "detail": "4 left",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "paragraph alignment carried (justified)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "font family carried",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-word-aws-tables",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "3 tables, 22 rows, 134 ms",
+      "error": null,
+      "ms": 639,
+      "opMs": 175,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has Word tables",
+          "ok": true,
+          "detail": "3 tables",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "row with AWS Service Charges + $4.11",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "row with Amazon Glacier + $2.22",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        }
+      ]
+    },
+    {
+      "id": "h-word-saeco-tables",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/saeco.pdf"
+      ],
+      "result": "PASS",
+      "detail": "3 tables, 11 rows, 139 ms",
+      "error": null,
+      "ms": 351,
+      "opMs": 172,
+      "heapMB": 18,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has Word tables",
+          "ok": true,
+          "detail": "3 tables",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "row with E103184 + Onderhoudsset CA6707/10 + 49,99",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "row with Grondslag + BTW bedrag",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        }
+      ]
+    },
+    {
+      "id": "h-word-camelot-tables",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/camelot-bol.pdf"
+      ],
+      "result": "PASS",
+      "detail": "5 tables, 11 rows, 72 ms",
+      "error": null,
+      "ms": 375,
+      "opMs": 96,
+      "heapMB": 22,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has Word tables",
+          "ok": true,
+          "detail": "5 tables",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "row with BTW + € 32,80",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "row with Bedrag inclusief BTW + € 189,00",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        }
+      ]
+    },
+    {
+      "id": "h-word-netpresse-tables",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/netpresse-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2 tables, 7 rows, 440 ms",
+      "error": null,
+      "ms": 569,
+      "opMs": 461,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has Word tables",
+          "ok": true,
+          "detail": "2 tables",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "row with Justificatif PDF + 0,75 €",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "row with Total TTC + 56,02 €",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        }
+      ]
+    },
+    {
+      "id": "h-word-arabic-cid-logical",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/pdfjs-ArabicCIDTrueType.pdf"
+      ],
+      "result": "PASS",
+      "detail": "4/4 RTL lines in reading order",
+      "error": null,
+      "ms": 165,
+      "opMs": 74,
+      "heapMB": 24,
+      "audit": null,
+      "checks": [
+        {
+          "name": "RTL lines in logical order",
+          "ok": true,
+          "detail": "4 of 4 lines",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "paragraphs marked right-to-left",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 15
+        }
+      ]
+    },
+    {
+      "id": "h-word-udhr-arabic-logical",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-arabic.pdf"
+      ],
+      "result": "PASS",
+      "detail": "278/281 three-word runs in order",
+      "error": null,
+      "ms": 454,
+      "opMs": 296,
+      "heapMB": 18,
+      "audit": null,
+      "checks": [
+        {
+          "name": "RTL word order kept (80%+ of 3-word runs)",
+          "ok": true,
+          "detail": "278 of 281",
+          "soft": false,
+          "audit": 15
+        }
+      ]
+    },
+    {
+      "id": "h-word-fdic-speed-furniture",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/fdic-quarterly-banking-profile-2023q4.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2.9 s, 60 tables, coverage 1.00",
+      "error": null,
+      "ms": 3207,
+      "opMs": 2966,
+      "heapMB": 25,
+      "audit": null,
+      "checks": [
+        {
+          "name": "converted in under 60 s",
+          "ok": true,
+          "detail": "2.9 s",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page header became a Word header",
+          "ok": true,
+          "detail": "word/header1.xml",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "page number became a PAGE field",
+          "ok": true,
+          "detail": "word/footer1.xml",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "header text not repeated in the body",
+          "ok": true,
+          "detail": "0 copies in body",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-word-jpeg-scan-ndl",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-ndl-konoye-p1.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 OCR pages, 0 images, 13 words, 4.4 s",
+      "error": null,
+      "ms": 4538,
+      "opMs": 4398,
+      "heapMB": 48,
+      "audit": null,
+      "checks": [
+        {
+          "name": "scanned page went to OCR",
+          "ok": true,
+          "detail": "1 pages tried, 1 with words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page image or recognized text in the docx",
+          "ok": true,
+          "detail": "0 images, 13 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-word-jpeg-scan-glover",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/letter-to-benjamin-glover.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2 OCR pages, 0 images, 24 words, 52.2 s",
+      "error": null,
+      "ms": 53949,
+      "opMs": 53661,
+      "heapMB": 28,
+      "audit": null,
+      "checks": [
+        {
+          "name": "scanned page went to OCR",
+          "ok": true,
+          "detail": "2 pages tried, 2 with words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page image or recognized text in the docx",
+          "ok": true,
+          "detail": "0 images, 24 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2excel-aws-invoice",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 73 cells, coverage 1.00; warn: leading-zero / long ids kept as text (lost 0000)",
+      "error": null,
+      "ms": 8517,
+      "opMs": 7451,
+      "heapMB": 7,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has cells",
+          "ok": true,
+          "detail": "73 cells",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": false,
+          "detail": "lost 0000",
+          "soft": true,
+          "audit": 16
+        }
+      ]
+    },
+    {
+      "id": "pdf2excel-flipkart",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/flipkart-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 36 cells, coverage 1.00",
+      "error": null,
+      "ms": 1932,
+      "opMs": 975,
+      "heapMB": 7,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has cells",
+          "ok": true,
+          "detail": "36 cells",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2excel-camelot-bol",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/camelot-bol.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 64 cells, coverage 1.00",
+      "error": null,
+      "ms": 134,
+      "opMs": 67,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has cells",
+          "ok": true,
+          "detail": "64 cells",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2excel-saeco",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/saeco.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 53 cells, coverage 1.00",
+      "error": null,
+      "ms": 600,
+      "opMs": 114,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has cells",
+          "ok": true,
+          "detail": "53 cells",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2excel-free-fiber",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/free-fiber.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2 sheets, 22 cells, coverage 1.00",
+      "error": null,
+      "ms": 221,
+      "opMs": 118,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has cells",
+          "ok": true,
+          "detail": "22 cells",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2excel-fdic",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/fdic-quarterly-banking-profile-2023q4.pdf"
+      ],
+      "result": "PASS",
+      "detail": "44 sheets, 5302 cells, coverage 0.99",
+      "error": null,
+      "ms": 9569,
+      "opMs": 7150,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has cells",
+          "ok": true,
+          "detail": "5302 cells",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 0.99",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-excel-aws-typed",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 22 numbers, 0 numeric text, 0.1 s",
+      "error": null,
+      "ms": 320,
+      "opMs": 179,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "number cells typed (<2% left as text)",
+          "ok": true,
+          "detail": "0 as text, e.g. ",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": true,
+          "detail": "1 ids",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed $4.11 as currency",
+          "ok": true,
+          "detail": "4.11 as \"$\"#,##0.00",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed August 3, 2014 as a date",
+          "ok": true,
+          "detail": "41854 as mmm d, yyyy",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-excel-camelot-eu-typed",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/camelot-bol.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 18 numbers, 0 numeric text, 0.0 s",
+      "error": null,
+      "ms": 222,
+      "opMs": 83,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "number cells typed (<2% left as text)",
+          "ok": true,
+          "detail": "0 as text, e.g. ",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": true,
+          "detail": "1 ids",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed € 189,00 (decimal comma)",
+          "ok": true,
+          "detail": "189 as \"€\"#,##0.00",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed € 32,80",
+          "ok": true,
+          "detail": "32.8 as \"€\"#,##0.00",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-excel-netpresse-eu-typed",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/netpresse-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 10 numbers, 0 numeric text, 0.3 s",
+      "error": null,
+      "ms": 452,
+      "opMs": 360,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "number cells typed (<2% left as text)",
+          "ok": true,
+          "detail": "0 as text, e.g. ",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": true,
+          "detail": "2 ids",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed 56,02 € (suffix currency)",
+          "ok": true,
+          "detail": "56.02 as \"€\"#,##0.00",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-excel-saeco-dates",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/saeco.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 14 numbers, 0 numeric text, 0.1 s",
+      "error": null,
+      "ms": 245,
+      "opMs": 123,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "number cells typed (<2% left as text)",
+          "ok": true,
+          "detail": "0 as text, e.g. ",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": true,
+          "detail": "3 ids",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed 22-9-2022 as a date",
+          "ok": true,
+          "detail": "44826 as dd-mm-yyyy",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed 49,99",
+          "ok": true,
+          "detail": "49.99 as 0.00",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-excel-fdic-speed-typed",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/fdic-quarterly-banking-profile-2023q4.pdf"
+      ],
+      "result": "PASS",
+      "detail": "44 sheets, 2860 numbers, 2 numeric text, 3.2 s",
+      "error": null,
+      "ms": 3571,
+      "opMs": 3342,
+      "heapMB": 26,
+      "audit": null,
+      "checks": [
+        {
+          "name": "converted in under 60 s",
+          "ok": true,
+          "detail": "3.2 s",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "number cells typed (<2% left as text)",
+          "ok": true,
+          "detail": "2 as text, e.g. \"39,281 847,993 130,571,047\" \"121,778 119,339 116,968 116,071 128,218 125,457 124,458 123,039 123,141 121,935 120,547\"",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": true,
+          "detail": "0 ids",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-excel-fdic-joined",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/fdic-quarterly-banking-profile-2023q4.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 2680 numbers, 2 numeric text, 2.8 s",
+      "error": null,
+      "ms": 2915,
+      "opMs": 2843,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "one joined sheet",
+          "ok": true,
+          "detail": "1 sheets",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "number cells typed (<2% left as text)",
+          "ok": true,
+          "detail": "2 as text, e.g. \"39,281 847,993 130,571,047\" \"121,778 119,339 116,968 116,071 128,218 125,457 124,458 123,039 123,141 121,935 120,547\"",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": true,
+          "detail": "0 ids",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2ppt-tracemonkey",
+      "tool": "pdf2ppt",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 slides, 99 images, 2.0 MB",
+      "error": null,
+      "ms": 7424,
+      "opMs": 6403,
+      "heapMB": 17,
+      "audit": null,
+      "checks": [
+        {
+          "name": "one slide per page",
+          "ok": true,
+          "detail": "14 slides, 14 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "slides carry editable text",
+          "ok": true,
+          "detail": "83231 chars",
+          "soft": true,
+          "audit": 17
+        }
+      ]
+    },
+    {
+      "id": "pdf2ppt-rotation-mixed",
+      "tool": "pdf2ppt",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2 slides, 1 images, 50 KB; warn: mixed page shapes each fit their slide (2 page aspects, one slide size)",
+      "error": null,
+      "ms": 2118,
+      "opMs": 1055,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "one slide per page",
+          "ok": true,
+          "detail": "2 slides, 2 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "slides carry editable text",
+          "ok": true,
+          "detail": "152 chars",
+          "soft": true,
+          "audit": 17
+        },
+        {
+          "name": "mixed page shapes each fit their slide",
+          "ok": false,
+          "detail": "2 page aspects, one slide size",
+          "soft": true,
+          "audit": 17
+        }
+      ]
+    },
+    {
+      "id": "pdf2ppt-rot90-cropbox",
+      "tool": "pdf2ppt",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "16 slides, 50 images, 2.2 MB",
+      "error": null,
+      "ms": 4570,
+      "opMs": 4112,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "one slide per page",
+          "ok": true,
+          "detail": "16 slides, 16 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "slides carry editable text",
+          "ok": true,
+          "detail": "64809 chars",
+          "soft": true,
+          "audit": 17
+        }
+      ]
+    },
+    {
+      "id": "h-ppt-tracemonkey-editable",
+      "tool": "pdf2ppt",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 slides, 83231 chars, 99 media, 2.0 MB, 4.3 s",
+      "error": null,
+      "ms": 4481,
+      "opMs": 4270,
+      "heapMB": 26,
+      "audit": null,
+      "checks": [
+        {
+          "name": "one slide per page",
+          "ok": true,
+          "detail": "14 slides, 14 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "slide text extractable (85%+ of words)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": 17
+        },
+        {
+          "name": "every slide has editable text",
+          "ok": true,
+          "detail": "0 slides without text",
+          "soft": false,
+          "audit": 17
+        },
+        {
+          "name": "pictures / art kept",
+          "ok": true,
+          "detail": "99 media",
+          "soft": false,
+          "audit": 17
+        },
+        {
+          "name": "shapes fit their slide (per-page letterbox)",
+          "ok": true,
+          "detail": "0 shapes outside",
+          "soft": false,
+          "audit": 17
+        }
+      ]
+    },
+    {
+      "id": "h-ppt-rotation-mixed-editable",
+      "tool": "pdf2ppt",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2 slides, 152 chars, 1 media, 50 KB, 0.0 s",
+      "error": null,
+      "ms": 117,
+      "opMs": 49,
+      "heapMB": 7,
+      "audit": null,
+      "checks": [
+        {
+          "name": "one slide per page",
+          "ok": true,
+          "detail": "2 slides, 2 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "slide text extractable (85%+ of words)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": 17
+        },
+        {
+          "name": "every slide has editable text",
+          "ok": true,
+          "detail": "0 slides without text",
+          "soft": false,
+          "audit": 17
+        },
+        {
+          "name": "shapes fit their slide (per-page letterbox)",
+          "ok": true,
+          "detail": "0 shapes outside",
+          "soft": false,
+          "audit": 17
+        }
+      ]
+    },
+    {
+      "id": "h-ppt-aws-editable",
+      "tool": "pdf2ppt",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 slides, 1853 chars, 3 media, 152 KB, 0.3 s",
+      "error": null,
+      "ms": 453,
+      "opMs": 321,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "one slide per page",
+          "ok": true,
+          "detail": "1 slides, 1 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "slide text extractable (85%+ of words)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": 17
+        },
+        {
+          "name": "every slide has editable text",
+          "ok": true,
+          "detail": "0 slides without text",
+          "soft": false,
+          "audit": 17
+        },
+        {
+          "name": "shapes fit their slide (per-page letterbox)",
+          "ok": true,
+          "detail": "0 shapes outside",
+          "soft": false,
+          "audit": 17
+        }
+      ]
+    },
+    {
+      "id": "pdf2md-tracemonkey",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "85800 chars, 14 headings, 11 tables",
+      "error": null,
+      "ms": 3620,
+      "opMs": 2751,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 0.94 of 1852",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2md-budget",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "596818 chars, 29 headings, 125 tables",
+      "error": null,
+      "ms": 4378,
+      "opMs": 4079,
+      "heapMB": 21,
+      "audit": null,
+      "checks": [
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 0.92 of 3479",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2md-aws-invoice",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2076 chars, 5 headings, 3 tables",
+      "error": null,
+      "ms": 3686,
+      "opMs": 1499,
+      "heapMB": 6,
+      "audit": null,
+      "checks": [
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00 of 93",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2md-chinese",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-chinese-simplified.pdf"
+      ],
+      "result": "PASS",
+      "detail": "5895 chars, 0 headings, 0 tables",
+      "error": null,
+      "ms": 338,
+      "opMs": 251,
+      "heapMB": 25,
+      "audit": null,
+      "checks": [
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00 of 511",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2md-japanese",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-japanese.pdf"
+      ],
+      "result": "PASS",
+      "detail": "4587 chars, 0 headings, 0 tables",
+      "error": null,
+      "ms": 594,
+      "opMs": 393,
+      "heapMB": 7,
+      "audit": null,
+      "checks": [
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00 of 477",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2md-noembed-sjis",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/pdfjs-noembed-sjis.pdf"
+      ],
+      "result": "PASS",
+      "detail": "6 chars, 0 headings, 0 tables",
+      "error": null,
+      "ms": 234,
+      "opMs": 102,
+      "heapMB": 33,
+      "audit": null,
+      "checks": [
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00 of 5",
+          "soft": false,
+          "audit": 20
+        }
+      ]
+    },
+    {
+      "id": "pdf2md-noembed-eucjp",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/pdfjs-noembed-eucjp.pdf"
+      ],
+      "result": "PASS",
+      "detail": "6 chars, 0 headings, 0 tables",
+      "error": null,
+      "ms": 234,
+      "opMs": 152,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00 of 5",
+          "soft": false,
+          "audit": 20
+        }
+      ]
+    },
+    {
+      "id": "pdf2md-vertical",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/pdfjs-vertical.pdf"
+      ],
+      "result": "PASS",
+      "detail": "20 chars, 0 headings, 0 tables",
+      "error": null,
+      "ms": 123,
+      "opMs": 68,
+      "heapMB": 34,
+      "audit": null,
+      "checks": [
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00 of 8",
+          "soft": false,
+          "audit": 20
+        }
+      ]
+    },
+    {
+      "id": "pdf2md-arabic",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-arabic.pdf"
+      ],
+      "result": "PASS",
+      "detail": "8269 chars, 0 headings, 0 tables",
+      "error": null,
+      "ms": 548,
+      "opMs": 409,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00 of 22",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-md-tracemonkey-columns",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "85800 chars, 11 tables, 14 headings",
+      "error": null,
+      "ms": 2632,
+      "opMs": 2501,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "column lines stay in reading order (90%+)",
+          "ok": true,
+          "detail": "108 of 109; missed \"VMs. In ıve implementation,\"",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-md-bert-columns",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1810.04805-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "68234 chars, 14 tables, 17 headings",
+      "error": null,
+      "ms": 1871,
+      "opMs": 1629,
+      "heapMB": 34,
+      "audit": null,
+      "checks": [
+        {
+          "name": "column lines stay in reading order (90%+)",
+          "ok": true,
+          "detail": "134 of 135; missed \"to incor- porate context\"",
+          "soft": false,
+          "audit": 15
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-md-netpresse-tables",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/netpresse-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1472 chars, 2 tables, 0 headings",
+      "error": null,
+      "ms": 545,
+      "opMs": 430,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "at least 1 tables",
+          "ok": true,
+          "detail": "2 tables",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (85%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    }
+  ]
+}

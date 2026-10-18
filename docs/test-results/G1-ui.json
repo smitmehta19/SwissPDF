@@ -1,0 +1,391 @@
+{
+  "at": "2026-10-17T20:12:57.580Z",
+  "results": [
+    {
+      "id": "g1-split-custom-ranges-merge",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "pass": true,
+      "ms": 5482,
+      "error": null,
+      "checks": [
+        {
+          "name": "live line: 2 PDFs",
+          "ok": true,
+          "detail": "2 PDFs will be created."
+        },
+        {
+          "name": "range past the end is named",
+          "ok": true,
+          "detail": "Range 2 goes past the end: pdfjs-tracemonkey.pdf has 14 pages."
+        },
+        {
+          "name": "merge: 1 PDF",
+          "ok": true,
+          "detail": "1 PDF will be created."
+        },
+        {
+          "name": "merged ranges: 8 pages, named by ranges",
+          "ok": true,
+          "detail": "pdfjs-tracemonkey_1-3_10-14.pdf, 8 pages"
+        },
+        {
+          "name": "no page errors",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "id": "g1-split-fixed-n",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "pass": true,
+      "ms": 6407,
+      "error": null,
+      "checks": [
+        {
+          "name": "live line: files of 4 pages, 4 PDFs",
+          "ok": true,
+          "detail": "This PDF will be split into files of 4 pages. 4 PDFs will be created."
+        },
+        {
+          "name": "4 + 4 + 4 + 2 pages, names {name}_1-4.pdf",
+          "ok": true,
+          "detail": "pdfjs-tracemonkey_1-4.pdf pdfjs-tracemonkey_13-14.pdf pdfjs-tracemonkey_5-8.pdf pdfjs-tracemonkey_9-12.pdf 4,4,4,2"
+        },
+        {
+          "name": "no page errors",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "id": "g1-split-select-pages",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "pass": true,
+      "ms": 6240,
+      "error": null,
+      "checks": [
+        {
+          "name": "live line: 5 PDFs",
+          "ok": true,
+          "detail": "5 PDFs will be created."
+        },
+        {
+          "name": "5 single-page files",
+          "ok": true,
+          "detail": "us-budget-2024_1.pdf us-budget-2024_5.pdf us-budget-2024_6.pdf us-budget-2024_7.pdf us-budget-2024_8.pdf"
+        },
+        {
+          "name": "no page errors",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "id": "g1-split-by-size-911",
+      "files": [
+        "large/911-commission-report.pdf"
+      ],
+      "pass": true,
+      "ms": 6603,
+      "error": null,
+      "checks": [
+        {
+          "name": "live line: at least 5 PDFs",
+          "ok": true,
+          "detail": "Each PDF up to 500 KB. At least 5 PDFs will be created."
+        },
+        {
+          "name": "every part at most 500 KB, all 585 pages kept",
+          "ok": true,
+          "detail": "5 parts, 585 pages, 0 over"
+        },
+        {
+          "name": "no page errors",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "id": "g1-split-bookmarks-911",
+      "files": [
+        "large/911-commission-report.pdf"
+      ],
+      "pass": true,
+      "ms": 4999,
+      "error": null,
+      "checks": [
+        {
+          "name": "live line counts top-level bookmarks",
+          "ok": true,
+          "detail": "23 PDFs will be created."
+        },
+        {
+          "name": "23 parts, 585 pages in total",
+          "ok": true,
+          "detail": "23 parts, 585 pages"
+        },
+        {
+          "name": "parts keep their bookmarks",
+          "ok": true,
+          "detail": "22 of 23 parts have bookmarks"
+        },
+        {
+          "name": "each part keeps the bookmark it starts at",
+          "ok": true,
+          "detail": "23 of 23"
+        },
+        {
+          "name": "no page errors",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "id": "g1-extract-shift-click",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "pass": true,
+      "ms": 3076,
+      "error": null,
+      "checks": [
+        {
+          "name": "Shift-click picks 2-5, field follows",
+          "ok": true,
+          "detail": "2-5"
+        },
+        {
+          "name": "count 4 of 14",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "name": "live line",
+          "ok": true,
+          "detail": "4 pages will be extracted into 1 PDF."
+        },
+        {
+          "name": "typing selects tiles",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "name": "5 pages: 2-5 and 9 in order",
+          "ok": true,
+          "detail": "pdfjs-tracemonkey_2-5_9.pdf"
+        },
+        {
+          "name": "no page errors",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "id": "g1-remove-shift-click-911",
+      "files": [
+        "large/911-commission-report.pdf"
+      ],
+      "pass": true,
+      "ms": 4377,
+      "error": null,
+      "checks": [
+        {
+          "name": "field 1-10",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "name": "live line",
+          "ok": true,
+          "detail": "10 pages will be removed from 911-commission-report.pdf, 575 left."
+        },
+        {
+          "name": "575 pages left",
+          "ok": true,
+          "detail": "911-commission-report-removed.pdf"
+        },
+        {
+          "name": "no page errors",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "id": "g1-remove-all-blocked",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "pass": true,
+      "ms": 1352,
+      "error": null,
+      "checks": [
+        {
+          "name": "removing every page is blocked",
+          "ok": true,
+          "detail": "Every page of pdfjs-tracemonkey.pdf is picked. Leave at least one."
+        },
+        {
+          "name": "no page errors",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "id": "g1-organize-presets",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "pass": true,
+      "ms": 3170,
+      "error": null,
+      "checks": [
+        {
+          "name": "reverse shows in the editor",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "name": "booklet: 16 tiles, blank first",
+          "ok": true,
+          "detail": "blank,1,2,blank,14,3,4,13,12,5,6,11,10,7,8,9"
+        },
+        {
+          "name": "duplex order in the editor",
+          "ok": true,
+          "detail": "1,14,2,13,3,12,4,11,5,10,6,9,7,8"
+        },
+        {
+          "name": "duplex output: page 2 is source page 14",
+          "ok": true,
+          "detail": "pdfjs-tracemonkey-organized.pdf, coverage 1"
+        },
+        {
+          "name": "no page errors",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "id": "g1-rotate-landscape-only",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "pass": true,
+      "ms": 15781,
+      "error": null,
+      "checks": [
+        {
+          "name": "note says 35 landscape pages",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "name": "35 pages turned left, others untouched",
+          "ok": true,
+          "detail": "35 changed"
+        },
+        {
+          "name": "no page errors",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "id": "g1-chain-split-rotate-merge",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "pass": true,
+      "ms": 4140,
+      "error": null,
+      "checks": [
+        {
+          "name": "split: 2 parts",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "name": "rotate sees 1 file",
+          "ok": true,
+          "detail": "1 rotated PDF will be created, all pages."
+        },
+        {
+          "name": "merged back: 14 pages, first 7 rotated",
+          "ok": true,
+          "detail": "90,90,90,90,90,90,90,0,0,0,0,0,0,0"
+        },
+        {
+          "name": "no page errors",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "id": "g1-split-every-page-956",
+      "files": [
+        "large/explorations-bible-lands-956pp-62MB.pdf"
+      ],
+      "pass": true,
+      "ms": 40613,
+      "error": null,
+      "checks": [
+        {
+          "name": "live line: 956 PDFs",
+          "ok": true,
+          "detail": "956 PDFs will be created."
+        },
+        {
+          "name": "zip holds 956 single-page PDFs",
+          "ok": true,
+          "detail": "956"
+        },
+        {
+          "name": "sample parts open with 1 page",
+          "ok": true,
+          "detail": "3 of 3"
+        },
+        {
+          "name": "UI stays responsive (frame under 1 s)",
+          "ok": true,
+          "detail": "worst frame wait 51 ms"
+        },
+        {
+          "name": "no page errors",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "metrics": [
+        "split 22 s, zip 7 s, zip 62.0 MB, browser private memory idle 520.4 MB, peak while splitting 1469.7 MB, after split 1403.5 MB, peak while zipping 1508.9 MB, page JS heap peak 58.8 MB"
+      ]
+    }
+  ]
+}
