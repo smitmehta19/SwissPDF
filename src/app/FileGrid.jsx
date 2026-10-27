@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import Icon from '../components/Icon.jsx'
 import { formatBytes } from '../lib/download.js'
 import { renderPageImage } from '../lib/pdfText.js'
-import { getBytes, getRecord, isPdfRecord, remove, reorder, revertVersion, sortBy, submitPassword, historyOf, subscribe } from './fileStore.js'
+import { getBytes, getRecord, isPdfRecord, remove, reorder, revertVersion, sortBy, submitPassword, historyOf, siblingsOf, subscribe, undoPreview, undoProblem } from './fileStore.js'
 import { Dialog } from './controls.jsx'
 
 const coverCache = new Map() // file id -> Promise<dataUrl>
@@ -144,6 +144,10 @@ function PasswordPrompt({ file }) {
         if (pw && !file.unlocking) submitPassword(file.id, pw)
       }}
     >
+      <p className="fc-lock-hint" data-testid="pw-hint">
+        <Icon name="lock" size={13} />
+        Locked: type the password here, or open Unlock.
+      </p>
       <input
         className="input"
         type="password"
@@ -167,14 +171,24 @@ function PasswordPrompt({ file }) {
   )
 }
 
-function FileCard({ file, index, count, selected, onToggle, onOpen, onRotate, onConfirm, drag }) {
+// Cards rendered at once; more on request.
+const GRID_WINDOW = 120
+
+// What a card says when a file cannot be opened; the engine text sits behind Details.
+const BROKEN = "Can't open this PDF. The file looks damaged or incomplete."
+
+function FileCard({ file, index, count, selected: picked, scope, onToggle, onOpen, onRotate, onConfirm, onRemove, drag }) {
   const ready = file.status === 'ready'
   const pdf = isPdfRecord(file)
   const versions = file.version > 1 ? historyOf(file.id).length : 0
-  const label = `${file.name}, ${metaLine(file)}${versions > 0 ? `, version ${file.version}` : ''}`
+  // a file the open tool cannot use is never shown as going into the run
+  const unused = !!scope && file.status !== 'reading' && file.status !== 'error' && !scope.uses(file)
+  const selected = picked && !unused
+  const meta = file.status === 'error' ? BROKEN : metaLine(file)
+  const label = `${file.name}, ${meta}${versions > 0 ? `, version ${file.version}` : ''}${unused ? `, not used by ${scope.name}` : ''}`
   return (
     <li
-      className={`fc ${selected ? 'is-selected' : ''} ${file.status === 'error' ? 'is-error' : ''} ${drag.over === index ? 'is-over' : ''} ${drag.from === index ? 'is-dragging' : ''}`}
+      className={`fc ${selected ? 'is-selected' : ''} ${unused ? 'is-unused' : ''} ${file.status === 'error' ? 'is-error' : ''} ${drag.over === index ? 'is-over' : ''} ${drag.from === index ? 'is-dragging' : ''}`}
       data-testid="file-card"
       draggable
       onDragStart={(e) => {
@@ -196,7 +210,7 @@ function FileCard({ file, index, count, selected, onToggle, onOpen, onRotate, on
         className="fc-main"
         aria-pressed={selected}
         aria-label={label}
-        disabled={!ready}
+        disabled={!ready && file.status !== 'locked'}
         onClick={() => onToggle(file.id)}
         onDoubleClick={() => ready && pdf && onOpen(file.id)}
         title={ready ? (pdf ? 'Click to select, double click to open' : 'Click to select') : undefined}
@@ -205,16 +219,30 @@ function FileCard({ file, index, count, selected, onToggle, onOpen, onRotate, on
         <span className="fc-check" aria-hidden="true">
           <Icon name="check" size={13} />
         </span>
-        {versions > 0 && <span className="fc-version mono">v{file.version}</span>}
+        {(ready || versions > 0) && (
+          <span className={`fc-version mono ${file.version > 1 ? 'is-new' : ''}`} title={`Version ${file.version}`}>
+            v{file.version}
+          </span>
+        )}
       </button>
       <div className="fc-text">
         <span className="file-name" title={file.name}>
           {file.name}
         </span>
-        <span className={`file-meta ${file.status === 'error' ? 'is-error' : ''}`}>{metaLine(file)}</span>
-        {file.status === 'error' && file.errorDetails && file.errorDetails !== file.error && (
-          <span className="file-meta fc-detail" title={file.errorDetails} data-testid="file-error-details">
-            {file.errorDetails}
+        <span className={`file-meta ${file.status === 'error' ? 'is-error' : ''}`} role={file.status === 'error' ? 'alert' : undefined}>
+          {meta}
+        </span>
+        {file.status === 'error' && (
+          <details className="fc-details">
+            <summary>Details</summary>
+            <span data-testid="file-error-details">
+              {[file.error, file.errorDetails !== file.error ? file.errorDetails : null].filter(Boolean).join('. ')}
+            </span>
+          </details>
+        )}
+        {unused && (
+          <span className="fc-unused" data-testid="file-unused">
+            {file.status === 'locked' ? 'Locked: unlock it first' : `Not used by ${scope.name}`}
           </span>
         )}
         {ready && file.notices?.length > 0 && (
@@ -242,7 +270,7 @@ function FileCard({ file, index, count, selected, onToggle, onOpen, onRotate, on
         <button type="button" className="icon-btn" onClick={() => reorder(index, index + 1)} disabled={index === count - 1} aria-label={`Move ${file.name} later`} title="Move later">
           <Icon name="right" size={16} />
         </button>
-        <button type="button" className="icon-btn icon-btn-danger" onClick={() => (file.version > 1 ? onConfirm({ kind: 'remove', file }) : remove(file.id))} aria-label={`Remove ${file.name}`} title="Remove file">
+        <button type="button" className="icon-btn icon-btn-danger" onClick={() => (file.version > 1 ? onConfirm({ kind: 'remove', file }) : onRemove(file))} aria-label={`Remove ${file.name}`} title="Remove file">
           <Icon name="close" size={16} />
         </button>
       </div>
@@ -268,7 +296,7 @@ export function AddFilesInput({ inputRef, onFiles, accept = '.pdf,application/pd
   )
 }
 
-export default function FileGrid({ files, selection, onToggle, onSelectAll, onOpen, onRotate, onAdd, onWipe }) {
+export default function FileGrid({ files, selection, onToggle, onSelectAll, onOpen, onRotate, onAdd, onWipe, scope = null, onStatus, onRestored }) {
   const fromRef = useRef(null)
   const [from, setFrom] = useState(null)
   const [over, setOver] = useState(null)
@@ -291,16 +319,41 @@ export default function FileGrid({ files, selection, onToggle, onSelectAll, onOp
     },
   }
   const [confirm, setConfirm] = useState(null) // { kind: 'remove' | 'undo', file }
-  const ready = files.filter((f) => f.status === 'ready')
-  const selectedCount = ready.filter((f) => selection.has(f.id)).length
+  // a 956-part split must not mount 956 cards in one frame: show a window first
+  const [limit, setLimit] = useState(GRID_WINDOW)
+  const shown = files.length > limit ? files.slice(0, limit) : files
+  // with a tool open, only the files it can use count
+  const usable = scope ? files.filter((f) => scope.uses(f)) : files.filter((f) => f.status === 'ready')
+  const selectedCount = usable.filter((f) => selection.has(f.id)).length
+  const doRemove = async (file) => {
+    await remove(file.id)
+    onStatus?.(`Removed ${file.name}.`)
+  }
+  const doUndo = async (file) => {
+    const name = file.name
+    const back = await revertVersion(file.id)
+    // the files that came back are selected again, ready for another try
+    if (back?.length) onRestored?.(back)
+    onStatus?.(`Undid the last change to ${name}.`)
+  }
+  const blocked = confirm?.kind === 'undo' ? undoProblem(confirm.file.id) : null
+  const preview = confirm?.kind === 'undo' && !blocked ? undoPreview(confirm.file.id) : null
   return (
     <section className="file-grid-wrap" aria-label="Files">
       <div className="grid-toolbar">
-        <span className="grid-count">
-          <span className="mono">{selectedCount}</span> of <span className="mono">{ready.length}</span> selected
+        <span className="grid-count" data-testid="grid-count">
+          {scope ? (
+            <>
+              <span className="mono">{scope.count}</span> of <span className="mono">{files.length}</span> file{files.length === 1 ? '' : 's'} go into {scope.name}
+            </>
+          ) : (
+            <>
+              <span className="mono">{selectedCount}</span> of <span className="mono">{usable.length}</span> selected
+            </>
+          )}
         </span>
-        <button type="button" className="link" onClick={() => onSelectAll(selectedCount < ready.length)}>
-          {selectedCount < ready.length ? 'Select all' : 'Select none'}
+        <button type="button" className="link" onClick={() => onSelectAll(selectedCount < usable.length)}>
+          {selectedCount < usable.length ? 'Select all' : 'Select none'}
         </button>
         <label className="sort">
           <span>Sort by</span>
@@ -327,20 +380,31 @@ export default function FileGrid({ files, selection, onToggle, onSelectAll, onOp
         </button>
       </div>
       <ul className="file-grid" data-testid="file-grid">
-        {files.map((f, i) => (
+        {shown.map((f, i) => (
           <FileCard
             key={f.id}
             file={f}
             index={i}
             count={files.length}
             selected={selection.has(f.id)}
+            scope={scope}
             onToggle={onToggle}
             onOpen={onOpen}
             onRotate={onRotate}
             onConfirm={setConfirm}
+            onRemove={doRemove}
             drag={drag}
           />
         ))}
+        {shown.length < files.length && (
+          <li className="fc fc-add">
+            <button type="button" className="fc-add-btn" onClick={() => setLimit((n) => n + GRID_WINDOW)} data-testid="grid-more">
+              <span>
+                Show {Math.min(GRID_WINDOW, files.length - shown.length)} more of {files.length - shown.length}
+              </span>
+            </button>
+          </li>
+        )}
         <li className="fc fc-add">
           <button type="button" className="fc-add-btn" onClick={onAdd} data-testid="add-files-tile">
             <Icon name="plus" size={22} />
@@ -350,34 +414,44 @@ export default function FileGrid({ files, selection, onToggle, onSelectAll, onOp
       </ul>
       {confirm && (
         <Dialog
-          title={confirm.kind === 'remove' ? 'Remove this file?' : 'Undo the last change?'}
+          title={confirm.kind === 'remove' ? 'Remove this file?' : blocked ? 'Cannot undo this yet' : 'Undo the last change?'}
           onClose={() => setConfirm(null)}
           testId="file-confirm"
           actions={
-            <>
+            blocked ? (
               <button type="button" className="btn btn-quiet" onClick={() => setConfirm(null)}>
-                {confirm.kind === 'remove' ? 'Keep file' : 'Keep this version'}
+                OK
               </button>
-              <button
-                type="button"
-                className="btn btn-danger"
-                data-testid="file-confirm-ok"
-                onClick={() => {
-                  const { kind, file } = confirm
-                  setConfirm(null)
-                  if (kind === 'remove') remove(file.id)
-                  else revertVersion(file.id)
-                }}
-              >
-                {confirm.kind === 'remove' ? 'Remove file' : 'Undo change'}
-              </button>
-            </>
+            ) : (
+              <>
+                <button type="button" className="btn btn-quiet" onClick={() => setConfirm(null)}>
+                  {confirm.kind === 'remove' ? 'Keep file' : 'Keep this version'}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  data-testid="file-confirm-ok"
+                  onClick={() => {
+                    const { kind, file } = confirm
+                    setConfirm(null)
+                    if (kind === 'remove') doRemove(file)
+                    else doUndo(file)
+                  }}
+                >
+                  {confirm.kind === 'remove' ? 'Remove file' : 'Undo change'}
+                </button>
+              </>
+            )
           }
         >
           <p>
             {confirm.kind === 'remove'
               ? `${confirm.file.name} and its ${confirm.file.version - 1} earlier version${confirm.file.version === 2 ? '' : 's'} are deleted from this browser.`
-              : `${confirm.file.name} goes back to version ${confirm.file.version - 1}. This version is deleted.`}
+              : blocked
+                ? blocked
+                : preview.restores.length
+                  ? `Undo deletes ${preview.removes.join(', ')} and brings back ${preview.restores.join(', ')}.`
+                  : `Undo deletes ${preview.removes.join(', ')}. No other file changes.`}
           </p>
         </Dialog>
       )}

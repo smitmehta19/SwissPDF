@@ -1,7 +1,7 @@
 // In-browser self-test: generates known PDFs from scratch, runs every core
 // operation on them, and reads the OUTPUT content back (via pdf.js) to prove
 // each tool still works in this exact browser + dependency combination.
-import { PDFDocument, StandardFonts } from 'pdf-lib'
+import { PDFDocument, StandardFonts, degrees } from 'pdf-lib'
 import {
   mergePdfs,
   splitByRanges,
@@ -26,7 +26,7 @@ async function makeTestPdf(label, pageCount) {
   return doc.save()
 }
 
-// A page with a title and a real ruled 3x3 table — ground truth for the
+// A page with a title and a real ruled 3x3 table, ground truth for the
 // table-detection pipeline used by PDF→Word and PDF→Excel.
 async function makeTablePdf() {
   const doc = await PDFDocument.create()
@@ -219,7 +219,7 @@ export async function runSelfTest(onProgress = () => {}) {
     const { cleanPdf } = await import('./mupdfOps.js')
     const res = await cleanPdf(a)
     if (res.note) {
-      // tiny test docs are often already tight — content must still be intact
+      // tiny test docs are often already tight, content must still be intact
       expectEqual(await getPageTexts(res.bytes), ['A-P1', 'A-P2', 'A-P3'], 'kept-original texts')
       return `engine ran; ${res.note}; content intact`
     }
@@ -229,7 +229,7 @@ export async function runSelfTest(onProgress = () => {}) {
 
   await check('Repair damaged PDF', async () => {
     const { repairPdf } = await import('./mupdfOps.js')
-    // A 6-page doc with its tail torn off — the same damage class as a broken
+    // A 6-page doc with its tail torn off, the same damage class as a broken
     // download: xref gone, some object-stream data destroyed, pages themselves
     // still present in the surviving bytes.
     const big = await makeTestPdf('R', 6)
@@ -348,18 +348,18 @@ export async function runSelfTest(onProgress = () => {}) {
     const { inspectPdf, unlockPdf } = await import('./cryptoOps.js')
     const info = await inspectPdf(restricted)
     if (info.needsUserPassword) throw new Error('wrongly flagged as needing an open-password')
-    if (!info.restrictedOnly) throw new Error('restriction not detected — the whole point of this case')
+    if (!info.restrictedOnly) throw new Error('restriction not detected, the whole point of this case')
     if (info.denied.length === 0) throw new Error('no denied permissions reported')
     // remove WITHOUT any password
     const freed = await unlockPdf(restricted, '')
     if (freed.hadUserPassword) throw new Error('should not have needed a password')
     const after = await inspectPdf(freed.bytes)
-    if (after.restrictedOnly) throw new Error('restrictions survived — file still not printable')
+    if (after.restrictedOnly) throw new Error('restrictions survived, file still not printable')
     expectEqual(await getPageTexts(freed.bytes), ['A-P1', 'A-P2', 'A-P3'], 'content intact after unlocking')
     return `detected blocked: ${info.deniedLabels.join(', ')}; removed with no password, content intact`
   })
 
-  await check('OCR (Tesseract engine — needs one-time model download)', async () => {
+  await check('OCR (Tesseract engine, self-hosted)', async () => {
     const { ocrPdf } = await import('./ocrOps.js')
     // Build a "scan": text drawn as pixels only, no text layer.
     const canvas = document.createElement('canvas')
@@ -382,7 +382,29 @@ export async function runSelfTest(onProgress = () => {}) {
     if (!after.includes('SWISS') || !after.includes('RESCUE')) {
       throw new Error(`recognized text missing expected words, got: "${after.slice(0, 60)}"`)
     }
-    return `scan had no text; after OCR it reads "${after.slice(0, 40).trim()}…" — searchable`
+    return `scan had no text; after OCR it reads "${after.slice(0, 40).trim()}…", searchable`
+  })
+
+  await check('Auto rotate (orientation detection)', async () => {
+    const { autoRotatePdf } = await import('./ocrOps.js')
+    // a page of text as pixels, then turned sideways with /Rotate 90
+    const canvas = document.createElement('canvas')
+    canvas.width = 900
+    canvas.height = 1200
+    const ctx = canvas.getContext('2d')
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(0, 0, 900, 1200)
+    ctx.fillStyle = '#111'
+    ctx.font = '28px Arial'
+    const line = 'The quick brown fox jumps over the lazy dog again'
+    for (let i = 0; i < 24; i++) ctx.fillText(line, 50, 80 + i * 44)
+    const blob = await new Promise((res) => canvas.toBlob(res, 'image/png'))
+    const scan = await PDFDocument.load(await imagesToPdf([await normalizeImage(new Uint8Array(await blob.arrayBuffer()))], { pageSize: 'fit' }))
+    scan.getPage(0).setRotation(degrees(90))
+    const res = await autoRotatePdf(await scan.save())
+    const angle = (await PDFDocument.load(res.bytes)).getPage(0).getRotation().angle % 360
+    if (angle !== 0) throw new Error(`sideways page ended at ${angle} degrees (detected ${res.pages[0].degrees}, confidence ${res.pages[0].confidence.toFixed(1)})`)
+    return `sideways page found (confidence ${res.pages[0].confidence.toFixed(1)}) and turned upright`
   })
 
   await check('PDF to Word (.docx)', async () => {
@@ -550,7 +572,7 @@ export async function runSelfTest(onProgress = () => {}) {
 
   await check('PDF to Word exact layout (payslip / form mode)', async () => {
     // Payslip-like page: scattered label/value pairs with NO ruling lines,
-    // plus two real AcroForm text fields — the cases that broke flowing mode.
+    // plus two real AcroForm text fields, the cases that broke flowing mode.
     const doc = await PDFDocument.create()
     const font = await doc.embedFont(StandardFonts.Helvetica)
     const bold = await doc.embedFont(StandardFonts.HelveticaBold)
@@ -580,7 +602,7 @@ export async function runSelfTest(onProgress = () => {}) {
     // 1 title + 4 label/value segments on the header line + 2 pay rows split
     // into label+amount + 2 form fields => 11 independently editable frames
     const frameCount = (xml.match(/<w:framePr/g) || []).length
-    if (frameCount < 10) throw new Error(`only ${frameCount} positioned frames — labels/values not separately editable`)
+    if (frameCount < 10) throw new Error(`only ${frameCount} positioned frames, labels/values not separately editable`)
     for (const t of ['PAYSLIP', 'Employee:', 'Jane Doe', '5,400.00', '4,102.50']) {
       if (!xml.includes(t)) throw new Error(`"${t}" missing from exact-layout output`)
     }
@@ -661,6 +683,67 @@ export async function runSelfTest(onProgress = () => {}) {
     return 'identical files match; single word change located precisely with a box'
   })
 
+  await check('Compare: an inserted page marks only that page', async () => {
+    const { comparePdfs } = await import('./compareOps.js')
+    const makeDoc = async (pages) => {
+      const d = await PDFDocument.create()
+      const f = await d.embedFont(StandardFonts.Helvetica)
+      for (const t of pages) d.addPage([300, 200]).drawText(t, { x: 30, y: 150, size: 12, font: f })
+      return d.save()
+    }
+    const v1 = await makeDoc(['first page words', 'second page words', 'third page words'])
+    const v2 = await makeDoc(['first page words', 'a brand new page', 'second page words', 'third page words'])
+    const res = await comparePdfs(v1, v2)
+    const changed = res.pages.filter((p) => p.added + p.removed > 0 || p.onlyInA || p.onlyInB)
+    if (changed.length !== 1 || !changed[0].onlyInB || changed[0].bPage !== 2) {
+      throw new Error(`expected only new page 2 to differ, got ${JSON.stringify(changed.map((p) => [p.aPage, p.bPage]))}`)
+    }
+    expectEqual(res.removed, 0, 'removed words')
+    return 'whole-document diff: the inserted page is the only difference, later pages still match'
+  })
+
+  await check('Protect with permissions (no open password)', async () => {
+    const { protectPdf, inspectPdf, unlockPdf } = await import('./cryptoOps.js')
+    const out = await protectPdf(a, '', 'owner-secret-1', { deny: ['print', 'copy'] })
+    const info = await inspectPdf(out)
+    if (info.needsUserPassword) throw new Error('asks for an open password it should not need')
+    if (!info.denied.includes('print') || !info.denied.includes('copy')) {
+      throw new Error(`printing and copying should be blocked, blocked: ${info.denied.join(', ') || 'nothing'}`)
+    }
+    if (info.denied.includes('form')) throw new Error('form filling was blocked but not asked for')
+    const freed = await unlockPdf(out, '')
+    expectEqual(await getPageTexts(freed.bytes), ['A-P1', 'A-P2', 'A-P3'], 'content after removing the restrictions')
+    return `opens freely, blocks ${info.deniedLabels.join(', ')}`
+  })
+
+  await check('Unlock a PDF 2.0 password (SASLprep)', async () => {
+    const mupdf = await import('mupdf')
+    const { unlockPdf } = await import('./cryptoOps.js')
+    const src = mupdf.Document.openDocument(new Uint8Array(a.slice(0)), 'application/pdf')
+    let locked
+    try {
+      locked = src.saveToBuffer('encrypt=aes-256,user-password=SaSLprep,owner-password=SaSLprep').asUint8Array().slice()
+    } finally {
+      src.destroy?.()
+    }
+    // typed with a feminine ordinal and a soft hyphen, as in the PDF 2.0 test file
+    const typed = `S${String.fromCharCode(0xaa)}SL${String.fromCharCode(0xad)}prep`
+    const res = await unlockPdf(locked, typed)
+    expectEqual(await getPageTexts(res.bytes), ['A-P1', 'A-P2', 'A-P3'], 'content after unlocking')
+    return 'password typed in its unprepared form still opens the file'
+  })
+
+  await check('OCR leaves pages with a text layer alone', async () => {
+    const { ocrPdf } = await import('./ocrOps.js')
+    const d = await PDFDocument.create()
+    const f = await d.embedFont(StandardFonts.Helvetica)
+    d.addPage([300, 200]).drawText('This page already has a real text layer.', { x: 20, y: 100, size: 10, font: f })
+    const res = await ocrPdf(await d.save(), { textPages: 'skip' })
+    expectEqual(res.skippedPages, [1], 'skipped pages')
+    expectEqual(res.totalWords, 0, 'words added')
+    return 'born-digital page skipped, no duplicate text layer'
+  })
+
   await check('Redact destroys content (not just covers it)', async () => {
     const { redactPdf, findTextBoxes } = await import('./redactOps.js')
     const d = await PDFDocument.create()
@@ -668,6 +751,7 @@ export async function runSelfTest(onProgress = () => {}) {
     const p = d.addPage([300, 200])
     p.drawText('Account 4455-9911', { x: 30, y: 150, size: 12, font: f })
     p.drawText('Keep this line', { x: 30, y: 120, size: 12, font: f })
+    d.setTitle('Statement 4455-9911')
     const src = await d.save()
     const boxes = await findTextBoxes(src, ['4455-9911'])
     if (boxes.length !== 1) throw new Error(`search found ${boxes.length} matches, expected 1`)
@@ -675,13 +759,34 @@ export async function runSelfTest(onProgress = () => {}) {
     const texts = await getPageTexts(out)
     const joined = texts.join(' ')
     if (joined.includes('4455-9911')) {
-      throw new Error('SECRET SURVIVED — redacted text is still extractable')
+      throw new Error('SECRET SURVIVED, redacted text is still extractable')
     }
     if (joined.trim() !== '') {
       throw new Error(`redacted page should carry no extractable text, got: "${joined.slice(0, 40)}"`)
     }
     if (out.length < 1000) throw new Error('output looks empty')
-    return 'searched text located, redacted page contains no recoverable text at all'
+    // the file itself, not only the page text: every string and decoded
+    // stream (title, old content, loose objects) must be clean too
+    const removed = await redactPdf(src, boxes, { method: 'remove' })
+    const mupdf = await import('mupdf')
+    for (const [label, bytes] of [['image', out], ['remove', removed]]) {
+      const doc = mupdf.Document.openDocument(new Uint8Array(bytes), 'application/pdf').asPDF()
+      try {
+        for (let i = 1; i < doc.countObjects(); i++) {
+          const ref = doc.newIndirect(i)
+          const obj = ref.resolve()
+          let text = obj.isString() ? obj.asString() : obj.toString()
+          if (obj.isDictionary() && obj.get('Title').isString()) text += obj.get('Title').asString()
+          if (ref.isStream() && !(obj.get('Subtype').isName() && obj.get('Subtype').asName() === 'Image')) {
+            text += new TextDecoder('latin1').decode(ref.readStream().asUint8Array())
+          }
+          if (text.includes('4455-9911')) throw new Error(`SECRET SURVIVED in the ${label} output file (object ${i})`)
+        }
+      } finally {
+        doc.destroy?.()
+      }
+    }
+    return 'searched text located, redacted page and the whole file (both methods) carry no recoverable copy'
   })
 
   await check('HTML to PDF', async () => {
@@ -691,11 +796,11 @@ export async function runSelfTest(onProgress = () => {}) {
     )
     const pages = await getPageCount(bytes)
     if (pages < 1) throw new Error('no pages produced')
-    if (window.__x !== undefined) throw new Error('script in the HTML was executed — must be stripped')
+    if (window.__x !== undefined) throw new Error('script in the HTML was executed, must be stripped')
     return `rendered to a valid ${pages}-page PDF with scripts stripped`
   })
 
-  await check('PDF Forms — all field types (detect, fill, flatten)', async () => {
+  await check('PDF Forms: all field types (detect, fill, flatten)', async () => {
     const { listFields, fillFields, flattenForm } = await import('./formOps.js')
     const doc = await PDFDocument.create()
     const page = doc.addPage([400, 360])
@@ -743,7 +848,7 @@ export async function runSelfTest(onProgress = () => {}) {
     return 'text, checkbox, dropdown, radio and list all detected, filled and flattened'
   })
 
-  await check('PDF Forms — create all field types on a flat PDF', async () => {
+  await check('PDF Forms: create all field types on a flat PDF', async () => {
     const { addFields, listFields } = await import('./formOps.js')
     const plain = await makeTestPdf('F', 1)
     const withNew = await addFields(plain, [
@@ -814,16 +919,16 @@ export async function runSelfTest(onProgress = () => {}) {
   await check('High-fidelity engine (LibreOffice WASM)', async () => {
     const { engineAvailable } = await import('./libreOffice.js')
     if (!engineAvailable()) {
-      throw new Error('cross-origin isolation is off — the high-fidelity engine cannot start in this hosting setup')
+      throw new Error('cross-origin isolation is off, the high-fidelity engine cannot start in this hosting setup')
     }
-    // Only exercise the engine if it is already booted — never force the
+    // Only exercise the engine if it is already booted, never force the
     // ~200MB download from a health check.
     const { Document, Packer, Paragraph } = await import('docx')
     const probe = new Document({ sections: [{ children: [new Paragraph('Engine probe text')] }] })
     const buf = await (await Packer.toBlob(probe)).arrayBuffer()
     const lo = await import('./libreOffice.js')
     if (!lo.engineLoaded()) {
-      return 'isolation active; engine downloads on demand (not booted yet — used by Office→PDF high-fidelity mode)'
+      return 'isolation active; engine downloads on demand (not booted yet, used by Office→PDF high-fidelity mode)'
     }
     const pdf = await lo.convertToPdfHiFi(buf, 'probe.docx')
     const texts = await getPageTexts(pdf)

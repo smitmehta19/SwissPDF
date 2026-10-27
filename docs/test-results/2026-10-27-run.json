@@ -1,0 +1,2608 @@
+{
+  "name": "2026-10-27-run",
+  "startedAt": "2026-10-27T15:20:33.035Z",
+  "finishedAt": "2026-10-27T15:21:43.691Z",
+  "durationMin": 1.2,
+  "command": "npm run test:corpus -- --light --shards 2 --tool forms",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 40,
+    "fail": 0,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "forms",
+      "pass": 40,
+      "fail": 0,
+      "skip": 0,
+      "ms": 59769
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no per-render copy counter; large scans now render (JPX fixed in U1), see time and heap on pdf2img-bible-62MB, pdf2img-crooked-104MB, split-911-large"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "c-forms-add-fw9-rot90: field box where drawn (60, 80) 200x22",
+        "c-forms-add-xfa-origin: field box where drawn (60, 80) 200x22",
+        "c-forms-add-fw9: field box where drawn (60, 80) 200x22"
+      ],
+      "passedChecks": 3,
+      "reason": null
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "c-forms-fill-zh: value stored in the field",
+        "c-forms-fill-zh-flat: flattened value extracts back (pdf.js)",
+        "c-forms-fill-ar: value stored in the field",
+        "c-forms-fill-ar-flat: flattened value extracts back (pdf.js)",
+        "c-forms-fill-hi: value stored in the field",
+        "c-forms-fill-hi-flat: flattened value extracts back (pdf.js)",
+        "c-forms-fill-ja: value stored in the field",
+        "c-forms-fill-ja-flat: flattened value extracts back (pdf.js)",
+        "c-forms-fill-ru: value stored in the field",
+        "c-forms-fill-ru-flat: flattened value extracts back (pdf.js)"
+      ],
+      "passedChecks": 10,
+      "reason": null
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "CDN pinning is a config review item; font fidelity not scored"
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "forms-list-irs-f1040: field scan under 10 s",
+        "forms-list-irs-fw9: field scan under 10 s",
+        "forms-list-irs-fw4: field scan under 10 s",
+        "forms-list-irs-f1040sa: field scan under 10 s",
+        "forms-list-uscis-i-9: field scan under 10 s",
+        "forms-list-uscis-i-485: field scan under 10 s",
+        "forms-list-uk-IPPH353: field scan under 10 s",
+        "forms-list-uk-AFPS-Form-17: field scan under 10 s",
+        "forms-list-xfa-imm1344e-filled: field scan under 10 s",
+        "forms-list-xfa-issue14315: field scan under 10 s",
+        "forms-list-annotation-button-widget: field scan under 10 s",
+        "forms-list-annotation-choice-widget: field scan under 10 s",
+        "forms-list-annotation-text-widget: field scan under 10 s",
+        "forms-fill-f1040: stale XFA removed after fill",
+        "forms-fill-f1040: no XFA streams left in the file",
+        "forms-fill-fw9: stale XFA removed after fill",
+        "forms-fill-fw9: no XFA streams left in the file",
+        "forms-fill-xfa-imm1344e: dynamic XFA: no fillable fields offered",
+        "forms-fill-flatten-fw4: stale XFA removed after fill",
+        "forms-fill-flatten-fw4: no XFA streams left in the file",
+        "forms-fill-flatten-text-widget: stale XFA removed after fill",
+        "forms-fill-flatten-text-widget: no XFA streams left in the file",
+        "forms-flatten-i485: no XFA streams left in the file",
+        "g3-forms-inspect-irs-fw9: XFA detected as static",
+        "g3-forms-inspect-irs-fw9: field scan under 3 s",
+        "g3-forms-inspect-xfa-issue14315: XFA detected as dynamic",
+        "g3-forms-inspect-xfa-issue14315: field scan under 3 s",
+        "g3-forms-inspect-uscis-i-9: XFA detected as none",
+        "g3-forms-inspect-uscis-i-9: field scan under 3 s",
+        "g3-forms-inspect-uscis-i-485: XFA detected as static",
+        "g3-forms-inspect-uscis-i-485: field scan under 3 s",
+        "g3-forms-fill-xfa-irs-fw9: XFA copy removed so viewers show the new values",
+        "g3-forms-fill-xfa-irs-fw9: no XFA streams left in the file",
+        "g3-forms-fill-xfa-irs-f1040-flat: XFA copy removed so viewers show the new values",
+        "g3-forms-fill-xfa-irs-f1040-flat: no XFA streams left in the file"
+      ],
+      "passedChecks": 35,
+      "reason": null
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no PAdES / multi-place API to call)"
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap"
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    }
+  ],
+  "results": [
+    {
+      "id": "forms-list-irs-f1040",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-f1040.pdf"
+      ],
+      "result": "PASS",
+      "detail": "199 fields (199 widgets) in 343 ms, pdf.js 199, has XFA",
+      "error": null,
+      "ms": 31980,
+      "opMs": 368,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "lists the fields pdf.js sees (90%+)",
+          "ok": true,
+          "detail": "199 of 199",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field scan under 10 s",
+          "ok": true,
+          "detail": "343 ms",
+          "soft": true,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-list-irs-fw9",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "23 fields (23 widgets) in 94 ms, pdf.js 23, has XFA",
+      "error": null,
+      "ms": 216,
+      "opMs": 94,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "lists the fields pdf.js sees (90%+)",
+          "ok": true,
+          "detail": "23 of 23",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field scan under 10 s",
+          "ok": true,
+          "detail": "94 ms",
+          "soft": true,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-list-irs-fw4",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw4.pdf"
+      ],
+      "result": "PASS",
+      "detail": "48 fields (48 widgets) in 402 ms, pdf.js 48, has XFA",
+      "error": null,
+      "ms": 446,
+      "opMs": 402,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "lists the fields pdf.js sees (90%+)",
+          "ok": true,
+          "detail": "48 of 48",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field scan under 10 s",
+          "ok": true,
+          "detail": "402 ms",
+          "soft": true,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-list-irs-f1040sa",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-f1040sa.pdf"
+      ],
+      "result": "PASS",
+      "detail": "33 fields (33 widgets) in 19 ms, pdf.js 33, has XFA",
+      "error": null,
+      "ms": 123,
+      "opMs": 20,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "lists the fields pdf.js sees (90%+)",
+          "ok": true,
+          "detail": "33 of 33",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field scan under 10 s",
+          "ok": true,
+          "detail": "19 ms",
+          "soft": true,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-list-uscis-i-9",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uscis-i-9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "128 fields (130 widgets) in 184 ms, pdf.js 128",
+      "error": null,
+      "ms": 426,
+      "opMs": 184,
+      "heapMB": 17,
+      "audit": null,
+      "checks": [
+        {
+          "name": "lists the fields pdf.js sees (90%+)",
+          "ok": true,
+          "detail": "128 of 128",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field scan under 10 s",
+          "ok": true,
+          "detail": "184 ms",
+          "soft": true,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-list-uscis-i-485",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uscis-i-485.pdf"
+      ],
+      "result": "PASS",
+      "detail": "730 fields (730 widgets) in 2887 ms, pdf.js 730, has XFA",
+      "error": null,
+      "ms": 3024,
+      "opMs": 2888,
+      "heapMB": 26,
+      "audit": null,
+      "checks": [
+        {
+          "name": "lists the fields pdf.js sees (90%+)",
+          "ok": true,
+          "detail": "730 of 730",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field scan under 10 s",
+          "ok": true,
+          "detail": "2887 ms",
+          "soft": true,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-list-uk-IPPH353",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uk-IPPH353.pdf"
+      ],
+      "result": "PASS",
+      "detail": "92 fields (92 widgets) in 381 ms, pdf.js 92",
+      "error": null,
+      "ms": 541,
+      "opMs": 382,
+      "heapMB": 39,
+      "audit": null,
+      "checks": [
+        {
+          "name": "lists the fields pdf.js sees (90%+)",
+          "ok": true,
+          "detail": "92 of 92",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field scan under 10 s",
+          "ok": true,
+          "detail": "381 ms",
+          "soft": true,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-list-uk-AFPS-Form-17",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uk-AFPS-Form-17.pdf"
+      ],
+      "result": "PASS",
+      "detail": "24 fields (24 widgets) in 55 ms, pdf.js 24",
+      "error": null,
+      "ms": 219,
+      "opMs": 55,
+      "heapMB": 25,
+      "audit": null,
+      "checks": [
+        {
+          "name": "lists the fields pdf.js sees (90%+)",
+          "ok": true,
+          "detail": "24 of 24",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field scan under 10 s",
+          "ok": true,
+          "detail": "55 ms",
+          "soft": true,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-list-xfa-imm1344e-filled",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/xfa-imm1344e-filled.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 fields (1 widgets) in 8 ms, pdf.js 1, has XFA",
+      "error": null,
+      "ms": 315,
+      "opMs": 9,
+      "heapMB": 30,
+      "audit": null,
+      "checks": [
+        {
+          "name": "lists the fields pdf.js sees (90%+)",
+          "ok": true,
+          "detail": "1 of 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field scan under 10 s",
+          "ok": true,
+          "detail": "8 ms",
+          "soft": true,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-list-xfa-issue14315",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/xfa-issue14315.pdf"
+      ],
+      "result": "PASS",
+      "detail": "0 fields (0 widgets) in 1 ms, pdf.js 0, has XFA",
+      "error": null,
+      "ms": 107,
+      "opMs": 1,
+      "heapMB": 31,
+      "audit": null,
+      "checks": [
+        {
+          "name": "lists the fields pdf.js sees (90%+)",
+          "ok": true,
+          "detail": "0 of 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field scan under 10 s",
+          "ok": true,
+          "detail": "1 ms",
+          "soft": true,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-list-annotation-button-widget",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/annotation-button-widget.pdf"
+      ],
+      "result": "PASS",
+      "detail": "6 fields (9 widgets) in 8 ms, pdf.js 6, has XFA",
+      "error": null,
+      "ms": 118,
+      "opMs": 8,
+      "heapMB": 31,
+      "audit": null,
+      "checks": [
+        {
+          "name": "lists the fields pdf.js sees (90%+)",
+          "ok": true,
+          "detail": "6 of 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field scan under 10 s",
+          "ok": true,
+          "detail": "8 ms",
+          "soft": true,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-list-annotation-choice-widget",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/annotation-choice-widget.pdf"
+      ],
+      "result": "PASS",
+      "detail": "5 fields (5 widgets) in 4 ms, pdf.js 5, has XFA",
+      "error": null,
+      "ms": 116,
+      "opMs": 4,
+      "heapMB": 32,
+      "audit": null,
+      "checks": [
+        {
+          "name": "lists the fields pdf.js sees (90%+)",
+          "ok": true,
+          "detail": "5 of 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field scan under 10 s",
+          "ok": true,
+          "detail": "4 ms",
+          "soft": true,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-list-annotation-text-widget",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/annotation-text-widget.pdf"
+      ],
+      "result": "PASS",
+      "detail": "7 fields (7 widgets) in 7 ms, pdf.js 7, has XFA",
+      "error": null,
+      "ms": 115,
+      "opMs": 7,
+      "heapMB": 33,
+      "audit": null,
+      "checks": [
+        {
+          "name": "lists the fields pdf.js sees (90%+)",
+          "ok": true,
+          "detail": "7 of 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field scan under 10 s",
+          "ok": true,
+          "detail": "7 ms",
+          "soft": true,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-fill-f1040",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-f1040.pdf"
+      ],
+      "result": "PASS",
+      "detail": "3 filled",
+      "error": null,
+      "ms": 1859,
+      "opMs": 1680,
+      "heapMB": 41,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "found text fields to fill",
+          "ok": true,
+          "detail": "3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "values stored in the fields",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stale XFA removed after fill",
+          "ok": true,
+          "detail": "XFA still present: Acrobat shows old values",
+          "soft": true,
+          "audit": 21
+        },
+        {
+          "name": "no XFA streams left in the file",
+          "ok": true,
+          "detail": "XFA key false, 0 XFA stream(s)",
+          "soft": false,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-fill-fw9",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "3 filled",
+      "error": null,
+      "ms": 434,
+      "opMs": 325,
+      "heapMB": 21,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "found text fields to fill",
+          "ok": true,
+          "detail": "3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "values stored in the fields",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stale XFA removed after fill",
+          "ok": true,
+          "detail": "XFA still present: Acrobat shows old values",
+          "soft": true,
+          "audit": 21
+        },
+        {
+          "name": "no XFA streams left in the file",
+          "ok": true,
+          "detail": "XFA key false, 0 XFA stream(s)",
+          "soft": false,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-fill-i9",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uscis-i-9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "3 filled",
+      "error": null,
+      "ms": 1076,
+      "opMs": 902,
+      "heapMB": 36,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 4, want 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 4 vs MuPDF 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "found text fields to fill",
+          "ok": true,
+          "detail": "3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "values stored in the fields",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "forms-fill-xfa-imm1344e",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/xfa-imm1344e-filled.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 214,
+      "opMs": 84,
+      "heapMB": 36,
+      "audit": 21,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "dynamic XFA: no fillable fields offered",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-fill-flatten-fw4",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw4.pdf"
+      ],
+      "result": "PASS",
+      "detail": "3 filled, flattened",
+      "error": null,
+      "ms": 1416,
+      "opMs": 1318,
+      "heapMB": 51,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "found text fields to fill",
+          "ok": true,
+          "detail": "3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "values baked into page text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no fields left after flatten",
+          "ok": true,
+          "detail": "0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stale XFA removed after fill",
+          "ok": true,
+          "detail": "XFA still present: Acrobat shows old values",
+          "soft": true,
+          "audit": 21
+        },
+        {
+          "name": "no XFA streams left in the file",
+          "ok": true,
+          "detail": "XFA key false, 0 XFA stream(s)",
+          "soft": false,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-fill-flatten-ipph353",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uk-IPPH353.pdf"
+      ],
+      "result": "PASS",
+      "detail": "3 filled, flattened",
+      "error": null,
+      "ms": 1726,
+      "opMs": 1370,
+      "heapMB": 45,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 4, want 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 4 vs MuPDF 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "found text fields to fill",
+          "ok": true,
+          "detail": "3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "values baked into page text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no fields left after flatten",
+          "ok": true,
+          "detail": "0 left",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "forms-fill-flatten-text-widget",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/annotation-text-widget.pdf"
+      ],
+      "result": "PASS",
+      "detail": "3 filled, flattened",
+      "error": null,
+      "ms": 112,
+      "opMs": 60,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "found text fields to fill",
+          "ok": true,
+          "detail": "3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "values baked into page text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no fields left after flatten",
+          "ok": true,
+          "detail": "0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stale XFA removed after fill",
+          "ok": true,
+          "detail": "XFA still present: Acrobat shows old values",
+          "soft": true,
+          "audit": 21
+        },
+        {
+          "name": "no XFA streams left in the file",
+          "ok": true,
+          "detail": "XFA key false, 0 XFA stream(s)",
+          "soft": false,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "forms-flatten-i485",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uscis-i-485.pdf"
+      ],
+      "result": "PASS",
+      "detail": "730 fields flattened",
+      "error": null,
+      "ms": 4158,
+      "opMs": 3881,
+      "heapMB": 46,
+      "audit": null,
+      "checks": [
+        {
+          "name": "flattened.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "flattened.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "flattened.pdf: page count",
+          "ok": true,
+          "detail": "got 24, want 24",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "flattened.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "flattened.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 24 vs MuPDF 24",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no fields left",
+          "ok": true,
+          "detail": "0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no XFA streams left in the file",
+          "ok": true,
+          "detail": "XFA key false, 0 XFA stream(s)",
+          "soft": false,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "c-forms-add-fw9-rot90",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-fw9-rot90.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 531,
+      "opMs": 456,
+      "heapMB": 28,
+      "audit": null,
+      "checks": [
+        {
+          "name": "added.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "added.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "added.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "added.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text field created",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field box where drawn (60, 80) 200x22",
+          "ok": true,
+          "detail": "(60, 80) 201x23",
+          "soft": false,
+          "audit": 8
+        },
+        {
+          "name": "non-Latin value kept",
+          "ok": true,
+          "detail": "张伟 Müller",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "c-forms-add-xfa-origin",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/xfa-imm1344e-filled.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 222,
+      "opMs": 64,
+      "heapMB": 31,
+      "audit": null,
+      "checks": [
+        {
+          "name": "added.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "added.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "added.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "added.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text field created",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field box where drawn (60, 80) 200x22",
+          "ok": true,
+          "detail": "(60, 80) 201x23",
+          "soft": false,
+          "audit": 8
+        },
+        {
+          "name": "non-Latin value kept",
+          "ok": true,
+          "detail": "张伟 Müller",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "c-forms-add-fw9",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 337,
+      "opMs": 207,
+      "heapMB": 34,
+      "audit": null,
+      "checks": [
+        {
+          "name": "added.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "added.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "added.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "added.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text field created",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field box where drawn (60, 80) 200x22",
+          "ok": true,
+          "detail": "(60, 80) 201x23",
+          "soft": false,
+          "audit": 8
+        },
+        {
+          "name": "non-Latin value kept",
+          "ok": true,
+          "detail": "张伟 Müller",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "c-forms-fill-zh",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 656,
+      "opMs": 605,
+      "heapMB": 17,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fields filled",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "value stored in the field",
+          "ok": true,
+          "detail": "张伟 测试 | 张伟 测试",
+          "soft": false,
+          "audit": 9
+        }
+      ]
+    },
+    {
+      "id": "c-forms-fill-zh-flat",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 439,
+      "opMs": 344,
+      "heapMB": 33,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fields filled",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "flattened value extracts back (pdf.js)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 9
+        }
+      ]
+    },
+    {
+      "id": "c-forms-fill-ar",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 656,
+      "opMs": 570,
+      "heapMB": 24,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fields filled",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "value stored in the field",
+          "ok": true,
+          "detail": "محمد علي | محمد علي",
+          "soft": false,
+          "audit": 9
+        }
+      ]
+    },
+    {
+      "id": "c-forms-fill-ar-flat",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 431,
+      "opMs": 331,
+      "heapMB": 40,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fields filled",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "flattened value extracts back (pdf.js)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 9
+        }
+      ]
+    },
+    {
+      "id": "c-forms-fill-hi",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 654,
+      "opMs": 564,
+      "heapMB": 38,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fields filled",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "value stored in the field",
+          "ok": true,
+          "detail": "राम कुमार | राम कुमार",
+          "soft": false,
+          "audit": 9
+        }
+      ]
+    },
+    {
+      "id": "c-forms-fill-hi-flat",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 547,
+      "opMs": 416,
+      "heapMB": 40,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fields filled",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "flattened value extracts back (pdf.js)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 9
+        }
+      ]
+    },
+    {
+      "id": "c-forms-fill-ja",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 653,
+      "opMs": 588,
+      "heapMB": 39,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fields filled",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "value stored in the field",
+          "ok": true,
+          "detail": "やまだ たろう | やまだ たろう",
+          "soft": false,
+          "audit": 9
+        }
+      ]
+    },
+    {
+      "id": "c-forms-fill-ja-flat",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 441,
+      "opMs": 353,
+      "heapMB": 17,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fields filled",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "flattened value extracts back (pdf.js)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 9
+        }
+      ]
+    },
+    {
+      "id": "c-forms-fill-ru",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 666,
+      "opMs": 536,
+      "heapMB": 35,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fields filled",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "value stored in the field",
+          "ok": true,
+          "detail": "Иван Петров | Иван Петров",
+          "soft": false,
+          "audit": 9
+        }
+      ]
+    },
+    {
+      "id": "c-forms-fill-ru-flat",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 428,
+      "opMs": 383,
+      "heapMB": 31,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fields filled",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "flattened value extracts back (pdf.js)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 9
+        }
+      ]
+    },
+    {
+      "id": "g3-forms-inspect-irs-fw9",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "23 fields, 23 widgets, 43 ms",
+      "error": null,
+      "ms": 116,
+      "opMs": 44,
+      "heapMB": 35,
+      "audit": null,
+      "checks": [
+        {
+          "name": "XFA detected as static",
+          "ok": true,
+          "detail": "got static (MuPDF XFA true)",
+          "soft": false,
+          "audit": 21
+        },
+        {
+          "name": "field scan under 3 s",
+          "ok": true,
+          "detail": "43 ms",
+          "soft": false,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "g3-forms-inspect-xfa-issue14315",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/xfa-issue14315.pdf"
+      ],
+      "result": "PASS",
+      "detail": "0 fields, 0 widgets, 1 ms",
+      "error": null,
+      "ms": 106,
+      "opMs": 1,
+      "heapMB": 38,
+      "audit": null,
+      "checks": [
+        {
+          "name": "XFA detected as dynamic",
+          "ok": true,
+          "detail": "got dynamic (MuPDF XFA true)",
+          "soft": false,
+          "audit": 21
+        },
+        {
+          "name": "field scan under 3 s",
+          "ok": true,
+          "detail": "1 ms",
+          "soft": false,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "g3-forms-inspect-uscis-i-9",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uscis-i-9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "128 fields, 130 widgets, 187 ms",
+      "error": null,
+      "ms": 229,
+      "opMs": 188,
+      "heapMB": 39,
+      "audit": null,
+      "checks": [
+        {
+          "name": "XFA detected as none",
+          "ok": true,
+          "detail": "got none (MuPDF XFA false)",
+          "soft": false,
+          "audit": 21
+        },
+        {
+          "name": "field scan under 3 s",
+          "ok": true,
+          "detail": "187 ms",
+          "soft": false,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "g3-forms-inspect-uscis-i-485",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uscis-i-485.pdf"
+      ],
+      "result": "PASS",
+      "detail": "730 fields, 730 widgets, 2629 ms",
+      "error": null,
+      "ms": 2722,
+      "opMs": 2629,
+      "heapMB": 41,
+      "audit": null,
+      "checks": [
+        {
+          "name": "XFA detected as static",
+          "ok": true,
+          "detail": "got static (MuPDF XFA true)",
+          "soft": false,
+          "audit": 21
+        },
+        {
+          "name": "field scan under 3 s",
+          "ok": true,
+          "detail": "2629 ms",
+          "soft": false,
+          "audit": 21
+        }
+      ]
+    },
+    {
+      "id": "g3-forms-fill-xfa-irs-fw9",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 326,
+      "opMs": 232,
+      "heapMB": 44,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled text fields",
+          "ok": true,
+          "detail": "3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "XFA copy removed so viewers show the new values",
+          "ok": true,
+          "detail": "xfaRemoved true, MuPDF XFA false",
+          "soft": false,
+          "audit": 21
+        },
+        {
+          "name": "no XFA streams left in the file",
+          "ok": true,
+          "detail": "XFA key false, 0 XFA stream(s)",
+          "soft": false,
+          "audit": 21
+        },
+        {
+          "name": "values stored in the fields",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-forms-fill-xfa-irs-f1040-flat",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-f1040.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 868,
+      "opMs": 732,
+      "heapMB": 32,
+      "audit": null,
+      "checks": [
+        {
+          "name": "filled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled text fields",
+          "ok": true,
+          "detail": "3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "XFA copy removed so viewers show the new values",
+          "ok": true,
+          "detail": "xfaRemoved true, MuPDF XFA false",
+          "soft": false,
+          "audit": 21
+        },
+        {
+          "name": "no XFA streams left in the file",
+          "ok": true,
+          "detail": "XFA key false, 0 XFA stream(s)",
+          "soft": false,
+          "audit": 21
+        },
+        {
+          "name": "values in the page text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no fields left",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    }
+  ]
+}

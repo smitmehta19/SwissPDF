@@ -1,0 +1,7225 @@
+{
+  "name": "u5a-final",
+  "startedAt": "2026-10-27T01:14:37.599Z",
+  "finishedAt": "2026-10-27T01:19:21.375Z",
+  "durationMin": 4.7,
+  "command": "npm run test:corpus -- --tool nup,booklet,scale,singlepage,overlay,stamp,removeblank,linearize,adjustcolors,replacecolors --name u5a-final",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 77,
+    "fail": 0,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "nup",
+      "pass": 11,
+      "fail": 0,
+      "skip": 0,
+      "ms": 18760
+    },
+    {
+      "tool": "booklet",
+      "pass": 8,
+      "fail": 0,
+      "skip": 0,
+      "ms": 14042
+    },
+    {
+      "tool": "scale",
+      "pass": 10,
+      "fail": 0,
+      "skip": 0,
+      "ms": 11730
+    },
+    {
+      "tool": "singlepage",
+      "pass": 7,
+      "fail": 0,
+      "skip": 0,
+      "ms": 16529
+    },
+    {
+      "tool": "overlay",
+      "pass": 5,
+      "fail": 0,
+      "skip": 0,
+      "ms": 6213
+    },
+    {
+      "tool": "stamp",
+      "pass": 9,
+      "fail": 0,
+      "skip": 0,
+      "ms": 6759
+    },
+    {
+      "tool": "removeblank",
+      "pass": 6,
+      "fail": 0,
+      "skip": 0,
+      "ms": 33182
+    },
+    {
+      "tool": "linearize",
+      "pass": 8,
+      "fail": 0,
+      "skip": 0,
+      "ms": 15085
+    },
+    {
+      "tool": "adjustcolors",
+      "pass": 5,
+      "fail": 0,
+      "skip": 0,
+      "ms": 33993
+    },
+    {
+      "tool": "replacecolors",
+      "pass": 8,
+      "fail": 0,
+      "skip": 0,
+      "ms": 11459
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no per-render copy counter; large scans now render (JPX fixed in U1), see time and heap on pdf2img-bible-62MB, pdf2img-crooked-104MB, split-911-large"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "CDN pinning is a config review item; font fidelity not scored"
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no PAdES / multi-place API to call)"
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap"
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    }
+  ],
+  "results": [
+    {
+      "id": "u5a-nup4-tracemonkey",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 pages on 4 sheets, 2x2, 1.0 MB",
+      "error": null,
+      "ms": 3748,
+      "opMs": 920,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page count",
+          "ok": true,
+          "detail": "got 4, want 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 4 vs MuPDF 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet size as planned",
+          "ok": true,
+          "detail": "612x792 vs 612x792",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page upright in its cell (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1852 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-nup2-aws-invoice",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 pages on 1 sheets, 2x1, 0.1 MB",
+      "error": null,
+      "ms": 255,
+      "opMs": 87,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet size as planned",
+          "ok": true,
+          "detail": "792x612 vs 792x612",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page upright in its cell (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 93 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-nup6-cols-rtl-attention",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "15 pages on 3 sheets, 3x2, 1.8 MB",
+      "error": null,
+      "ms": 3684,
+      "opMs": 3386,
+      "heapMB": 40,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page count",
+          "ok": true,
+          "detail": "got 3, want 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet size as planned",
+          "ok": true,
+          "detail": "792x612 vs 792x612",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page upright in its cell (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1232 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-nup9-a4-rot90-cropbox",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "16 pages on 2 sheets, 3x3, 0.7 MB",
+      "error": null,
+      "ms": 681,
+      "opMs": 324,
+      "heapMB": 35,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet size as planned",
+          "ok": true,
+          "detail": "842x595 vs 842x595",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page upright in its cell (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1676 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-nup4-rot270-cropbox",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot270-cropbox.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2 pages on 1 sheets, 2x2, 0.2 MB",
+      "error": null,
+      "ms": 228,
+      "opMs": 56,
+      "heapMB": 33,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet size as planned",
+          "ok": true,
+          "detail": "712x532 vs 712x532",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page upright in its cell (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 565 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-nup2-origin-shift",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/origin-shift-aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 pages on 1 sheets, 2x1, 0.1 MB",
+      "error": null,
+      "ms": 119,
+      "opMs": 34,
+      "heapMB": 37,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet size as planned",
+          "ok": true,
+          "detail": "792x612 vs 792x612",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page upright in its cell (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 93 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-nup3x2-custom-mixed",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-mixed.pdf"
+      ],
+      "result": "PASS",
+      "detail": "5 pages on 1 sheets, 3x2, 0.5 MB",
+      "error": null,
+      "ms": 332,
+      "opMs": 94,
+      "heapMB": 38,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet size as planned",
+          "ok": true,
+          "detail": "792x612 vs 792x612",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page upright in its cell (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 846 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-nup16-llama2",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-2307.09288-llama2.pdf"
+      ],
+      "result": "PASS",
+      "detail": "77 pages on 5 sheets, 4x4, 13.2 MB",
+      "error": null,
+      "ms": 5784,
+      "opMs": 5215,
+      "heapMB": 44,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet size as planned",
+          "ok": true,
+          "detail": "612x792 vs 612x792",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page upright in its cell (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 4591 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-nup2-raw-attention",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "15 pages on 8 sheets, 2x1, 1.8 MB",
+      "error": null,
+      "ms": 2813,
+      "opMs": 2693,
+      "heapMB": 40,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page count",
+          "ok": true,
+          "detail": "got 8, want 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 8 vs MuPDF 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet size as planned",
+          "ok": true,
+          "detail": "792x612 vs 792x612",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bookmarks kept",
+          "ok": true,
+          "detail": "22 -> 22 (report 22)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "lost links counted",
+          "ok": true,
+          "detail": "113 links, report 113",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1232 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-nup2-filled-fw9",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "6 pages on 3 sheets, 2x1, 0.1 MB",
+      "error": null,
+      "ms": 451,
+      "opMs": 340,
+      "heapMB": 40,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page count",
+          "ok": true,
+          "detail": "got 3, want 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet size as planned",
+          "ok": true,
+          "detail": "792x612 vs 792x612",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bookmarks kept",
+          "ok": true,
+          "detail": "0 -> 0 (report 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "title kept",
+          "ok": true,
+          "detail": "Form W-9 (Rev. March 2024) -> Form W-9 (Rev. March 2024)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "lost links counted",
+          "ok": true,
+          "detail": "0 links, report 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "form fields drawn in",
+          "ok": true,
+          "detail": "23 widgets, report 23",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled field value still shows",
+          "ok": true,
+          "detail": "Form   W-9 (Rev. March 2024)  Request for Taxpayer Identification Number and Cer",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 760 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-nup4-comments-tracemonkey",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-tracemonkey_with_annotations.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 pages on 4 sheets, 2x2, 1.0 MB",
+      "error": null,
+      "ms": 665,
+      "opMs": 454,
+      "heapMB": 37,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page count",
+          "ok": true,
+          "detail": "got 4, want 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nup.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 4 vs MuPDF 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet size as planned",
+          "ok": true,
+          "detail": "612x792 vs 612x792",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bookmarks kept",
+          "ok": true,
+          "detail": "0 -> 0 (report 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "lost links counted",
+          "ok": true,
+          "detail": "0 links, report 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "comments drawn in",
+          "ok": true,
+          "detail": "4 comments, report 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1852 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-booklet-tracemonkey",
+      "tool": "booklet",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 pages on 4 sheets, first sides -|1 / 2|-",
+      "error": null,
+      "ms": 1772,
+      "opMs": 797,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page count",
+          "ok": true,
+          "detail": "got 8, want 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 8 vs MuPDF 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet = two pages side by side",
+          "ok": true,
+          "detail": "1224x792",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "saddle-stitch page order (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no side turned (short-edge duplex)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1852 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-booklet-aws-invoice",
+      "tool": "booklet",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 pages on 1 sheets, first sides -|1 / -|-",
+      "error": null,
+      "ms": 245,
+      "opMs": 83,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet = two pages side by side",
+          "ok": true,
+          "detail": "1224x792",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "saddle-stitch page order (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no side turned (short-edge duplex)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 93 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-booklet-attention-spine-right-gutter",
+      "tool": "booklet",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "15 pages on 4 sheets, first sides 1|- / 15|2",
+      "error": null,
+      "ms": 3530,
+      "opMs": 3445,
+      "heapMB": 36,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page count",
+          "ok": true,
+          "detail": "got 8, want 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 8 vs MuPDF 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet = two pages side by side",
+          "ok": true,
+          "detail": "1248x792",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "saddle-stitch page order (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no side turned (short-edge duplex)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1232 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-booklet-mixed-fronts",
+      "tool": "booklet",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-mixed.pdf"
+      ],
+      "result": "PASS",
+      "detail": "5 pages on 2 sheets, first sides -|1 / -|3",
+      "error": null,
+      "ms": 345,
+      "opMs": 148,
+      "heapMB": 35,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet = two pages side by side",
+          "ok": true,
+          "detail": "1584x792",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "saddle-stitch page order (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no side turned (short-edge duplex)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-booklet-long-edge-rot90-a4",
+      "tool": "booklet",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "16 pages on 4 sheets, first sides 16|1 / 2|15",
+      "error": null,
+      "ms": 434,
+      "opMs": 333,
+      "heapMB": 41,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page count",
+          "ok": true,
+          "detail": "got 8, want 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 8 vs MuPDF 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "saddle-stitch page order (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "backs turned 180 for long-edge printers",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1676 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-booklet-llama2",
+      "tool": "booklet",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-2307.09288-llama2.pdf"
+      ],
+      "result": "PASS",
+      "detail": "77 pages on 20 sheets, first sides -|1 / 2|-",
+      "error": null,
+      "ms": 4616,
+      "opMs": 4077,
+      "heapMB": 40,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page count",
+          "ok": true,
+          "detail": "got 40, want 40",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 40 vs MuPDF 40",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet = two pages side by side",
+          "ok": true,
+          "detail": "1224x792",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "saddle-stitch page order (marker positions)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no side turned (short-edge duplex)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 4591 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-booklet-raw-attention",
+      "tool": "booklet",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "15 pages on 4 sheets, first sides -|1 / 2|15",
+      "error": null,
+      "ms": 2645,
+      "opMs": 2531,
+      "heapMB": 58,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page count",
+          "ok": true,
+          "detail": "got 8, want 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 8 vs MuPDF 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet = two pages side by side",
+          "ok": true,
+          "detail": "1224x792",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bookmarks kept",
+          "ok": true,
+          "detail": "22 -> 22 (report 22)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "lost links counted",
+          "ok": true,
+          "detail": "113 links, report 113",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no side turned (short-edge duplex)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1232 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-booklet-filled-fw9",
+      "tool": "booklet",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "6 pages on 2 sheets, first sides -|1 / 2|-",
+      "error": null,
+      "ms": 455,
+      "opMs": 345,
+      "heapMB": 59,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page count",
+          "ok": true,
+          "detail": "got 4, want 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "booklet.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 4 vs MuPDF 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "sheet = two pages side by side",
+          "ok": true,
+          "detail": "1224x792",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bookmarks kept",
+          "ok": true,
+          "detail": "0 -> 0 (report 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "title kept",
+          "ok": true,
+          "detail": "Form W-9 (Rev. March 2024) -> Form W-9 (Rev. March 2024)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "lost links counted",
+          "ok": true,
+          "detail": "0 links, report 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "form fields drawn in",
+          "ok": true,
+          "detail": "23 widgets, report 23",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no side turned (short-edge duplex)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled field value still shows",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 760 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-scale-a4-fit-tracemonkey",
+      "tool": "scale",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 pages, first 595x842 pt",
+      "error": null,
+      "ms": 4137,
+      "opMs": 627,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page sizes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "content centred and upright on the new page",
+          "ok": true,
+          "detail": "pages ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1852 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-scale-half-aws-invoice",
+      "tool": "scale",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, first 306x396 pt",
+      "error": null,
+      "ms": 230,
+      "opMs": 82,
+      "heapMB": 15,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page sizes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "content centred and upright on the new page",
+          "ok": true,
+          "detail": "pages ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 93 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-scale-a3-attention",
+      "tool": "scale",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "15 pages, first 842x1191 pt",
+      "error": null,
+      "ms": 3508,
+      "opMs": 3436,
+      "heapMB": 38,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page count",
+          "ok": true,
+          "detail": "got 15, want 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page sizes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "content centred and upright on the new page",
+          "ok": true,
+          "detail": "pages ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1232 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-scale-letter-landscape-rot270",
+      "tool": "scale",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot270-cropbox.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2 pages, first 792x612 pt",
+      "error": null,
+      "ms": 133,
+      "opMs": 54,
+      "heapMB": 27,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page sizes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "content centred and upright on the new page",
+          "ok": true,
+          "detail": "pages ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 565 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-scale-a4-rot90-cropbox",
+      "tool": "scale",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "16 pages, first 842x595 pt",
+      "error": null,
+      "ms": 437,
+      "opMs": 247,
+      "heapMB": 30,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page sizes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "content centred and upright on the new page",
+          "ok": true,
+          "detail": "pages ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1676 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-scale-a5-origin-shift",
+      "tool": "scale",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/origin-shift-aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, first 420x595 pt",
+      "error": null,
+      "ms": 119,
+      "opMs": 32,
+      "heapMB": 23,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page sizes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "content centred and upright on the new page",
+          "ok": true,
+          "detail": "pages ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 93 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-scale-150pc-mixed",
+      "tool": "scale",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-mixed.pdf"
+      ],
+      "result": "PASS",
+      "detail": "5 pages, first 918x1188 pt",
+      "error": null,
+      "ms": 232,
+      "opMs": 91,
+      "heapMB": 24,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page sizes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "content centred and upright on the new page",
+          "ok": true,
+          "detail": "pages ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 846 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-scale-half-raw-attention",
+      "tool": "scale",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "15 pages, first 306x396 pt",
+      "error": null,
+      "ms": 2001,
+      "opMs": 1935,
+      "heapMB": 28,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page count",
+          "ok": true,
+          "detail": "got 15, want 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page sizes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "links kept",
+          "ok": true,
+          "detail": "113 -> 113",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "widgets kept",
+          "ok": true,
+          "detail": "0 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "comments kept",
+          "ok": true,
+          "detail": "0 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "outline kept",
+          "ok": true,
+          "detail": "22 -> 22",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "link areas scaled by 0.5",
+          "ok": true,
+          "detail": "[]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1232 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-scale-a4-filled-fw9",
+      "tool": "scale",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "6 pages, first 595x842 pt",
+      "error": null,
+      "ms": 353,
+      "opMs": 288,
+      "heapMB": 31,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page sizes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "links kept",
+          "ok": true,
+          "detail": "0 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "widgets kept",
+          "ok": true,
+          "detail": "23 -> 23",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "comments kept",
+          "ok": true,
+          "detail": "0 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "outline kept",
+          "ok": true,
+          "detail": "0 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "title kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "filled value kept in the field",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 760 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-scale-a4-comments-tracemonkey",
+      "tool": "scale",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-tracemonkey_with_annotations.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 pages, first 595x842 pt",
+      "error": null,
+      "ms": 580,
+      "opMs": 412,
+      "heapMB": 28,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page sizes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "links kept",
+          "ok": true,
+          "detail": "0 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "widgets kept",
+          "ok": true,
+          "detail": "0 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "comments kept",
+          "ok": true,
+          "detail": "4 -> 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "outline kept",
+          "ok": true,
+          "detail": "0 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1852 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-single-tracemonkey",
+      "tool": "singlepage",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 pages, 612 x 11088 pt",
+      "error": null,
+      "ms": 1696,
+      "opMs": 862,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "height = sum of page heights, width = widest (times the scale)",
+          "ok": true,
+          "detail": "612x11088 want 612x11088",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pages stacked in order, upright (marker bands)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1852 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-single-aws-invoice",
+      "tool": "singlepage",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 612 x 792 pt",
+      "error": null,
+      "ms": 230,
+      "opMs": 111,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "height = sum of page heights, width = widest (times the scale)",
+          "ok": true,
+          "detail": "612x792 want 612x792",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pages stacked in order, upright (marker bands)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 93 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-single-attention",
+      "tool": "singlepage",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "15 pages, 612 x 11880 pt",
+      "error": null,
+      "ms": 3832,
+      "opMs": 3742,
+      "heapMB": 31,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "height = sum of page heights, width = widest (times the scale)",
+          "ok": true,
+          "detail": "612x11880 want 612x11880",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pages stacked in order, upright (marker bands)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1232 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-single-mixed",
+      "tool": "singlepage",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-mixed.pdf"
+      ],
+      "result": "PASS",
+      "detail": "5 pages, 792 x 2902 pt",
+      "error": null,
+      "ms": 344,
+      "opMs": 150,
+      "heapMB": 35,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "height = sum of page heights, width = widest (times the scale)",
+          "ok": true,
+          "detail": "792x2902 want 792x2902",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pages stacked in order, upright (marker bands)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 846 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-single-lincoln-scan-scaled",
+      "tool": "singlepage",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "36 pages, 330 x 14399 pt, scaled 79%",
+      "error": null,
+      "ms": 455,
+      "opMs": 213,
+      "heapMB": 41,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "height = sum of page heights, width = widest (times the scale)",
+          "ok": true,
+          "detail": "330x14399 want 330x14399",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled to the 200 inch limit",
+          "ok": true,
+          "detail": "14399",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pages stacked in order, upright (marker bands)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 207 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-single-llama2-scaled",
+      "tool": "singlepage",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-2307.09288-llama2.pdf"
+      ],
+      "result": "PASS",
+      "detail": "77 pages, 145 x 14399 pt, scaled 24%",
+      "error": null,
+      "ms": 6650,
+      "opMs": 5359,
+      "heapMB": 33,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "height = sum of page heights, width = widest (times the scale)",
+          "ok": true,
+          "detail": "145x14399 want 145x14399",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "scaled to the 200 inch limit",
+          "ok": true,
+          "detail": "14399",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pages stacked in order, upright (marker bands)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 4591 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-single-raw-attention",
+      "tool": "singlepage",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "15 pages, 612 x 11880 pt",
+      "error": null,
+      "ms": 3322,
+      "opMs": 3125,
+      "heapMB": 45,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "single.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "height = sum of page heights, width = widest (times the scale)",
+          "ok": true,
+          "detail": "612x11880 want 612x11880",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bookmarks kept",
+          "ok": true,
+          "detail": "22 -> 22 (report 22)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "lost links counted",
+          "ok": true,
+          "detail": "113 links, report 113",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1232 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-overlay-interleaved-tracemonkey-aws",
+      "tool": "overlay",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf",
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 pages, interleaved, foreground",
+      "error": null,
+      "ms": 2151,
+      "opMs": 746,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "base page sizes kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay pages on the right base pages",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "base links and bookmarks kept",
+          "ok": true,
+          "detail": "links 0 -> 0, bookmarks 0 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1852 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-overlay-background-rot270",
+      "tool": "overlay",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot270-cropbox.pdf",
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2 pages, interleaved, background",
+      "error": null,
+      "ms": 347,
+      "opMs": 151,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "base page sizes kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay pages on the right base pages",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "base links and bookmarks kept",
+          "ok": true,
+          "detail": "links 0 -> 0, bookmarks 0 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 565 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay upright and on the visible page (rotated base)",
+          "ok": true,
+          "detail": "[[\"0.25\",\"0.15\",true]]",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-overlay-sequential-attention-aws",
+      "tool": "overlay",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf",
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "15 pages, sequential, foreground",
+      "error": null,
+      "ms": 2312,
+      "opMs": 2132,
+      "heapMB": 24,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: page count",
+          "ok": true,
+          "detail": "got 15, want 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "base page sizes kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay pages on the right base pages",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "base links and bookmarks kept",
+          "ok": true,
+          "detail": "links 113 -> 113, bookmarks 22 -> 22",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1232 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-overlay-repeat3-rot90-origin",
+      "tool": "overlay",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf",
+        "derived/origin-shift-aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "16 pages, repeat, foreground",
+      "error": null,
+      "ms": 462,
+      "opMs": 222,
+      "heapMB": 26,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "base page sizes kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay pages on the right base pages",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "base links and bookmarks kept",
+          "ok": true,
+          "detail": "links 290 -> 290, bookmarks 0 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1676 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay upright and inside the CropBox of a /Rotate 90 page",
+          "ok": true,
+          "detail": "[[\"0.26\",\"0.15\",true]]",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-overlay-background-empty-page",
+      "tool": "overlay",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf",
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "15 pages, interleaved, background",
+      "error": null,
+      "ms": 941,
+      "opMs": 641,
+      "heapMB": 23,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: page count",
+          "ok": true,
+          "detail": "got 15, want 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "base page sizes kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay pages on the right base pages",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "base links and bookmarks kept",
+          "ok": true,
+          "detail": "links 0 -> 0, bookmarks 0 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1852 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-stamp-topright-tokens-tracemonkey",
+      "tool": "stamp",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 2054,
+      "opMs": 600,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1852 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "top-right and upright on every page",
+          "ok": true,
+          "detail": "pages : []",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page tokens filled",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-stamp-arabic-aws",
+      "tool": "stamp",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 1101,
+      "opMs": 1030,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 93 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "Arabic stamp text present",
+          "ok": true,
+          "detail": "orage Service   $0.01  Charges   $0.01 VAT **   $0.00  موافق",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-stamp-pages-2-3-attention",
+      "tool": "stamp",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 2182,
+      "opMs": 2092,
+      "heapMB": 21,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page count",
+          "ok": true,
+          "detail": "got 15, want 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1232 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "only the selected pages stamped",
+          "ok": true,
+          "detail": "2,3",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-stamp-bottomleft-rot90-cropbox",
+      "tool": "stamp",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 347,
+      "opMs": 197,
+      "heapMB": 29,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1676 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bottom-left inside the CropBox on /Rotate 90 pages",
+          "ok": true,
+          "detail": "pages : []",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-stamp-cjk-rot270",
+      "tool": "stamp",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot270-cropbox.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 340,
+      "opMs": 219,
+      "heapMB": 28,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 565 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "Japanese stamp text extracts",
+          "ok": true,
+          "detail": "Trace-based Just-in-Time Type Specialization for Dynamic Languages  Andreas Gal ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "top-centre and upright on /Rotate 270",
+          "ok": true,
+          "detail": "[[\"0.42\",\"0.12\"],[\"0.42\",\"0.12\"]]",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-stamp-turned45-origin-shift",
+      "tool": "stamp",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/origin-shift-aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 133,
+      "opMs": 37,
+      "heapMB": 31,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 93 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "turned stamp centred on a page with moved origin",
+          "ok": true,
+          "detail": "pages : []",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-stamp-image-centre-rot270",
+      "tool": "stamp",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot270-cropbox.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 229,
+      "opMs": 126,
+      "heapMB": 31,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 565 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "image centred, 30% wide on /Rotate 270 + CropBox",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-stamp-mixed-rotations",
+      "tool": "stamp",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-mixed.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 242,
+      "opMs": 98,
+      "heapMB": 34,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 846 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bottom-centre and upright on mixed sizes and rotations",
+          "ok": true,
+          "detail": "pages : []",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-stamp-long-text-aws",
+      "tool": "stamp",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 131,
+      "opMs": 67,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamped.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 93 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text shrunk on the page",
+          "ok": true,
+          "detail": "{\"shrunk\":1}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stamp starts inside the page",
+          "ok": true,
+          "detail": "[\"0.06\"]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "whole text kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-blank-fax-inserted",
+      "tool": "removeblank",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "found 1, 3 (inserted 1, 3) in 2.9 s",
+      "error": null,
+      "ms": 4369,
+      "opMs": 3134,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every inserted blank page found",
+          "ok": true,
+          "detail": "missed ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page found is blank in MuPDF too",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no real page taken for blank",
+          "ok": true,
+          "detail": "1,3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-blank-lincoln-real",
+      "tool": "removeblank",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "found 4, 7, 8, 9, 12, 16, 20, 22, 25, 26, 27, 28, 29, 30, 31, 32 (inserted none) in 11.3 s",
+      "error": null,
+      "ms": 11603,
+      "opMs": 11450,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every inserted blank page found",
+          "ok": true,
+          "detail": "missed ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "exactly the real blank pages found",
+          "ok": true,
+          "detail": "found 4,7,8,9,12,16,20,22,25,26,27,28,29,30,31,32 want 4,7,8,9,12,16,20,22,25,26,27,28,29,30,31,32",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page found is blank in MuPDF too",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: page count",
+          "ok": true,
+          "detail": "got 20, want 20",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 20 vs MuPDF 20",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-blank-mixed-inserted",
+      "tool": "removeblank",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-mixed.pdf"
+      ],
+      "result": "PASS",
+      "detail": "found 3, 6 (inserted 3, 6) in 0.3 s",
+      "error": null,
+      "ms": 661,
+      "opMs": 525,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every inserted blank page found",
+          "ok": true,
+          "detail": "missed ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page found is blank in MuPDF too",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-blank-tracemonkey-none",
+      "tool": "removeblank",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "found none (inserted none) in 0.4 s",
+      "error": null,
+      "ms": 654,
+      "opMs": 553,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every inserted blank page found",
+          "ok": true,
+          "detail": "missed ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page found is blank in MuPDF too",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no real page taken for blank",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-blank-notebook-handwriting-none",
+      "tool": "removeblank",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/handwritten-field-trips-notebook-1950.pdf"
+      ],
+      "result": "PASS",
+      "detail": "found none (inserted none) in 4.8 s",
+      "error": null,
+      "ms": 5224,
+      "opMs": 4770,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every inserted blank page found",
+          "ok": true,
+          "detail": "missed ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page found is blank in MuPDF too",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no real page taken for blank",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-blank-fips-real",
+      "tool": "removeblank",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fips-document-facsimile-transmission.pdf"
+      ],
+      "result": "PASS",
+      "detail": "found 6, 71 (inserted none) in 8.8 s",
+      "error": null,
+      "ms": 10671,
+      "opMs": 9687,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every inserted blank page found",
+          "ok": true,
+          "detail": "missed ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "exactly the real blank pages found",
+          "ok": true,
+          "detail": "found 6,71 want 6,71",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page found is blank in MuPDF too",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: page count",
+          "ok": true,
+          "detail": "got 70, want 70",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no-blanks.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 70 vs MuPDF 70",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-lin-tracemonkey",
+      "tool": "linearize",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 pages, 5 packed objects, 0.95 MB from 0.97 MB (0.98x), page 1 loads 177 -> 153 KB, 181 ms",
+      "error": null,
+      "ms": 1402,
+      "opMs": 283,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized structure (dict, xref sections, hint tables)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdf.js sees it as linearized",
+          "ok": true,
+          "detail": "true",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes and rotation unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text of every page unchanged",
+          "ok": true,
+          "detail": "page 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "not much bigger (at most 1.2x or 64 KB more)",
+          "ok": true,
+          "detail": "0.98x",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 1 needs no more bytes than before (ranged loading)",
+          "ok": true,
+          "detail": "177 KB -> 153 KB",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-lin-aws-invoice",
+      "tool": "linearize",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 3 packed objects, 0.15 MB from 0.15 MB (1.00x), 36 ms",
+      "error": null,
+      "ms": 462,
+      "opMs": 330,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized structure (dict, xref sections, hint tables)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdf.js sees it as linearized",
+          "ok": true,
+          "detail": "true",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes and rotation unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text of every page unchanged",
+          "ok": true,
+          "detail": "page 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "not much bigger (at most 1.2x or 64 KB more)",
+          "ok": true,
+          "detail": "1.00x",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-lin-attention",
+      "tool": "linearize",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "15 pages, 193 packed objects, 1.94 MB from 2.11 MB (0.92x), page 1 loads 340 -> 166 KB, 833 ms",
+      "error": null,
+      "ms": 1263,
+      "opMs": 978,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page count",
+          "ok": true,
+          "detail": "got 15, want 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized structure (dict, xref sections, hint tables)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdf.js sees it as linearized",
+          "ok": true,
+          "detail": "true",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes and rotation unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text of every page unchanged",
+          "ok": true,
+          "detail": "page 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "not much bigger (at most 1.2x or 64 KB more)",
+          "ok": true,
+          "detail": "0.92x",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 1 needs no more bytes than before (ranged loading)",
+          "ok": true,
+          "detail": "340 KB -> 166 KB",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-lin-rot90-cropbox",
+      "tool": "linearize",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "16 pages, 178 packed objects, 0.69 MB from 0.63 MB (1.09x), 72 ms",
+      "error": null,
+      "ms": 339,
+      "opMs": 146,
+      "heapMB": 26,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized structure (dict, xref sections, hint tables)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdf.js sees it as linearized",
+          "ok": true,
+          "detail": "true",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes and rotation unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text of every page unchanged",
+          "ok": true,
+          "detail": "page 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "not much bigger (at most 1.2x or 64 KB more)",
+          "ok": true,
+          "detail": "1.09x",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-lin-lincoln-relinearize",
+      "tool": "linearize",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "36 pages, 6 packed objects, 0.52 MB from 0.52 MB (1.00x), 17 ms",
+      "error": null,
+      "ms": 228,
+      "opMs": 63,
+      "heapMB": 24,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page count",
+          "ok": true,
+          "detail": "got 36, want 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 36 vs MuPDF 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized structure (dict, xref sections, hint tables)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdf.js sees it as linearized",
+          "ok": true,
+          "detail": "true",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes and rotation unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text of every page unchanged",
+          "ok": true,
+          "detail": "page 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "not much bigger (at most 1.2x or 64 KB more)",
+          "ok": true,
+          "detail": "1.00x",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-lin-llama2",
+      "tool": "linearize",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-2307.09288-llama2.pdf"
+      ],
+      "result": "PASS",
+      "detail": "77 pages, 653 packed objects, 12.88 MB from 13.03 MB (0.99x), page 1 loads 366 -> 232 KB, 1128 ms",
+      "error": null,
+      "ms": 4465,
+      "opMs": 2881,
+      "heapMB": 26,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page count",
+          "ok": true,
+          "detail": "got 77, want 77",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 77 vs MuPDF 77",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized structure (dict, xref sections, hint tables)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdf.js sees it as linearized",
+          "ok": true,
+          "detail": "true",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes and rotation unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text of every page unchanged",
+          "ok": true,
+          "detail": "page 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "not much bigger (at most 1.2x or 64 KB more)",
+          "ok": true,
+          "detail": "0.99x",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 1 needs no more bytes than before (ranged loading)",
+          "ok": true,
+          "detail": "366 KB -> 232 KB",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-lin-us-budget-objstm",
+      "tool": "linearize",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "184 pages, 25770 packed objects, 2.57 MB from 2.31 MB (1.11x), page 1 loads 313 -> 295 KB, 2920 ms",
+      "error": null,
+      "ms": 4408,
+      "opMs": 3199,
+      "heapMB": 38,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page count",
+          "ok": true,
+          "detail": "got 184, want 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 184 vs MuPDF 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized structure (dict, xref sections, hint tables)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdf.js sees it as linearized",
+          "ok": true,
+          "detail": "true",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes and rotation unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text of every page unchanged",
+          "ok": true,
+          "detail": "page 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "not much bigger (at most 1.2x or 64 KB more)",
+          "ok": true,
+          "detail": "1.11x",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 1 needs no more bytes than before (ranged loading)",
+          "ok": true,
+          "detail": "313 KB -> 295 KB",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-lin-fdic-objstm",
+      "tool": "linearize",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/fdic-quarterly-banking-profile-2023q4.pdf"
+      ],
+      "result": "PASS",
+      "detail": "44 pages, 20859 packed objects, 1.31 MB from 1.29 MB (1.02x), page 1 loads 250 -> 258 KB, 1927 ms",
+      "error": null,
+      "ms": 2518,
+      "opMs": 2040,
+      "heapMB": 46,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page count",
+          "ok": true,
+          "detail": "got 44, want 44",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 44 vs MuPDF 44",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized structure (dict, xref sections, hint tables)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdf.js sees it as linearized",
+          "ok": true,
+          "detail": "true",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes and rotation unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text of every page unchanged",
+          "ok": true,
+          "detail": "page 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "not much bigger (at most 1.2x or 64 KB more)",
+          "ok": true,
+          "detail": "1.02x",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 1 needs no more bytes than before (ranged loading)",
+          "ok": true,
+          "detail": "250 KB -> 258 KB",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-adjust-contrast-fax",
+      "tool": "adjustcolors",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "layers, change 21/24, worst MuPDF p2 mean 1.02 p99 2, 186 KB from 186 KB, 47 ms",
+      "error": null,
+      "ms": 2172,
+      "opMs": 1015,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "method layers",
+          "ok": true,
+          "detail": "layers",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the setting changes the page",
+          "ok": true,
+          "detail": "change 20.89, 23.54",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pixels match the colour map (pdf.js and MuPDF)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 190 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-adjust-desat-lincoln",
+      "tool": "adjustcolors",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "layers, change 17, worst MuPDF p1 mean 0.76 p99 2, 537 KB from 529 KB, 86 ms",
+      "error": null,
+      "ms": 2530,
+      "opMs": 2375,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page count",
+          "ok": true,
+          "detail": "got 36, want 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 36 vs MuPDF 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "method layers",
+          "ok": true,
+          "detail": "layers",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the setting changes the page",
+          "ok": true,
+          "detail": "change 16.63",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pixels match the colour map (pdf.js and MuPDF)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 207 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-adjust-bright-mixed",
+      "tool": "adjustcolors",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-mixed.pdf"
+      ],
+      "result": "PASS",
+      "detail": "layers, change 36/37, worst MuPDF p1 mean 0.18 p99 1, 480 KB from 478 KB, 43 ms",
+      "error": null,
+      "ms": 1003,
+      "opMs": 782,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "method layers",
+          "ok": true,
+          "detail": "layers",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the setting changes the page",
+          "ok": true,
+          "detail": "change 36.29, 37.07",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pixels match the colour map (pdf.js and MuPDF)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 846 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-adjust-dark-tracemonkey",
+      "tool": "adjustcolors",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "layers, change 72, worst pdf.js p1 mean 0.1 p99 1, 946 KB from 992 KB, 212 ms",
+      "error": null,
+      "ms": 789,
+      "opMs": 664,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "method layers",
+          "ok": true,
+          "detail": "layers",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the setting changes the page",
+          "ok": true,
+          "detail": "change 72.06",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pixels match the colour map (pdf.js and MuPDF)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1852 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-adjust-saturate-images-lincoln",
+      "tool": "adjustcolors",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "images, change 16/20, worst MuPDF p2 mean 2.06 p99 8, 1949 KB from 529 KB, 25465 ms",
+      "error": null,
+      "ms": 27499,
+      "opMs": 27173,
+      "heapMB": 19,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page count",
+          "ok": true,
+          "detail": "got 36, want 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 36 vs MuPDF 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "method images",
+          "ok": true,
+          "detail": "images",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the setting changes the page",
+          "ok": true,
+          "detail": "change 16.2, 20.13",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pixels match the colour map (pdf.js and MuPDF)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "image pages at the visible size, upright",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-replace-invert-fax",
+      "tool": "replacecolors",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "layers, change 224/243, worst pdf.js p2 mean 0.52 p99 0, 186 KB from 186 KB, 26 ms",
+      "error": null,
+      "ms": 1457,
+      "opMs": 675,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "method layers",
+          "ok": true,
+          "detail": "layers",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the setting changes the page",
+          "ok": true,
+          "detail": "change 224.23, 242.91",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pixels match the colour map (pdf.js and MuPDF)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 190 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-replace-invert-tracemonkey",
+      "tool": "replacecolors",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "layers, change 228, worst MuPDF p1 mean 0.37 p99 0, 946 KB from 992 KB, 220 ms",
+      "error": null,
+      "ms": 760,
+      "opMs": 635,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "method layers",
+          "ok": true,
+          "detail": "layers",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the setting changes the page",
+          "ok": true,
+          "detail": "change 227.76",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pixels match the colour map (pdf.js and MuPDF)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 1852 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-replace-yellow-on-black-lincoln",
+      "tool": "replacecolors",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "layers, change 96/83, worst pdf.js p3 mean 0.37 p99 2, 537 KB from 529 KB, 75 ms",
+      "error": null,
+      "ms": 3275,
+      "opMs": 3151,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page count",
+          "ok": true,
+          "detail": "got 36, want 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 36 vs MuPDF 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "method layers",
+          "ok": true,
+          "detail": "layers",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the setting changes the page",
+          "ok": true,
+          "detail": "change 96.1, 83.22",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pixels match the colour map (pdf.js and MuPDF)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 207 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-replace-white-on-black-mixed",
+      "tool": "replacecolors",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-mixed.pdf"
+      ],
+      "result": "PASS",
+      "detail": "layers, change 234/234/227, worst MuPDF p1 mean 0.29 p99 1, 480 KB from 478 KB, 32 ms",
+      "error": null,
+      "ms": 996,
+      "opMs": 869,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "method layers",
+          "ok": true,
+          "detail": "layers",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the setting changes the page",
+          "ok": true,
+          "detail": "change 234, 233.86, 226.89",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pixels match the colour map (pdf.js and MuPDF)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 846 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-replace-custom-aws",
+      "tool": "replacecolors",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "layers, change 12, worst MuPDF p1 mean 0.4 p99 1, 148 KB from 151 KB, 11 ms",
+      "error": null,
+      "ms": 330,
+      "opMs": 221,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "method layers",
+          "ok": true,
+          "detail": "layers",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the setting changes the page",
+          "ok": true,
+          "detail": "change 12.25",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pixels match the colour map (pdf.js and MuPDF)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 93 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-replace-grayscale-lincoln",
+      "tool": "replacecolors",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "layers, change 29/27, worst MuPDF p1 mean 0.02 p99 1, 533 KB from 529 KB, 64 ms",
+      "error": null,
+      "ms": 3609,
+      "opMs": 3460,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page count",
+          "ok": true,
+          "detail": "got 36, want 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 36 vs MuPDF 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "method layers",
+          "ok": true,
+          "detail": "layers",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the setting changes the page",
+          "ok": true,
+          "detail": "change 29.47, 26.71",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pixels match the colour map (pdf.js and MuPDF)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 207 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-replace-green-on-black-rot270",
+      "tool": "replacecolors",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot270-cropbox.pdf"
+      ],
+      "result": "PASS",
+      "detail": "layers, change 234, worst pdf.js p1 mean 0.03 p99 1, 206 KB from 205 KB, 12 ms",
+      "error": null,
+      "ms": 568,
+      "opMs": 339,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "method layers",
+          "ok": true,
+          "detail": "layers",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the setting changes the page",
+          "ok": true,
+          "detail": "change 234.11",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pixels match the colour map (pdf.js and MuPDF)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 565 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5a-replace-invert-empty-page",
+      "tool": "replacecolors",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "layers, change 255/238, worst MuPDF p1 mean 0.37 p99 0, 148 KB from 147 KB, 6 ms",
+      "error": null,
+      "ms": 464,
+      "opMs": 326,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no external requests",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "colour.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "method layers",
+          "ok": true,
+          "detail": "layers",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the setting changes the page",
+          "ok": true,
+          "detail": "change 255, 238.34",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pixels match the colour map (pdf.js and MuPDF)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page boxes unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "source text kept",
+          "ok": true,
+          "detail": "coverage 1.000 of 93 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    }
+  ]
+}

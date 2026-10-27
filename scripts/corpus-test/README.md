@@ -24,8 +24,27 @@ Flags (after `--`):
 | `--timeout-scale 2` | Multiply every per-case timeout |
 | `--shards 4` | Run on N parallel browser contexts (default 1), one Vite server. Cases are spread by weight (timings from the last `2026-10-17-baseline.json`, else a size guess), longest first; the LibreOffice group stays on one shard so there is never more than one engine per page. Rows are merged back into serial order |
 | `--headed` | Show the browser |
+| `--light` | Skip inputs over 20 MB (the 57 to 104 MB scans) |
 
 Example: `npm run test:corpus -- --tool redact,crop --name redact-check`.
+
+## Test tiers (do not overload the machine)
+
+Every run starts Chromium plus the PDF engines (1 to 2 GB each). Pick the smallest tier that proves the change.
+
+| Tier | When | Command | Time |
+|---|---|---|---|
+| 1 Touched | After each change | `npm run test:touched -- --tool <ids>` (or `--case <regex>`), plus the one UI script for that area | 1 to 5 min |
+| 2 Quick | Before handing work back / merging | `npm run test:quick` | about 5 min |
+| 3 Full | Once per phase, by the orchestrator only | `npm run test:clean` then `npm run test:full` | about 17 min |
+
+Guards built in:
+- One run at a time per machine: `startServer()` and `serve-pages-sim.mjs` take a lock in the OS temp folder (`swisspdf-test-run.lock`, covers worktrees). A second run waits and says who holds it. `CORPUS_LOCK=off` skips it (only when you know nothing else runs).
+- `--shards` is capped by free memory (about 2 GB per shard) and at 4.
+- `serve-pages-sim.mjs` takes `PORT` (0 = any free port) and stops after 10 idle minutes (`IDLE_MIN`).
+- `npm run test:clean` closes leftover test browsers and test servers (never your own browser or the Playwright MCP browser); `-- --dry` lists only.
+- Wrap long runs in a hard timeout (`timeout 900 node scripts/corpus-test/g1.mjs`) so a hang fails in minutes, not hours. Do not run a dev-server script while your own `serve-pages-sim` is up: both take the lock.
+- `CORPUS_OUT=<name>` keeps a run's outputs in its own folder.
 
 ## What it does
 
@@ -47,7 +66,7 @@ Per case: default timeout 120 s, large and Office cases 600 s or more. A timeout
 - **PASS**: every hard check passed. **FAIL**: an error or a hard check failed; Detail shows the first one. **SKIP**: could not run (missing engine, no suitable input).
 - `warn:` in Detail = a soft check failed. Soft checks never fail a row; they are evidence for an audit finding (feature gaps such as dropped bookmarks, no editable text in PPT).
 - The audit table maps checks to findings in `docs/research/swisspdf-audit.md`: CONFIRMED (a linked hard check failed, with evidence), SOFT WARN (only soft checks failed: a known gap or a noisy probe, read the warnings), NOT REPRODUCED (all linked checks passed), NOT TESTED (with reason).
-- Raw outputs stay in `test-corpus/derived/outputs/<case id>/` for a manual look.
+- Raw outputs stay in `test-corpus/derived/outputs/<case id>/` for a manual look. Set `CORPUS_OUT=<name>` to write to `outputs-<name>/` instead, so runs in parallel do not overwrite each other.
 - A partial `<name>.partial.json` is written after every row and removed at the end, so a killed run still leaves data.
 
 ## Other scripts

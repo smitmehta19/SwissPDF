@@ -34,10 +34,35 @@ function pdfjsAssets() {
   }
 }
 
+// Tesseract worker and WASM cores, copied from node_modules into
+// public/tesseract/ (not committed) so OCR loads from our own origin, never a
+// CDN. Language data lives in public/tessdata/ (committed).
+function tesseractAssets() {
+  const files = {
+    'tesseract.js/dist/worker.min.js': 'worker.min.js',
+    'tesseract.js-core/tesseract-core.wasm.js': 'tesseract-core.wasm.js',
+    'tesseract.js-core/tesseract-core-simd.wasm.js': 'tesseract-core-simd.wasm.js',
+    'tesseract.js-core/LICENSE': 'LICENSE-tesseract-core.txt',
+  }
+  const mods = fileURLToPath(new URL('./node_modules/', import.meta.url))
+  const dest = fileURLToPath(new URL('./public/tesseract/', import.meta.url))
+  return {
+    name: 'tesseract-assets',
+    configResolved() {
+      const version = ['tesseract.js', 'tesseract.js-core'].map((m) => JSON.parse(readFileSync(`${mods}${m}/package.json`, 'utf8')).version).join(' ')
+      const stamp = dest + 'VERSION'
+      if (existsSync(stamp) && readFileSync(stamp, 'utf8') === version) return
+      mkdirSync(dest, { recursive: true })
+      for (const [from, to] of Object.entries(files)) cpSync(mods + from, dest + to)
+      writeFileSync(stamp, version)
+    },
+  }
+}
+
 export default defineConfig(({ command }) => ({
   // Project page lives at https://<user>.github.io/SwissPDF/ on build; '/' locally.
   base: command === 'build' ? '/SwissPDF/' : '/',
-  plugins: [react(), pdfjsAssets()],
+  plugins: [react(), pdfjsAssets(), tesseractAssets()],
   server: {
     port: 5173,
     headers: isolationHeaders,

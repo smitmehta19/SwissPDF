@@ -7,14 +7,17 @@
 // what we fill in, so filling removes the XFA part. Dynamic XFA forms have no
 // AcroForm fields at all; they cannot be filled here (formInfo says so).
 import {
+  PDFArray,
   PDFButton,
   PDFCheckBox,
+  PDFDict,
   PDFDropdown,
   PDFName,
   PDFOptionList,
   PDFRadioGroup,
   PDFRef,
   PDFSignature,
+  PDFStream,
   PDFTextField,
   TextAlignment,
   drawObject,
@@ -65,6 +68,10 @@ function xfaKind(xfa, fieldCount) {
 }
 
 // Drops the XFA copy so every viewer shows the AcroForm values we wrote.
+// Call it before doc.getForm() (getForm deletes the /XFA key itself, so the
+// result would say nothing was removed). The XFA streams, with the old
+// values, go with dropLooseObjects before save: only when nothing else
+// still points at them.
 function stripXfa(doc) {
   const af = acroFormDict(doc)
   let removed = false
@@ -77,6 +84,28 @@ function stripXfa(doc) {
     removed = true
   }
   return removed
+}
+
+// pdf-lib saves every object it loaded, also the ones nothing points to any
+// more: XFA streams of older revisions, removed fields. Drops everything the
+// trailer does not reach, so stale form data does not ride along.
+function dropLooseObjects(doc) {
+  const { context } = doc
+  const seen = new Set()
+  const { Root, Info, Encrypt } = context.trailerInfo
+  const stack = [Root, Info, Encrypt]
+  while (stack.length) {
+    let obj = stack.pop()
+    if (obj instanceof PDFRef) {
+      if (seen.has(obj)) continue
+      seen.add(obj)
+      obj = context.lookup(obj)
+    }
+    if (obj instanceof PDFStream) obj = obj.dict
+    if (obj instanceof PDFDict) for (const [, v] of obj.entries()) stack.push(v)
+    else if (obj instanceof PDFArray) stack.push(...obj.asArray())
+  }
+  for (const [ref] of context.enumerateIndirectObjects()) if (!seen.has(ref)) context.delete(ref)
 }
 
 // ---------- widget -> page ----------
@@ -290,7 +319,7 @@ function flattenAll(doc, form) {
 // Returns { bytes, filled, xfaRemoved }.
 export async function fillFields(bytes, values, { flatten = false } = {}) {
   const doc = await loadPdf(bytes)
-  const xfa = hasXfa(doc)
+  const xfaRemoved = stripXfa(doc)
   const form = doc.getForm()
   let filled = 0
   for (const field of safeFields(form)) {
@@ -319,10 +348,9 @@ export async function fillFields(bytes, values, { flatten = false } = {}) {
     }
     filled++
   }
-  stripXfa(doc)
-  const xfaRemoved = !!xfa
   await prepareAppearances(doc, form, { forFlatten: flatten })
   if (flatten) flattenAll(doc, form)
+  dropLooseObjects(doc)
   return { bytes: await doc.save({ updateFieldAppearances: false }), filled, xfaRemoved }
 }
 
@@ -332,6 +360,7 @@ export async function fillFields(bytes, values, { flatten = false } = {}) {
 //   evenly across the drawn width.
 export async function addFields(bytes, newFields) {
   const doc = await loadPdf(bytes)
+  stripXfa(doc)
   const form = doc.getForm()
   const existing = new Set(safeFields(form).map((f) => f.getName()))
   const uniqueName = (base, type) => {
@@ -386,6 +415,7 @@ export async function addFields(bytes, newFields) {
     }
     added++
   }
+  dropLooseObjects(doc)
   return { bytes: await doc.save(), added }
 }
 
@@ -434,9 +464,10 @@ export async function detectFillAreas(bytes) {
 // Bakes the current values of every field into the pages.
 export async function flattenForm(bytes) {
   const doc = await loadPdf(bytes)
-  const form = doc.getForm()
   stripXfa(doc)
+  const form = doc.getForm()
   await prepareAppearances(doc, form, { forFlatten: true })
   const flattened = flattenAll(doc, form)
+  dropLooseObjects(doc)
   return { bytes: await doc.save({ updateFieldAppearances: false }), flattened }
 }

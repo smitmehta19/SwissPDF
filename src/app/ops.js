@@ -1,6 +1,8 @@
 // Pure bytes-in / bytes-out ops that may run in the worker (opsWorker.js) or,
 // when no worker can start, inline on the page. Nothing here may touch the
 // DOM, pdf.js rendering or app state. Libraries load on first use.
+const DOC_OPS = new Set(['readBookmarks', 'writeBookmarks', 'readMetadata', 'writeMetadata', 'listAttachments', 'extractAttachments', 'editAttachments', 'annotationSummary', 'removeAnnotations', 'removeImages', 'extractImages', 'sanitizePdf', 'scanActiveContent', 'flattenPdf', 'setPermissions', 'readPermissions', 'pdfInfo', 'unlockForms', 'listJavaScript'])
+
 export const OPS = {
   async normalize(bytes, opts) {
     const { normalizePdf } = await import('../lib/intake.js')
@@ -49,5 +51,42 @@ export const OPS = {
   async pageEdit(bytes, plan) {
     const { applyPageEdits } = await import('./pageEdit.js')
     return applyPageEdits(bytes, plan)
+  },
+  // U5-B structure tools: the worker-safe docOps.js functions, by name
+  async doc(name, ...args) {
+    const ops = await import('../lib/docOps.js')
+    if (!DOC_OPS.has(name)) throw new Error(`Unknown doc op ${name}`)
+    return ops[name](...args)
+  },
+  // U5-A page layout and colour tools: worker-safe exports by name
+  async layout(name, ...args) {
+    const ops = await import('../lib/layoutOps.js')
+    if (!['nUp', 'booklet', 'scalePages', 'singleLargePage', 'overlayPdfs', 'stampPdf', 'linearizePdf'].includes(name)) throw new Error(`Unknown layout op ${name}`)
+    return ops[name](...args)
+  },
+  async color(name, ...args) {
+    const ops = await import('../lib/colorOps.js')
+    if (!['applyBlendSteps', 'replaceColors'].includes(name)) throw new Error(`Unknown colour op ${name}`)
+    return ops[name](...args)
+  },
+  async protect(bytes, user, owner, opts) {
+    const { protectPdf } = await import('../lib/cryptoOps.js')
+    return protectPdf(bytes, user, owner, opts)
+  },
+  async unlock(bytes, password) {
+    const { unlockPdf } = await import('../lib/cryptoOps.js')
+    return unlockPdf(bytes, password)
+  },
+  async inspect(bytes) {
+    const { inspectPdf } = await import('../lib/cryptoOps.js')
+    return inspectPdf(bytes)
+  },
+  async repair(bytes) {
+    const { repairPdf } = await import('../lib/mupdfOps.js')
+    return repairPdf(bytes)
+  },
+  async compareDiff(pagesA, pagesB, opts) {
+    const { diffPages } = await import('../lib/compareOps.js')
+    return diffPages(pagesA, pagesB, opts)
   },
 }

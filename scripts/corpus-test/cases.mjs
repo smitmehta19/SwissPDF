@@ -1,11 +1,12 @@
 // Every corpus case: which op runs on which real files, and how Node checks
 // the output. A check is hard (fails the case) unless marked soft; soft
 // checks only add a warning and evidence for an audit finding.
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import * as XLSX from 'xlsx'
 import JSZip from 'jszip'
 import { PDFDocument } from 'pdf-lib'
+import * as mupdf from 'mupdf'
 import {
   probe,
   textOf,
@@ -19,6 +20,8 @@ import {
   boxesSane,
   withPdfjs,
   openMupdf,
+  rawScan,
+  redactionLeaks,
 } from './validate.mjs'
 import { ROOT } from './server.mjs'
 import { USER_PW } from './derive.mjs'
@@ -185,6 +188,37 @@ async function checkPdf(ctx, name, { pages, password, label = name, maxInfoPages
 }
 
 const allText = (p) => (p?.pdfjs?.texts ?? []).join('\n')
+
+// Raw check on every redaction output (integ-1 #14, redact-fix review #9): no
+// page object outside the page tree, no loose objects, no XFA, none of
+// `terms` anywhere in the decoded file (hex, UTF-16 and CID text included),
+// no listed-but-undrawn images, forms or patterns, and nothing left under the
+// boxes the op reports (meta.areas): characters, image pixels, curved or
+// slanted drawings, pattern fills.
+function leakCheck(ctx, name, terms = []) {
+  const bytes = ctx.out(name)
+  if (!bytes) return
+  const { bad } = redactionLeaks(bytes, terms, { pages: 'all', boxes: ctx.meta?.areas ?? [] })
+  ctx.check(`raw file clean${terms.length ? ` of ${terms.map((t) => `"${t}"`).join(', ')}` : ''}`, bad.length === 0, bad.join('; '))
+}
+
+// Pages the redaction did not touch read exactly as before (a whole-file
+// object walk before a compacting save has cost MuPDF page content).
+async function sameUntouched(ctx, rel, p, pagesHit = []) {
+  const f = await inputFacts(rel)
+  const hit = new Set(pagesHit)
+  const changed = f.pdfjs.texts.map((t, i) => i).filter((i) => !hit.has(i + 1) && i < p.pdfjs.texts.length && f.pdfjs.texts[i] !== p.pdfjs.texts[i])
+  ctx.check('untouched pages keep exactly their text', changed.length === 0, changed.slice(0, 3).map((i) => `p${i + 1} ${f.pdfjs.texts[i].length} -> ${p.pdfjs.texts[i].length} chars`).join(', '))
+}
+
+// Form outputs: the XFA copy (with the old values) must not stay behind as
+// loose streams once the /XFA key is gone.
+function xfaLeftCheck(ctx, name) {
+  const bytes = ctx.out(name)
+  if (!bytes) return
+  const scan = rawScan(bytes)
+  ctx.check('no XFA streams left in the file', !scan.xfa && scan.xfaStreams === 0, `XFA key ${scan.xfa}, ${scan.xfaStreams} XFA stream(s)`, { audit: 21 })
+}
 const pct = (a, b) => `${((100 * a) / b).toFixed(0)}%`
 const kb = (n) => (n > 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `${(n / 1024).toFixed(0)} KB`)
 
@@ -1107,13 +1141,12 @@ function redactCase(id, rel, { quick = false, audit } = {}) {
       if (!p?.pdfjs.ok) return
       const outText = allText(p).toLowerCase()
       ctx.check(`"${term}" gone from extracted text`, !outText.includes(term.toLowerCase()), '')
+      leakCheck(ctx, 'redacted.pdf', [term])
       const covered = ctx.meta?.covered ?? []
       const weak = covered.filter((c) => c < 0.6)
       ctx.check('black box covers the word on screen', covered.length > 0 && weak.length === 0, `coverage ${covered.map((c) => c.toFixed(2)).join(', ')}`, { audit: audit ?? 2 })
       const hit = new Set(ctx.meta.pagesHit)
-      const untouched = f.pdfjs.texts.map((t, i) => i).filter((i) => !hit.has(i + 1) && i < p.pdfjs.texts.length)
-      const keptOk = untouched.every((i) => (wordCoverage(f.pdfjs.texts[i], p.pdfjs.texts[i]).ratio ?? 1) > 0.9)
-      ctx.check('untouched pages keep their text', keptOk)
+      await sameUntouched(ctx, rel, p, ctx.meta.pagesHit)
       const ratio = p.size / sizeOf(rel)
       ctx.check('size stays reasonable (<= 3x)', ratio <= 3, `${ratio.toFixed(1)}x input`, { soft: true, audit: 25 })
       ctx.metric(`${ctx.meta.boxes} boxes on ${hit.size} page(s), ${ratio.toFixed(1)}x size`)
@@ -1166,7 +1199,7 @@ for (const name of FORMS) {
     },
   })
 }
-function fillCase(id, rel, { flatten = false, quick = false, audit } = {}) {
+function fillCase(id, rel, { flatten = false, quick = false, audit, dynamicXfa = false } = {}) {
   add({
     id,
     tool: 'forms',
@@ -1182,6 +1215,11 @@ function fillCase(id, rel, { flatten = false, quick = false, audit } = {}) {
       if (!p?.pdfjs.ok) return
       const values = ctx.meta?.values ?? {}
       const names = Object.keys(values)
+      // dynamic XFA: the fields only exist in Adobe Reader; the Forms tool says so and offers no fill
+      if (dynamicXfa) {
+        ctx.check('dynamic XFA: no fillable fields offered', names.length === 0, `${names.length}`, audit ? { audit } : {})
+        return
+      }
       ctx.check('found text fields to fill', names.length > 0, `${names.length}`, audit ? { audit } : {})
       const facts = await formFacts(ctx.out('filled.pdf'))
       if (flatten) {
@@ -1193,6 +1231,7 @@ function fillCase(id, rel, { flatten = false, quick = false, audit } = {}) {
       }
       const src = await formFacts(readRel(rel))
       if (src.hasXfa) ctx.check('stale XFA removed after fill', !facts.hasXfa, 'XFA still present: Acrobat shows old values', { soft: true, audit: 21 })
+      if (src.hasXfa) xfaLeftCheck(ctx, 'filled.pdf')
       ctx.metric(`${ctx.meta?.filled} filled${flatten ? ', flattened' : ''}`)
     },
   })
@@ -1200,7 +1239,7 @@ function fillCase(id, rel, { flatten = false, quick = false, audit } = {}) {
 fillCase('forms-fill-f1040', 'forms/irs-f1040.pdf', { quick: true })
 fillCase('forms-fill-fw9', 'forms/irs-fw9.pdf')
 fillCase('forms-fill-i9', 'forms/uscis-i-9.pdf')
-fillCase('forms-fill-xfa-imm1344e', 'forms/xfa-imm1344e-filled.pdf', { audit: 21 })
+fillCase('forms-fill-xfa-imm1344e', 'forms/xfa-imm1344e-filled.pdf', { audit: 21, dynamicXfa: true })
 fillCase('forms-fill-flatten-fw4', 'forms/irs-fw4.pdf', { flatten: true, quick: true })
 fillCase('forms-fill-flatten-ipph353', 'forms/uk-IPPH353.pdf', { flatten: true })
 fillCase('forms-fill-flatten-text-widget', 'forms/annotation-text-widget.pdf', { flatten: true })
@@ -1215,6 +1254,7 @@ add({
     if (!p?.pdfjs.ok) return
     const facts = await formFacts(ctx.out('flattened.pdf'))
     ctx.check('no fields left', facts.count === 0, `${facts.count} left`)
+    xfaLeftCheck(ctx, 'flattened.pdf')
     ctx.metric(`${ctx.meta?.flattened} fields flattened`)
   },
 })
@@ -2432,11 +2472,11 @@ function g3RedactCase(id, rel, { quick = false, method = 'remove' } = {}) {
       const p = await checkPdf(ctx, 'redacted.pdf', { pages: f.pdfjs.pages })
       if (!p?.pdfjs.ok) return
       ctx.check(`"${term}" gone from extracted text`, !allText(p).toLowerCase().includes(term.toLowerCase()), '', { audit: 2 })
+      leakCheck(ctx, 'redacted.pdf', [term])
       const covered = ctx.meta.covered ?? []
       ctx.check('black box covers the word on screen', covered.length > 0 && covered.every((c) => c >= 0.6), `coverage ${covered.map((c) => c.toFixed(2)).join(', ')}`, { audit: 2 })
       const hit = new Set(ctx.meta.pagesHit)
-      const untouched = f.pdfjs.texts.map((t, i) => i).filter((i) => !hit.has(i + 1) && i < p.pdfjs.texts.length)
-      ctx.check('untouched pages keep their text', untouched.every((i) => (wordCoverage(f.pdfjs.texts[i], p.pdfjs.texts[i]).ratio ?? 1) > 0.9))
+      await sameUntouched(ctx, rel, p, ctx.meta.pagesHit)
       const ratio = p.size / sizeOf(rel)
       if (method === 'remove') {
         await keptOutside(ctx, rel, p, ctx.meta.pagesHit, (t) => noTerm(t, term))
@@ -2457,6 +2497,433 @@ g3RedactCase('g3-redact-remove-rot270-cropbox', 'derived/c-rot270-cropbox.pdf')
 g3RedactCase('g3-redact-remove-rot180-origin', 'derived/c-rot180-origin.pdf')
 g3RedactCase('g3-redact-remove-aws-invoice', 'invoices/aws-invoice.pdf')
 g3RedactCase('g3-redact-image-rot90-cropbox', 'derived/rot90-cropbox-bert.pdf', { method: 'image' })
+g3RedactCase('g3-redact-remove-flipkart', 'invoices/flipkart-invoice.pdf')
+g3RedactCase('g3-redact-image-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', { method: 'image' })
+
+// Synthetic file with a name in the page text, document properties, XMP, a
+// bookmark, a sticky note with popup, a FreeText box, an attachment and alt
+// texts. Built here (MuPDF) so it exists before the cases are listed.
+const SECRET = 'SECRETNAME'
+// in a subfolder, so the intake rows (top level of derived/) do not change
+const SECRET_REL = 'derived/synthetic/redact-secretname.pdf'
+function makeSecretPdf() {
+  const doc = new mupdf.PDFDocument()
+  try {
+    const resources = doc.addObject(doc.newDictionary())
+    const fonts = doc.newDictionary()
+    fonts.put('F1', doc.addSimpleFont(new mupdf.Font('Helvetica')))
+    resources.put('Font', fonts)
+    const text = (lines) => lines.map(([y, s]) => `BT /F1 14 Tf 72 ${y} Td (${s}) Tj ET`).join('\n')
+    doc.insertPage(-1, doc.addPage([0, 0, 612, 792], 0, resources, text([[700, `Agreement with ${SECRET} and others`], [650, 'This line stays readable on the page']])))
+    doc.insertPage(-1, doc.addPage([0, 0, 612, 792], 0, resources, text([[700, 'Second page without the name'], [650, 'Plain words for coverage checks']])))
+    const root = doc.getTrailer().get('Root')
+    const info = doc.addObject(doc.newDictionary())
+    info.put('Title', doc.newString(`Contract for ${SECRET}`))
+    info.put('Subject', doc.newString(`Notes on ${SECRET}`))
+    doc.getTrailer().put('Info', info)
+    const meta = doc.newDictionary()
+    meta.put('Type', doc.newName('Metadata'))
+    meta.put('Subtype', doc.newName('XML'))
+    const xmp = `<?xpacket begin="" id="W5M0MpCehiHzreSzNTczkc9d"?><x:xmpmeta xmlns:x="adobe:ns:meta/"><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title><rdf:Alt><rdf:li xml:lang="x-default">Contract for ${SECRET}</rdf:li></rdf:Alt></dc:title></rdf:Description></rdf:RDF></x:xmpmeta><?xpacket end="w"?>`
+    root.put('Metadata', doc.addStream(xmp, meta))
+    // the bookmark points at page 1, so that page object must stay the same
+    const outlines = doc.addObject(doc.newDictionary())
+    const item = doc.addObject(doc.newDictionary())
+    item.put('Title', doc.newString(`Section ${SECRET}`))
+    item.put('Parent', outlines)
+    const dest = doc.newArray()
+    dest.push(doc.findPage(0))
+    dest.push(doc.newName('Fit'))
+    item.put('Dest', dest)
+    outlines.put('Type', doc.newName('Outlines'))
+    outlines.put('First', item)
+    outlines.put('Last', item)
+    outlines.put('Count', 1)
+    root.put('Outlines', outlines)
+    // alt text on the hit page, matching actual text on page 2
+    const tree = doc.addObject(doc.newDictionary())
+    tree.put('Type', doc.newName('StructTreeRoot'))
+    const kids = doc.newArray()
+    for (const [pg, key, value] of [[0, 'Alt', 'Photo of the signer'], [1, 'ActualText', `Signed by ${SECRET}`]]) {
+      const el = doc.addObject(doc.newDictionary())
+      el.put('Type', doc.newName('StructElem'))
+      el.put('S', doc.newName('Figure'))
+      el.put('P', tree)
+      el.put('Pg', doc.findPage(pg))
+      el.put(key, doc.newString(value))
+      kids.push(el)
+    }
+    tree.put('K', kids)
+    root.put('StructTreeRoot', tree)
+    doc.insertEmbeddedFile('notes.txt', doc.addEmbeddedFile('notes.txt', 'text/plain', `${SECRET} private notes`, new Date(0), new Date(0)))
+    const p2 = doc.loadPage(1)
+    const note = p2.createAnnotation('Text')
+    note.setRect([500, 500, 520, 520])
+    note.setContents(`Call ${SECRET} tomorrow`)
+    note.setPopup([520, 400, 700, 520])
+    note.update()
+    p2.destroy?.()
+    const p1 = doc.loadPage(0)
+    const free = p1.createAnnotation('FreeText')
+    free.setRect([72, 400, 400, 440])
+    free.setContents(`Approved by ${SECRET}`)
+    free.update()
+    p1.destroy?.()
+    return doc.saveToBuffer('garbage=compact,compress').asUint8Array().slice()
+  } finally {
+    doc.destroy?.()
+  }
+}
+if (!existsSync(abs(SECRET_REL)) && existsSync(join(CORPUS, 'derived'))) {
+  mkdirSync(join(CORPUS, 'derived', 'synthetic'), { recursive: true })
+  // other runners share the corpus folder: write aside, then rename
+  const tmp = `${abs(SECRET_REL)}.${process.pid}.tmp`
+  writeFileSync(tmp, makeSecretPdf())
+  renameSync(tmp, abs(SECRET_REL))
+}
+for (const method of ['remove', 'image']) {
+  add({
+    id: `g3-redact-hidden-secretname-${method}`,
+    tool: 'redact',
+    op: 'g3RedactRemove',
+    files: [SECRET_REL],
+    params: { term: SECRET, method },
+    quick: true,
+    async validate(ctx) {
+      ctx.check('search finds the page text, the sticky note and the FreeText', (ctx.meta?.boxes ?? 0) >= 3, `${ctx.meta?.boxes} matches`)
+      const p = await checkPdf(ctx, 'redacted.pdf', { pages: 2 })
+      if (!p?.pdfjs.ok) return
+      leakCheck(ctx, 'redacted.pdf', [SECRET])
+      ctx.check('bookmark kept (title cleaned)', (await outlineCount(ctx.out('redacted.pdf'))) === 1)
+      ctx.check('page 2 keeps its text', (p.pdfjs.texts[1] ?? '').includes('Plain words for coverage checks'), (p.pdfjs.texts[1] ?? '').slice(0, 60))
+      if (method === 'remove') ctx.check('page 1 keeps the other line', (p.pdfjs.texts[0] ?? '').includes('stays readable'), (p.pdfjs.texts[0] ?? '').slice(0, 60))
+    },
+  })
+}
+
+// XFA keeps its own copy of every filled value: any redaction drops it.
+add({
+  id: 'g3-redact-xfa-imm1344e',
+  tool: 'redact',
+  op: 'g3RedactRemove',
+  files: ['forms/xfa-imm1344e-filled.pdf'],
+  params: { query: {}, wholePages: [1] },
+  quick: true,
+  async validate(ctx) {
+    const p = await checkPdf(ctx, 'redacted.pdf', { pages: 1 })
+    if (!p?.pdfjs.ok) return
+    leakCheck(ctx, 'redacted.pdf', ['Leonhard', 'Euler', 'Brunswick'])
+  },
+})
+
+// Leak classes from the redact-fix review (P0 #1 to #8), one synthetic file
+// each, built here with MuPDF. Search rows look for SECRETNAME; rows with
+// `boxes` black out a drawn area (view points on a 612 x 792 page).
+function synth(build) {
+  const doc = new mupdf.PDFDocument()
+  try {
+    const font = doc.addSimpleFont(new mupdf.Font('Helvetica'))
+    const res = (extra = {}) => {
+      const r = doc.newDictionary()
+      const f = doc.newDictionary()
+      f.put('F1', font)
+      r.put('Font', f)
+      for (const [k, v] of Object.entries(extra)) r.put(k, v)
+      return r
+    }
+    const page = (content, resources = res()) => {
+      doc.insertPage(-1, doc.addPage([0, 0, 612, 792], 0, resources, content))
+      return doc.findPage(doc.countPages() - 1)
+    }
+    const dict = (entries) => {
+      const d = doc.newDictionary()
+      for (const [k, v] of Object.entries(entries)) d.put(k, typeof v === 'string' && v.startsWith('/') ? doc.newName(v.slice(1)) : typeof v === 'string' ? doc.newString(v) : v)
+      return d
+    }
+    const arr = (...items) => {
+      const a = doc.newArray()
+      for (const v of items) a.push(v)
+      return a
+    }
+    const redImage = () => {
+      const pix = new mupdf.Pixmap(mupdf.ColorSpace.DeviceRGB, [0, 0, 8, 8], false)
+      const px = pix.getPixels()
+      for (let i = 0; i < 64; i++) px.set([255, 0, 0], i * 3)
+      return doc.addImage(new mupdf.Image(pix))
+    }
+    build({ doc, res, page, dict, arr, redImage, T: (y, s) => `BT /F1 14 Tf 72 ${y} Td (${s}) Tj ET` })
+    return doc.saveToBuffer('garbage=compact,compress').asUint8Array().slice()
+  } finally {
+    doc.destroy?.()
+  }
+}
+// tags the annotation through the structure tree (OBJR), as tagged PDFs do
+function tagAnnot(doc, dict, arr, annotObj) {
+  const tree = doc.addObject(dict({ Type: '/StructTreeRoot' }))
+  const el = doc.addObject(dict({ Type: '/StructElem', S: '/Annot', P: tree, Pg: doc.findPage(0), K: dict({ Type: '/OBJR', Obj: annotObj, Pg: doc.findPage(0) }) }))
+  tree.put('K', arr(el))
+  tree.put('ParentTree', dict({ Nums: arr(0, el) }))
+  annotObj.put('StructParent', 0)
+  doc.getTrailer().get('Root').put('StructTreeRoot', tree)
+}
+const LEAK_FIXTURES = {
+  // #1 a tagged FreeText: the struct tree keeps it alive after deletion
+  objr: ({ doc, page, dict, arr, T }) => {
+    page(T(700, 'Body text'))
+    const p = doc.loadPage(0)
+    const a = p.createAnnotation('FreeText')
+    a.setRect([300, 150, 500, 190])
+    a.setContents(`Approved by ${SECRET}`)
+    a.update()
+    tagAnnot(doc, dict, arr, a.getObject())
+    p.destroy?.()
+  },
+  // #2 a reply (/IRT) to the deleted note, also tagged
+  replies: ({ doc, page, dict, arr, T }) => {
+    page(`${T(700, 'Body text')}\n${T(650, 'Second line')}`)
+    const p = doc.loadPage(0)
+    const note = p.createAnnotation('Text')
+    note.setRect([400, 170, 420, 190])
+    note.setContents(`Call ${SECRET}`)
+    note.update()
+    const reply = p.createAnnotation('Text')
+    reply.setRect([430, 170, 450, 190])
+    reply.setContents('Done, called.')
+    reply.update()
+    reply.getObject().put('IRT', note.getObject())
+    tagAnnot(doc, dict, arr, note.getObject())
+    p.destroy?.()
+  },
+  // #3a a header form in /Pages /Resources, drawn by page 1 only
+  inherited: ({ doc, page, dict, arr, res, T }) => {
+    const form = doc.addStream(T(740, `Header ${SECRET}`), dict({ Type: '/XObject', Subtype: '/Form', BBox: arr(0, 0, 612, 792), Resources: res() }))
+    const p1 = page(`/Hdr Do\n${T(700, 'Page one body')}`)
+    const p2 = page(T(700, 'Page two body'))
+    doc.getTrailer().get('Root').get('Pages').put('Resources', res({ XObject: dict({ Hdr: form }) }))
+    p1.delete('Resources')
+    p2.delete('Resources')
+  },
+  // #3b one resource dict shared by both pages, the photo drawn on page 1
+  sharedPhoto: ({ doc, page, dict, res, redImage, T }) => {
+    const shared = doc.addObject(res({ XObject: dict({ Photo: redImage() }) }))
+    page(`q 100 0 0 100 72 600 cm /Photo Do Q\n${T(500, 'Page one')}`, shared)
+    page(T(700, 'Page two'), shared)
+  },
+  // #4 marked-content ActualText, Alt and E, a span only partly redacted
+  bdc: ({ page, T }) => {
+    page(
+      [
+        `/Span <</ActualText (Signed by ${SECRET} today)>> BDC ${T(700, `Signed by ${SECRET} today`)} EMC`,
+        `/Span <</ActualText <FEFF${[...`${SECRET}HEX`].map((c) => c.charCodeAt(0).toString(16).padStart(4, '0')).join('')}>>> BDC ${T(650, SECRET)} EMC`,
+        `/Span <</Alt (Alt ${SECRET}ALT) /E (${SECRET}EXP)>> BDC ${T(600, SECRET)} EMC`,
+        T(500, 'This line stays'),
+      ].join('\n'),
+    )
+  },
+  // #5 a slanted polyline (a vector signature) partly under the box
+  lineArt: ({ page, T }) => {
+    page(`0 0 1 RG 3 w 100 600 m 150 650 l 200 600 l 250 650 l 300 600 l 350 650 l 400 600 l S\n${T(500, 'This line stays')}`)
+  },
+  // #6 an image inside a tiling pattern, filled under the box
+  pattern: ({ doc, page, dict, arr, res, redImage, T }) => {
+    const pat = doc.addStream(
+      'q 100 0 0 100 0 0 cm /Im Do Q',
+      dict({ Type: '/Pattern', PatternType: 1, PaintType: 1, TilingType: 1, BBox: arr(0, 0, 100, 100), XStep: 100, YStep: 100, Resources: dict({ XObject: dict({ Im: redImage() }) }) }),
+    )
+    page(`q /Pattern cs /P0 scn 300 450 100 100 re f Q\n${T(300, 'This line stays')}`, res({ Pattern: dict({ P0: pat }) }))
+  },
+  // #7 text in a layer that is off
+  hiddenLayer: ({ doc, page, dict, arr, res, T }) => {
+    const ocg = doc.addObject(dict({ Type: '/OCG', Name: 'Draft' }))
+    doc.getTrailer().get('Root').put('OCProperties', dict({ OCGs: arr(ocg), D: dict({ OFF: arr(ocg) }) }))
+    page(`${T(700, 'Agreement with the client')}\n/OC /oc1 BDC ${T(600, `Draft note ${SECRET} private`)} EMC\n${T(500, 'This line stays')}`, res({ Properties: dict({ oc1: ocg }) }))
+  },
+  // review 2 #2: text hidden by an OCMD policy (/P /AllOff) over a layer that is on
+  ocmd: ({ doc, page, dict, arr, res, T }) => {
+    const ocg = doc.addObject(dict({ Type: '/OCG', Name: 'Base' }))
+    doc.getTrailer().get('Root').put('OCProperties', dict({ OCGs: arr(ocg), D: dict({ ON: arr(ocg) }) }))
+    const md = doc.addObject(dict({ Type: '/OCMD', OCGs: ocg, P: '/AllOff' }))
+    page(`${T(700, 'Agreement with the client')}\n/OC /mc1 BDC ${T(600, `Draft note ${SECRET} private`)} EMC\n${T(500, 'This line stays')}`, res({ Properties: dict({ mc1: md }) }))
+  },
+  // review 2 #1: an axial shading drawn inside a clip, under the box
+  shading: ({ doc, page, dict, arr, res, T }) => {
+    const fn = dict({ FunctionType: 2, Domain: arr(0, 1), C0: arr(1, 0, 0), C1: arr(0, 0, 1), N: 1 })
+    const sh = dict({ ShadingType: 2, ColorSpace: '/DeviceRGB', Coords: arr(100, 600, 300, 600), Function: fn })
+    page(`q 100 560 200 100 re W n /Sh0 sh Q\n${T(400, 'This line stays')}`, res({ Shading: dict({ Sh0: sh }) }))
+  },
+  // review 2 #1: a free-form triangle mesh (a tiny picture) inside a clip
+  mesh: ({ doc, page, dict, arr, res, T }) => {
+    const vtx = (flag, x, y, rgb) => {
+      const b = Buffer.alloc(8)
+      b[0] = flag
+      b.writeUInt16BE(Math.round((x / 612) * 65535), 1)
+      b.writeUInt16BE(Math.round((y / 792) * 65535), 3)
+      b.set(rgb, 5)
+      return b
+    }
+    const data = Buffer.concat([vtx(0, 100, 550, [255, 0, 0]), vtx(0, 300, 550, [0, 255, 0]), vtx(0, 100, 650, [0, 0, 255]), vtx(1, 300, 650, [255, 255, 0])])
+    const sh = doc.addStream(data, dict({ ShadingType: 4, ColorSpace: '/DeviceRGB', BitsPerCoordinate: 16, BitsPerComponent: 8, BitsPerFlag: 8, Decode: arr(0, 612, 0, 792, 0, 1, 0, 1, 0, 1) }))
+    page(`q 100 550 200 100 re W n /M0 sh Q\n${T(400, 'This line stays')}`, res({ Shading: dict({ M0: sh }) }))
+  },
+  // review 2 #3: a Type3 font without resources draws with the shared page
+  // resources; page 2 (not hit) must keep its glyphs after pruning
+  type3Shared: ({ doc, page, dict, arr, res, T }) => {
+    const pix = new mupdf.Pixmap(mupdf.ColorSpace.DeviceRGB, [0, 0, 4, 4], false)
+    pix.clear(0)
+    const t3 = doc.addObject(
+      dict({
+        Type: '/Font',
+        Subtype: '/Type3',
+        FontBBox: arr(0, 0, 1, 1),
+        FontMatrix: arr(1, 0, 0, 1, 0, 0),
+        CharProcs: dict({ a: doc.addStream('1 0 0 0 1 1 d1 q 0.8 0 0 0.8 0.1 0.1 cm /Dot Do Q', doc.newDictionary()) }),
+        Encoding: dict({ Differences: arr(65, doc.newName('a')) }),
+        FirstChar: 65,
+        LastChar: 65,
+        Widths: arr(1),
+      }),
+    )
+    const shared = doc.addObject(res({ XObject: dict({ Dot: doc.addImage(new mupdf.Image(pix)) }) }))
+    shared.get('Font').put('T3', t3)
+    page(T(700, `Agreement with ${SECRET}`), shared)
+    page('BT /T3 1 Tf 30 0 0 30 100 600 Tm (AAAA) Tj ET', shared)
+  },
+  // review 2 #6: an old-style catalog /Dests dict keyed by name
+  nameDests: ({ doc, page, dict, arr, T }) => {
+    const p1 = page(`${T(700, `Agreement with ${SECRET}`)}\n${T(650, 'This line stays')}`)
+    const dests = doc.newDictionary()
+    dests.put(`${SECRET}-chapter`, arr(p1, doc.newName('Fit')))
+    doc.getTrailer().get('Root').put('Dests', doc.addObject(dests))
+  },
+  // #8 the name in places no page shows
+  carriers: ({ doc, page, dict, arr, T }) => {
+    const p1 = page(`${T(700, `Agreement with ${SECRET}`)}\n${T(650, 'Other line')}`)
+    page(T(700, 'Second page'))
+    const root = doc.getTrailer().get('Root')
+    const outlines = doc.addObject(dict({ Type: '/Outlines', Count: 2 }))
+    const it1 = doc.addObject(dict({ Title: 'Profile link', Parent: outlines, A: dict({ S: '/URI', URI: `https://example.com/u/${SECRET}` }) }))
+    const it2 = doc.addObject(dict({ Title: 'Script', Parent: outlines, Prev: it1, A: dict({ S: '/JavaScript', JS: `app.alert("${SECRET}")` }) }))
+    it1.put('Next', it2)
+    outlines.put('First', it1)
+    outlines.put('Last', it2)
+    root.put('Outlines', outlines)
+    root.put('Names', dict({ Dests: dict({ Names: arr(doc.newString(`${SECRET}-section`), arr(p1, doc.newName('Fit'))) }), JavaScript: dict({ Names: arr(doc.newString('init'), dict({ S: '/JavaScript', JS: `var who = "${SECRET}";` })) }) }))
+    root.put('OpenAction', dict({ S: '/JavaScript', JS: `console.println("${SECRET} opened")` }))
+    root.put('PageLabels', dict({ Nums: arr(0, dict({ P: `${SECRET}-` })) }))
+    const ocg = doc.addObject(dict({ Type: '/OCG', Name: `Layer ${SECRET}` }))
+    root.put('OCProperties', dict({ OCGs: arr(ocg), D: dict({ ON: arr(ocg) }) }))
+    const field = doc.addObject(dict({ FT: '/Tx', T: 'name', V: SECRET, DV: SECRET, TU: `Tooltip ${SECRET}` }))
+    root.put('AcroForm', dict({ Fields: arr(field) }))
+    p1.put('AF', arr(doc.addEmbeddedFile('page.txt', 'text/plain', `${SECRET} page attachment`, new Date(0), new Date(0))))
+  },
+}
+const leakRel = (key) => `derived/synthetic/redact-leak-${key}.pdf`
+if (existsSync(join(CORPUS, 'derived'))) {
+  mkdirSync(join(CORPUS, 'derived', 'synthetic'), { recursive: true })
+  for (const [key, build] of Object.entries(LEAK_FIXTURES)) {
+    if (existsSync(abs(leakRel(key)))) continue
+    const tmp = `${abs(leakRel(key))}.${process.pid}.tmp`
+    writeFileSync(tmp, synth(build))
+    renameSync(tmp, abs(leakRel(key)))
+  }
+}
+// [key, finding, params]
+for (const [key, finding, params] of [
+  ['objr', 1, { term: SECRET }],
+  ['replies', 2, { term: SECRET }],
+  ['inherited', 3, { term: SECRET }],
+  ['sharedPhoto', 3, { query: {}, boxes: [{ pageNum: 1, x: 68, y: 88, w: 108, h: 108 }] }],
+  ['bdc', 4, { term: SECRET }],
+  ['lineArt', 5, { query: {}, boxes: [{ pageNum: 1, x: 180, y: 120, w: 140, h: 90 }] }],
+  ['pattern', 6, { query: {}, boxes: [{ pageNum: 1, x: 296, y: 238, w: 108, h: 108 }] }],
+  ['hiddenLayer', 7, { term: SECRET }],
+  ['carriers', 8, { term: SECRET }],
+  ['ocmd', 'r2-2', { term: SECRET }],
+  ['shading', 'r2-1', { query: {}, boxes: [{ pageNum: 1, x: 90, y: 122, w: 220, h: 120 }] }],
+  ['mesh', 'r2-1', { query: {}, boxes: [{ pageNum: 1, x: 150, y: 162, w: 100, h: 60 }] }],
+  ['type3Shared', 'r2-3', { term: SECRET }],
+  ['nameDests', 'r2-6', { term: SECRET }],
+]) {
+  for (const method of ['remove', 'image']) {
+    add({
+      id: `g3-redact-leak-${key}-${method}`,
+      tool: 'redact',
+      op: 'g3RedactRemove',
+      files: [leakRel(key)],
+      params: { ...params, method },
+      quick: method === 'remove',
+      async validate(ctx) {
+        if (!ctx.meta?.areas?.length && !ctx.meta?.boxes) return ctx.check('something to redact', false, 'no matches and no boxes')
+        const p = await checkPdf(ctx, 'redacted.pdf')
+        if (!p?.pdfjs.ok) return
+        leakCheck(ctx, 'redacted.pdf', params.term ? [params.term] : [])
+        await sameUntouched(ctx, leakRel(key), p, ctx.meta.pagesHit)
+        if (key === 'type3Shared') {
+          // page 2 draws only Type3 glyphs (no text): compare pixels
+          const a = renderGray(readRel(leakRel(key)), 1)
+          const b = renderGray(ctx.out('redacted.pdf'), 1)
+          ctx.check('page 2 (Type3 glyphs, pruned resources) renders the same', a.length === b.length && a.every((v, i) => v === b[i]))
+        }
+        ctx.metric(`review #${finding}, raster pages ${(ctx.meta.rasterPages ?? []).join(',') || 'none'}`)
+      },
+    })
+  }
+}
+
+// Pages sharing one resource dict with a hit page get their resources pruned
+// to what they draw: page 2 must still look exactly the same.
+function renderGray(bytes, pageIndex) {
+  const doc = mupdf.Document.openDocument(new Uint8Array(bytes), 'application/pdf')
+  try {
+    const pix = doc.loadPage(pageIndex).toPixmap(mupdf.Matrix.identity, mupdf.ColorSpace.DeviceGray, false, true)
+    return Uint8Array.from(pix.getPixels())
+  } finally {
+    doc.destroy?.()
+  }
+}
+for (const method of ['remove', 'image']) {
+  add({
+    id: `g3-redact-shared-resources-free-fiber-${method}`,
+    tool: 'redact',
+    op: 'g3RedactRemove',
+    files: ['invoices/free-fiber.pdf'],
+    params: { term: 'VILLEURBANNE', query: { terms: ['VILLEURBANNE'], pages: [1] }, method },
+    quick: method === 'remove',
+    async validate(ctx) {
+      ctx.check('finds the word on page 1', (ctx.meta?.boxes ?? 0) > 0, `${ctx.meta?.boxes} matches`)
+      const p = await checkPdf(ctx, 'redacted.pdf', { pages: 2 })
+      if (!p?.pdfjs.ok) return
+      // the word may also be on page 2, which was not searched
+      leakCheck(ctx, 'redacted.pdf')
+      await sameUntouched(ctx, 'invoices/free-fiber.pdf', p, ctx.meta.pagesHit)
+      const a = renderGray(readRel('invoices/free-fiber.pdf'), 1)
+      const b = renderGray(ctx.out('redacted.pdf'), 1)
+      let diff = a.length === b.length ? 0 : Infinity
+      for (let k = 0; k < a.length && diff < Infinity; k++) diff += Math.abs(a[k] - b[k])
+      ctx.check('page 2 (pruned resources) renders the same', diff / a.length < 0.5, `mean grey diff ${(diff / a.length).toFixed(3)}`)
+    },
+  })
+}
+
+// Real file: ActualText spans on a report page; part of a span is redacted.
+add({
+  id: 'g3-redact-actualtext-us-budget',
+  tool: 'redact',
+  op: 'g3RedactRemove',
+  files: ['reports/us-budget-2024.pdf'],
+  params: { query: { regex: 'Econ', pages: [23] } },
+  timeout: 5 * MIN,
+  async validate(ctx) {
+    ctx.check('finds "Econ" on page 23', (ctx.meta?.boxes ?? 0) > 0, `${ctx.meta?.boxes} matches`)
+    const p = await checkPdf(ctx, 'redacted.pdf', { pages: 184 })
+    if (!p?.pdfjs.ok) return
+    const [text] = await textAt(ctx.out('redacted.pdf'), [23])
+    ctx.check('page 23 text no longer reads "Econ" (ActualText gone)', !/econ/i.test(text), text.slice(0, 80))
+    // other pages still say "economy": structure and box checks only
+    leakCheck(ctx, 'redacted.pdf')
+    await sameUntouched(ctx, 'reports/us-budget-2024.pdf', p, ctx.meta.pagesHit)
+  },
+})
 
 // Phrase split across pdf.js text items, then removed.
 add({
@@ -2472,6 +2939,7 @@ add({
     const p = await checkPdf(ctx, 'redacted.pdf', { pages: 4 })
     if (!p?.pdfjs.ok) return
     ctx.check('phrase gone from extracted text', !allText(p).replace(/\s+/g, '').includes('AcrobatReader'), '', { audit: 3 })
+    leakCheck(ctx, 'redacted.pdf', ['Acrobat Reader'])
     await keptOutside(ctx, 'forms/uk-IPPH353.pdf', p, ctx.meta.pagesHit, (t) => t.replace(/Acrobat\s*Rea\s*der/gi, ' '))
     ctx.metric(`${ctx.meta.boxes} boxes, ${ctx.meta.ms} ms`)
   },
@@ -2493,6 +2961,7 @@ add({
     const text = allText(p)
     const left = (m.matches ?? []).filter((x) => text.replace(/\s+/g, '').includes(x.replace(/\s+/g, '')))
     ctx.check('every match gone from extracted text', left.length === 0, left.join(' | '))
+    leakCheck(ctx, 'redacted.pdf', m.matches ?? [])
     const strip = (t) => (m.matches ?? []).reduce((s, x) => noTerm(s, x), t)
     await keptOutside(ctx, 'invoices/quality-hosting.pdf', p, m.pagesHit ?? [], strip)
     ctx.metric(`${m.boxes} boxes: ${(m.matches ?? []).slice(0, 4).join(', ')}`)
@@ -2514,6 +2983,8 @@ add({
     if (!p?.pdfjs.ok) return
     const text = p.pdfjs.texts.slice(0, 4).join(' ')
     ctx.check('no phone number left on pages 1-4', !/\(\d{3}\)\s*\d{3}-\d{4}/.test(text), '')
+    // search covered pages 1-4 only: the same numbers may stay on later pages
+    leakCheck(ctx, 'redacted.pdf')
     ctx.metric(`${m.boxes} boxes, ${(m.matches ?? []).slice(0, 3).join(', ')}`)
   },
 })
@@ -2531,6 +3002,7 @@ add({
     const p = await checkPdf(ctx, 'redacted.pdf', { pages: 14 })
     if (!p?.pdfjs.ok) return
     ctx.check('page 1 has no text left', !(p.pdfjs.texts[0] ?? '').trim(), (p.pdfjs.texts[0] ?? '').slice(0, 60))
+    leakCheck(ctx, 'redacted.pdf')
     ctx.check('page 2 keeps its text', (wordCoverage(f.pdfjs.texts[1], p.pdfjs.texts[1]).ratio ?? 0) > 0.95)
     const ratio = p.size / sizeOf('reports/pdfjs-tracemonkey.pdf')
     ctx.check('size stays close to the input (<= 1.5x)', ratio <= 1.5, `${ratio.toFixed(2)}x`)
@@ -2664,6 +3136,7 @@ for (const [rel, flatten] of [['forms/irs-fw9.pdf', false], ['forms/irs-f1040.pd
       ctx.check('filled text fields', names.length > 0 && ctx.meta.filled === names.length, `${ctx.meta?.filled}`)
       const facts = await formFacts(ctx.out('filled.pdf'))
       ctx.check('XFA copy removed so viewers show the new values', ctx.meta?.xfaRemoved === true && !facts.hasXfa, `xfaRemoved ${ctx.meta?.xfaRemoved}, MuPDF XFA ${facts.hasXfa}`, { audit: 21 })
+      xfaLeftCheck(ctx, 'filled.pdf')
       if (flatten) {
         ctx.check('values in the page text', names.every((n) => allText(p).includes(values[n])))
         ctx.check('no fields left', facts.count === 0, `${facts.count}`)
@@ -2690,8 +3163,15 @@ add({
     const facts = await formFacts(ctx.out('redacted.pdf'))
     ctx.check('field value gone', !Object.values(facts.values).some((v) => String(v ?? '').includes('SECRET4455')), String(facts.values[ctx.meta.name]))
     ctx.check('value gone from text and file bytes', !allText(p).includes('SECRET4455') && !Buffer.from(ctx.out('redacted.pdf')).includes('SECRET4455'))
+    leakCheck(ctx, 'redacted.pdf', ['SECRET4455'])
   },
 })
+
+// Extra case files (cases-<unit>.mjs) register through the same helpers.
+for (const f of readdirSync(new URL('.', import.meta.url)).filter((n) => /^cases-[\w-]+\.mjs$/.test(n)).sort()) {
+  const m = await import(new URL(f, import.meta.url))
+  m.default({ add, checkPdf, inputFacts, readRel, allText, CORPUS, MIN, passwordFor })
+}
 
 export function buildCases() {
   return cases.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))

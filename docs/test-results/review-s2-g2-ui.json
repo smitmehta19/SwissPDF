@@ -1,0 +1,361 @@
+{
+  "date": "2026-10-27T10:14:01.385Z",
+  "base": "http://127.0.0.1:56296",
+  "summary": [
+    {
+      "tool": "repair",
+      "pass": 5,
+      "runs": 5,
+      "medianMs": 964
+    },
+    {
+      "tool": "ocr",
+      "pass": 3,
+      "runs": 3,
+      "medianMs": 17311
+    },
+    {
+      "tool": "autorotate",
+      "pass": 3,
+      "runs": 3,
+      "medianMs": 6654
+    },
+    {
+      "tool": "protect",
+      "pass": 3,
+      "runs": 3,
+      "medianMs": 2061
+    },
+    {
+      "tool": "unlock",
+      "pass": 3,
+      "runs": 3,
+      "medianMs": 1509
+    },
+    {
+      "tool": "compare",
+      "pass": 3,
+      "runs": 3,
+      "medianMs": 1511
+    },
+    {
+      "tool": "health",
+      "pass": 3,
+      "runs": 3,
+      "medianMs": 19987
+    }
+  ],
+  "rows": [
+    {
+      "tool": "repair",
+      "file": "quirks/pdfjs-xref_command_missing.pdf",
+      "cards": [
+        "1 page, 631 B"
+      ],
+      "ms": 964,
+      "ok": true,
+      "detail": "1 pages, Rebuilt the file structure. All 1 page kept as they were, with any bookmarks, links and form fields.",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "repair",
+      "file": "quirks/pdfjs-poppler-395-0-fuzzed.pdf",
+      "cards": [
+        "Not a valid PDF",
+        "pdf-lib: Expected instance of PDFDict2, but got instance of undefined; MuPDF rewrite: No readable pages; MuPDF repair: Unrecoverable: the file contains no readable pages."
+      ],
+      "ok": true,
+      "detail": "rejected on add: Not a valid PDF pdf-lib: Expected instance of PDFDict2, but got instance of undefined; MuPDF rewrite: No readable pages; MuPDF repair: Unrecoverable: the file c",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "repair",
+      "file": "quirks/pdfjs-poppler-742-0-fuzzed.pdf",
+      "cards": [
+        "Not a valid PDF",
+        "pdf-lib: _this.catalog.Pages is not a function; MuPDF: cannot open the file; MuPDF rewrite: invalid key in dict; MuPDF repair: Unrecoverable: the file structure is too damaged to parse (invalid key in dict)."
+      ],
+      "ok": true,
+      "detail": "rejected on add: Not a valid PDF pdf-lib: _this.catalog.Pages is not a function; MuPDF: cannot open the file; MuPDF rewrite: invalid key in dict; MuPDF repair: Unrecoverable: th",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "repair",
+      "file": "quirks/pdfjs-Pages-tree-refs.pdf (extra, for timing)",
+      "cards": [
+        "1 page, 622 B",
+        "File was damaged and has been repaired. 1 of 2 pages could not be recovered"
+      ],
+      "ms": 437,
+      "ok": true,
+      "detail": "1 pages, Rebuilt the file structure. All 1 page kept as they were, with any bookmarks, links and form fields. Damage was also found and fixed when the file was added.",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "repair",
+      "file": "quirks/pdf20-offset-start.pdf (extra, for timing)",
+      "cards": [
+        "1 page, 5.1 KB"
+      ],
+      "ms": 1068,
+      "ok": true,
+      "detail": "1 pages, Rebuilt the file structure. All 1 page kept as they were, with any bookmarks, links and form fields.",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "ocr",
+      "file": "scanned/fax-jean-schmidt-doe.pdf (read every page)",
+      "cards": [
+        "2 pages, 186.4 KB"
+      ],
+      "ms": 17311,
+      "ok": true,
+      "detail": "2174 chars of text, 397 words recognised on 2 pages. The old invisible text layer was replaced on 2 pages.",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "ocr",
+      "file": "scanned/lincoln-ellsworth-letter-1861.pdf",
+      "cards": [
+        "36 pages, 528.6 KB"
+      ],
+      "ms": 45140,
+      "ok": true,
+      "detail": "3008 chars of text, 80 words recognised on 24 pages. 12 pages already had text and stayed as they were.",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "ocr",
+      "file": "derived/sub-ndl-konoye-p1.pdf",
+      "cards": [
+        "1 page, 235.5 KB"
+      ],
+      "ms": 14365,
+      "ok": true,
+      "detail": "89 chars of text, 21 words recognised on 1 page.",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "autorotate",
+      "file": "scanned/fax-jean-schmidt-doe.pdf (turned 90)",
+      "cards": [
+        "2 pages, 185.2 KB"
+      ],
+      "ms": 4206,
+      "ok": true,
+      "detail": "2 of 2 pages back upright, 0 wrong, 2 pages turned upright (p. 1-2).",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "autorotate",
+      "file": "scanned/lincoln-ellsworth-letter-1861.pdf (turned 90)",
+      "cards": [
+        "36 pages, 520.5 KB"
+      ],
+      "ms": 24722,
+      "ok": true,
+      "detail": "36 of 36 pages back upright, 0 wrong, 36 pages turned upright (p. 1-36).",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "autorotate",
+      "file": "derived/sub-ndl-konoye-p1.pdf (turned 90)",
+      "cards": [
+        "1 page, 235.5 KB"
+      ],
+      "ms": 6654,
+      "ok": true,
+      "detail": "0 of 1 pages back upright, 0 wrong, Every page was already upright. 1 page had too little text to tell and stayed as it was.",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "protect",
+      "file": "reports/pdfjs-tracemonkey.pdf",
+      "cards": [
+        "14 pages, 992.5 KB"
+      ],
+      "ms": 3029,
+      "ok": true,
+      "detail": "Standard V5 R6 256-bit AES, opens with the password",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "protect",
+      "file": "invoices/aws-invoice.pdf",
+      "cards": [
+        "1 page, 150.9 KB"
+      ],
+      "ms": 1043,
+      "ok": true,
+      "detail": "Standard V4 R4 128-bit AES, opens freely",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "protect",
+      "file": "forms/irs-fw9.pdf",
+      "cards": [
+        "6 pages, 137.5 KB"
+      ],
+      "ms": 2061,
+      "ok": true,
+      "detail": "Standard V1 R2 40-bit RC4, opens with the password",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "unlock",
+      "file": "derived/owner-only-aws-invoice.pdf",
+      "cards": [
+        "1 page, 150.4 KB",
+        "Restrictions removed so the file can be edited"
+      ],
+      "ms": 1509,
+      "ok": true,
+      "detail": "None, 1 pages, 1921 chars, Its protection was already removed when it was added.",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "unlock",
+      "file": "derived/user-pw-TAMReview.pdf (with a plain PDF, Pages and Viewer opened first)",
+      "cards": [
+        "14 pages, 992.5 KB",
+        "Password needed to open this file"
+      ],
+      "ms": 976,
+      "ok": true,
+      "detail": "None, 23 pages, 65271 chars, Password removed. Not protected, left out: pdfjs-tracemonkey.pdf.",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "unlock",
+      "file": "quirks/pdfjs-saslprep-r6.pdf",
+      "cards": [
+        "Password needed to open this file"
+      ],
+      "ms": 2368,
+      "ok": true,
+      "detail": "None, 1 pages, 18 chars, Password removed.",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "compare",
+      "file": "derived/compare-tracemonkey-base.pdf vs derived/compare-tracemonkey-inserted.pdf",
+      "cards": [
+        "5 pages, 456.2 KB",
+        "6 pages, 527.5 KB"
+      ],
+      "ms": 1511,
+      "ok": true,
+      "detail": "1213 words added, 0 removed, on 1 of 6 page pairs. | Not in the original, changed p. 3 (1 of 1, new page)",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "compare",
+      "file": "reports/pdfjs-TAMReview.pdf vs reports/pdfjs-TAMReview.pdf",
+      "cards": [
+        "23 pages, 658.8 KB",
+        "23 pages, 658.8 KB"
+      ],
+      "ms": 3696,
+      "ok": true,
+      "detail": "The text of both documents is the same. | ",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "compare",
+      "file": "invoices/aws-invoice.pdf vs derived/origin-shift-aws-invoice.pdf",
+      "cards": [
+        "1 page, 150.9 KB",
+        "1 page, 147.8 KB"
+      ],
+      "ms": 942,
+      "ok": true,
+      "detail": "The text of both documents is the same. | ",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "health",
+      "file": "run 1",
+      "cards": [],
+      "ms": 19987,
+      "ok": true,
+      "detail": "All 49 checks passed. Every tool works in this browser.",
+      "external": [],
+      "errors": [
+        "No PPTX loaded. Call loadFile() first."
+      ],
+      "knownErrors": [
+        "No PPTX loaded. Call loadFile() first."
+      ]
+    },
+    {
+      "tool": "health",
+      "file": "run 2",
+      "cards": [],
+      "ms": 17875,
+      "ok": true,
+      "detail": "All 49 checks passed. Every tool works in this browser.",
+      "external": [],
+      "errors": [
+        "No PPTX loaded. Call loadFile() first."
+      ],
+      "knownErrors": [
+        "No PPTX loaded. Call loadFile() first."
+      ]
+    },
+    {
+      "tool": "health",
+      "file": "run 3",
+      "cards": [],
+      "ms": 32393,
+      "ok": true,
+      "detail": "All 49 checks passed. Every tool works in this browser.",
+      "external": [],
+      "errors": [
+        "No PPTX loaded. Call loadFile() first."
+      ],
+      "knownErrors": [
+        "No PPTX loaded. Call loadFile() first."
+      ]
+    }
+  ]
+}

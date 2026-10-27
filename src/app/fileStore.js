@@ -88,12 +88,24 @@ function reqResult(req) {
   })
 }
 
+// What IndexedDB keeps of a record. Decrypted content never goes to disk: a
+// file opened with its password is stored as the encrypted original (it is
+// locked again after a reload), and files made from decrypted content are
+// kept in memory only.
+function stored(rec) {
+  if (!rec || rec.status === 'reading' || rec.memoryOnly) return null
+  if (!rec.encryptedBlob) return rec
+  const { encryptedBlob, ...rest } = rec
+  return { ...rest, status: 'locked', blob: encryptedBlob, size: encryptedBlob.size, pageCount: null, notices: [], unlocking: false, passwordError: null }
+}
+
 // Writes are best effort: a full disk or a closed database only downgrades
 // the session to memory, it never loses the file the user is working on.
 async function persist(rec) {
-  if (!db || !rec || rec.status === 'reading') return
+  const row = stored(rec)
+  if (!db || !row) return
   try {
-    await tx('readwrite', (s) => s.put(rec))
+    await tx('readwrite', (s) => s.put(row))
   } catch (err) {
     downgrade(err)
   }
@@ -103,7 +115,7 @@ async function persist(rec) {
 // versions before the flags that hide their inputs). Returns false when
 // nothing was written; the session then keeps the change in memory only.
 async function persistAll(recs) {
-  const list = recs.filter((r) => r && r.status !== 'reading')
+  const list = recs.map(stored).filter(Boolean)
   if (!db || list.length === 0) return !!db
   try {
     await tx('readwrite', (s) => list.forEach((r) => s.put(r)))
@@ -323,6 +335,9 @@ export async function addFiles(fileList, { keepOther = () => false } = {}) {
   return recs.map((r) => r.id)
 }
 
+// "report-protected.pdf" -> "report.pdf" for the decrypted copy.
+const unprotectedName = (name) => name.replace(/-protected(?=\.pdf$)/i, '')
+
 async function intake(id, password) {
   const rec = records.get(id)
   if (!rec) return
@@ -331,16 +346,31 @@ async function intake(id, password) {
     if (!raw) raw = new Uint8Array(await rec.blob.arrayBuffer())
     const res = await callOp('normalize', [raw, password ? { password } : {}], { lane: 'intake' })
     if (!records.has(id)) return
+    // A tool output (Protect) opened on its card: the decrypted copy is a new
+    // version, so the encrypted file stays in the history (undo brings it back).
+    if (password && rec.parentIds?.length) {
+      update(id, { unlocking: false, passwordError: null })
+      const change = await addVersions(
+        [{ name: unprotectedName(rec.name), bytes: res.bytes, pageCount: res.pageCount, parentIds: [id] }],
+        { tool: 'unlock-card', consumedIds: [id] },
+      )
+      const out = change?.outputIds[0]
+      if (out && res.notices?.length) await persist(update(out, { notices: res.notices }))
+      return
+    }
     locked.delete(id)
     const same = res.bytes.byteLength === raw.byteLength && !res.notices.length
     const bytes = same ? raw : res.bytes
     cacheBytes(id, bytes)
+    // opened with a password: the decrypted copy lives in memory only
+    const decrypted = !!password && !same
     const next = update(id, {
       status: 'ready',
       blob: same ? rec.blob : new Blob([bytes], { type: 'application/pdf' }),
+      encryptedBlob: decrypted ? (rec.encryptedBlob ?? rec.blob) : rec.encryptedBlob,
       size: bytes.byteLength,
       pageCount: res.pageCount,
-      notices: res.notices ?? [],
+      notices: [...(res.notices ?? []), ...(decrypted ? ['Unlocked for this session only. After a reload it asks for the password again'] : [])],
       error: null,
       errorDetails: null,
       passwordError: null,
@@ -389,13 +419,25 @@ export async function addVersions(outputs, { tool, consumedIds = [], generation:
   if (live.length === 0) return null
   const outputIds = []
   const consumed = consumedIds.filter((id) => records.get(id)?.isLeaf)
+  // outputs of one change share an id, so a card undo can take back all of them
+  const changeId = newId()
+  // two current files never share a name: "report (2).pdf"
+  const taken = new Set([...records.values()].filter((r) => r.isLeaf && !consumed.includes(r.id)).map((r) => r.name.toLowerCase()))
+  const uniqueName = (name) => {
+    let n = 1
+    let next = name
+    const [, stem, ext = ''] = /^(.*?)(\.[^.]+)?$/.exec(name)
+    while (taken.has(next.toLowerCase())) next = `${stem} (${++n})${ext}`
+    taken.add(next.toLowerCase())
+    return next
+  }
   for (const [k, out] of live.entries()) {
     const parents = (out.parentIds ?? []).map((id) => records.get(id)).filter(Boolean)
     const first = parents[0]
     const type = out.type ?? PDF
     const rec = {
       id: newId(),
-      name: out.name,
+      name: uniqueName(out.name),
       size: out.bytes.byteLength,
       type,
       addedAt: Date.now(),
@@ -403,17 +445,24 @@ export async function addVersions(outputs, { tool, consumedIds = [], generation:
       order: first ? first.order - 1 + (k + 1) / (live.length + 1) : nextOrder() + k,
       // the Blob is the only copy kept; bytes are read back on demand
       blob: new Blob([out.bytes], { type }),
-      status: 'ready',
+      // a password-protected output (Protect) sits in the workspace locked
+      status: out.locked ? 'locked' : 'ready',
       pageCount: out.pageCount ?? null,
       notices: [],
       error: null,
       errorDetails: null,
       parentIds: parents.map((p) => p.id),
+      // the parents this change replaced (empty for keepInputs tools: PDF to images...)
+      consumedParents: parents.map((p) => p.id).filter((pid) => consumed.includes(pid)),
       version: Math.max(0, ...parents.map((p) => p.version)) + 1,
       toolHistory: [...(first?.toolHistory ?? []), { tool, at: Date.now() }],
+      // made from decrypted content (an unlocked file): memory only, never stored
+      memoryOnly: !out.locked && parents.some((p) => p.memoryOnly || p.encryptedBlob || p.status === 'locked') ? true : undefined,
       isLeaf: true,
+      changeId,
     }
     records.set(rec.id, rec)
+    if (out.locked) locked.set(rec.id, out.bytes)
     outputIds.push(rec.id)
   }
   for (const id of consumed) {
@@ -447,7 +496,8 @@ async function adoptStoredBlobs(ids) {
     let changed = false
     for (const r of stored ?? []) {
       const cur = r && records.get(r.id)
-      if (cur && r.blob && r.blob !== cur.blob && r.blob.size === cur.blob?.size) {
+      // a decrypted file is stored encrypted: never swap its blob
+      if (cur && !cur.encryptedBlob && !cur.memoryOnly && r.blob && r.blob !== cur.blob && r.blob.size === cur.blob?.size) {
         records.set(r.id, { ...cur, blob: r.blob })
         changed = true
       }
@@ -458,6 +508,11 @@ async function adoptStoredBlobs(ids) {
   }
 }
 
+// Did the change that made `rec` replace its parent `pid`? Records from before
+// consumedParents existed: PDFs replaced their parent, other outputs (images,
+// Word) were made next to it.
+const consumes = (rec, pid) => !!rec.parentIds?.includes(pid) && (rec.consumedParents ? rec.consumedParents.includes(pid) : isPdfRecord(rec))
+
 // Reverses one addVersions change: outputs go away, inputs come back.
 export async function undoChange({ outputIds, consumedIds }) {
   const gone = outputIds.filter((id) => records.has(id))
@@ -465,26 +520,72 @@ export async function undoChange({ outputIds, consumedIds }) {
     records.delete(id)
     dropBytes(id)
   }
-  const back = consumedIds.filter((id) => records.has(id))
+  // an input comes back only when nothing else was made from it since (a kept
+  // input that a later tool replaced stays an older version)
+  const goneSet = new Set(gone)
+  const usedElsewhere = (id) => [...records.values()].some((r) => !goneSet.has(r.id) && consumes(r, id))
+  const back = consumedIds.filter((id) => records.has(id) && !usedElsewhere(id))
   for (const id of back) records.set(id, { ...records.get(id), isLeaf: true })
   emit()
-  if (!db) return
+  if (!db) return back
   // inputs come back and outputs go in one transaction
   try {
     await tx('readwrite', (s) => {
-      back.forEach((id) => s.put(records.get(id)))
+      back.map((id) => stored(records.get(id))).filter(Boolean).forEach((row) => s.put(row))
       gone.forEach((id) => s.delete(id))
     })
   } catch (err) {
     downgrade(err)
   }
+  return back
 }
 
-// Steps one file back to the version(s) it was made from.
+// Other current files made by the same change (split parts). Empty when one
+// of them has been changed again since, then only this file steps back.
+export function siblingsOf(id) {
+  const rec = records.get(id)
+  if (!rec?.changeId) return []
+  // same change and same parents: parts of one file, not other files compressed in the same run
+  const key = (r) => [...r.parentIds].sort().join('|')
+  const all = [...records.values()].filter((r) => r.changeId === rec.changeId && r.id !== id && key(r) === key(rec))
+  return all.every((r) => r.isLeaf) ? all : []
+}
+
+// Why a card undo cannot run now, or null: a part made in the same step
+// (split) was changed since, so the parent cannot come back next to it.
+export function undoProblem(id) {
+  const rec = records.get(id)
+  if (!rec?.changeId) return null
+  const key = (r) => [...r.parentIds].sort().join('|')
+  const changed = [...records.values()].some((r) => r.changeId === rec.changeId && r.id !== id && key(r) === key(rec) && !r.isLeaf)
+  return changed ? `Another file made in the same step as ${rec.name} was changed since. Undo that change first.` : null
+}
+
+// What a card undo would do, for the confirm dialog: names of the files it
+// removes and of the files it brings back.
+export function undoPreview(id) {
+  const rec = records.get(id)
+  if (!rec) return { removes: [], restores: [] }
+  const out = [rec, ...siblingsOf(id)]
+  const goneSet = new Set(out.map((r) => r.id))
+  const parents = [...new Set(out.flatMap((r) => r.parentIds.filter((pid) => consumes(r, pid))))]
+  const usedElsewhere = (pid) => [...records.values()].some((r) => !goneSet.has(r.id) && consumes(r, pid))
+  return {
+    removes: out.map((r) => r.name),
+    restores: parents.filter((pid) => records.has(pid) && !usedElsewhere(pid)).map((pid) => records.get(pid).name),
+  }
+}
+
+// Steps one file back to the version(s) it was made from. Split parts go
+// back together, so the parent never sits next to a leftover part. Returns
+// the ids of the files that came back.
 export async function revertVersion(id) {
   const rec = records.get(id)
-  if (!rec?.parentIds.length) return
-  await undoChange({ outputIds: [id], consumedIds: rec.parentIds })
+  if (!rec?.parentIds.length || undoProblem(id)) return []
+  const sibs = siblingsOf(id)
+  // only the parents the change replaced come back (a kept input never left)
+  const parents = [...new Set([rec, ...sibs].flatMap((r) => r.parentIds.filter((pid) => consumes(r, pid))))]
+  return undoChange({ outputIds: [id, ...sibs.map((r) => r.id)], consumedIds: parents })
 }
 
 // Chain of versions behind a file, newest first (follows the first parent).
@@ -509,6 +610,14 @@ export async function remove(id) {
     records.get(rid)?.parentIds.forEach(walk)
   }
   for (const r of records.values()) if (r.isLeaf && r.id !== id) walk(r.id)
+  // still needed by another current file (images made from it): hide it
+  if (keep.has(id)) {
+    const hidden = { ...records.get(id), isLeaf: false }
+    records.set(id, hidden)
+    emit()
+    await persist(hidden)
+    return
+  }
   const gone = [...records.keys()].filter((rid) => !keep.has(rid))
   for (const rid of gone) {
     records.delete(rid)
@@ -575,13 +684,17 @@ export async function wipeAll() {
   }
 }
 
-// Ready files only, with their bytes, for a tool run.
-export async function filesForRun(ids) {
+// Ready files only, with their bytes, for a tool run. With { locked: true }
+// files that still need a password come too (Unlock), as their encrypted
+// bytes, with locked: true.
+export async function filesForRun(ids, { locked: withLocked = false } = {}) {
   const out = []
   for (const id of ids) {
     const rec = records.get(id)
-    if (!rec || rec.status !== 'ready') continue
-    out.push({ id, name: rec.name, size: rec.size, pageCount: rec.pageCount, type: rec.type ?? PDF, bytes: await getBytes(id) })
+    const isLocked = rec?.status === 'locked'
+    if (!rec || !(rec.status === 'ready' || (withLocked && isLocked))) continue
+    const bytes = isLocked ? (locked.get(id) ?? new Uint8Array(await rec.blob.arrayBuffer())) : await getBytes(id)
+    out.push({ id, name: rec.name, size: rec.size, pageCount: rec.pageCount, type: rec.type ?? PDF, notices: rec.notices ?? [], locked: isLocked, bytes })
   }
   return out
 }

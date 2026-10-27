@@ -243,6 +243,10 @@ function summary(files, o) {
     const est = files.reduce((n, f) => n + Math.max(1, Math.ceil(f.size / max)), 0)
     return { ready: true, line: `Each PDF up to ${o.maxSize} ${o.unit}. At least ${plural(est, 'PDF')} will be created${from}.`, runLabel: 'Split by size' }
   }
+  // an empty custom range would copy the whole file: ask for a range first
+  if (o.tab === 'range' && o.rangeMode === 'custom' && o.rows.every((r) => !r.from && !r.to)) {
+    return { ...none, line: 'Type a page range, or choose Fixed to split every few pages.' }
+  }
   let count = 0
   try {
     for (const f of files) {

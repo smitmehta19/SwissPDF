@@ -8,7 +8,11 @@
     "build": "vite build",
     "preview": "vite preview",
     "make-samples": "node scripts/make-samples.mjs",
-    "test:corpus": "node scripts/corpus-test/run.mjs"
+    "test:corpus": "node scripts/corpus-test/run.mjs",
+    "test:touched": "node scripts/corpus-test/run.mjs --light --shards 2",
+    "test:quick": "node scripts/corpus-test/run.mjs --quick --light --shards 2",
+    "test:full": "node scripts/corpus-test/run.mjs --shards 4",
+    "test:clean": "node scripts/corpus-test/clean.mjs"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "^1.1.1",

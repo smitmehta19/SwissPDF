@@ -1,0 +1,2673 @@
+{
+  "name": "review-automate",
+  "startedAt": "2026-10-27T03:20:13.675Z",
+  "finishedAt": "2026-10-27T03:21:54.869Z",
+  "durationMin": 1.7,
+  "command": "npm run test:corpus -- --tool automate --name review-automate",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 19,
+    "fail": 0,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "automate",
+      "pass": 19,
+      "fail": 0,
+      "skip": 0,
+      "ms": 92883
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no per-render copy counter; large scans now render (JPX fixed in U1), see time and heap on pdf2img-bible-62MB, pdf2img-crooked-104MB, split-911-large"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "CDN pinning is a config review item; font fidelity not scored"
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no PAdES / multi-place API to call)"
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap"
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    }
+  ],
+  "results": [
+    {
+      "id": "s3-share-pdfjs-tracemonkey",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 3395 ms; Sanitize 2641ms, Flatten 26ms, Remove annotations 16ms, Metadata 226ms, Compress 480ms",
+      "error": null,
+      "ms": 18066,
+      "opMs": 3554,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Sanitize done, Flatten done, Remove annotations done, Metadata done, Compress done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 5: Sanitize | File 1 of 1, step 2 of 5: Flatten | File 1 of 1, step 3 of 5: Remove annotations",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no scripts left (sanitize)",
+          "ok": true,
+          "detail": "0 -> 0 script objects",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no attached files left (sanitize)",
+          "ok": true,
+          "detail": "0 -> 0 attached file objects",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no form fields (flatten)",
+          "ok": true,
+          "detail": "0 -> 0 fields, 0 -> 0 widgets",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no annotations except links (remove annotations)",
+          "ok": true,
+          "detail": "0 -> 0: {}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "links kept",
+          "ok": true,
+          "detail": "0 -> 0 links",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "document info cleared (metadata)",
+          "ok": true,
+          "detail": "4 -> 0 fields ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "XMP metadata cleared (metadata)",
+          "ok": true,
+          "detail": "false -> false",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text kept",
+          "ok": true,
+          "detail": "10620 words, input 10620",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "not larger than the input",
+          "ok": true,
+          "detail": "842495 vs 1016315",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-share-aws-invoice",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 59 ms; Sanitize 7ms, Flatten 3ms, Remove annotations 4ms, Metadata 12ms, Compress 31ms",
+      "error": null,
+      "ms": 225,
+      "opMs": 103,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Sanitize done, Flatten done, Remove annotations done, Metadata done, Compress done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 5: Sanitize | File 1 of 1, step 2 of 5: Flatten | File 1 of 1, step 3 of 5: Remove annotations",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no scripts left (sanitize)",
+          "ok": true,
+          "detail": "0 -> 0 script objects",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no attached files left (sanitize)",
+          "ok": true,
+          "detail": "0 -> 0 attached file objects",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no form fields (flatten)",
+          "ok": true,
+          "detail": "0 -> 0 fields, 0 -> 0 widgets",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no annotations except links (remove annotations)",
+          "ok": true,
+          "detail": "0 -> 0: {}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "links kept",
+          "ok": true,
+          "detail": "0 -> 0 links",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "document info cleared (metadata)",
+          "ok": true,
+          "detail": "2 -> 0 fields ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "XMP metadata cleared (metadata)",
+          "ok": true,
+          "detail": "true -> false",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text kept",
+          "ok": true,
+          "detail": "247 words, input 247",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "not larger than the input",
+          "ok": true,
+          "detail": "149816 vs 154526",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-share-irs-fw9",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 536 ms; Sanitize 74ms, Flatten 246ms, Remove annotations 11ms, Metadata 98ms, Compress 102ms",
+      "error": null,
+      "ms": 761,
+      "opMs": 611,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Sanitize done, Flatten done, Remove annotations done, Metadata done, Compress done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 5: Sanitize | File 1 of 1, step 2 of 5: Flatten | File 1 of 1, step 3 of 5: Remove annotations",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no scripts left (sanitize)",
+          "ok": true,
+          "detail": "4 -> 0 script objects",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no attached files left (sanitize)",
+          "ok": true,
+          "detail": "8 -> 0 attached file objects",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no form fields (flatten)",
+          "ok": true,
+          "detail": "1 -> 0 fields, 23 -> 0 widgets",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no annotations except links (remove annotations)",
+          "ok": true,
+          "detail": "23 -> 0: {}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "links kept",
+          "ok": true,
+          "detail": "0 -> 0 links",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "document info cleared (metadata)",
+          "ok": true,
+          "detail": "9 -> 0 fields ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "XMP metadata cleared (metadata)",
+          "ok": true,
+          "detail": "true -> false",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text kept",
+          "ok": true,
+          "detail": "4844 words, input 4844",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "not larger than the input",
+          "ok": true,
+          "detail": "77532 vs 140815",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-share-pdfjs-tracemonkey-with-a",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-tracemonkey_with_annotations.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 683 ms; Sanitize 65ms, Flatten 9ms, Remove annotations 60ms, Metadata 140ms, Compress 406ms",
+      "error": null,
+      "ms": 1115,
+      "opMs": 886,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Sanitize done, Flatten done, Remove annotations done, Metadata done, Compress done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 5: Sanitize | File 1 of 1, step 2 of 5: Flatten | File 1 of 1, step 3 of 5: Remove annotations",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no scripts left (sanitize)",
+          "ok": true,
+          "detail": "0 -> 0 script objects",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no attached files left (sanitize)",
+          "ok": true,
+          "detail": "0 -> 0 attached file objects",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no form fields (flatten)",
+          "ok": true,
+          "detail": "0 -> 0 fields, 0 -> 0 widgets",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no annotations except links (remove annotations)",
+          "ok": true,
+          "detail": "4 -> 0: {}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "links kept",
+          "ok": true,
+          "detail": "0 -> 0 links",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "document info cleared (metadata)",
+          "ok": true,
+          "detail": "4 -> 0 fields ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "XMP metadata cleared (metadata)",
+          "ok": true,
+          "detail": "false -> false",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text kept",
+          "ok": true,
+          "detail": "10620 words, input 10620",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "not larger than the input",
+          "ok": true,
+          "detail": "842761 vs 1021717",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-mail-pdfjs-tracemonkey",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 508 ms; Compress 383ms, Protect 124ms",
+      "error": null,
+      "ms": 891,
+      "opMs": 664,
+      "heapMB": 15,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Compress done, Protect done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 2: Compress | File 1 of 1, step 2 of 2: Protect | Done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "needs password",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "output marked locked for the workspace",
+          "ok": true,
+          "detail": "{\"index\":0,\"name\":\"pdfjs-tracemonkey-small-and-locked.pdf\",\"note\":\"All 2 steps done.\",\"locked\":true,\"pageCount\":14}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "needs a password in MuPDF, the password opens it",
+          "ok": true,
+          "detail": "Standard V5 R6 256-bit AES",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "AES-256",
+          "ok": true,
+          "detail": "Standard V5 R6 256-bit AES",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdf.js refuses it without the password",
+          "ok": true,
+          "detail": "PasswordException: No password given",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text readable with the password",
+          "ok": true,
+          "detail": "10620 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-mail-aws-invoice",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 99 ms; Compress 12ms, Protect 86ms",
+      "error": null,
+      "ms": 232,
+      "opMs": 125,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Compress done, Protect done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 2: Compress | File 1 of 1, step 2 of 2: Protect | Done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "needs password",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "output marked locked for the workspace",
+          "ok": true,
+          "detail": "{\"index\":0,\"name\":\"aws-invoice-small-and-locked.pdf\",\"note\":\"All 2 steps done.\",\"locked\":true,\"pageCount\":1}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "needs a password in MuPDF, the password opens it",
+          "ok": true,
+          "detail": "Standard V5 R6 256-bit AES",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "AES-256",
+          "ok": true,
+          "detail": "Standard V5 R6 256-bit AES",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdf.js refuses it without the password",
+          "ok": true,
+          "detail": "PasswordException: No password given",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text readable with the password",
+          "ok": true,
+          "detail": "247 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-mail-irs-fw9",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 220 ms; Compress 109ms, Protect 111ms",
+      "error": null,
+      "ms": 348,
+      "opMs": 294,
+      "heapMB": 17,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Compress done, Protect done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 2: Compress | File 1 of 1, step 2 of 2: Protect | Done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "needs password",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "output marked locked for the workspace",
+          "ok": true,
+          "detail": "{\"index\":0,\"name\":\"irs-fw9-small-and-locked.pdf\",\"note\":\"All 2 steps done.\",\"locked\":true,\"pageCount\":6}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "needs a password in MuPDF, the password opens it",
+          "ok": true,
+          "detail": "Standard V5 R6 256-bit AES",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "AES-256",
+          "ok": true,
+          "detail": "Standard V5 R6 256-bit AES",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdf.js refuses it without the password",
+          "ok": true,
+          "detail": "PasswordException: No password given",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text readable with the password",
+          "ok": true,
+          "detail": "4844 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-scan-fax-jean-schmidt-doe",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 4092 ms; Auto rotate 4043ms, OCR skipped, Compress 13ms",
+      "error": null,
+      "ms": 4236,
+      "opMs": 4129,
+      "heapMB": 15,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Auto rotate done, OCR skipped, Compress done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 3: Auto rotate | File 1 of 1, step 2 of 3: OCR | File 1 of 1, step 3 of 3: Compress",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "auto rotate ran",
+          "ok": true,
+          "detail": "Every page was already upright.",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "OCR read the pages, or every page already had text",
+          "ok": true,
+          "detail": "skipped: Every page already has a text layer. Choose \"Read every page\" to OCR them anyway.",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "compress ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "searchable text kept or added",
+          "ok": true,
+          "detail": "339 words, input 339",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-scan-sub-ndl-konoye-p1",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-ndl-konoye-p1.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 9621 ms; Auto rotate 2660ms, OCR 6955ms, Compress 4ms",
+      "error": null,
+      "ms": 9773,
+      "opMs": 9634,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Auto rotate done, OCR done, Compress done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 3: Auto rotate | File 1 of 1, step 2 of 3: OCR | File 1 of 1, step 3 of 3: Compress",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "auto rotate ran",
+          "ok": true,
+          "detail": "Every page was already upright. 1 page had too little text to tell and stayed as it was.",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "OCR read the pages, or every page already had text",
+          "ok": true,
+          "detail": "done: 20 words recognised on 1 page.",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "compress ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "searchable text kept or added",
+          "ok": true,
+          "detail": "15 words, input 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "OCR added words",
+          "ok": true,
+          "detail": "+15",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-scan-lincoln-ellsworth-letter",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 48669 ms; Auto rotate 17649ms, OCR 31002ms, Compress 16ms",
+      "error": null,
+      "ms": 48832,
+      "opMs": 48697,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Auto rotate done, OCR done, Compress done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 3: Auto rotate | File 1 of 1, step 2 of 3: OCR | File 1 of 1, step 3 of 3: Compress",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 36, want 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 36 vs MuPDF 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "auto rotate ran",
+          "ok": true,
+          "detail": "Every page was already upright. 32 pages had too little text to tell and stayed as they were.",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "OCR read the pages, or every page already had text",
+          "ok": true,
+          "detail": "done: 80 words recognised on 24 pages. 12 pages already had text and stayed as they were.",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "compress ran",
+          "ok": true,
+          "detail": "already optimized, kept the original",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "searchable text kept or added",
+          "ok": true,
+          "detail": "425 words, input 411",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "OCR added words",
+          "ok": true,
+          "detail": "+14",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-draft-pdfjs-tracemonkey",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 302 ms; Page numbers 140ms, Watermark 159ms",
+      "error": null,
+      "ms": 539,
+      "opMs": 401,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Page numbers done, Watermark done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 2: Page numbers | File 1 of 1, step 2 of 2: Watermark | Done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 1 says \"Page 1 of N\"",
+          "ok": true,
+          "detail": "l occur in subsequent loop iterations.  Page 1 of 14   DRAFT",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "last page numbered",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "DRAFT mark on every page read",
+          "ok": true,
+          "detail": "14 of 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-draft-aws-invoice",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 28 ms; Page numbers 13ms, Watermark 13ms",
+      "error": null,
+      "ms": 123,
+      "opMs": 61,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Page numbers done, Watermark done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 2: Page numbers | File 1 of 1, step 2 of 2: Watermark | Done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 1 says \"Page 1 of N\"",
+          "ok": true,
+          "detail": "  $0.01  Charges   $0.01 VAT **   $0.00  Page 1 of 1   DRAFT",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "last page numbered",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "DRAFT mark on every page read",
+          "ok": true,
+          "detail": "1 of 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-draft-irs-fw9",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 146 ms; Page numbers 71ms, Watermark 72ms",
+      "error": null,
+      "ms": 328,
+      "opMs": 202,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Page numbers done, Watermark done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 2: Page numbers | File 1 of 1, step 2 of 2: Watermark | Done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 1 says \"Page 1 of N\"",
+          "ok": true,
+          "detail": "No. 10231X   Form   W-9   (Rev. 3-2024)  Page 1 of 6   DRAFT",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "last page numbered",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "DRAFT mark on every page read",
+          "ok": true,
+          "detail": "6 of 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-archive-pdfjs-tracemonkey",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 166 ms; Repair 34ms, Fast web view 129ms",
+      "error": null,
+      "ms": 576,
+      "opMs": 315,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Repair done, Fast web view done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 2: Repair | File 1 of 1, step 2 of 2: Fast web view | Done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized (dict, xref sections, hint tables)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text kept",
+          "ok": true,
+          "detail": "10620 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-archive-aws-invoice",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 14 ms; Repair 5ms, Fast web view 7ms",
+      "error": null,
+      "ms": 123,
+      "opMs": 37,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Repair done, Fast web view done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 2: Repair | File 1 of 1, step 2 of 2: Fast web view | Done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized (dict, xref sections, hint tables)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text kept",
+          "ok": true,
+          "detail": "247 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-archive-irs-fw9",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run 124 ms; Repair 45ms, Fast web view 77ms",
+      "error": null,
+      "ms": 236,
+      "opMs": 174,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "automation ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one output for the file",
+          "ok": true,
+          "detail": "1 outputs",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every step ran or had nothing to do",
+          "ok": true,
+          "detail": "Repair done, Fast web view done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress names file and step",
+          "ok": true,
+          "detail": "File 1 of 1, step 1 of 2: Repair | File 1 of 1, step 2 of 2: Fast web view | Done",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out-0.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "linearized (dict, xref sections, hint tables)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text kept",
+          "ok": true,
+          "detail": "4844 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-batch-draft-3",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf",
+        "invoices/aws-invoice.pdf",
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "batch run 428 ms for 3 files",
+      "error": null,
+      "ms": 784,
+      "opMs": 704,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "batch ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "3 outputs, one per file",
+          "ok": true,
+          "detail": "[0,1,2]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "progress walks every file and step",
+          "ok": true,
+          "detail": "File 1 of 3, step 1 of 2: Page numbers | File 1 of 3, step 2 of 2: Watermark | File 2 of 3, step 1 of 2: Page numbers | File 2 of 3, step 2 of 2: Watermark | File 3 of 3, step 1 of 2: Page numbers | F",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdfjs-tracemonkey.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdfjs-tracemonkey.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdfjs-tracemonkey.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdfjs-tracemonkey.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdfjs-tracemonkey.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdfjs-tracemonkey.pdf: numbered and marked",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "aws-invoice.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "aws-invoice.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "aws-invoice.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "aws-invoice.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "aws-invoice.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "aws-invoice.pdf: numbered and marked",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "irs-fw9.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "irs-fw9.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "irs-fw9.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "irs-fw9.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "irs-fw9.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "irs-fw9.pdf: numbered and marked",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-batch-share-one-fails",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf",
+        "forms/xfa-imm1344e-filled.pdf",
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "batch run 749 ms; failed: This is a dynamic XFA form: the form exists only as XFA, and this change would l",
+      "error": null,
+      "ms": 1652,
+      "opMs": 942,
+      "heapMB": 18,
+      "audit": null,
+      "checks": [
+        {
+          "name": "batch ran",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the 2 other files came through",
+          "ok": true,
+          "detail": "[0,2]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the form stopped at step 2, Flatten",
+          "ok": true,
+          "detail": "{\"step\":2,\"tool\":\"Flatten\",\"message\":\"This is a dynamic XFA form: the form exists only as XFA, and this change would leave only its \\\"Please wait\\\" page. It cannot be flattened here.\"}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "the reason is named",
+          "ok": true,
+          "detail": "This is a dynamic XFA form: the form exists only as XFA, and this change would leave only its \"Please wait\" page. It cannot be flattened here.",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "later steps did not run on it",
+          "ok": true,
+          "detail": "Sanitize, Flatten",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdfjs-tracemonkey.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdfjs-tracemonkey.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdfjs-tracemonkey.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdfjs-tracemonkey.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdfjs-tracemonkey.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdfjs-tracemonkey.pdf: cleaned",
+          "ok": true,
+          "detail": "{\"info\":[],\"scripts\":0,\"annots\":{}}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "aws-invoice.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "aws-invoice.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "aws-invoice.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "aws-invoice.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "aws-invoice.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "aws-invoice.pdf: cleaned",
+          "ok": true,
+          "detail": "{\"info\":[],\"scripts\":0,\"annots\":{}}",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "s3-cancel-scan",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 4043,
+      "opMs": 4010,
+      "heapMB": 18,
+      "audit": null,
+      "checks": [
+        {
+          "name": "run ended as cancelled",
+          "ok": true,
+          "detail": "Cancelled",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stopped soon after Cancel",
+          "ok": true,
+          "detail": "4004 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    }
+  ]
+}

@@ -16,8 +16,9 @@ try {
   await page.goto(`${base.replace(/\/$/, '')}/#/health`, { waitUntil: 'load', timeout: 120_000 })
   // the built app reloads once when coi-serviceworker takes over
   await page.waitForFunction(() => window.crossOriginIsolated, null, { timeout: 60_000 }).catch(() => {})
-  await page.waitForSelector('[data-testid="health-run-btn"]', { timeout: 60_000 })
-  await page.click('[data-testid="health-run-btn"]')
+  // Health is a shell tool: its Run button is the shell's
+  await page.waitForSelector('[data-testid="run-btn"]:not([disabled])', { timeout: 60_000 })
+  await page.click('[data-testid="run-btn"]')
   await page.waitForSelector('[data-testid="health-summary"]', { timeout: 15 * 60_000 })
   const rows = await page.$$eval('[data-testid="health-results"] li', (lis) =>
     lis.map((li) => ({

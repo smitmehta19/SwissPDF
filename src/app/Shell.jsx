@@ -15,6 +15,10 @@ import Viewer from './Viewer.jsx'
 import PageEditor, { usePageEditor } from './PageEditor.jsx'
 import ResultScreen from './ResultScreen.jsx'
 import ToolPanel from './ToolPanel.jsx'
+import CommandPalette from './CommandPalette.jsx'
+import Reader from './Reader.jsx'
+import { POPULAR, scopedRunLabel, suggestNext } from './nextTools.js'
+import { metaLine } from './FileGrid.jsx'
 import './shell.css'
 
 const isV2 = (tool) => typeof tool?.run === 'function'
@@ -52,6 +56,25 @@ function writeList(key, list) {
 const narrow = () => window.matchMedia('(max-width: 1099px)').matches
 const typing = (el) => el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))
 
+const MODES = [
+  ['files', 'Files', 'files'],
+  ['viewer', 'Viewer', 'viewer'],
+  ['pages', 'Pages', 'pages'],
+]
+// Multi-file tools (merge, compare, the converters) open on the Files view.
+const opensOnFiles = (t) => !!t && !t.Canvas && !t.workbench && ((t.accepts?.min ?? 0) >= 2 || t.category === 'Convert')
+// Options steps in the panel. A tool may set its own order and titles with
+// steps: [{ id: 'options', title: 'Automation' }, { id: 'files' }]; Run is always last.
+const STEP_TITLES = { files: 'Files', options: 'Options' }
+function stepsOf(t) {
+  const own = (Array.isArray(t?.steps) ? t.steps : []).filter((st) => STEP_TITLES[st?.id])
+  const list = [...own, ...['files', 'options'].filter((id) => !own.some((st) => st.id === id)).map((id) => ({ id }))]
+  return list.map((st) => ({ id: st.id, title: st.title || STEP_TITLES[st.id] }))
+}
+// Tool messages that mean "nothing needed doing", not a failure
+const NEUTRAL = /^(No |Nothing |Every page (already|was already))/
+const isMac = () => /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)
+
 function StartArea({ onAdd, tool }) {
   const noun = tool?.accepts?.noun
   return (
@@ -62,6 +85,56 @@ function StartArea({ onAdd, tool }) {
         <span className="start-sub">Drop them anywhere here, or choose files. They are processed in this browser and never uploaded.</span>
         <span className="btn btn-primary">{noun ? 'Choose files' : 'Choose PDF files'}</span>
       </button>
+    </div>
+  )
+}
+
+// Home without files: the most used tools as large tiles.
+function PopularTiles({ onOpen }) {
+  const list = POPULAR.map((id) => TOOLS.find((t) => t.id === id)).filter(Boolean)
+  return (
+    <section className="popular" aria-labelledby="popular-title" data-testid="popular-tiles">
+      <h2 id="popular-title" className="directory-title">
+        Popular tools
+      </h2>
+      <div className="popular-grid">
+        {list.map((t) => (
+          <button key={t.id} type="button" className="popular-tile" onClick={() => onOpen(t.id)} data-testid={`popular-${t.id}`}>
+            <span className="next-icon">
+              <Icon name={t.icon} size={20} />
+            </span>
+            <span className="popular-name">{t.name}</span>
+            <span className="popular-desc">{t.description}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+// Home with files and no tool: what to do next, with tools that fit the files.
+function HomeHint({ files, onOpen }) {
+  const exts = [...new Set(files.map((f) => extOf(f.name)).filter((e) => e && e !== '.pdf'))]
+  const pdfs = files.filter((f) => store.isPdfRecord(f)).length
+  const byType = exts.flatMap((e) => TOOLS.filter((t) => t.accepts?.types?.includes(e)).map((t) => t.id))
+  const ids = [...new Set([...byType, ...(pdfs > 1 ? ['merge', 'compress', 'organize'] : ['compress', 'split', 'protect'])])].slice(0, 3)
+  const list = ids.map((id) => TOOLS.find((t) => t.id === id)).filter(Boolean)
+  return (
+    <div className="home-hint" data-testid="home-hint">
+      <p>
+        <span className="hint-wide">
+          Pick a tool on the left, or press <kbd>{isMac() ? 'Cmd' : 'Ctrl'}+K</kbd>.
+        </span>
+        <span className="hint-narrow">Open the tool list with the menu button.</span> Suggested:
+      </p>
+      <div className="chip-row">
+        {list.map((t) => (
+          <button key={t.id} type="button" className="chip" onClick={() => onOpen(t.id)} data-testid={`hint-${t.id}`}>
+            <Icon name={t.icon} size={15} />
+            {t.name}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
@@ -136,7 +209,14 @@ export default function Shell() {
   const [dialog, setDialog] = useState(null)
   const [notice, setNotice] = useState(null)
   const [sheet, setSheet] = useState(false) // phone: options as a bottom sheet
+  const [palette, setPalette] = useState(false)
+  const [reader, setReader] = useState(null) // { id, page } while reading
+  const [filesOpen, setFilesOpen] = useState(null) // options step 1 list; null = open for 3 files or fewer
   const searchRef = useRef(null)
+  const tabRefs = useRef({})
+  const onlyNewRef = useRef(false) // next added files replace the selection
+  const mountedAt = useRef(Date.now()) // files from an earlier visit are not selected
+  const [status, setStatus] = useState(null) // short confirmation (undo)
   const pickerRef = useRef(null)
   const seenRef = useRef(new Set())
   const startingRef = useRef(false) // Run pressed, job not set up yet
@@ -153,20 +233,32 @@ export default function Shell() {
     store.init()
   }, [])
 
-  // New files join the selection; files that left drop out of it.
+  // New files join the selection; files that left drop out of it. When the
+  // user adds files while a tool is open, results of earlier runs leave the
+  // selection, so they do not join the next run unless selected again.
   useEffect(() => {
     const ids = new Set(files.map((f) => f.id))
-    const fresh = files.filter((f) => !seenRef.current.has(f.id)).map((f) => f.id)
-    for (const id of fresh) seenRef.current.add(id)
+    const unseen = files.filter((f) => !seenRef.current.has(f.id))
+    for (const f of unseen) seenRef.current.add(f.id)
+    // files kept from an earlier visit come back unselected: nothing runs on them by surprise
+    const fresh = unseen.filter((f) => f.addedAt >= mountedAt.current).map((f) => f.id)
+    const onlyNew = onlyNewRef.current && fresh.length > 0
+    if (onlyNew) onlyNewRef.current = false
     setSelection((prev) => {
-      const next = new Set([...prev, ...fresh].filter((id) => ids.has(id)))
+      // results of earlier runs (made from another file) leave the selection;
+      // files the user added stay, so adding one more file to Compare works
+      const userAdded = (id) => !files.find((f) => f.id === id)?.parentIds?.length
+      const next = new Set([...(onlyNew ? [...prev].filter(userAdded) : prev), ...fresh].filter((id) => ids.has(id)))
       return next.size === prev.size && [...next].every((id) => prev.has(id)) ? prev : next
     })
   }, [files])
 
-  const chosen = files.filter((f) => f.status === 'ready' && selection.has(f.id))
+  // tools with accepts.locked (Unlock) also get files that still need a password
+  const takesLocked = v2 && !!tool?.accepts?.locked
+  const chosen = files.filter((f) => (f.status === 'ready' || (takesLocked && f.status === 'locked')) && selection.has(f.id))
   const selected = chosen.filter((f) => takesFile(v2 ? tool : null, f))
-  const editor = usePageEditor(chosen.filter(store.isPdfRecord))
+  // the Pages view only shows files that open
+  const editor = usePageEditor(chosen.filter((f) => f.status === 'ready' && store.isPdfRecord(f)))
 
   // Tools that work on pages (extract, remove, organize) open the Pages view.
   useEffect(() => {
@@ -221,7 +313,8 @@ export default function Shell() {
       ro.disconnect()
       root.style.removeProperty('--run-bar-h')
     }
-  })
+    // only when the Run bar can appear or go: not on every render
+  }, [activeToolId, !!result, files.length > 0]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!sheet) return undefined
@@ -247,10 +340,16 @@ export default function Shell() {
     return () => window.removeEventListener('beforeunload', onBefore)
   }, [running, editor.dirty])
 
-  // "/" focuses search. Esc closes the drawer; dialogs handle their own Esc.
+  // Ctrl+K / Cmd+K opens the command palette. "/" focuses search. Esc closes
+  // the drawer; dialogs, the palette and the reader handle their own Esc.
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === '/' && !typing(document.activeElement)) {
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'k') {
+        if (dialog) return
+        e.preventDefault()
+        setPalette((p) => !p)
+        setDrawer(false)
+      } else if (e.key === '/' && !typing(document.activeElement) && !document.querySelector('[data-testid=reader]')) {
         e.preventDefault()
         searchRef.current?.focus()
       } else if (e.key === 'Escape' && drawer && !dialog) {
@@ -268,10 +367,17 @@ export default function Shell() {
   }, [query])
 
   const navigate = (id) => {
+    const target = TOOLS.find((t) => t.id === id)
     setActiveToolId(id)
     setResult(null)
-    // tools with an on-page canvas (sign, redact, ...) open on it
-    if (TOOLS.find((t) => t.id === id)?.Canvas) setMode('viewer')
+    // tools with an on-page canvas (sign, redact, ...) open on it; tools that
+    // take several files (merge, compare, convert) open on Files
+    if (target?.Canvas) {
+      setMode('viewer')
+      // on the newest selected file, the one the user most likely means
+      const newest = files.filter((f) => selection.has(f.id) && f.status === 'ready').sort((a, b) => b.addedAt - a.addedAt)[0]
+      if (newest) setViewerTarget({ id: newest.id, page: 1 })
+    } else if (opensOnFiles(target)) setMode('files')
     setDrawer(false)
     setJob((j) => (j?.cancel ? j : null))
     if (id) {
@@ -314,7 +420,14 @@ export default function Shell() {
     if (kept.length < all.length) {
       setNotice(`${all.length - kept.length} file${all.length - kept.length === 1 ? ' is' : 's are'} not a type SwissPDF can open.`)
     } else setNotice(null)
-    if (kept.length) await store.addFiles(kept, { keepOther })
+    // same name and size as a file already here: say so, add it anyway
+    const dupes = kept.filter((f) => files.some((x) => x.name === f.name && x.size === f.size))
+    if (dupes.length) setNotice(`${dupes.map((f) => f.name).join(', ')} ${dupes.length === 1 ? 'is' : 'are'} already in your files. Added again.`)
+    if (!kept.length) return
+    if (tool && files.length > 0) onlyNewRef.current = true
+    const ids = await store.addFiles(kept, { keepOther })
+    // canvas tools (redact, sign...) open on the file just added
+    if (tool?.Canvas && ids?.length) setViewerTarget({ id: ids[0], page: 1 })
   }
 
   const toggleSelect = (id) =>
@@ -343,17 +456,21 @@ export default function Shell() {
   const setOptions = (o) =>
     setOptionsByTool((prev) => ({ ...prev, [tool.id]: typeof o === 'function' ? o(prev[tool.id] ?? tool.defaults ?? {}) : o }))
   const summary = tool && v2 ? tool.summary(selected, options) : null
+  // a tool that uses no files (Health) has no Files step
+  const steps = stepsOf(tool).filter((st) => !(st.id === 'files' && tool?.accepts?.min === 0 && !tool?.accepts?.types))
+  const filesShown = filesOpen ?? selected.length <= 3
 
   const run = async () => {
     if (!summary?.ready || running || startingRef.current) return
     startingRef.current = true
     const t = tool
+    const t0 = performance.now()
     // a wipe while this job runs bumps the generation: its outputs are dropped
     const generation = store.getGeneration()
     let handle
     let inputs
     try {
-      inputs = await store.filesForRun(selected.map((f) => f.id))
+      inputs = await store.filesForRun(selected.map((f) => f.id), { locked: !!t.accepts?.locked })
       handle = runJob(t, inputs, options, {
         onProgress: (progress) => setJob((j) => (j?.cancel ? { ...j, progress } : j)),
       })
@@ -366,15 +483,28 @@ export default function Shell() {
       startingRef.current = false
     }
     try {
-      const outs = await handle.promise
+      // run returns outputs, or { outputs, view } when the tool also shows a
+      // result view (compare, health)
+      const res = await handle.promise
+      const outs = Array.isArray(res) ? res : (res?.outputs ?? [])
+      const view = Array.isArray(res) ? null : (res?.view ?? null)
+      const stats = { ms: null, beforeSize: inputs.reduce((n, f) => n + (f.size ?? 0), 0) }
+      if (outs.length === 0 && view) {
+        setJob(null)
+        setResult({ toolId: t.id, outputs: [], change: { outputIds: [], consumedIds: [] }, view, stats: { ...stats, ms: performance.now() - t0 } })
+        return
+      }
       const checked = []
       for (const out of outs) {
         if (store.getGeneration() !== generation) break
-        const { pageCount } = out.type ? { pageCount: null } : await assertValidOutput(out.bytes)
+        // a locked output (Protect with an open password) cannot be opened here;
+        // the tool checked it by reopening it with the password
+        const { pageCount } = out.type ? { pageCount: null } : out.locked ? { pageCount: out.pageCount ?? null } : await assertValidOutput(out.bytes)
         checked.push({ ...out, pageCount })
       }
       // keepInputs: the inputs stay as they are (PDF to images, to Word...)
-      const consumed = t.keepInputs ? [] : [...new Set(checked.flatMap((o) => o.parentIds ?? []))]
+      const keep = typeof t.keepInputs === 'function' ? t.keepInputs(options) : !!t.keepInputs
+      const consumed = keep ? [] : [...new Set(checked.flatMap((o) => o.parentIds ?? []))]
       const change = await store.addVersions(checked, { tool: t.id, consumedIds: consumed, generation })
       if (!change || store.getGeneration() !== generation) {
         setJob(null)
@@ -386,26 +516,60 @@ export default function Shell() {
         return { id, name: rec?.name, size: rec?.size, pageCount: rec?.pageCount, before: src.before ?? null, note: src.note ?? null }
       })
       // kept inputs stay selected too, so a PDF tool can continue on them
-      setSelection(new Set([...change.outputIds, ...(t.keepInputs ? inputs.map((f) => f.id) : [])]))
+      setSelection(new Set([...change.outputIds, ...(keep ? inputs.map((f) => f.id) : [])]))
       setJob(null)
-      setResult({ toolId: t.id, outputs, change })
+      // size before: only the inputs the stored outputs were made from (a file
+      // that stopped in an Automate batch is not counted)
+      const parents = new Set(change.outputIndex.flatMap((i) => checked[i]?.parentIds ?? []))
+      const beforeSize = parents.size ? inputs.filter((f) => parents.has(f.id)).reduce((n, f) => n + (f.size ?? 0), 0) : stats.beforeSize
+      setResult({ toolId: t.id, outputs, change, view, stats: { ms: performance.now() - t0, beforeSize }, inputIds: inputs.map((f) => f.id) })
     } catch (err) {
       if (err?.cancelled || err?.name === 'AbortError') setJob(null)
       else setJob({ toolId: t.id, error: err?.message ?? String(err) })
     }
   }
 
+  // a short confirmation that clears itself
+  const flashTimer = useRef(null)
+  const flash = (text) => {
+    setStatus(text)
+    clearTimeout(flashTimer.current)
+    flashTimer.current = setTimeout(() => setStatus(null), 6000)
+  }
+
   const undoResult = async () => {
     if (!result) return
     await store.undoChange(result.change)
-    setSelection(new Set(result.change.consumedIds))
+    // the files the run started with (kept inputs included)
+    setSelection(new Set(result.inputIds ?? result.change.consumedIds))
     setResult(null)
+    flash(`Undid ${TOOLS.find((t) => t.id === result.toolId)?.name ?? 'the change'}. Your files are back as they were.`)
   }
 
-  // legacy tools cannot take the result (own file picker): no chip for them
-  const nextTools = result
-    ? (TOOLS.find((t) => t.id === result.toolId)?.next ?? []).map((id) => TOOLS.find((t) => t.id === id)).filter((t) => isV2(t))
-    : []
+  // the tool's own next list first, padded from its category (nextTools.js)
+  // a locked output (Protect) only goes on in a tool that takes locked files
+  const lockedResult = !!result?.outputs?.some((o) => store.getRecord(o.id)?.status === 'locked')
+  const nextTools = !result ? [] : lockedResult ? TOOLS.filter((t) => isV2(t) && t.accepts?.locked) : suggestNext(TOOLS.find((t) => t.id === result.toolId), TOOLS)
+
+  const openFile = (id, page = 1) => {
+    setViewerTarget({ id, page })
+    setResult(null)
+    setMode('viewer')
+  }
+
+  const pickMode = (m) => {
+    setMode(m)
+    requestAnimationFrame(() => tabRefs.current[m]?.focus())
+  }
+  // Tab pattern: arrows, Home and End move between the enabled views.
+  const onTabKey = (e) => {
+    const enabled = MODES.map(([m]) => m).filter((m) => m === 'files' || readyCount > 0)
+    const i = enabled.indexOf(mode)
+    const to = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: enabled.length - 1 }[e.key]
+    if (to === undefined) return
+    e.preventDefault()
+    pickMode(enabled[(to + enabled.length) % enabled.length])
+  }
   const showResult = result && result.toolId === activeToolId
   const showOptions = !!tool && v2 && !showResult
   const legacy = !!tool && !v2
@@ -428,17 +592,17 @@ export default function Shell() {
     <>
       {files.length > 0 && (
         <div className="wb-bar">
-          <div className="modes" role="tablist" aria-label="Workbench view">
-            {[
-              ['files', 'Files', 'files'],
-              ['viewer', 'Viewer', 'viewer'],
-              ['pages', 'Pages', 'pages'],
-            ].map(([m, label, icon]) => (
+          <div className="modes" role="tablist" aria-label="Workbench view" onKeyDown={onTabKey}>
+            {MODES.map(([m, label, icon]) => (
               <button
                 key={m}
+                ref={(el) => (tabRefs.current[m] = el)}
+                id={`wb-tab-${m}`}
                 type="button"
                 role="tab"
                 aria-selected={mode === m}
+                aria-controls="wb-panel"
+                tabIndex={mode === m ? 0 : -1}
                 className={mode === m ? 'is-on' : ''}
                 onClick={() => setMode(m)}
                 disabled={m !== 'files' && readyCount === 0}
@@ -466,28 +630,42 @@ export default function Shell() {
           {notice}
         </p>
       )}
+      {status && (
+        <p className="notice notice-ok" role="status" data-testid="status-flash">
+          {status}
+        </p>
+      )}
+      {!tool && files.length > 0 && <HomeHint files={files} onOpen={openTool} />}
       {files.length === 0 ? (
-        <StartArea onAdd={() => pickerRef.current?.click()} tool={v2 ? tool : null} />
-      ) : mode === 'viewer' && v2 && tool.Canvas ? (
-        <tool.Canvas files={selected} options={options} setOptions={setOptions} target={viewerTarget} onTarget={setViewerTarget} />
-      ) : mode === 'viewer' ? (
-        <Viewer files={files.filter(store.isPdfRecord)} target={viewerTarget} onTarget={setViewerTarget} />
-      ) : mode === 'pages' ? (
-        <PageEditor files={selected} editor={editor} />
+        <>
+          <StartArea onAdd={() => pickerRef.current?.click()} tool={v2 ? tool : null} />
+          {!tool && <PopularTiles onOpen={openTool} />}
+        </>
       ) : (
-        <FileGrid
-          files={files}
-          selection={selection}
-          onToggle={toggleSelect}
-          onSelectAll={(all) => setSelection(all ? new Set(files.filter((f) => f.status === 'ready').map((f) => f.id)) : new Set())}
-          onOpen={(id) => {
-            setViewerTarget({ id, page: 1 })
-            setMode('viewer')
-          }}
-          onRotate={rotateFile}
-          onAdd={() => pickerRef.current?.click()}
-          onWipe={() => setDialog({ kind: 'wipe' })}
-        />
+        <div role="tabpanel" id="wb-panel" aria-labelledby={`wb-tab-${mode}`} className="wb-panel">
+          {mode === 'viewer' && v2 && tool.Canvas ? (
+            <tool.Canvas files={selected} options={options} setOptions={setOptions} target={viewerTarget} onTarget={setViewerTarget} />
+          ) : mode === 'viewer' ? (
+            <Viewer files={files.filter(store.isPdfRecord)} target={viewerTarget} onTarget={setViewerTarget} onReader={setReader} />
+          ) : mode === 'pages' ? (
+            <PageEditor files={selected.filter((f) => f.status === 'ready')} editor={editor} onView={openFile} />
+          ) : (
+            <FileGrid
+              files={files}
+              selection={selection}
+              onToggle={toggleSelect}
+              onSelectAll={(all) => setSelection(all ? new Set(files.filter((f) => f.status === 'ready' && (!v2 || takesFile(tool, f))).map((f) => f.id)) : new Set())}
+              onOpen={(id) => openFile(id)}
+              onRotate={rotateFile}
+              onAdd={() => pickerRef.current?.click()}
+              onWipe={() => setDialog({ kind: 'wipe' })}
+              scope={v2 ? { name: tool.name, count: selected.length, uses: (f) => (f.status === 'ready' || (takesLocked && f.status === 'locked')) && takesFile(tool, f) } : null}
+              onStatus={flash}
+              onRestored={(ids) => setSelection((prev) => new Set([...prev, ...ids]))}
+              onOpenTool={openTool}
+            />
+          )}
+        </div>
       )}
     </>
   )
@@ -541,6 +719,18 @@ export default function Shell() {
           <kbd>/</kbd>
         </div>
         <div className="bar-right">
+          <button
+            type="button"
+            className="icon-btn palette-btn"
+            onClick={() => setPalette(true)}
+            aria-label={`Search tools, files and settings (${isMac() ? 'Cmd' : 'Ctrl'}+K)`}
+            aria-keyshortcuts="Control+K Meta+K"
+            aria-haspopup="dialog"
+            title={`Search everything (${isMac() ? 'Cmd' : 'Ctrl'}+K)`}
+            data-testid="palette-btn"
+          >
+            <Icon name="command" size={18} />
+          </button>
           <button
             type="button"
             className="local-chip"
@@ -621,9 +811,71 @@ export default function Shell() {
             </div>
           </div>
           <p className="options-desc">{tool.description}</p>
-          <div className="options-body">
-            <tool.Options options={options} setOptions={setOptions} files={selected} editor={editor} />
-          </div>
+          <ol className="steps" data-testid="option-steps">
+            {steps.map((step, i) => {
+              const n = i + 1
+              return step.id === 'files' ? (
+                <li key="files" className="step" data-testid="step-files">
+                  <h2 className="step-head">
+                    <button
+                      type="button"
+                      className="step-toggle"
+                      aria-expanded={filesShown}
+                      aria-controls="step-files-list"
+                      onClick={() => setFilesOpen(!filesShown)}
+                    >
+                      <span className="step-num mono" aria-hidden="true">
+                        {n}
+                      </span>
+                      <span className="step-title">{step.title}</span>
+                      <span className="step-meta" data-testid="step-files-count">
+                        <span className="mono">{selected.length}</span> selected
+                      </span>
+                      <Icon name="right" size={14} className={`step-chevron ${filesShown ? 'is-open' : ''}`} />
+                    </button>
+                  </h2>
+                  {filesShown && (
+                    <div className="step-body" id="step-files-list">
+                      {selected.length ? (
+                        <ul className="step-files">
+                          {selected.map((f) => (
+                            <li key={f.id}>
+                              <span className="file-name" title={f.name}>
+                                {f.name}
+                              </span>
+                              <span className="mono step-file-meta">
+                                {metaLine(f)}
+                                {f.version > 1 ? `, v${f.version}` : ''}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="field-help">No file selected for this tool yet.</p>
+                      )}
+                      {files.length > 0 && mode !== 'files' && (
+                        <button type="button" className="link step-link" onClick={() => setMode('files')}>
+                          Change files
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </li>
+              ) : (
+                <li key="options" className="step" data-testid="step-options">
+                  <h2 className="step-head step-head-static">
+                    <span className="step-num mono" aria-hidden="true">
+                      {n}
+                    </span>
+                    <span className="step-title">{step.title}</span>
+                  </h2>
+                  <div className="options-body">
+                    <tool.Options options={options} setOptions={setOptions} files={selected} editor={editor} />
+                  </div>
+                </li>
+              )
+            })}
+          </ol>
           <button
             type="button"
             className="btn btn-quiet btn-block sheet-done"
@@ -636,6 +888,12 @@ export default function Shell() {
           </button>
           </div>
           <div className="options-foot" ref={footRef} data-testid="run-bar">
+            <h2 className="step-head step-head-static step-head-run">
+              <span className="step-num mono" aria-hidden="true">
+                {steps.length + 1}
+              </span>
+              <span className="step-title">Run</span>
+            </h2>
             {job?.cancel && job.toolId === tool.id ? (
               <>
                 <ProgressBar {...job.progress} />
@@ -646,14 +904,20 @@ export default function Shell() {
             ) : (
               <>
                 {job?.error && job.toolId === tool.id && (
-                  <p className="field-error" role="alert" data-testid="run-error">
-                    {tool.name} failed: {job.error}
-                  </p>
+                  NEUTRAL.test(job.error) ? (
+                    <p className="notice notice-ok" role="status" data-testid="run-error">
+                      Nothing to do: {job.error}
+                    </p>
+                  ) : (
+                    <p className="field-error" role="alert" data-testid="run-error">
+                      {tool.name} failed: {job.error}
+                    </p>
+                  )
                 )}
                 <p className="live-line" aria-live="polite" data-testid="live-line">
                   {summary.line}
                 </p>
-                {editor.dirty && !tool.workbench && <p className="field-help">Pages has unapplied edits. Apply them first to include them.</p>}
+                {editor.dirty && !tool.workbench && <p className="field-help">Pages has unsaved edits. Save them first to include them.</p>}
                 <div className="run-row">
                   <button
                     type="button"
@@ -670,7 +934,7 @@ export default function Shell() {
                     Options
                   </button>
                   <button type="button" className="btn btn-primary btn-block btn-large" onClick={run} disabled={!summary.ready || running} data-testid="run-btn">
-                    {summary.runLabel}
+                    {scopedRunLabel(summary.runLabel, summary.ready, selected.length)}
                   </button>
                 </div>
                 <p className="run-local">Runs on this device. Nothing is uploaded.</p>
@@ -725,7 +989,8 @@ export default function Shell() {
           }
         >
           <p>Every tool runs in this browser. Files are read, changed and saved here and are never uploaded to a server.</p>
-          <p>Your workspace is kept in this browser&apos;s storage until you remove it. Remove all deletes it.</p>
+          <p>Your workspace is kept in this browser&apos;s storage until you remove it. Remove all deletes it. A file you open with its password is decrypted in memory only: after a reload it asks for the password again.</p>
+          <p>Word, Excel and PowerPoint to PDF use an office engine that is downloaded once from cdn.zetaoffice.net. It is checked against a fixed fingerprint before it runs, and no document data is sent.</p>
         </Dialog>
       )}
       {dialog?.kind === 'leave' && (
@@ -754,6 +1019,42 @@ export default function Shell() {
         >
           <p>Pages has edits you have not applied. They are lost if you open this tool.</p>
         </Dialog>
+      )}
+      {palette && (
+        <CommandPalette
+          tools={TOOLS}
+          files={files}
+          theme={theme}
+          onClose={() => setPalette(false)}
+          onOpenTool={(id) => {
+            setPalette(false)
+            setReader(null)
+            openTool(id)
+          }}
+          onOpenFile={(id) => {
+            setPalette(false)
+            setReader(null)
+            openFile(id)
+          }}
+          onTheme={(t) => {
+            setPalette(false)
+            setTheme(t)
+          }}
+          onHome={() => {
+            setPalette(false)
+            goHome()
+          }}
+        />
+      )}
+      {reader && store.getRecord(reader.id)?.status === 'ready' && (
+        <Reader
+          file={store.getRecord(reader.id)}
+          page={reader.page}
+          onClose={(page) => {
+            setViewerTarget({ id: reader.id, page })
+            setReader(null)
+          }}
+        />
       )}
     </div>
   )

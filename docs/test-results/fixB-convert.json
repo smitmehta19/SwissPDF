@@ -1,0 +1,4308 @@
+{
+  "name": "fixB-convert",
+  "startedAt": "2026-10-18T00:16:19.083Z",
+  "finishedAt": "2026-10-18T00:18:57.693Z",
+  "durationMin": 2.6,
+  "command": "npm run test:corpus -- --case html2pdf|img2pdf|pdf2excel|h-excel|2pdf-hifi|2pdf-quick|office-engine|i-hifi --name fixB-convert --shards 2",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 67,
+    "fail": 0,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "word2pdf",
+      "pass": 14,
+      "fail": 0,
+      "skip": 0,
+      "ms": 51376
+    },
+    {
+      "tool": "excel2pdf",
+      "pass": 12,
+      "fail": 0,
+      "skip": 0,
+      "ms": 67938
+    },
+    {
+      "tool": "ppt2pdf",
+      "pass": 12,
+      "fail": 0,
+      "skip": 0,
+      "ms": 11093
+    },
+    {
+      "tool": "html2pdf",
+      "pass": 5,
+      "fail": 0,
+      "skip": 0,
+      "ms": 58177
+    },
+    {
+      "tool": "pdf2excel",
+      "pass": 12,
+      "fail": 0,
+      "skip": 0,
+      "ms": 31944
+    },
+    {
+      "tool": "img2pdf",
+      "pass": 12,
+      "fail": 0,
+      "skip": 0,
+      "ms": 15729
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no per-render copy counter; large scans now render (JPX fixed in U1), see time and heap on pdf2img-bible-62MB, pdf2img-crooked-104MB, split-911-large"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "SOFT WARN",
+      "evidence": [
+        "pdf2excel-aws-invoice: leading-zero / long ids kept as text (lost 0000)"
+      ],
+      "passedChecks": 20,
+      "reason": null
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "SOFT WARN",
+      "evidence": [
+        "excel2pdf-quick-poi-SampleSS.xlsx: selectable text (coverage 0.00)",
+        "ppt2pdf-quick-poi-SampleShow.pptx: selectable text (coverage 0.00)",
+        "excel2pdf-quick-poi-Tables.xlsx: selectable text (coverage 0.00)",
+        "word2pdf-quick-poi-VariousPictures.docx: selectable text (coverage 0.00)",
+        "word2pdf-quick-poi-chartex.docx: selectable text (coverage 0.00)",
+        "excel2pdf-quick-poi-picture.xlsx: selectable text (coverage 0.00)",
+        "ppt2pdf-quick-poi-pie-chart.pptx: selectable text (coverage 0.00)",
+        "word2pdf-quick-poi-sample.docx: selectable text (coverage 0.00)",
+        "word2pdf-quick-poi-table_footnotes.docx: selectable text (coverage 0.00)"
+      ],
+      "passedChecks": 15,
+      "reason": null
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "SOFT WARN",
+      "evidence": [
+        "office-engine-load: no fetches outside the page origin (cdn.zetaoffice.net)"
+      ],
+      "passedChecks": 12,
+      "reason": null
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "SOFT WARN",
+      "evidence": [
+        "img2pdf-photo-24MP-punjab-smartphone.jpg: fit page is a sane paper size (<= 17 in) (40.1 x 26.7 in)",
+        "img2pdf-photo-castle-3456x2628.jpg: fit page is a sane paper size (<= 17 in) (23.0 x 17.5 in)",
+        "img2pdf-tiff-multipage.tiff: output not bloated (<= 3x input) (4.8x input)"
+      ],
+      "passedChecks": 21,
+      "reason": null
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no PAdES / multi-place API to call)"
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "SOFT WARN",
+      "evidence": [
+        "html2pdf-tracemonkey-text: selectable text (coverage 0.00)"
+      ],
+      "passedChecks": 8,
+      "reason": null
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap"
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    }
+  ],
+  "results": [
+    {
+      "id": "office-engine-load",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [],
+      "result": "PASS",
+      "detail": "engine loaded; warn: no fetches outside the page origin (cdn.zetaoffice.net)",
+      "error": null,
+      "ms": 30176,
+      "opMs": 14794,
+      "heapMB": 26,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no fetches outside the page origin",
+          "ok": false,
+          "detail": "cdn.zetaoffice.net",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "excel2pdf-hifi-poi-SampleSS.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-SampleSS.xlsx"
+      ],
+      "result": "PASS",
+      "detail": "2 pages, 17 KB, text coverage 1.00",
+      "error": null,
+      "ms": 1284,
+      "opMs": 1191,
+      "heapMB": 27,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "ppt2pdf-hifi-poi-SampleShow.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-SampleShow.pptx"
+      ],
+      "result": "PASS",
+      "detail": "2 pages, 30 KB, text coverage 1.00",
+      "error": null,
+      "ms": 1828,
+      "opMs": 1688,
+      "heapMB": 27,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "excel2pdf-hifi-poi-Tables.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-Tables.xlsx"
+      ],
+      "result": "PASS",
+      "detail": "15 pages, 71 KB, text coverage 1.00",
+      "error": null,
+      "ms": 1081,
+      "opMs": 934,
+      "heapMB": 19,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "word2pdf-hifi-poi-VariousPictures.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-VariousPictures.docx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 88 KB, text coverage 1.00",
+      "error": null,
+      "ms": 1016,
+      "opMs": 849,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "excel2pdf-hifi-poi-WithThreeCharts.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-WithThreeCharts.xlsx"
+      ],
+      "result": "PASS",
+      "detail": "3 pages, 27 KB, text coverage undefined",
+      "error": null,
+      "ms": 1003,
+      "opMs": 900,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage undefined",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "ppt2pdf-hifi-poi-chart-picture-bg.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-chart-picture-bg.pptx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 157 KB, text coverage undefined",
+      "error": null,
+      "ms": 1101,
+      "opMs": 865,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage undefined",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "word2pdf-hifi-poi-chartex.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-chartex.docx"
+      ],
+      "result": "PASS",
+      "detail": "3 pages, 67 KB, text coverage 1.00",
+      "error": null,
+      "ms": 2940,
+      "opMs": 2675,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "excel2pdf-hifi-poi-picture.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-picture.xlsx"
+      ],
+      "result": "PASS",
+      "detail": "3 pages, 315 KB, text coverage 1.00",
+      "error": null,
+      "ms": 1288,
+      "opMs": 949,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "ppt2pdf-hifi-poi-pie-chart.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-pie-chart.pptx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 15 KB, text coverage 1.00",
+      "error": null,
+      "ms": 1238,
+      "opMs": 1161,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "word2pdf-hifi-poi-sample.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-sample.docx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 12 KB, text coverage 1.00",
+      "error": null,
+      "ms": 348,
+      "opMs": 249,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "word2pdf-hifi-poi-table_footnotes.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-table_footnotes.docx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 11 KB, text coverage 1.00",
+      "error": null,
+      "ms": 336,
+      "opMs": 204,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "ppt2pdf-hifi-poi-table_test.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-table_test.pptx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 7 KB, text coverage undefined",
+      "error": null,
+      "ms": 669,
+      "opMs": 599,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage undefined",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-convert-no-network",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-sample.docx"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 247,
+      "opMs": 168,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "converting sends nothing off the page",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-poi-SampleSS.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-SampleSS.xlsx"
+      ],
+      "result": "PASS",
+      "detail": "2 pages, 198 ms, fonts Carlito-Bold Carlito",
+      "error": null,
+      "ms": 339,
+      "opMs": 199,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (pdf.js)",
+          "ok": true,
+          "detail": "166 chars, source 189",
+          "soft": false,
+          "audit": 18
+        },
+        {
+          "name": "page count sane",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "all fonts embedded",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no last-resort DejaVu substitution",
+          "ok": true,
+          "detail": "Carlito-Bold, Carlito",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-poi-SampleShow.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-SampleShow.pptx"
+      ],
+      "result": "PASS",
+      "detail": "2 pages, 596 ms, fonts Carlito-Italic Carlito LiberationSans NotoSans-Regular",
+      "error": null,
+      "ms": 663,
+      "opMs": 596,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (pdf.js)",
+          "ok": true,
+          "detail": "225 chars, source 219",
+          "soft": false,
+          "audit": 18
+        },
+        {
+          "name": "page count sane",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "all fonts embedded",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no last-resort DejaVu substitution",
+          "ok": true,
+          "detail": "Carlito-Italic, Carlito, LiberationSans, NotoSans-Regular",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-poi-Tables.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-Tables.xlsx"
+      ],
+      "result": "PASS",
+      "detail": "15 pages, 853 ms, fonts LiberationSerif-Bold LiberationSerif-Italic LiberationSerif",
+      "error": null,
+      "ms": 1015,
+      "opMs": 853,
+      "heapMB": 21,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (pdf.js)",
+          "ok": true,
+          "detail": "17943 chars, source 19182",
+          "soft": false,
+          "audit": 18
+        },
+        {
+          "name": "page count sane",
+          "ok": true,
+          "detail": "15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "all fonts embedded",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no last-resort DejaVu substitution",
+          "ok": true,
+          "detail": "LiberationSerif-Bold, LiberationSerif-Italic, LiberationSerif",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-poi-VariousPictures.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-VariousPictures.docx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 352 ms, fonts Carlito",
+      "error": null,
+      "ms": 442,
+      "opMs": 353,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (pdf.js)",
+          "ok": true,
+          "detail": "58 chars, source 63",
+          "soft": false,
+          "audit": 18
+        },
+        {
+          "name": "page count sane",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "all fonts embedded",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no last-resort DejaVu substitution",
+          "ok": true,
+          "detail": "Carlito",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-poi-WithThreeCharts.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-WithThreeCharts.xlsx"
+      ],
+      "result": "PASS",
+      "detail": "3 pages, 949 ms, fonts Carlito-Bold Carlito",
+      "error": null,
+      "ms": 1081,
+      "opMs": 950,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (pdf.js)",
+          "ok": true,
+          "detail": "234 chars, source 60",
+          "soft": false,
+          "audit": 18
+        },
+        {
+          "name": "page count sane",
+          "ok": true,
+          "detail": "3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "all fonts embedded",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no last-resort DejaVu substitution",
+          "ok": true,
+          "detail": "Carlito-Bold, Carlito",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-poi-chart-picture-bg.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-chart-picture-bg.pptx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 1619 ms, fonts Carlito",
+      "error": null,
+      "ms": 1759,
+      "opMs": 1620,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (pdf.js)",
+          "ok": true,
+          "detail": "96 chars, source 0",
+          "soft": false,
+          "audit": 18
+        },
+        {
+          "name": "page count sane",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "all fonts embedded",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no last-resort DejaVu substitution",
+          "ok": true,
+          "detail": "Carlito",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-poi-chartex.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-chartex.docx"
+      ],
+      "result": "PASS",
+      "detail": "3 pages, 965 ms, fonts Carlito LiberationSerif OpenSymbol",
+      "error": null,
+      "ms": 1084,
+      "opMs": 965,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (pdf.js)",
+          "ok": true,
+          "detail": "427 chars, source 18",
+          "soft": false,
+          "audit": 18
+        },
+        {
+          "name": "page count sane",
+          "ok": true,
+          "detail": "3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "all fonts embedded",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no last-resort DejaVu substitution",
+          "ok": true,
+          "detail": "Carlito, LiberationSerif, OpenSymbol",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-poi-picture.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-picture.xlsx"
+      ],
+      "result": "PASS",
+      "detail": "3 pages, 380 ms, fonts Carlito LiberationSans-Bold LiberationSans-Italic LiberationSans",
+      "error": null,
+      "ms": 558,
+      "opMs": 380,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (pdf.js)",
+          "ok": true,
+          "detail": "104 chars, source 124",
+          "soft": false,
+          "audit": 18
+        },
+        {
+          "name": "page count sane",
+          "ok": true,
+          "detail": "3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "all fonts embedded",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no last-resort DejaVu substitution",
+          "ok": true,
+          "detail": "Carlito, LiberationSans-Bold, LiberationSans-Italic, LiberationSans",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-poi-pie-chart.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-pie-chart.pptx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 469 ms, fonts Carlito-Bold Carlito",
+      "error": null,
+      "ms": 567,
+      "opMs": 469,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (pdf.js)",
+          "ok": true,
+          "detail": "50 chars, source 12",
+          "soft": false,
+          "audit": 18
+        },
+        {
+          "name": "page count sane",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "all fonts embedded",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no last-resort DejaVu substitution",
+          "ok": true,
+          "detail": "Carlito-Bold, Carlito",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-poi-sample.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-sample.docx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 176 ms, fonts Carlito",
+      "error": null,
+      "ms": 233,
+      "opMs": 176,
+      "heapMB": 21,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (pdf.js)",
+          "ok": true,
+          "detail": "1542 chars, source 1542",
+          "soft": false,
+          "audit": 18
+        },
+        {
+          "name": "page count sane",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "all fonts embedded",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no last-resort DejaVu substitution",
+          "ok": true,
+          "detail": "Carlito",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-poi-table_footnotes.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-table_footnotes.docx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 147 ms, fonts Carlito",
+      "error": null,
+      "ms": 234,
+      "opMs": 147,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (pdf.js)",
+          "ok": true,
+          "detail": "30 chars, source 26",
+          "soft": false,
+          "audit": 18
+        },
+        {
+          "name": "page count sane",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "all fonts embedded",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no last-resort DejaVu substitution",
+          "ok": true,
+          "detail": "Carlito",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-poi-table_test.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-table_test.pptx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 521 ms, fonts none",
+      "error": null,
+      "ms": 561,
+      "opMs": 521,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (pdf.js)",
+          "ok": true,
+          "detail": "0 chars, source 0",
+          "soft": false,
+          "audit": 18
+        },
+        {
+          "name": "page count sane",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "all fonts embedded",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no last-resort DejaVu substitution",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "i-html2pdf-hifi-styled-report",
+      "tool": "html2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [],
+      "result": "PASS",
+      "detail": "1 page(s), 43 KB, 429 ms, coverage 0.98",
+      "error": null,
+      "ms": 1627,
+      "opMs": 1579,
+      "heapMB": 21,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ran in the engine",
+          "ok": true,
+          "detail": "[\"hifi\",null]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no remote fetches (stylesheet, @import, images)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 28
+        },
+        {
+          "name": "html.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (90%+ of the source words)",
+          "ok": true,
+          "detail": "coverage 0.98",
+          "soft": false,
+          "audit": 28
+        },
+        {
+          "name": "table cells kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 28
+        },
+        {
+          "name": "script not run",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "head <style> applied (red h1, blue table header)",
+          "ok": true,
+          "detail": "red 4900, blue 11021",
+          "soft": false,
+          "audit": 28
+        },
+        {
+          "name": "A4 pages",
+          "ok": true,
+          "detail": "1 pages, 595.303937007874 wide",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "i-html2pdf-hifi-long-page",
+      "tool": "html2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [],
+      "result": "PASS",
+      "detail": "23 pages, 478 KB, 1636 ms",
+      "error": null,
+      "ms": 1850,
+      "opMs": 1732,
+      "heapMB": 22,
+      "audit": null,
+      "checks": [
+        {
+          "name": "html.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 23 vs MuPDF 23",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "many pages, no canvas failure",
+          "ok": true,
+          "detail": "23 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "last section present as text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 28
+        }
+      ]
+    },
+    {
+      "id": "pdf2excel-aws-invoice",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 73 cells, coverage 1.00; warn: leading-zero / long ids kept as text (lost 0000)",
+      "error": null,
+      "ms": 17089,
+      "opMs": 1693,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has cells",
+          "ok": true,
+          "detail": "73 cells",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": false,
+          "detail": "lost 0000",
+          "soft": true,
+          "audit": 16
+        }
+      ]
+    },
+    {
+      "id": "pdf2excel-flipkart",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/flipkart-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 36 cells, coverage 1.00",
+      "error": null,
+      "ms": 460,
+      "opMs": 334,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has cells",
+          "ok": true,
+          "detail": "36 cells",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2excel-camelot-bol",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/camelot-bol.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 64 cells, coverage 1.00",
+      "error": null,
+      "ms": 1648,
+      "opMs": 1053,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has cells",
+          "ok": true,
+          "detail": "64 cells",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2excel-saeco",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/saeco.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 53 cells, coverage 1.00",
+      "error": null,
+      "ms": 368,
+      "opMs": 273,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has cells",
+          "ok": true,
+          "detail": "53 cells",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2excel-free-fiber",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/free-fiber.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2 sheets, 22 cells, coverage 1.00",
+      "error": null,
+      "ms": 364,
+      "opMs": 171,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has cells",
+          "ok": true,
+          "detail": "22 cells",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2excel-fdic",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/fdic-quarterly-banking-profile-2023q4.pdf"
+      ],
+      "result": "PASS",
+      "detail": "44 sheets, 5302 cells, coverage 0.99",
+      "error": null,
+      "ms": 3370,
+      "opMs": 3230,
+      "heapMB": 37,
+      "audit": null,
+      "checks": [
+        {
+          "name": "has cells",
+          "ok": true,
+          "detail": "5302 cells",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 0.99",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-excel-aws-typed",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 22 numbers, 0 numeric text, 0.1 s",
+      "error": null,
+      "ms": 229,
+      "opMs": 105,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "number cells typed (<2% left as text)",
+          "ok": true,
+          "detail": "0 as text, e.g. ",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": true,
+          "detail": "1 ids",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed $4.11 as currency",
+          "ok": true,
+          "detail": "4.11 as \"$\"#,##0.00",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed August 3, 2014 as a date",
+          "ok": true,
+          "detail": "41854 as mmm d, yyyy",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-excel-camelot-eu-typed",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/camelot-bol.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 18 numbers, 0 numeric text, 0.1 s",
+      "error": null,
+      "ms": 259,
+      "opMs": 116,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "number cells typed (<2% left as text)",
+          "ok": true,
+          "detail": "0 as text, e.g. ",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": true,
+          "detail": "1 ids",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed € 189,00 (decimal comma)",
+          "ok": true,
+          "detail": "189 as \"€\"#,##0.00",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed € 32,80",
+          "ok": true,
+          "detail": "32.8 as \"€\"#,##0.00",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-excel-netpresse-eu-typed",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/netpresse-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 10 numbers, 0 numeric text, 0.2 s",
+      "error": null,
+      "ms": 317,
+      "opMs": 193,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "number cells typed (<2% left as text)",
+          "ok": true,
+          "detail": "0 as text, e.g. ",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": true,
+          "detail": "2 ids",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed 56,02 € (suffix currency)",
+          "ok": true,
+          "detail": "56.02 as \"€\"#,##0.00",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-excel-saeco-dates",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/saeco.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 14 numbers, 0 numeric text, 0.1 s",
+      "error": null,
+      "ms": 131,
+      "opMs": 63,
+      "heapMB": 23,
+      "audit": null,
+      "checks": [
+        {
+          "name": "number cells typed (<2% left as text)",
+          "ok": true,
+          "detail": "0 as text, e.g. ",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": true,
+          "detail": "3 ids",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed 22-9-2022 as a date",
+          "ok": true,
+          "detail": "44826 as dd-mm-yyyy",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "typed 49,99",
+          "ok": true,
+          "detail": "49.99 as 0.00",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-excel-fdic-speed-typed",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/fdic-quarterly-banking-profile-2023q4.pdf"
+      ],
+      "result": "PASS",
+      "detail": "44 sheets, 2860 numbers, 2 numeric text, 3.6 s",
+      "error": null,
+      "ms": 3891,
+      "opMs": 3689,
+      "heapMB": 26,
+      "audit": null,
+      "checks": [
+        {
+          "name": "converted in under 60 s",
+          "ok": true,
+          "detail": "3.6 s",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "number cells typed (<2% left as text)",
+          "ok": true,
+          "detail": "2 as text, e.g. \"39,281 847,993 130,571,047\" \"121,778 119,339 116,968 116,071 128,218 125,457 124,458 123,039 123,141 121,935 120,547\"",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": true,
+          "detail": "0 ids",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "h-excel-fdic-joined",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/fdic-quarterly-banking-profile-2023q4.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 sheets, 2680 numbers, 2 numeric text, 3.7 s",
+      "error": null,
+      "ms": 3818,
+      "opMs": 3744,
+      "heapMB": 36,
+      "audit": null,
+      "checks": [
+        {
+          "name": "one joined sheet",
+          "ok": true,
+          "detail": "1 sheets",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "number cells typed (<2% left as text)",
+          "ok": true,
+          "detail": "2 as text, e.g. \"39,281 847,993 130,571,047\" \"121,778 119,339 116,968 116,071 128,218 125,457 124,458 123,039 123,141 121,935 120,547\"",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "leading-zero / long ids kept as text",
+          "ok": true,
+          "detail": "0 ids",
+          "soft": false,
+          "audit": 16
+        },
+        {
+          "name": "words carried over (80%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "excel2pdf-quick-poi-SampleSS.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-SampleSS.xlsx"
+      ],
+      "result": "PASS",
+      "detail": "2 pages, 62 KB, text coverage 0.00; warn: selectable text (coverage 0.00)",
+      "error": null,
+      "ms": 2479,
+      "opMs": 1931,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "has pages",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": false,
+          "detail": "coverage 0.00",
+          "soft": true,
+          "audit": 18
+        }
+      ]
+    },
+    {
+      "id": "ppt2pdf-quick-poi-SampleShow.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-SampleShow.pptx"
+      ],
+      "result": "PASS",
+      "detail": "2 pages, 8 KB, text coverage 0.00; warn: selectable text (coverage 0.00)",
+      "error": null,
+      "ms": 1353,
+      "opMs": 1234,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "has pages",
+          "ok": true,
+          "detail": "2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": false,
+          "detail": "coverage 0.00",
+          "soft": true,
+          "audit": 18
+        }
+      ]
+    },
+    {
+      "id": "excel2pdf-quick-poi-Tables.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-Tables.xlsx"
+      ],
+      "result": "PASS",
+      "detail": "18 pages, 4.6 MB, text coverage 0.00; warn: selectable text (coverage 0.00)",
+      "error": null,
+      "ms": 54693,
+      "opMs": 53178,
+      "heapMB": 35,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 18 vs MuPDF 18",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "has pages",
+          "ok": true,
+          "detail": "18",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": false,
+          "detail": "coverage 0.00",
+          "soft": true,
+          "audit": 18
+        }
+      ]
+    },
+    {
+      "id": "word2pdf-quick-poi-VariousPictures.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-VariousPictures.docx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 295 KB, text coverage 0.00; warn: selectable text (coverage 0.00)",
+      "error": null,
+      "ms": 2509,
+      "opMs": 2423,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "has pages",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": false,
+          "detail": "coverage 0.00",
+          "soft": true,
+          "audit": 18
+        }
+      ]
+    },
+    {
+      "id": "excel2pdf-quick-poi-WithThreeCharts.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-WithThreeCharts.xlsx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 31 KB, text coverage undefined",
+      "error": null,
+      "ms": 1451,
+      "opMs": 1330,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "has pages",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": true,
+          "detail": "coverage undefined",
+          "soft": true,
+          "audit": 18
+        }
+      ]
+    },
+    {
+      "id": "ppt2pdf-quick-poi-chart-picture-bg.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-chart-picture-bg.pptx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 5 KB, text coverage undefined",
+      "error": null,
+      "ms": 671,
+      "opMs": 559,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "has pages",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": true,
+          "detail": "coverage undefined",
+          "soft": true,
+          "audit": 18
+        }
+      ]
+    },
+    {
+      "id": "word2pdf-quick-poi-chartex.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-chartex.docx"
+      ],
+      "result": "PASS",
+      "detail": "3 pages, 440 KB, text coverage 0.00; warn: selectable text (coverage 0.00)",
+      "error": null,
+      "ms": 6899,
+      "opMs": 6739,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "has pages",
+          "ok": true,
+          "detail": "3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": false,
+          "detail": "coverage 0.00",
+          "soft": true,
+          "audit": 18
+        }
+      ]
+    },
+    {
+      "id": "excel2pdf-quick-poi-picture.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-picture.xlsx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 39 KB, text coverage 0.00; warn: selectable text (coverage 0.00)",
+      "error": null,
+      "ms": 1666,
+      "opMs": 1403,
+      "heapMB": 17,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "has pages",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": false,
+          "detail": "coverage 0.00",
+          "soft": true,
+          "audit": 18
+        }
+      ]
+    },
+    {
+      "id": "ppt2pdf-quick-poi-pie-chart.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-pie-chart.pptx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 3 KB, text coverage 0.00; warn: selectable text (coverage 0.00)",
+      "error": null,
+      "ms": 451,
+      "opMs": 362,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "has pages",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": false,
+          "detail": "coverage 0.00",
+          "soft": true,
+          "audit": 18
+        }
+      ]
+    },
+    {
+      "id": "word2pdf-quick-poi-sample.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-sample.docx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 251 KB, text coverage 0.00; warn: selectable text (coverage 0.00)",
+      "error": null,
+      "ms": 2731,
+      "opMs": 2622,
+      "heapMB": 15,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "has pages",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": false,
+          "detail": "coverage 0.00",
+          "soft": true,
+          "audit": 18
+        }
+      ]
+    },
+    {
+      "id": "word2pdf-quick-poi-table_footnotes.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-table_footnotes.docx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 33 KB, text coverage 0.00; warn: selectable text (coverage 0.00)",
+      "error": null,
+      "ms": 2181,
+      "opMs": 2055,
+      "heapMB": 17,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "has pages",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": false,
+          "detail": "coverage 0.00",
+          "soft": true,
+          "audit": 18
+        }
+      ]
+    },
+    {
+      "id": "ppt2pdf-quick-poi-table_test.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-table_test.pptx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 2 KB, text coverage undefined",
+      "error": null,
+      "ms": 232,
+      "opMs": 102,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "has pages",
+          "ok": true,
+          "detail": "1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": true,
+          "detail": "coverage undefined",
+          "soft": true,
+          "audit": 18
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-heic-libheif-example.heic",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/heic-libheif-example.heic"
+      ],
+      "result": "PASS",
+      "detail": "1 page(s), 8.5x5.7 in, 455 KB",
+      "error": null,
+      "ms": 1570,
+      "opMs": 1021,
+      "heapMB": 7,
+      "audit": 23,
+      "checks": [
+        {
+          "name": "images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fit page is a sane paper size (<= 17 in)",
+          "ok": true,
+          "detail": "8.5 x 5.7 in",
+          "soft": true,
+          "audit": 23
+        },
+        {
+          "name": "output not bloated (<= 3x input)",
+          "ok": true,
+          "detail": "0.6x input",
+          "soft": true,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-heic-nokia-C001.heic",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/heic-nokia-C001.heic"
+      ],
+      "result": "PASS",
+      "detail": "1 page(s), 8.5x4.8 in, 219 KB",
+      "error": null,
+      "ms": 350,
+      "opMs": 219,
+      "heapMB": 10,
+      "audit": 23,
+      "checks": [
+        {
+          "name": "images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fit page is a sane paper size (<= 17 in)",
+          "ok": true,
+          "detail": "8.5 x 4.8 in",
+          "soft": true,
+          "audit": 23
+        },
+        {
+          "name": "output not bloated (<= 3x input)",
+          "ok": true,
+          "detail": "0.3x input",
+          "soft": true,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-photo-24MP-punjab-smartphone.jpg",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/photo-24MP-punjab-smartphone.jpg"
+      ],
+      "result": "PASS",
+      "detail": "1 page(s), 40.1x26.7 in, 13.9 MB, EXIF 1; warn: fit page is a sane paper size (<= 17 in) (40.1 x 26.7 in)",
+      "error": null,
+      "ms": 2250,
+      "opMs": 1069,
+      "heapMB": 7,
+      "audit": null,
+      "checks": [
+        {
+          "name": "images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fit page is a sane paper size (<= 17 in)",
+          "ok": false,
+          "detail": "40.1 x 26.7 in",
+          "soft": true,
+          "audit": 23
+        },
+        {
+          "name": "output not bloated (<= 3x input)",
+          "ok": true,
+          "detail": "1.0x input",
+          "soft": true,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-photo-castle-3456x2628.jpg",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/photo-castle-3456x2628.jpg"
+      ],
+      "result": "PASS",
+      "detail": "1 page(s), 23.0x17.5 in, 5.4 MB, EXIF 1; warn: fit page is a sane paper size (<= 17 in) (23.0 x 17.5 in)",
+      "error": null,
+      "ms": 2169,
+      "opMs": 282,
+      "heapMB": 6,
+      "audit": null,
+      "checks": [
+        {
+          "name": "images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fit page is a sane paper size (<= 17 in)",
+          "ok": false,
+          "detail": "23.0 x 17.5 in",
+          "soft": true,
+          "audit": 23
+        },
+        {
+          "name": "output not bloated (<= 3x input)",
+          "ok": true,
+          "detail": "1.0x input",
+          "soft": true,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-photo-portrait-sepia-1640x2268.jpg",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/photo-portrait-sepia-1640x2268.jpg"
+      ],
+      "result": "PASS",
+      "detail": "1 page(s), 10.9x15.1 in, 1.5 MB, EXIF 1",
+      "error": null,
+      "ms": 509,
+      "opMs": 114,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fit page is a sane paper size (<= 17 in)",
+          "ok": true,
+          "detail": "10.9 x 15.1 in",
+          "soft": true,
+          "audit": 23
+        },
+        {
+          "name": "output not bloated (<= 3x input)",
+          "ok": true,
+          "detail": "1.0x input",
+          "soft": true,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-png-alpha-transparency-demo.png",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/png-alpha-transparency-demo.png"
+      ],
+      "result": "PASS",
+      "detail": "1 page(s), 6.6x5.0 in, 424 KB",
+      "error": null,
+      "ms": 457,
+      "opMs": 339,
+      "heapMB": 7,
+      "audit": null,
+      "checks": [
+        {
+          "name": "images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fit page is a sane paper size (<= 17 in)",
+          "ok": true,
+          "detail": "6.6 x 5.0 in",
+          "soft": true,
+          "audit": 23
+        },
+        {
+          "name": "output not bloated (<= 3x input)",
+          "ok": true,
+          "detail": "1.5x input",
+          "soft": true,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-png-webp-comparison-2412x1500.png",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/png-webp-comparison-2412x1500.png"
+      ],
+      "result": "PASS",
+      "detail": "1 page(s), 16.1x10.0 in, 4.3 MB",
+      "error": null,
+      "ms": 2806,
+      "opMs": 1952,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fit page is a sane paper size (<= 17 in)",
+          "ok": true,
+          "detail": "16.1 x 10.0 in",
+          "soft": true,
+          "audit": 23
+        },
+        {
+          "name": "output not bloated (<= 3x input)",
+          "ok": true,
+          "detail": "1.4x input",
+          "soft": true,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-tiff-multipage-mmap.tiff",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/tiff-multipage-mmap.tiff"
+      ],
+      "result": "PASS",
+      "detail": "3 page(s), 0.1x0.1 in, 4 KB",
+      "error": null,
+      "ms": 128,
+      "opMs": 82,
+      "heapMB": 8,
+      "audit": 23,
+      "checks": [
+        {
+          "name": "images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one page per TIFF frame",
+          "ok": true,
+          "detail": "3 pages",
+          "soft": false,
+          "audit": 23
+        },
+        {
+          "name": "fit page is a sane paper size (<= 17 in)",
+          "ok": true,
+          "detail": "0.1 x 0.1 in",
+          "soft": true,
+          "audit": 23
+        },
+        {
+          "name": "output not bloated (<= 3x input)",
+          "ok": true,
+          "detail": "0.7x input",
+          "soft": true,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-tiff-multipage.tiff",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/tiff-multipage.tiff"
+      ],
+      "result": "PASS",
+      "detail": "3 page(s), 0.1x0.1 in, 4 KB; warn: output not bloated (<= 3x input) (4.8x input)",
+      "error": null,
+      "ms": 208,
+      "opMs": 90,
+      "heapMB": 8,
+      "audit": 23,
+      "checks": [
+        {
+          "name": "images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one page per TIFF frame",
+          "ok": true,
+          "detail": "3 pages",
+          "soft": false,
+          "audit": 23
+        },
+        {
+          "name": "fit page is a sane paper size (<= 17 in)",
+          "ok": true,
+          "detail": "0.1 x 0.1 in",
+          "soft": true,
+          "audit": 23
+        },
+        {
+          "name": "output not bloated (<= 3x input)",
+          "ok": false,
+          "detail": "4.8x input",
+          "soft": true,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-webp-chandrayaan-rover.webp",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/webp-chandrayaan-rover.webp"
+      ],
+      "result": "PASS",
+      "detail": "1 page(s), 3.7x2.9 in, 59 KB",
+      "error": null,
+      "ms": 131,
+      "opMs": 34,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fit page is a sane paper size (<= 17 in)",
+          "ok": true,
+          "detail": "3.7 x 2.9 in",
+          "soft": true,
+          "audit": 23
+        },
+        {
+          "name": "output not bloated (<= 3x input)",
+          "ok": true,
+          "detail": "2.8x input",
+          "soft": true,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-webp-hopper.webp",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/webp-hopper.webp"
+      ],
+      "result": "PASS",
+      "detail": "1 page(s), 0.9x0.9 in, 8 KB",
+      "error": null,
+      "ms": 127,
+      "opMs": 24,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "fit page is a sane paper size (<= 17 in)",
+          "ok": true,
+          "detail": "0.9 x 0.9 in",
+          "soft": true,
+          "audit": 23
+        },
+        {
+          "name": "output not bloated (<= 3x input)",
+          "ok": true,
+          "detail": "2.5x input",
+          "soft": true,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-three-photos-a4",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/photo-24MP-punjab-smartphone.jpg",
+        "images/photo-castle-3456x2628.jpg",
+        "images/photo-portrait-sepia-1640x2268.jpg"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 5024,
+      "opMs": 3162,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: page count",
+          "ok": true,
+          "detail": "got 3, want 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 3 vs MuPDF 3",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "A4 pages",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "html2pdf-tracemonkey-text",
+      "tool": "html2pdf",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 230 KB; warn: selectable text (coverage 0.00)",
+      "error": null,
+      "ms": 2188,
+      "opMs": 1003,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "html.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "has pages",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "head <style> applied",
+          "ok": true,
+          "detail": "2256 red pixels",
+          "soft": true,
+          "audit": 28
+        },
+        {
+          "name": "selectable text",
+          "ok": false,
+          "detail": "coverage 0.00",
+          "soft": true,
+          "audit": 28
+        }
+      ]
+    },
+    {
+      "id": "i-html2pdf-quick-styled-report",
+      "tool": "html2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [],
+      "result": "PASS",
+      "detail": "1 page(s), 152 KB, 353 ms",
+      "error": null,
+      "ms": 563,
+      "opMs": 469,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no remote fetches (stylesheet, @import, images)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 28
+        },
+        {
+          "name": "html.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "head <style> applied (red h1, blue table header)",
+          "ok": true,
+          "detail": "red 5419, blue 19688",
+          "soft": false,
+          "audit": 28
+        }
+      ]
+    },
+    {
+      "id": "i-html2pdf-quick-long-page",
+      "tool": "html2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [],
+      "result": "PASS",
+      "detail": "22 pages, 3.9 MB, 49065 ms",
+      "error": null,
+      "ms": 51949,
+      "opMs": 50219,
+      "heapMB": 44,
+      "audit": null,
+      "checks": [
+        {
+          "name": "html.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 22 vs MuPDF 22",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "many pages, no canvas failure",
+          "ok": true,
+          "detail": "22 pages",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    }
+  ]
+}

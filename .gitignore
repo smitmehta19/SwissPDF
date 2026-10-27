@@ -8,3 +8,4 @@ public/samples/
 test-corpus/
 .claude/worktrees/
 .claude/snapshots/
+.playwright-mcp/

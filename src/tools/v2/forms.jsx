@@ -35,6 +35,44 @@ function useScan(id) {
   return state.id === id ? state : { id, scan: null, error: null }
 }
 
+// Human names for fields: the tooltip (/TU) the form author wrote, read from
+// pdf.js annotations, so a screen reader hears "First name" and not
+// "topmostSubform[0].Page1[0].f1_01[0]".
+const labelScans = new Map()
+function useLabels(id) {
+  const [labels, setLabels] = useState({ id: null, map: {} })
+  useEffect(() => {
+    if (!id) return undefined
+    let active = true
+    if (!labelScans.has(id)) {
+      labelScans.set(
+        id,
+        (async () => {
+          const { openPdfDocument, serializedPdfOp } = await import('../../lib/pdfText.js')
+          const bytes = await getBytes(id)
+          return serializedPdfOp(async () => {
+            const doc = await openPdfDocument(bytes)
+            const map = {}
+            for (let i = 1; i <= Math.min(doc.numPages, 60); i++) {
+              const page = await doc.getPage(i)
+              for (const a of await page.getAnnotations()) if (a.fieldName && a.alternativeText && !map[a.fieldName]) map[a.fieldName] = a.alternativeText.trim()
+            }
+            return map
+          })
+        })().catch(() => ({})),
+      )
+    }
+    labelScans.get(id).then((map) => active && setLabels({ id, map }))
+    return () => {
+      active = false
+    }
+  }, [id])
+  return labels.id === id ? labels.map : {}
+}
+
+// The tooltip when there is one, else the last readable part of the field name.
+const labelFor = (labels, name) => labels[name] || name.split('.').pop().replace(/\[\d+\]$/, '')
+
 const MODES = [
   ['fill', 'Fill', 'forms'],
   ['text', 'Text', 'edit'],
@@ -48,6 +86,7 @@ let seq = 1
 function Canvas({ files, options: o, setOptions, target, onTarget }) {
   const { file } = currentOf(files, target)
   const { scan, error } = useScan(file?.id)
+  const labels = useLabels(file?.id)
   const start = useRef(null)
   const [draft, setDraft] = useState(null)
   const [detecting, setDetecting] = useState(null)
@@ -82,6 +121,7 @@ function Canvas({ files, options: o, setOptions, target, onTarget }) {
       target={target}
       onTarget={onTarget}
       testId="form-canvas"
+      zoom
       cursor={o.mode === 'fill' ? 'default' : 'crosshair'}
       hint={error ?? xfaNote ?? (o.mode === 'fill' ? 'Type into the fields on the page.' : o.mode === 'radio' ? 'Drag a wide box: one button per option is placed across it.' : 'Drag on the page to draw the field.')}
       toolbar={
@@ -129,34 +169,44 @@ function Canvas({ files, options: o, setOptions, target, onTarget }) {
           {(scan?.fields ?? [])
             .filter((f) => f.pageIndex === page - 1 && f.w > 2 && f.h > 2)
             .map((f, i) => {
-              const style = ptStyle(f, size)
               const v = valueOf(f)
-              const common = { 'data-g3-control': true, 'data-testid': 'pdf-field', title: f.name, disabled: f.readOnly }
+              const label = labelFor(labels, f.name)
+              const common = { 'data-g3-control': true, 'data-testid': 'pdf-field', title: label, disabled: f.readOnly }
+              // the label sits on the widget box; in fill mode its halo makes
+              // the click target at least 24 px without moving the field
+              const hit = (key, control) => (
+                <label key={key} className={`g3-ov g3-slot ${o.mode === 'fill' ? 'g3-hit' : ''}`} style={{ ...ptStyle(f, size), '--fh': f.h }}>
+                  {control}
+                </label>
+              )
               if (f.type === 'checkbox')
-                return (
-                  <label key={i} className="g3-ov g3-field g3-field-check" style={style}>
-                    <input type="checkbox" {...common} aria-label={f.name} checked={!!v} onChange={(e) => setValue(f.name, e.target.checked)} />
-                  </label>
+                return hit(
+                  i,
+                  <span className="g3-field g3-field-check">
+                    <input type="checkbox" {...common} aria-label={label} checked={!!v} onChange={(e) => setValue(f.name, e.target.checked)} />
+                  </span>,
                 )
               if (f.type === 'radio')
-                return (
-                  <label key={i} className="g3-ov g3-field g3-field-check" style={style}>
-                    <input type="radio" {...common} aria-label={`${f.name}: ${f.widgetOption}`} name={`r-${file.id}-${f.name}`} checked={v === f.widgetOption} onChange={() => setValue(f.name, f.widgetOption)} />
-                  </label>
+                return hit(
+                  i,
+                  <span className="g3-field g3-field-check">
+                    <input type="radio" {...common} aria-label={`${label}: ${f.widgetOption}`} name={`r-${file.id}-${f.name}`} checked={v === f.widgetOption} onChange={() => setValue(f.name, f.widgetOption)} />
+                  </span>,
                 )
               if (f.options)
-                return (
-                  <select key={i} className="g3-ov g3-field" style={style} {...common} aria-label={f.name} value={v ?? ''} onChange={(e) => setValue(f.name, e.target.value)}>
+                return hit(
+                  i,
+                  <select className="g3-field" {...common} aria-label={label} value={v ?? ''} onChange={(e) => setValue(f.name, e.target.value)}>
                     <option value="" />
                     {f.options.map((opt) => (
                       <option key={opt} value={opt}>
                         {opt}
                       </option>
                     ))}
-                  </select>
+                  </select>,
                 )
               if (f.type !== 'text') return null
-              return <input key={i} className="g3-ov g3-field" style={style} {...common} aria-label={f.name} maxLength={f.maxLength || undefined} value={v ?? ''} onChange={(e) => setValue(f.name, e.target.value)} />
+              return hit(i, <input className="g3-field" {...common} aria-label={label} maxLength={f.maxLength || undefined} value={v ?? ''} onChange={(e) => setValue(f.name, e.target.value)} />)
             })}
           {added
             .filter((f) => f.pageIndex === page - 1)

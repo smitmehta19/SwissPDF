@@ -3,11 +3,14 @@
 // tools can work on it, and the user gets a short notice instead of a reject.
 import { PDFDocument } from 'pdf-lib'
 import { inspectPdf, unlockPdf } from './cryptoOps.js'
-import { repairPdf } from './mupdfOps.js'
+import { repairPdf, rewriteOk } from './mupdfOps.js'
 
 export const NOTICE_RESTRICTED = 'Restrictions removed so the file can be edited'
 export const NOTICE_UNLOCKED = 'Password removed so the file can be edited'
 export const NOTICE_REPAIRED = 'File was damaged and has been repaired'
+// "2 of 184 pages could not be recovered", "1 page rebuilt as an image"
+const lostNotice = (lost, total) => `${lost} of ${total} pages could not be recovered`
+const rasterNotice = (n) => `${n} page${n === 1 ? '' : 's'} rebuilt as an image`
 
 let mupdfPromise = null
 function getMupdf() {
@@ -73,13 +76,15 @@ async function unlockWithPassword(bytes, password) {
 
 // Plain MuPDF open + save: MuPDF rebuilds a broken xref on open and the
 // rewrite keeps outlines, forms and metadata (unlike the per-page graft).
+// Returns the bytes and the page count MuPDF saw.
 async function mupdfRewrite(bytes) {
   const mupdf = await getMupdf()
   const doc = mupdf.Document.openDocument(new Uint8Array(bytes), 'application/pdf')
   try {
     if (doc.needsPassword()) throw new Error('File needs a password')
-    if (doc.countPages() < 1) throw new Error('No readable pages')
-    return doc.saveToBuffer('garbage,encrypt=none').asUint8Array().slice()
+    const pageCount = doc.countPages()
+    if (pageCount < 1) throw new Error('No readable pages')
+    return { bytes: doc.saveToBuffer('garbage,encrypt=none').asUint8Array().slice(), pageCount }
   } finally {
     doc.destroy?.()
   }
@@ -126,12 +131,14 @@ export async function normalizePdf(input, { password } = {}) {
   } catch (err) {
     causes.push(`MuPDF rewrite: ${causeOf(err)}`)
   }
+  // the rewrite counts only when pdf-lib sees every page MuPDF sees (a
+  // truncated file can lose a page in it); else the page rebuild below
   if (repaired) {
-    const check = await tryPdfLib(repaired)
-    if (check.pageCount) {
-      return { bytes: repaired, pageCount: check.pageCount, notices: [...notices, NOTICE_REPAIRED] }
+    if (await rewriteOk(repaired.bytes, repaired.pageCount)) {
+      return { bytes: repaired.bytes, pageCount: repaired.pageCount, notices: [...notices, NOTICE_REPAIRED] }
     }
-    causes.push(`pdf-lib after rewrite: ${causeOf(check.error)}`)
+    const check = await tryPdfLib(repaired.bytes)
+    causes.push(`pdf-lib after rewrite: ${check.pageCount ? `${check.pageCount} of ${repaired.pageCount} pages` : causeOf(check.error)}`)
   }
 
   try {
@@ -139,7 +146,10 @@ export async function normalizePdf(input, { password } = {}) {
     const out = result.bytes instanceof Uint8Array ? result.bytes : new Uint8Array(result.bytes)
     const check = await tryPdfLib(out)
     if (check.pageCount) {
-      return { bytes: out, pageCount: check.pageCount, notices: [...notices, NOTICE_REPAIRED] }
+      const more = []
+      if (result.lost) more.push(lostNotice(result.lost, result.pageCount))
+      if (result.rasterized) more.push(rasterNotice(result.rasterized))
+      return { bytes: out, pageCount: check.pageCount, notices: [...notices, NOTICE_REPAIRED, ...more] }
     }
     causes.push(`pdf-lib after repair: ${causeOf(check.error)}`)
   } catch (err) {

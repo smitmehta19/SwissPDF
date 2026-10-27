@@ -1,0 +1,5386 @@
+{
+  "name": "review-g2-2",
+  "startedAt": "2026-10-27T09:27:58.916Z",
+  "finishedAt": "2026-10-27T09:39:37.944Z",
+  "durationMin": 11.7,
+  "command": "npm run test:corpus -- --tool ocr,autorotate,protect,unlock,repair,compare,health --name review-g2-2",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 85,
+    "fail": 0,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "repair",
+      "pass": 11,
+      "fail": 0,
+      "skip": 0,
+      "ms": 33643
+    },
+    {
+      "tool": "protect",
+      "pass": 16,
+      "fail": 0,
+      "skip": 0,
+      "ms": 6301
+    },
+    {
+      "tool": "unlock",
+      "pass": 13,
+      "fail": 0,
+      "skip": 0,
+      "ms": 5823
+    },
+    {
+      "tool": "ocr",
+      "pass": 22,
+      "fail": 0,
+      "skip": 0,
+      "ms": 465632
+    },
+    {
+      "tool": "compare",
+      "pass": 10,
+      "fail": 0,
+      "skip": 0,
+      "ms": 41755
+    },
+    {
+      "tool": "health",
+      "pass": 1,
+      "fail": 0,
+      "skip": 0,
+      "ms": 16918
+    },
+    {
+      "tool": "autorotate",
+      "pass": 12,
+      "fail": 0,
+      "skip": 0,
+      "ms": 107635
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no per-render copy counter; large scans now render (JPX fixed in U1), see time and heap on pdf2img-bible-62MB, pdf2img-crooked-104MB, split-911-large"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "ocr-fax-printed: no network fetches outside the page origin",
+        "ocr-fips-printed: no network fetches outside the page origin",
+        "ocr-darwin-with-text-layer: no network fetches outside the page origin",
+        "ocr-lincoln-letter: no network fetches outside the page origin",
+        "ocr-glover-handwritten: no network fetches outside the page origin",
+        "ocr-ndl-japanese-scan: no network fetches outside the page origin",
+        "ocr-born-digital-invoice: no network fetches outside the page origin",
+        "ocr-intl-korean: no network fetches outside the page origin",
+        "g2-ocr-geometry: no network fetches outside the page origin",
+        "g2-ocr-scan-chinese: chi_sim text recognised",
+        "g2-ocr-scan-chinese: no network fetches outside the page origin",
+        "g2-ocr-scan-japanese: jpn text recognised",
+        "g2-ocr-scan-japanese: no network fetches outside the page origin",
+        "g2-ocr-scan-korean: kor text recognised",
+        "g2-ocr-scan-korean: no network fetches outside the page origin",
+        "g2-ocr-scan-arabic: ara+eng text recognised",
+        "g2-ocr-scan-arabic: no network fetches outside the page origin",
+        "g2-ocr-scan-hindi: hin text recognised",
+        "g2-ocr-scan-hindi: no network fetches outside the page origin",
+        "g2-ocr-scan-mixed-eng-deu: eng+deu text recognised",
+        "g2-ocr-scan-mixed-eng-deu: no network fetches outside the page origin",
+        "g2-ocr-fax-force: no network fetches outside the page origin",
+        "g2-ocr-lincoln-36p: no network fetches outside the page origin",
+        "g2-ocr-konoye-jpn: no network fetches outside the page origin"
+      ],
+      "passedChecks": 24,
+      "reason": null
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "SOFT WARN",
+      "evidence": [
+        "ocr-darwin-with-text-layer: skips pages that already have text (33 words before, +33 added)",
+        "ocr-born-digital-invoice: skips pages that already have text (105 words before, +105 added)",
+        "ocr-intl-korean: skips pages that already have text (0 words before, +36 added)"
+      ],
+      "passedChecks": 8,
+      "reason": null
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "CDN pinning is a config review item; font fidelity not scored"
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "protect-comma-password: comma password refused with a clear message",
+        "g2-protect-permissions-only: printing and copying blocked",
+        "g2-protect-permissions-only: other permissions kept",
+        "g2-protect-open-and-owner: open password gets the restricted rights",
+        "g2-protect-aes128-tracemonkey: restrictions applied",
+        "g2-protect-rc4-40-invoice: restrictions applied",
+        "g2-protect-aes256-fw9: restrictions applied"
+      ],
+      "passedChecks": 7,
+      "reason": null
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no PAdES / multi-place API to call)"
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "repair-budget-bookmarks: bookmarks kept",
+        "repair-fw9-form: form fields kept",
+        "g2-repair-keeps-structure: plain rewrite used",
+        "g2-repair-keeps-structure: bookmarks kept",
+        "g2-repair-keeps-fields: form fields kept",
+        "g2-repair-truncated-bookmarks: bookmarks kept after the rebuild"
+      ],
+      "passedChecks": 6,
+      "reason": null
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "compare-inserted-page: only the inserted page differs",
+        "compare-911-self: passed",
+        "compare-dense-econ-self: passed",
+        "g2-compare-inserted-overlay: one inserted page, nothing else changed",
+        "g2-compare-removed-page: only the removed page differs",
+        "g2-compare-dense-removed-page: only the removed page differs"
+      ],
+      "passedChecks": 6,
+      "reason": null
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap"
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "SOFT WARN",
+      "evidence": [
+        "health-selftest: self-test covers real-world fixtures (synthetic pdf-lib fixtures only)"
+      ],
+      "passedChecks": 0,
+      "reason": null
+    }
+  ],
+  "results": [
+    {
+      "id": "repair-xref-missing",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-xref_command_missing.pdf"
+      ],
+      "result": "PASS",
+      "detail": "recovered 1, rasterized 0, lost 0",
+      "error": null,
+      "ms": 13913,
+      "opMs": 387,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "repaired.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text kept",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "repair-fuzzed-742",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-poppler-742-0-fuzzed.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": "Unrecoverable: the file structure is too damaged to parse (invalid key in dict).",
+      "ms": 116,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "fails gracefully",
+          "ok": true,
+          "detail": "Unrecoverable: the file structure is too damaged to parse (invalid key in dict).",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "repair-fuzzed-395",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-poppler-395-0-fuzzed.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": "Unrecoverable: the file contains no readable pages.",
+      "ms": 116,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "fails gracefully",
+          "ok": true,
+          "detail": "Unrecoverable: the file contains no readable pages.",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "repair-bug1020226",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-bug1020226.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": "Unrecoverable: the file contains no readable pages.",
+      "ms": 120,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "fails gracefully",
+          "ok": true,
+          "detail": "Unrecoverable: the file contains no readable pages.",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "repair-pages-tree-refs",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-Pages-tree-refs.pdf"
+      ],
+      "result": "PASS",
+      "detail": "recovered 1, rasterized 0, lost 1",
+      "error": null,
+      "ms": 121,
+      "opMs": 38,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "repaired.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "repair-offset-start",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdf20-offset-start.pdf"
+      ],
+      "result": "PASS",
+      "detail": "recovered 1, rasterized 0, lost 0",
+      "error": null,
+      "ms": 117,
+      "opMs": 21,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "repaired.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text kept",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "repair-budget-bookmarks",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "recovered 184, rasterized 0, lost 0",
+      "error": null,
+      "ms": 3337,
+      "opMs": 2855,
+      "heapMB": 28,
+      "audit": null,
+      "checks": [
+        {
+          "name": "repaired.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page count",
+          "ok": true,
+          "detail": "got 184, want 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 184 vs MuPDF 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text kept",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bookmarks kept",
+          "ok": true,
+          "detail": "27 of 27",
+          "soft": true,
+          "audit": 26
+        }
+      ]
+    },
+    {
+      "id": "repair-fw9-form",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "recovered 6, rasterized 0, lost 0",
+      "error": null,
+      "ms": 137,
+      "opMs": 77,
+      "heapMB": 42,
+      "audit": null,
+      "checks": [
+        {
+          "name": "repaired.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text kept",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "form fields kept",
+          "ok": true,
+          "detail": "23 of 23",
+          "soft": true,
+          "audit": 26
+        }
+      ]
+    },
+    {
+      "id": "g2-repair-keeps-structure",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "rewrite, 27 of 27 bookmarks",
+      "error": null,
+      "ms": 3039,
+      "opMs": 2701,
+      "heapMB": 68,
+      "audit": null,
+      "checks": [
+        {
+          "name": "repaired.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page count",
+          "ok": true,
+          "detail": "got 184, want 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 184 vs MuPDF 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "plain rewrite used",
+          "ok": true,
+          "detail": "rewrite",
+          "soft": false,
+          "audit": 26
+        },
+        {
+          "name": "bookmarks kept",
+          "ok": true,
+          "detail": "27 of 27",
+          "soft": false,
+          "audit": 26
+        }
+      ]
+    },
+    {
+      "id": "g2-repair-keeps-fields",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "rewrite, 23 of 23 fields",
+      "error": null,
+      "ms": 125,
+      "opMs": 63,
+      "heapMB": 43,
+      "audit": null,
+      "checks": [
+        {
+          "name": "repaired.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "repaired.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "form fields kept",
+          "ok": true,
+          "detail": "23 of 23",
+          "soft": false,
+          "audit": 26
+        }
+      ]
+    },
+    {
+      "id": "g2-repair-truncated-bookmarks",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "rebuild, 183 pages, 27/27 bookmarks, intake: File was damaged and has been repaired. 1 of 184 pages could not be recovered",
+      "error": null,
+      "ms": 12502,
+      "opMs": 11578,
+      "heapMB": 71,
+      "audit": null,
+      "checks": [
+        {
+          "name": "bookmarks kept after the rebuild",
+          "ok": true,
+          "detail": "27 of 27 (rebuild)",
+          "soft": false,
+          "audit": 26
+        },
+        {
+          "name": "every page MuPDF reads is kept or reported",
+          "ok": true,
+          "detail": "183 kept + 1 lost of 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "intake does not hide a missing page",
+          "ok": true,
+          "detail": "intake 183 of 184 pages: File was damaged and has been repaired. 1 of 184 pages could not be recovered",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "protect-tracemonkey",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "Standard V5 R6 256-bit AES",
+      "error": null,
+      "ms": 1484,
+      "opMs": 378,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "needs a password to open",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "typed password opens it",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "wrong password refused",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "needs password",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "content intact",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "protect-911-large",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "large",
+      "files": [
+        "large/911-commission-report.pdf"
+      ],
+      "result": "PASS",
+      "detail": "Standard V5 R6 256-bit AES",
+      "error": null,
+      "ms": 1635,
+      "opMs": 373,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "needs a password to open",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "typed password opens it",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "wrong password refused",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "needs password",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page count",
+          "ok": true,
+          "detail": "got 585, want 585",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 585 vs MuPDF 585",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "content intact",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "protect-owner-only-input",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/owner-only-irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "Standard V5 R6 256-bit AES",
+      "error": null,
+      "ms": 457,
+      "opMs": 226,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "needs a password to open",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "typed password opens it",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "wrong password refused",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "needs password",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "content intact",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "protect-comma-password",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "refused: Passwords cannot contain a comma.",
+      "error": "Passwords cannot contain a comma.",
+      "ms": 123,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "comma password refused with a clear message",
+          "ok": true,
+          "detail": "Passwords cannot contain a comma.",
+          "soft": false,
+          "audit": 22
+        }
+      ]
+    },
+    {
+      "id": "protect-unicode-password",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "Standard V5 R6 256-bit AES",
+      "error": null,
+      "ms": 351,
+      "opMs": 179,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "needs a password to open",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "typed password opens it",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "wrong password refused",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "needs password",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "content intact",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-protect-permissions-only",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "Standard V5 R6 256-bit AES, {\"print\":false,\"copy\":false,\"edit\":true,\"annotate\":true,\"form\":true,\"assemble\":true,\"print-hq\":false}",
+      "error": null,
+      "ms": 452,
+      "opMs": 197,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "opens without a password",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "printing and copying blocked",
+          "ok": true,
+          "detail": "{\"print\":false,\"copy\":false,\"edit\":true,\"annotate\":true,\"form\":true,\"assemble\":true,\"print-hq\":false}",
+          "soft": false,
+          "audit": 22
+        },
+        {
+          "name": "other permissions kept",
+          "ok": true,
+          "detail": "{\"print\":false,\"copy\":false,\"edit\":true,\"annotate\":true,\"form\":true,\"assemble\":true,\"print-hq\":false}",
+          "soft": false,
+          "audit": 22
+        },
+        {
+          "name": "owner password lifts them",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "AES-256",
+          "ok": true,
+          "detail": "Standard V5 R6 256-bit AES",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-protect-open-and-owner",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "{\"print\":true,\"copy\":true,\"edit\":false,\"annotate\":true,\"form\":true,\"assemble\":false,\"print-hq\":true}",
+      "error": null,
+      "ms": 230,
+      "opMs": 158,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "needs the open password",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "open password gets the restricted rights",
+          "ok": true,
+          "detail": "{\"print\":true,\"copy\":true,\"edit\":false,\"annotate\":true,\"form\":true,\"assemble\":false,\"print-hq\":true}",
+          "soft": false,
+          "audit": 22
+        },
+        {
+          "name": "permissions password (with \"=\") opens with full rights",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "wrong password refused",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-protect-aes128-tracemonkey",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "Standard V4 R4 128-bit AES, {\"print\":false,\"copy\":false,\"edit\":true,\"annotate\":true,\"form\":false,\"assemble\":true,\"print-hq\":false}",
+      "error": null,
+      "ms": 344,
+      "opMs": 119,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "128-bit AES",
+          "ok": true,
+          "detail": "Standard V4 R4 128-bit AES",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "needs the open password",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "restrictions applied",
+          "ok": true,
+          "detail": "{\"print\":false,\"copy\":false,\"edit\":true,\"annotate\":true,\"form\":false,\"assemble\":true,\"print-hq\":false}",
+          "soft": false,
+          "audit": 22
+        },
+        {
+          "name": "permissions password opens with full rights",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "needs password",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-protect-rc4-40-invoice",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "Standard V1 R2 40-bit RC4, {\"print\":false,\"copy\":true,\"edit\":false,\"annotate\":true,\"form\":true,\"assemble\":true,\"print-hq\":false}",
+      "error": null,
+      "ms": 121,
+      "opMs": 31,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "40-bit RC4",
+          "ok": true,
+          "detail": "Standard V1 R2 40-bit RC4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "needs the open password",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "restrictions applied",
+          "ok": true,
+          "detail": "{\"print\":false,\"copy\":true,\"edit\":false,\"annotate\":true,\"form\":true,\"assemble\":true,\"print-hq\":false}",
+          "soft": false,
+          "audit": 22
+        },
+        {
+          "name": "permissions password opens with full rights",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "needs password",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-protect-aes256-fw9",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "Standard V5 R6 256-bit AES, {\"print\":true,\"copy\":true,\"edit\":true,\"annotate\":true,\"form\":false,\"assemble\":false,\"print-hq\":false}",
+      "error": null,
+      "ms": 323,
+      "opMs": 207,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "256-bit AES",
+          "ok": true,
+          "detail": "Standard V5 R6 256-bit AES",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "needs the open password",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "restrictions applied",
+          "ok": true,
+          "detail": "{\"print\":true,\"copy\":true,\"edit\":true,\"annotate\":true,\"form\":false,\"assemble\":false,\"print-hq\":false}",
+          "soft": false,
+          "audit": 22
+        },
+        {
+          "name": "permissions password opens with full rights",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "needs password",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-protect-aes256-unicode-pdfjs",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 233,
+      "opMs": 100,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "protected.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "needs password",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pdf.js opens it with the typed password",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "MuPDF opens it with the typed password",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "a shorter password does not open it",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-protect-aes128-emoji-refused",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": "AES 128-bit only takes Latin letters, digits and common symbols, not \"🔒\". Choose AES 256-bit for this password.",
+      "ms": 117,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "emoji in AES 128 refused with a clear message",
+          "ok": true,
+          "detail": "AES 128-bit only takes Latin letters, digits and common symbols, not \"🔒\". Choose AES 256-bit for this password.",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-protect-rc4-nbsp-refused",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": "RC4 40-bit only takes Latin letters, digits and common symbols, not \"non-breaking space\". Choose AES 256-bit for this password.",
+      "ms": 109,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "non-breaking space in RC4 40 refused with a clear message",
+          "ok": true,
+          "detail": "RC4 40-bit only takes Latin letters, digits and common symbols, not \"non-breaking space\". Choose AES 256-bit for this password.",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-protect-aes128-cjk-refused",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": "AES 128-bit only takes Latin letters, digits and common symbols, not \"密\". Choose AES 256-bit for this password.",
+      "ms": 107,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "CJK in AES 128 refused with a clear message",
+          "ok": true,
+          "detail": "AES 128-bit only takes Latin letters, digits and common symbols, not \"密\". Choose AES 256-bit for this password.",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-protect-aes256-softhyphen-refused",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": "This password has a character PDF apps read in different ways (a non-breaking space, soft hyphen, full-width letter or an accent typed as a separate mark). Type it with plain characters.",
+      "ms": 107,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "soft hyphen in AES 256 refused with a clear message",
+          "ok": true,
+          "detail": "This password has a character PDF apps read in different ways (a non-breaking space, soft hyphen, full-width letter or an accent typed as a separate mark). Type it with plain characters.",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-protect-aes256-fullwidth-refused",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": "This password has a character PDF apps read in different ways (a non-breaking space, soft hyphen, full-width letter or an accent typed as a separate mark). Type it with plain characters.",
+      "ms": 108,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "full-width letter in AES 256 refused with a clear message",
+          "ok": true,
+          "detail": "This password has a character PDF apps read in different ways (a non-breaking space, soft hyphen, full-width letter or an accent typed as a separate mark). Type it with plain characters.",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "unlock-issue3371",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-issue3371.pdf"
+      ],
+      "result": "PASS",
+      "detail": "removed: none listed, had user password",
+      "error": null,
+      "ms": 912,
+      "opMs": 214,
+      "heapMB": 8,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text intact",
+          "ok": true,
+          "detail": "coverage undefined",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "unlock-issue6010_1",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-issue6010_1.pdf"
+      ],
+      "result": "PASS",
+      "detail": "removed: none listed, had user password",
+      "error": null,
+      "ms": 236,
+      "opMs": 105,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text intact",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "unlock-issue6010_2",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-issue6010_2.pdf"
+      ],
+      "result": "PASS",
+      "detail": "removed: none listed, had user password",
+      "error": null,
+      "ms": 251,
+      "opMs": 116,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text intact",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "unlock-bug1782186",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-bug1782186.pdf"
+      ],
+      "result": "PASS",
+      "detail": "removed: none listed, had user password",
+      "error": null,
+      "ms": 121,
+      "opMs": 30,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text intact",
+          "ok": true,
+          "detail": "coverage undefined",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "unlock-issue21579",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-issue21579.pdf"
+      ],
+      "result": "PASS",
+      "detail": "removed: copying text, editing, annotating, reordering pages, had user password",
+      "error": null,
+      "ms": 141,
+      "opMs": 17,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "unlock-issue15893_reduced",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-issue15893_reduced.pdf"
+      ],
+      "result": "PASS",
+      "detail": "removed: none listed, had user password",
+      "error": null,
+      "ms": 120,
+      "opMs": 21,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text intact",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "unlock-saslprep-r6",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-saslprep-r6.pdf"
+      ],
+      "result": "PASS",
+      "detail": "removed: none listed, had user password",
+      "error": null,
+      "ms": 240,
+      "opMs": 125,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "unlock-user-pw-TAMReview",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/user-pw-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "removed: none listed, had user password",
+      "error": null,
+      "ms": 573,
+      "opMs": 248,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page count",
+          "ok": true,
+          "detail": "got 23, want 23",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 23 vs MuPDF 23",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text intact",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "unlock-empty-protected",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-empty_protected.pdf"
+      ],
+      "result": "PASS",
+      "detail": "removed: copying text, editing, reordering pages",
+      "error": null,
+      "ms": 236,
+      "opMs": 130,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text intact",
+          "ok": true,
+          "detail": "coverage undefined",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "unlock-owner-only-tracemonkey",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/owner-only-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "removed: printing, high-quality printing, copying text",
+      "error": null,
+      "ms": 531,
+      "opMs": 233,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text intact",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "unlock-owner-only-invoice",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/owner-only-aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "removed: printing, high-quality printing, copying text",
+      "error": null,
+      "ms": 341,
+      "opMs": 204,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text intact",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "unlock-wrong-password",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-bug1782186.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": "Wrong password, the file stays locked.",
+      "ms": 111,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "wrong password refused with a clear message",
+          "ok": true,
+          "detail": "Wrong password, the file stays locked.",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-unlock-owner-only-fast",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/a-owner-only-us-budget.pdf"
+      ],
+      "result": "PASS",
+      "detail": "603 ms, removed: printing, copying text, editing",
+      "error": null,
+      "ms": 2010,
+      "opMs": 1344,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page count",
+          "ok": true,
+          "detail": "got 184, want 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 184 vs MuPDF 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "outlines kept",
+          "ok": true,
+          "detail": "27 outlines",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "owner-only unlock is quick",
+          "ok": true,
+          "detail": "603 ms",
+          "soft": true,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "ocr-fax-printed",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "397 words, sample \"10/25/2008 15:38 FAX 202 225 1992 Congresswoman Sc\"",
+      "error": null,
+      "ms": 24450,
+      "opMs": 23327,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "searchable text added (20+ words)",
+          "ok": true,
+          "detail": "+246 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "ocr-fips-printed",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-fips-p5-6.pdf"
+      ],
+      "result": "PASS",
+      "detail": "91 words, sample \"N RS-466 PROCEDURES FOR DOCUMENT FACSIMILE TRANSMI\"",
+      "error": null,
+      "ms": 10463,
+      "opMs": 10315,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "searchable text added (20+ words)",
+          "ok": true,
+          "detail": "+53 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "ocr-darwin-with-text-layer",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-darwin-p10-11.pdf"
+      ],
+      "result": "PASS",
+      "detail": "97 words, sample \" CONTENTS PAGE EDITOR'S INTRODUCTION . 5 5 3 e o \"; warn: skips pages that already have text (33 words before, +33 added)",
+      "error": null,
+      "ms": 5253,
+      "opMs": 5121,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "searchable text added (20+ words)",
+          "ok": true,
+          "detail": "+33 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "skips pages that already have text",
+          "ok": false,
+          "detail": "33 words before, +33 added",
+          "soft": true,
+          "audit": 11
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "ocr-lincoln-letter",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-lincoln-p3-4.pdf"
+      ],
+      "result": "PASS",
+      "detail": "0 words, sample \" \"; warn: some text recognised (+0 words (OCR saw nothing: page renders blank, JPX scan))",
+      "error": null,
+      "ms": 3268,
+      "opMs": 3204,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "some text recognised",
+          "ok": false,
+          "detail": "+0 words (OCR saw nothing: page renders blank, JPX scan)",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "ocr-glover-handwritten",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/letter-to-benjamin-glover.pdf"
+      ],
+      "result": "PASS",
+      "detail": "449 words, sample \"Tl , AR caiksie feATT | | i RE 0 ie | | Aili i pT \"",
+      "error": null,
+      "ms": 94425,
+      "opMs": 93848,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "some text recognised",
+          "ok": true,
+          "detail": "+14 words",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "ocr-ndl-japanese-scan",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-ndl-konoye-p1.pdf"
+      ],
+      "result": "PASS",
+      "detail": "20 words, sample \"¢- © - REN gE RTT ERY A TR a A RY A SN a IPS EVIDE\"",
+      "error": null,
+      "ms": 11704,
+      "opMs": 11565,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "some text recognised",
+          "ok": true,
+          "detail": "+9 words",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "ocr-born-digital-invoice",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/oyo.pdf"
+      ],
+      "result": "PASS",
+      "detail": "183 words, sample \"OoYO PAYMENT RECEIPT Guest Name: Sanjay Date: 31/1\"; warn: skips pages that already have text (105 words before, +105 added)",
+      "error": null,
+      "ms": 5129,
+      "opMs": 5081,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "some text recognised",
+          "ok": true,
+          "detail": "+105 words",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "skips pages that already have text",
+          "ok": false,
+          "detail": "105 words before, +105 added",
+          "soft": true,
+          "audit": 11
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "ocr-intl-korean",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-korean.pdf"
+      ],
+      "result": "PASS",
+      "detail": "376 words, sample \"MA Ql MA ME DE QR FHM MEO EYE S551 FTE + gle HEE\"; warn: skips pages that already have text (0 words before, +36 added)",
+      "error": null,
+      "ms": 55533,
+      "opMs": 55302,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 7, want 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 7 vs MuPDF 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "some text recognised",
+          "ok": true,
+          "detail": "+36 words",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "skips pages that already have text",
+          "ok": false,
+          "detail": "0 words before, +36 added",
+          "soft": true,
+          "audit": 11
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-geometry",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "upright 45/46 median 1.7pt; turned 45/46 median 1.6pt; rot90crop 46/47 median 1.5pt; skew 41/43 median 1.8pt",
+      "error": null,
+      "ms": 59824,
+      "opMs": 59599,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "upright: words recognised",
+          "ok": true,
+          "detail": "46 of 49 probe words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "upright: words placed on the scan",
+          "ok": true,
+          "detail": "45 of 46 within 8 pt, median 1.7 pt",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "turned: words recognised",
+          "ok": true,
+          "detail": "46 of 49 probe words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "turned: words placed on the scan",
+          "ok": true,
+          "detail": "45 of 46 within 8 pt, median 1.6 pt",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "rot90crop: words recognised",
+          "ok": true,
+          "detail": "47 of 49 probe words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rot90crop: words placed on the scan",
+          "ok": true,
+          "detail": "46 of 47 within 8 pt, median 1.5 pt",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "skew: words recognised",
+          "ok": true,
+          "detail": "43 of 49 probe words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "skew: words placed on the scan",
+          "ok": true,
+          "detail": "41 of 43 within 8 pt, median 1.8 pt",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "sideways scan turned by OSD",
+          "ok": true,
+          "detail": "{\"totalWords\":721,\"rotatedPages\":[1]}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-scan-chinese",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-chinese-simplified.pdf"
+      ],
+      "result": "PASS",
+      "detail": "451 words, 0 without a font, coverage 0.92, \"世界 人 权 宣 告 联合 国 大 会 一 九 四 八 年 十 二 月 十 日\"",
+      "error": null,
+      "ms": 11063,
+      "opMs": 10819,
+      "heapMB": 18,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "chi_sim text recognised",
+          "ok": true,
+          "detail": "coverage 0.92 (want 0.6)",
+          "soft": false,
+          "audit": 10
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-scan-japanese",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-japanese.pdf"
+      ],
+      "result": "PASS",
+      "detail": "399 words, 0 without a font, coverage 0.96, \"『 世 界 人 権 宣言 』 ( 1948.12.10 第 3 回 国連 総会\"",
+      "error": null,
+      "ms": 14384,
+      "opMs": 14242,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "jpn text recognised",
+          "ok": true,
+          "detail": "coverage 0.96 (want 0.5)",
+          "soft": false,
+          "audit": 10
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-scan-korean",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-korean.pdf"
+      ],
+      "result": "PASS",
+      "detail": "460 words, 0 without a font, coverage 0.99, \"세계인권선언 전 문 모든 인류 구성원의 천부의 존엄성과 동등하고 양도\"",
+      "error": null,
+      "ms": 13825,
+      "opMs": 13644,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "kor text recognised",
+          "ok": true,
+          "detail": "coverage 0.99 (want 0.4)",
+          "soft": false,
+          "audit": 10
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-scan-arabic",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-arabic.pdf"
+      ],
+      "result": "PASS",
+      "detail": "290 words, 1 without a font, coverage 1.00, \"UDHR - Arabic, Standard https://unicode.\"",
+      "error": null,
+      "ms": 13711,
+      "opMs": 13602,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ara+eng text recognised",
+          "ok": true,
+          "detail": "5 key words found",
+          "soft": false,
+          "audit": 10
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-scan-hindi",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-hindi.pdf"
+      ],
+      "result": "PASS",
+      "detail": "547 words, 8 without a font, coverage undefined, \"ह्ड - प़ंएतां मानव अधिकारों की सार्वमौम \"",
+      "error": null,
+      "ms": 18057,
+      "opMs": 17805,
+      "heapMB": 21,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "hin text recognised",
+          "ok": true,
+          "detail": "3 key words found",
+          "soft": false,
+          "audit": 10
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-scan-mixed-eng-deu",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "724 words, 0 without a font, coverage 0.97, \". . . . . . Trace-based Just-in-Time Typ\"",
+      "error": null,
+      "ms": 19091,
+      "opMs": 18866,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "eng+deu text recognised",
+          "ok": true,
+          "detail": "coverage 0.97 (want 0.8)",
+          "soft": false,
+          "audit": 10
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-fax-force",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "397 words on 2 pages (0 skipped), turned 0, \"10/25/2008 15:38 FAX 202 225 1992 Congre\"",
+      "error": null,
+      "ms": 10677,
+      "opMs": 10582,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "searchable text added (100+ words)",
+          "ok": true,
+          "detail": "+397 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page read",
+          "ok": true,
+          "detail": "read 2 of 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "old text layer replaced, not doubled",
+          "ok": true,
+          "detail": "\"Schmidt\" 3 -> 3, 3023 -> 3268 chars, replaced on 2 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-lincoln-36p",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "80 words on 24 pages (12 skipped), turned 0, \" TEL ey +o '] i ¥ 7, x - 3 - a, )\"",
+      "error": null,
+      "ms": 43904,
+      "opMs": 43677,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 36, want 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 36 vs MuPDF 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "searchable text added (5+ words)",
+          "ok": true,
+          "detail": "+14 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "pages without text read, the rest skipped",
+          "ok": true,
+          "detail": "read 24, skipped 12 of 36",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-konoye-jpn",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-ndl-konoye-p1.pdf"
+      ],
+      "result": "PASS",
+      "detail": "21 words on 1 pages (0 skipped), turned 0, \"ii | TPS EVIDENTIARY DOCUMENT wo ンズ の 村 \"",
+      "error": null,
+      "ms": 17480,
+      "opMs": 17339,
+      "heapMB": 15,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "searchable text added (1+ words)",
+          "ok": true,
+          "detail": "+10 words",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "pages without text read, the rest skipped",
+          "ok": true,
+          "detail": "read 1, skipped 0 of 1",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-ndl-japanese-handwritten",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-ndl-konoye-p1.pdf"
+      ],
+      "result": "PASS",
+      "detail": "21 words, 2 CJK characters; warn: Japanese characters recognised (2 CJK characters)",
+      "error": null,
+      "ms": 12652,
+      "opMs": 12529,
+      "heapMB": 15,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "Japanese characters recognised",
+          "ok": false,
+          "detail": "2 CJK characters",
+          "soft": true,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-skip-text-pages",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-darwin-p10-11.pdf"
+      ],
+      "result": "PASS",
+      "detail": "read 1, skipped 2",
+      "error": null,
+      "ms": 1876,
+      "opMs": 1794,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page with a text layer skipped",
+          "ok": true,
+          "detail": "skipped 2",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "page without text read",
+          "ok": true,
+          "detail": "read 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text layer not duplicated",
+          "ok": true,
+          "detail": "390 chars before, 390 after",
+          "soft": false,
+          "audit": 11
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-force-text-pages",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/oyo.pdf"
+      ],
+      "result": "PASS",
+      "detail": "183 words",
+      "error": null,
+      "ms": 6346,
+      "opMs": 6228,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "force reads the page anyway",
+          "ok": true,
+          "detail": "183 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-cancel",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "stopped at 3006 ms during \"Page 1 of 2, recognizing\", next run 334 words",
+      "error": null,
+      "ms": 12517,
+      "opMs": 12440,
+      "heapMB": 17,
+      "audit": null,
+      "checks": [
+        {
+          "name": "cancel stops the run",
+          "ok": true,
+          "detail": "{\"cancelled\":true,\"stopMs\":3006,\"stage\":\"Page 1 of 2, recognizing\",\"againWords\":334}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stops within 2 s of cancel",
+          "ok": true,
+          "detail": "3006 ms after start (cancel at 3000)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "a later run still works",
+          "ok": true,
+          "detail": "334 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "compare-same-file",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/compare-tracemonkey-base.pdf",
+        "derived/compare-tracemonkey-base.pdf"
+      ],
+      "result": "PASS",
+      "detail": "+0 -0, changed pages none",
+      "error": null,
+      "ms": 3472,
+      "opMs": 1674,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "identical",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "compare-with-annotations",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf",
+        "quirks/pdfjs-tracemonkey_with_annotations.pdf"
+      ],
+      "result": "PASS",
+      "detail": "+0 -0, changed pages none",
+      "error": null,
+      "ms": 650,
+      "opMs": 457,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "same text = identical",
+          "ok": true,
+          "detail": "+0 -0",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "compare-inserted-page",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/compare-tracemonkey-base.pdf",
+        "derived/compare-tracemonkey-inserted.pdf"
+      ],
+      "result": "PASS",
+      "detail": "+1213 -0, changed pages 3",
+      "error": null,
+      "ms": 430,
+      "opMs": 296,
+      "heapMB": 20,
+      "audit": 27,
+      "checks": [
+        {
+          "name": "only the inserted page differs",
+          "ok": true,
+          "detail": "changed pages 3",
+          "soft": false,
+          "audit": 27
+        }
+      ]
+    },
+    {
+      "id": "compare-911-self",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "large",
+      "files": [
+        "large/911-commission-report.pdf",
+        "large/911-commission-report.pdf"
+      ],
+      "result": "PASS",
+      "detail": "+0 -0, changed pages none",
+      "error": null,
+      "ms": 8376,
+      "opMs": 7798,
+      "heapMB": 89,
+      "audit": 27,
+      "checks": [
+        {
+          "name": "identical",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "compare-dense-econ-self",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-economic-report-president-2024.pdf",
+        "reports/us-economic-report-president-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "+0 -0, changed pages none",
+      "error": null,
+      "ms": 10208,
+      "opMs": 9895,
+      "heapMB": 249,
+      "audit": 27,
+      "checks": [
+        {
+          "name": "identical",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-compare-inserted-overlay",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/compare-tracemonkey-base.pdf",
+        "derived/compare-tracemonkey-inserted.pdf"
+      ],
+      "result": "PASS",
+      "detail": "250 ms, +1213 -0, changed 3, overlay max 0.00%",
+      "error": null,
+      "ms": 1302,
+      "opMs": 1164,
+      "heapMB": 91,
+      "audit": null,
+      "checks": [
+        {
+          "name": "one inserted page, nothing else changed",
+          "ok": true,
+          "detail": "only in changed 3, changed pairs 3, -0",
+          "soft": false,
+          "audit": 27
+        },
+        {
+          "name": "paired pages look the same",
+          "ok": true,
+          "detail": "overlay 0 0 0 0 0",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-compare-tamreview-self",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-TAMReview.pdf",
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "526 ms, +0 -0, changed none, overlay max 0.00%",
+      "error": null,
+      "ms": 3612,
+      "opMs": 3466,
+      "heapMB": 91,
+      "audit": null,
+      "checks": [
+        {
+          "name": "identical",
+          "ok": true,
+          "detail": "+0 -0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overlay shows no pixels",
+          "ok": true,
+          "detail": "overlay 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-compare-origin-shift",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf",
+        "derived/origin-shift-aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "88 ms, +0 -0, changed none, overlay max 0.00%",
+      "error": null,
+      "ms": 324,
+      "opMs": 236,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "same text",
+          "ok": true,
+          "detail": "+0 -0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "moved origin draws the same page",
+          "ok": true,
+          "detail": "overlay 0",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-compare-removed-page",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "450 ms, -1260 words, changed pairs 4",
+      "error": null,
+      "ms": 766,
+      "opMs": 681,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "only the removed page differs",
+          "ok": true,
+          "detail": "changed 4, only in original 4",
+          "soft": false,
+          "audit": 27
+        },
+        {
+          "name": "nothing added",
+          "ok": true,
+          "detail": "+0",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-compare-dense-removed-page",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-economic-report-president-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "11089 ms, -251 words, changed pairs 10",
+      "error": null,
+      "ms": 12615,
+      "opMs": 12473,
+      "heapMB": 141,
+      "audit": null,
+      "checks": [
+        {
+          "name": "only the removed page differs",
+          "ok": true,
+          "detail": "changed 10, only in original 10",
+          "soft": false,
+          "audit": 27
+        },
+        {
+          "name": "nothing added",
+          "ok": true,
+          "detail": "+0",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "health-selftest",
+      "tool": "health",
+      "layer": "ops",
+      "category": "none",
+      "files": [],
+      "result": "PASS",
+      "detail": "49 checks, 0 failed; warn: self-test covers real-world fixtures (synthetic pdf-lib fixtures only)",
+      "error": null,
+      "ms": 16918,
+      "opMs": 15269,
+      "heapMB": 28,
+      "audit": null,
+      "checks": [
+        {
+          "name": "all self-test checks pass",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "self-test covers real-world fixtures",
+          "ok": false,
+          "detail": "synthetic pdf-lib fixtures only",
+          "soft": true,
+          "audit": 42
+        }
+      ]
+    },
+    {
+      "id": "g2-autorotate-fax-0",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2791 ms, turned 0 of 2, osd 0/4.9 0/5.5",
+      "error": null,
+      "ms": 3765,
+      "opMs": 2850,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no page turned the wrong way",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "upright scan left as it is",
+          "ok": true,
+          "detail": "turned ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-autorotate-fax-90",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1753 ms, turned 2 of 2, osd 270/0.4 270/2.2",
+      "error": null,
+      "ms": 1874,
+      "opMs": 1798,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no page turned the wrong way",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page back upright",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-autorotate-fax-180",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1720 ms, turned 2 of 2, osd 180/3.4 180/5.3",
+      "error": null,
+      "ms": 1868,
+      "opMs": 1766,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no page turned the wrong way",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page back upright",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-autorotate-fax-270",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1821 ms, turned 2 of 2, osd 90/0.3 90/2.3",
+      "error": null,
+      "ms": 1970,
+      "opMs": 1861,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no page turned the wrong way",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page back upright",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-autorotate-lincoln-0",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "24564 ms, turned 0 of 36, osd 0/0.0 180/0.1 180/0.6 0/0.0 0/0.0 0/4.3 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/20.4 0/30.3 0/0.0 0/0.0 180/1.0 180/0.8 0/0.0 0/0.0 0/0.0 0/0.0 0/9.6 0/1.3 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 180/0.5 0/0.0 180/0.2",
+      "error": null,
+      "ms": 24802,
+      "opMs": 24682,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 36, want 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 36 vs MuPDF 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no page turned the wrong way",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "upright scan left as it is",
+          "ok": true,
+          "detail": "turned ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-autorotate-lincoln-90",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "22248 ms, turned 36 of 36, osd 0/0.0 90/0.1 0/0.0 0/0.0 0/0.0 270/4.2 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 270/21.2 270/27.6 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 270/6.5 270/0.9 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/1.0 0/0.4 180/0.9",
+      "error": null,
+      "ms": 22530,
+      "opMs": 22346,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 36, want 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 36 vs MuPDF 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no page turned the wrong way",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page back upright",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-autorotate-lincoln-180",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "21441 ms, turned 36 of 36, osd 0/0.0 0/0.0 0/0.7 0/0.0 0/0.0 180/3.5 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 180/18.5 180/30.7 0/0.0 0/0.0 0/1.0 0/0.6 0/0.0 0/0.0 0/0.0 0/0.0 180/8.4 180/1.2 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.5 0/0.0 0/0.4",
+      "error": null,
+      "ms": 21672,
+      "opMs": 21537,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 36, want 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 36 vs MuPDF 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no page turned the wrong way",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page back upright",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-autorotate-lincoln-270",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "20697 ms, turned 36 of 36, osd 0/0.0 180/0.1 0/0.0 0/0.0 0/0.0 90/4.2 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 90/22.3 90/28.7 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 90/7.0 90/0.9 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 180/1.0 270/0.3 0/0.6",
+      "error": null,
+      "ms": 20924,
+      "opMs": 20793,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 36, want 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 36 vs MuPDF 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no page turned the wrong way",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page back upright",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-autorotate-konoye-0",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-ndl-konoye-p1.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1753 ms, turned 0 of 1, osd 0/0.4",
+      "error": null,
+      "ms": 1864,
+      "opMs": 1776,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no page turned the wrong way",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "upright scan left as it is",
+          "ok": true,
+          "detail": "turned ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-autorotate-konoye-90",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-ndl-konoye-p1.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2036 ms, turned 0 of 1, osd 270/1.2; warn: every page back upright (not detected: p1)",
+      "error": null,
+      "ms": 2197,
+      "opMs": 2059,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no page turned the wrong way",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page back upright",
+          "ok": false,
+          "detail": "not detected: p1",
+          "soft": true,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-autorotate-konoye-180",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-ndl-konoye-p1.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2044 ms, turned 0 of 1, osd 180/0.4; warn: every page back upright (not detected: p1)",
+      "error": null,
+      "ms": 2179,
+      "opMs": 2082,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no page turned the wrong way",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page back upright",
+          "ok": false,
+          "detail": "not detected: p1",
+          "soft": true,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-autorotate-konoye-270",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-ndl-konoye-p1.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1861 ms, turned 0 of 1, osd 90/1.1; warn: every page back upright (not detected: p1)",
+      "error": null,
+      "ms": 1990,
+      "opMs": 1897,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "rotated.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotated.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no page turned the wrong way",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page back upright",
+          "ok": false,
+          "detail": "not detected: p1",
+          "soft": true,
+          "audit": null
+        }
+      ]
+    }
+  ]
+}

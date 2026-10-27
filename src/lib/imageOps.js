@@ -99,7 +99,7 @@ export function stripJpegMetadata(bytes) {
   let removed = false
   const keepApp = (marker, at) =>
     marker === 0xe0 || marker === 0xee || (marker === 0xe2 && ascii(b, at + 4, 12) === 'ICC_PROFILE\0')
-  while (i + 4 <= b.length) {
+  while (i + 2 <= b.length) {
     if (b[i] !== 0xff) return b // lost the marker chain: leave the file alone
     const marker = b[i + 1]
     if (marker === 0xff) {
@@ -113,6 +113,7 @@ export function stripJpegMetadata(bytes) {
       i = b.length
       break
     }
+    if (i + 4 > b.length) return b
     const len = (b[i + 2] << 8) | b[i + 3]
     if (len < 2 || i + 2 + len > b.length) return b
     const meta = (marker >= 0xe0 && marker <= 0xef && !keepApp(marker, i)) || marker === 0xfe

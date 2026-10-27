@@ -37,6 +37,22 @@
   box-shadow: none;
 }
 
+/* zoomable canvas (forms): the box gets an explicit width and the image
+   must fill it exactly, or the percent overlays drift off the page. The
+   selector beats shell.css `.viewer-stage img`, which clamps the height. */
+.g3-stage-wrap .g3-stage.is-zoom {
+  display: block;
+  max-width: none;
+  margin-inline: auto;
+}
+
+.g3-stage-wrap .g3-stage.is-zoom > img {
+  width: 100%;
+  height: auto;
+  max-width: none;
+  max-height: none;
+}
+
 .g3-ov {
   position: absolute;
   box-sizing: border-box;
@@ -176,7 +192,32 @@
   outline-offset: 1px;
 }
 
-/* form fields on the page */
+/* form fields on the page: the slot is the widget box, the control fills it */
+.g3-slot > .g3-field {
+  position: relative;
+  z-index: 1;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  /* at least 12px when the box is tall enough, never taller than the box */
+  font-size: min(max(12px, calc(var(--pt) * 9)), calc(var(--pt) * var(--fh, 12) * 0.78));
+}
+
+/* 24 x 24 px minimum target (WCAG 2.5.8), centred on the widget. A real
+   field (z-index 1) always wins over a neighbour's halo. */
+.g3-hit::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 24px);
+  height: max(100%, 24px);
+  transform: translate(-50%, -50%);
+}
+
 .g3-field {
   font-size: calc(var(--pt) * 9);
   border: 1px solid color-mix(in srgb, var(--signal) 55%, transparent);

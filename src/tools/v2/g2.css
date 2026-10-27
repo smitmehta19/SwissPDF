@@ -1,0 +1,441 @@
+/* G2 tools (repair, OCR, auto rotate, compare, protect, unlock, health):
+   option panel pieces and the result views. Tokens come from src/app/shell.css. */
+
+/* slider with its value (auto rotate threshold) */
+.g2-range {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.g2-range input {
+  flex: 1;
+  min-width: 0;
+}
+
+.g2-range .mono {
+  min-width: 3ch;
+  text-align: right;
+}
+
+.g2-fieldset {
+  display: grid;
+  gap: var(--s-2);
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.g2-fieldset legend {
+  margin-bottom: var(--s-2);
+}
+
+/* password checklist */
+.g2-checklist {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: var(--t-sm);
+  color: var(--muted);
+}
+
+.g2-checklist li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.g2-checklist li.is-ok {
+  color: var(--ok-text);
+}
+
+.g2-tick {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--edge);
+}
+
+.g2-checklist li.is-ok .g2-tick {
+  border-color: var(--ok);
+  background: var(--ok);
+  color: var(--on-signal);
+}
+
+/* file rows inside a panel (unlock, compare) */
+.g2-filelist {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2);
+}
+
+.g2-filelist li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  min-width: 0;
+}
+
+.g2-filelist li > .input,
+.g2-filelist li > .g2-filestate {
+  grid-column: 1 / -1;
+}
+
+.g2-fileicon {
+  display: inline-grid;
+  color: var(--muted);
+}
+
+.g2-filename {
+  font-size: var(--t-sm);
+  font-weight: 560;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.g2-filestate {
+  font-size: var(--t-sm);
+  color: var(--muted);
+}
+
+.g2-tag {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.g2-tag-removed {
+  background: var(--g2-removed-wash);
+  color: var(--g2-removed-ink);
+}
+
+.g2-tag-added {
+  background: var(--g2-added-wash);
+  color: var(--g2-added-ink);
+}
+
+/* OCR languages */
+.g2-langs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.g2-lang {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 36px;
+  padding: 0 var(--s-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  font-size: var(--t-sm);
+  cursor: pointer;
+}
+
+.g2-lang.is-on {
+  border-color: var(--signal);
+  background: var(--signal-wash);
+}
+
+.g2-lang input {
+  accent-color: var(--signal);
+}
+
+/* ---------- result views ---------- */
+:root {
+  --g2-added: rgb(81 207 102 / 0.38);
+  --g2-added-edge: #2f9e44;
+  --g2-added-wash: #e3f8e7;
+  --g2-added-ink: #1b6b2e;
+  --g2-removed: rgb(255 107 107 / 0.42);
+  --g2-removed-edge: #e03131;
+  --g2-removed-wash: #fde8e8;
+  --g2-removed-ink: #a51d1d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --g2-added-wash: #17351f;
+    --g2-added-ink: #8ce99a;
+    --g2-removed-wash: #3d1a1d;
+    --g2-removed-ink: #ffa8a8;
+  }
+}
+
+:root[data-theme='dark'] {
+  --g2-added-wash: #17351f;
+  --g2-added-ink: #8ce99a;
+  --g2-removed-wash: #3d1a1d;
+  --g2-removed-ink: #ffa8a8;
+}
+
+.result-view {
+  grid-column: 1 / -1;
+  min-width: 0;
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+
+.result-viewonly {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.result-viewonly .result-body,
+.g2-health {
+  min-width: 0;
+}
+
+.g2-compare {
+  display: grid;
+  gap: var(--s-4);
+  min-width: 0;
+}
+
+.g2-compare-sum {
+  font-size: var(--t-base);
+}
+
+.g2-compare-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3) var(--s-5);
+}
+
+.g2-pager {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-sm);
+}
+
+.g2-muted {
+  color: var(--muted);
+}
+
+.g2-sides {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-4);
+}
+
+.g2-sides-one {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 560px;
+}
+
+.g2-side {
+  margin: 0;
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+  min-width: 0;
+}
+
+.g2-side-label {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.g2-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.g2-swatch-added {
+  background: var(--g2-added);
+  outline: 1px solid var(--g2-added-edge);
+}
+
+.g2-swatch-removed {
+  background: var(--g2-removed);
+  outline: 1px solid var(--g2-removed-edge);
+}
+
+.g2-stage {
+  position: relative;
+  width: 100%;
+  background: #fff;
+  box-shadow: var(--shadow-1);
+  border: 1px solid var(--line);
+}
+
+.g2-stage img,
+.g2-stage canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.g2-diff {
+  position: absolute;
+  border-radius: 2px;
+  pointer-events: auto;
+}
+
+.g2-diff-added {
+  background: var(--g2-added);
+  outline: 1px solid var(--g2-added-edge);
+}
+
+.g2-diff-removed {
+  background: var(--g2-removed);
+  outline: 1px solid var(--g2-removed-edge);
+}
+
+.g2-empty {
+  padding: var(--s-6) var(--s-4);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-md);
+  color: var(--muted);
+  text-align: center;
+  font-size: var(--t-sm);
+}
+
+.g2-changes {
+  display: grid;
+  gap: var(--s-2);
+}
+
+.g2-change-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.g2-change {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-2);
+  width: 100%;
+  min-height: 36px;
+  padding: var(--s-1) var(--s-2);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--t-sm);
+  text-align: left;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .g2-change:hover {
+    background: var(--surface-2);
+  }
+}
+
+.g2-change del {
+  background: var(--g2-removed-wash);
+  color: var(--g2-removed-ink);
+  text-decoration-thickness: 1px;
+  padding: 0 3px;
+  border-radius: 3px;
+}
+
+.g2-change ins {
+  background: var(--g2-added-wash);
+  color: var(--g2-added-ink);
+  text-decoration: none;
+  padding: 0 3px;
+  border-radius: 3px;
+}
+
+/* health */
+.g2-health {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.g2-checks {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.g2-checks li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 14rem) minmax(0, 1fr);
+  gap: var(--s-2) var(--s-3);
+  align-items: baseline;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-sm);
+  font-size: var(--t-sm);
+}
+
+.g2-checks li:nth-child(odd) {
+  background: var(--surface-2);
+}
+
+.g2-checks .check-name {
+  font-weight: 560;
+  /* the old Health page's global rule kept names on one line */
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.g2-checks .check-detail {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.g2-check-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: var(--on-signal);
+  background: var(--ok);
+}
+
+.g2-checks li.check-fail .g2-check-mark {
+  background: var(--err);
+}
+
+.g2-checks li.check-fail .check-name {
+  color: var(--err);
+}
+
+@media (max-width: 759px) {
+  .g2-sides {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .g2-checks li {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .g2-checks .check-detail {
+    grid-column: 2;
+  }
+
+  .g2-langs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

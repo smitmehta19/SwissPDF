@@ -14,50 +14,155 @@ const PERM_LABEL = {
   annotate: 'annotating',
   form: 'filling forms',
   assemble: 'reordering pages',
+  accessibility: 'text for accessibility tools',
 }
 
-// AES-256 encrypt. The user password opens the file; the owner password (same
-// one unless provided) also lifts edit/print restrictions.
-export async function protectPdf(bytes, userPassword, ownerPassword = null) {
-  if (!userPassword) throw new Error('A password is required.')
-  // MuPDF splits its option string on commas, so a comma would silently change the password.
-  if ([userPassword, ownerPassword].some((p) => p && p.includes(',')))
-    throw new Error('Passwords cannot contain a comma.')
+// PDF /P bits (ISO 32000 table 22). Bits 1-2 must be 0, the rest default to 1.
+export const PERMISSION_BITS = {
+  print: 1 << 2,
+  edit: 1 << 3,
+  copy: 1 << 4,
+  annotate: 1 << 5,
+  form: 1 << 8,
+  accessibility: 1 << 9,
+  assemble: 1 << 10,
+  'print-hq': 1 << 11,
+}
+
+// /P value with the given permissions taken away, as a signed 32-bit int.
+export function permissionValue(deny = []) {
+  let p = -4
+  for (const k of deny) {
+    if (!(k in PERMISSION_BITS)) throw new Error(`Unknown permission ${k}`)
+    p &= ~PERMISSION_BITS[k]
+  }
+  // no printing also means no high-quality printing
+  if (deny.includes('print')) p &= ~PERMISSION_BITS['print-hq']
+  return p
+}
+
+// SASLprep (RFC 4013) as PDF 2.0 asks for AES-256 R6 passwords: non-ASCII
+// spaces become a space, "mapped to nothing" characters go, then NFKC.
+export function saslPrep(pw) {
+  return String(pw ?? '')
+    .replace(/[\u00a0\u1680\u2000-\u200b\u202f\u205f\u3000]/g, ' ')
+    .replace(/[\u00ad\u034f\u1806\u180b-\u180d\u200c\u200d\u2060\ufe00-\ufe0f\ufeff]/g, '')
+    .normalize('NFKC')
+}
+
+// The forms of a typed password worth trying, most literal first.
+export function passwordCandidates(pw) {
+  const raw = String(pw ?? '')
+  return [...new Set([raw, saslPrep(raw), raw.normalize('NFC'), raw.normalize('NFKC')])]
+}
+
+// MuPDF splits its option string on commas, so a comma would silently change
+// the password. Returns an error message or null.
+//
+// AES-128 and RC4-40 store the password in PDFDocEncoding: MuPDF silently
+// drops anything else, so the file would open with a shorter password and
+// pdf.js would refuse the typed one. Only printable Latin-1 is safe there.
+// AES-256 (PDF 2.0) readers SASLprep the typed password (pypdf, Acrobat) and
+// pdf.js does not, so a password that SASLprep changes only opens in some
+// readers: refuse it too.
+const LATIN1_SAFE = /^[\x20-\x7e\xa1-\xac\xae-\xff]*$/
+export function passwordProblem(pw, keyLength = 256) {
+  if (!pw) return null
+  if (pw.includes(',')) return 'Passwords cannot contain a comma.'
+  if (keyLength !== 256 && !LATIN1_SAFE.test(pw)) {
+    const bad = [...pw].find((c) => !LATIN1_SAFE.test(c))
+    return `${keyLength === 40 ? 'RC4 40-bit' : 'AES 128-bit'} only takes Latin letters, digits and common symbols, not "${bad === ' ' ? 'non-breaking space' : bad}". Choose AES 256-bit for this password.`
+  }
+  if (keyLength === 256 && saslPrep(pw) !== pw) {
+    return 'This password has a character PDF apps read in different ways (a non-breaking space, soft hyphen, full-width letter or an accent typed as a separate mark). Type it with plain characters.'
+  }
+  return null
+}
+
+function open(mupdf, bytes) {
+  return mupdf.Document.openDocument(new Uint8Array(bytes.slice(0)), 'application/pdf')
+}
+
+// Key length -> MuPDF encryption method. 128 is AES like PDFBox does it; 40
+// is the old RC4 for very old readers.
+export const KEY_METHODS = { 256: 'aes-256', 128: 'aes-128', 40: 'rc4-40' }
+
+// Encrypts (AES-256 unless keyLength says otherwise). The user password opens
+// the file (may be empty for a file that opens freely but keeps its
+// restrictions); the owner password (same as the user one unless given) lifts
+// the restrictions. `deny` lists permissions to take away (keys of
+// PERMISSION_BITS). The result is re-opened and checked with the typed
+// passwords before it is returned.
+export async function protectPdf(bytes, userPassword, ownerPassword = null, { deny = [], keyLength = 256 } = {}) {
+  const method = KEY_METHODS[keyLength]
+  if (!method) throw new Error(`Unknown key length ${keyLength}`)
+  const user = userPassword ?? ''
+  const owner = ownerPassword || user
+  if (!user && !owner) throw new Error('A password is required.')
+  if (!user && deny.length === 0) throw new Error('Set an open password, or choose at least one restriction.')
+  for (const p of [user, owner]) {
+    const problem = passwordProblem(p, keyLength)
+    if (problem) throw new Error(problem)
+  }
   const mupdf = await getMupdf()
-  const doc = mupdf.Document.openDocument(new Uint8Array(bytes.slice(0)), 'application/pdf')
+  const doc = open(mupdf, bytes)
   let out
   try {
-    const opts = [
-      'encrypt=aes-256',
-      `user-password=${userPassword}`,
-      `owner-password=${ownerPassword || userPassword}`,
-    ].join(',')
-    out = doc.saveToBuffer(opts).asUint8Array().slice()
+    if (doc.needsPassword()) throw new Error('Unlock this file first, it already has a password.')
+    const opts = [`encrypt=${method}`, `user-password=${user}`, `owner-password=${owner}`]
+    if (deny.length) opts.push(`permissions=${permissionValue(deny)}`)
+    out = doc.saveToBuffer(opts.join(',')).asUint8Array().slice()
   } finally {
     doc.destroy?.()
   }
-  // Re-open with the typed password before handing the file over.
-  const check = mupdf.Document.openDocument(out.slice(0), 'application/pdf')
-  let ok
+  verifyProtected(mupdf, out, { user, owner, deny, cipher: method.startsWith('rc4') ? /RC4/i : /AES/i })
+  return out
+}
+
+function verifyProtected(mupdf, out, { user, owner, deny, cipher }) {
+  const check = open(mupdf, out)
   try {
-    ok = !check.needsPassword() || check.authenticatePassword(userPassword) > 0
+    const enc = check.getMetaData('encryption') ?? 'None'
+    if (!cipher.test(enc)) throw new Error(`the file is not encrypted as asked (${enc})`)
+    if (user) {
+      if (!check.needsPassword()) throw new Error('it opens without the password')
+      if (!(check.authenticatePassword(user) > 0)) throw new Error('the password does not open it')
+    } else if (check.needsPassword()) {
+      throw new Error('it asks for a password it should not need')
+    }
+    // 40-bit RC4 (revision 2) only knows print, edit, copy and annotate
+    const known = cipher.source === 'RC4' ? ['print', 'edit', 'copy', 'annotate'] : PERMS
+    for (const p of deny) {
+      if (p !== 'accessibility' && known.includes(p) && check.hasPermission(p) && !(user && user === owner)) {
+        throw new Error(`${PERM_LABEL[p]} is still allowed`)
+      }
+    }
+  } catch (err) {
+    throw new Error(`Could not verify the protected file: ${err.message}.`)
   } finally {
     check.destroy?.()
   }
-  if (!ok) throw new Error('Could not verify the password on the protected file.')
-  return out
+  // the owner password must also open it
+  if (owner !== user) {
+    const o = open(mupdf, out)
+    try {
+      if (!(o.authenticatePassword(owner) & 4)) throw new Error('Could not verify the protected file: the owner password does not work.')
+    } finally {
+      o.destroy?.()
+    }
+  }
 }
 
 // Inspects a PDF's security WITHOUT modifying it. Distinguishes the two very
 // different cases:
 //   - needsUserPassword: won't even open without a password (must know it)
-//   - restrictedOnly: opens fine but blocks printing/copying/editing — the
+//   - restrictedOnly: opens fine but blocks printing/copying/editing, the
 //     "prints with an error" case, removable with NO password
 export async function inspectPdf(bytes) {
   const mupdf = await getMupdf()
   let doc
   try {
-    doc = mupdf.Document.openDocument(new Uint8Array(bytes.slice(0)), 'application/pdf')
+    doc = open(mupdf, bytes)
   } catch {
     return { valid: false }
   }
@@ -92,19 +197,22 @@ function deniedPerms(doc) {
 }
 
 // Removes protection/restrictions. For open-password files the correct password
-// is required; for restriction-only files no password is needed. `fast` skips
-// garbage collection and recompression (intake only needs the decrypted file).
+// is required (tried as typed, then SASLprep / NFC / NFKC forms); for
+// restriction-only files no password is needed. `fast` skips garbage collection
+// and recompression (intake only needs the decrypted file). An owner-only file
+// with no open password also takes the fast path: decrypting is all it needs.
 export async function unlockPdf(bytes, password = '', { fast = false } = {}) {
   const mupdf = await getMupdf()
-  const doc = mupdf.Document.openDocument(new Uint8Array(bytes.slice(0)), 'application/pdf')
+  const doc = open(mupdf, bytes)
   try {
     const neededPassword = doc.needsPassword()
     if (neededPassword) {
-      const ok = doc.authenticatePassword(password ?? '')
+      const ok = passwordCandidates(password).some((pw) => doc.authenticatePassword(pw) > 0)
       if (!ok) throw new Error('Wrong password, the file stays locked.')
     }
     const before = deniedPerms(doc)
-    const out = doc.saveToBuffer(fast ? 'encrypt=none' : 'encrypt=none,garbage,compress').asUint8Array().slice()
+    const quick = fast || !neededPassword
+    const out = doc.saveToBuffer(quick ? 'encrypt=none' : 'encrypt=none,garbage,compress').asUint8Array().slice()
     return {
       bytes: out,
       hadUserPassword: neededPassword,
@@ -120,7 +228,7 @@ export async function isPasswordProtected(bytes) {
   const mupdf = await getMupdf()
   let doc
   try {
-    doc = mupdf.Document.openDocument(new Uint8Array(bytes.slice(0)), 'application/pdf')
+    doc = open(mupdf, bytes)
     return doc.needsPassword()
   } catch {
     return false

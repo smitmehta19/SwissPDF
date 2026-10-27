@@ -87,7 +87,7 @@ export function EngineDownload({ options, setOptions, quickOk = true }) {
       <p>
         <strong>Download engine (about {mb} MB)</strong>
       </p>
-      <p>High fidelity needs the Office engine once. It stays on this device after that, and works offline. Your files are not uploaded.</p>
+      <p>High fidelity needs the Office engine once, from cdn.zetaoffice.net. Each file is checked against a fixed fingerprint before it runs, and it stays on this device after that. Your files are not uploaded.</p>
       {state?.error && (
         <p className="notice-error" role="alert">
           {state.error}

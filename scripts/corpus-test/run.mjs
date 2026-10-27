@@ -13,6 +13,7 @@ import { startServer, OUT_DIR, ROOT } from './server.mjs'
 import { deriveAll } from './derive.mjs'
 import { buildCases, intakeFiles, intakeExpectation, FLOWS, validateFlow, CORPUS, sizeOf } from './cases.mjs'
 import { writeReport } from './report.mjs'
+import { safeShards } from './runlock.mjs'
 
 // ---------- args ----------
 const argv = process.argv.slice(2)
@@ -31,8 +32,11 @@ const opts = {
   name: arg('name') ?? `${new Date().toISOString().slice(0, 10)}-run${flag('quick') ? '-quick' : ''}`,
   headed: flag('headed'),
   timeoutScale: Number(arg('timeout-scale', '1')),
-  shards: Math.max(1, parseInt(arg('shards', '1'), 10) || 1),
+  shards: safeShards(Math.max(1, parseInt(arg('shards', '1'), 10) || 1)),
+  // --light: skip inputs over 20 MB (the 57 to 104 MB scans), for checks during development
+  light: flag('light'),
 }
+const light = (files) => !opts.light || (files ?? []).reduce((a, f) => a + sizeOf(f), 0) <= 20e6
 if (!existsSync(CORPUS)) {
   console.error('test-corpus/ is missing: run `bash scripts/fetch-test-corpus.sh` first.')
   process.exit(2)
@@ -449,7 +453,8 @@ const keep = (c) =>
   (!opts.quick || c.quick) &&
   (!opts.tools || opts.tools.includes(c.tool) || (c.tool === 'intake' && opts.tools.includes('intake'))) &&
   (!opts.categories || opts.categories.includes(c.category)) &&
-  (!opts.caseRe || opts.caseRe.test(c.id))
+  (!opts.caseRe || opts.caseRe.test(c.id)) &&
+  light(c.files)
 
 // ---------- sharding ----------
 // Work units keep together what must share a page: a group with a `requires`
@@ -526,9 +531,10 @@ try {
     if (opts.caseRe) files = files.filter((f) => opts.caseRe.test(`intake-${f}`))
     if (opts.tools && !opts.tools.includes('intake')) files = []
     if (opts.quick) files = files.filter((f, i) => i % 6 === 0 || /owner-only|xref|fuzzed|user-pw|3371/.test(f))
+    files = files.filter((f) => light([f]))
   }
   const flows = opts.layers.includes('flow')
-    ? FLOWS.filter((f) => (!opts.quick || f.quick) && (!opts.tools || opts.tools.includes(f.tool)) && (!opts.caseRe || opts.caseRe.test(f.id)) && !opts.categories)
+    ? FLOWS.filter((f) => (!opts.quick || f.quick) && (!opts.tools || opts.tools.includes(f.tool)) && (!opts.caseRe || opts.caseRe.test(f.id)) && !opts.categories && light(f.files))
     : []
   log(`ops ${selectedOps.length} cases, ui intake ${files.length} files, flows ${flows.length}, shards ${opts.shards}`)
   if (opts.shards === 1) {

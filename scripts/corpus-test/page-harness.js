@@ -379,7 +379,7 @@ const OPS = {
     const covered = before.length ? await darkShare(bytes, before.slice(0, 6)) : []
     return {
       outputs: [await save(s.id, 'redacted.pdf', bytes)],
-      meta: { boxes: boxes.length, pagesHit: [...new Set(boxes.map((b) => b.pageNum))], covered },
+      meta: { boxes: boxes.length, pagesHit: [...new Set(boxes.map((b) => b.pageNum))], covered, areas: areasOf(boxes) },
     }
   },
   async redactFind(s, [src]) {
@@ -632,11 +632,12 @@ OPS.g3RedactRemove = async (s, [src]) => {
   const { findMatches, redactPdf } = await lib('redactOps')
   const q = s.params.query ?? { terms: [s.params.term] }
   const boxes = await findMatches(src, q)
-  const whole = (s.params.wholePages ?? []).map((p) => ({ pageNum: p, whole: true }))
+  // whole pages and boxes drawn by hand (view points) next to the search
+  const whole = [...(s.params.wholePages ?? []).map((p) => ({ pageNum: p, whole: true })), ...(s.params.boxes ?? [])]
   if (boxes.length + whole.length === 0) return { outputs: [], meta: { boxes: 0 } }
   const before = s.params.term ? await termRects(src, s.params.term) : []
   const t0 = performance.now()
-  const res = await redactPdf(src, [...boxes, ...whole], { method: s.params.method ?? 'remove', report: true })
+  const res = await redactPdf(src, [...boxes, ...whole], { method: s.params.method ?? 'remove', query: q, report: true })
   const ms = Math.round(performance.now() - t0)
   const covered = before.length ? await darkShare(res.bytes, before.slice(0, 6)) : []
   return {
@@ -647,10 +648,16 @@ OPS.g3RedactRemove = async (s, [src]) => {
       sources: [...new Set(boxes.map((b) => b.source))],
       pagesHit: res.pages,
       rasterPages: res.rasterPages,
+      cleaned: res.cleaned ?? null,
       covered,
       ms,
+      areas: areasOf([...boxes, ...whole]),
     },
   }
+}
+// Redaction boxes for the raw check in Node (comments are deleted, not boxed).
+function areasOf(boxes) {
+  return boxes.filter((b) => !b.annot).map(({ pageNum, x, y, w, h, whole }) => ({ pageNum, x, y, w, h, whole }))
 }
 OPS.g3PageNumbers = async (s, [src]) => {
   const { addPageNumbers } = await lib('stampOps')
@@ -696,11 +703,22 @@ OPS.g3RedactFormValue = async (s, [src]) => {
   const boxes = await findMatches(filled, { terms: [s.params.value] })
   if (!boxes.length) return { outputs: [], meta: { boxes: 0, name } }
   const res = await redactPdf(filled, boxes, { method: 'remove', report: true })
-  return { outputs: [await save(s.id, 'redacted.pdf', res.bytes)], meta: { boxes: boxes.length, name, field: boxes.some((b) => b.field) } }
+  return { outputs: [await save(s.id, 'redacted.pdf', res.bytes)], meta: { boxes: boxes.length, name, field: boxes.some((b) => b.field), areas: areasOf(boxes) } }
 }
 
 export async function run(spec) {
-  const fn = OPS[spec.op]
+  // G2 ops live in their own file
+  let fn = OPS[spec.op] ?? (await import('./page-harness-g2.js')).OPS[spec.op]
+  // "<unit>:<op>" lives next to this file: page-harness-<unit>.js (ops take spec, files)
+  // or harness-<unit>.js (ops also get { save, lib, load } first)
+  const ext = /^([\w-]+):(\w+)$/.exec(spec.op)
+  if (!fn && ext) {
+    try {
+      fn = (await import(/* @vite-ignore */ `/scripts/corpus-test/page-harness-${ext[1]}.js`)).OPS[ext[2]]
+    } catch {
+      fn = (await import(/* @vite-ignore */ `/scripts/corpus-test/harness-${ext[1]}.js`)).OPS[ext[2]]?.bind(null, { save, lib, load })
+    }
+  }
   if (!fn) throw new Error(`unknown op ${spec.op}`)
   const files = []
   for (const f of spec.files ?? []) files.push(await load(f))

@@ -34,6 +34,8 @@ async function download(page) {
   return { name: dl.suggestedFilename(), bytes: new Uint8Array(readFileSync(await dl.path())) }
 }
 async function open(page, id) {
+  // tool groups start folded (S2): unfold them so the row is there
+  await page.$$eval('[data-testid^=fold-][aria-expanded=false]', (els) => els.forEach((el) => el.click()))
   await page.click(`[data-testid=tool-${id}]`)
   await page.waitForSelector('[data-testid=options-panel]')
 }

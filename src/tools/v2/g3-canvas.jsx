@@ -50,33 +50,49 @@ export function currentOf(files, target) {
   return { file, page }
 }
 
-// Rendered image and visible size (points) of one page.
-export function usePageView(file, page) {
+// Rendered image and visible size (points) of one page. A new `width` keeps
+// the old image on screen until the sharper one is ready.
+export function usePageView(file, page, width = 1400) {
   const [view, setView] = useState({ img: null, size: null, error: null, key: null })
   const key = file ? `${file.id}:${page}` : null
+  const loaded = useRef(null)
   useEffect(() => {
     if (!file) return undefined
     let active = true
     setView((v) => (v.key === key ? v : { img: null, size: null, error: null, key }))
-    ;(async () => {
-      const bytes = await getBytes(file.id)
-      const size = await serializedPdfOp(async () => {
-        const doc = await openPdfDocument(bytes)
-        const vp = (await doc.getPage(page)).getViewport({ scale: 1 })
-        return { width: vp.width, height: vp.height }
-      })
-      const img = await renderPageImage(bytes, page, 1400)
-      return { img, size }
-    })().then(
-      (res) => active && setView({ ...res, error: null, key }),
-      (err) => active && setView({ img: null, size: null, error: err.message, key }),
+    // only a re-render of the page already shown waits, so zoom steps batch
+    const t = setTimeout(
+      () =>
+        (async () => {
+          const bytes = await getBytes(file.id)
+          const size = await serializedPdfOp(async () => {
+            const doc = await openPdfDocument(bytes)
+            const vp = (await doc.getPage(page)).getViewport({ scale: 1 })
+            return { width: vp.width, height: vp.height }
+          })
+          const img = await renderPageImage(bytes, page, width)
+          return { img, size }
+        })().then(
+          (res) => {
+            if (!active) return
+            loaded.current = key
+            setView({ ...res, error: null, key })
+          },
+          (err) => active && setView({ img: null, size: null, error: err.message, key }),
+        ),
+      loaded.current === key ? 180 : 0,
     )
     return () => {
       active = false
+      clearTimeout(t)
     }
-  }, [key]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [key, width]) // eslint-disable-line react-hooks/exhaustive-deps
   return view
 }
+
+const PX = 96 / 72 // CSS px per point at 100%, as in the Viewer
+const ZOOM_MIN = 25
+const ZOOM_MAX = 400
 
 // One page with overlays. Pointer handlers get { x, y } in points and
 // { fx, fy } fractions of the visible page.
@@ -93,13 +109,18 @@ export function PageStage({
   onUp,
   children,
   empty = 'Select a PDF in Files to work on it here.',
+  zoom = false,
 }) {
   const { file, page } = currentOf(files, target)
-  const view = usePageView(file, page)
+  const [renderW, setRenderW] = useState(1400)
+  const view = usePageView(file, page, renderW)
   const boxRef = useRef(null)
+  const wrapRef = useRef(null)
   const dragging = useRef(false)
   // displayed pixels per PDF point, so overlays (text, signatures) scale
   const [scale, setScale] = useState(1)
+  const [zoomAt, setZoom] = useState({ fit: true, value: 100 })
+  const [wrapW, setWrapW] = useState(0)
   const shown = !!(view.img && view.size && file && view.key === `${file.id}:${page}`)
   useEffect(() => {
     if (!shown || !boxRef.current) return undefined
@@ -113,8 +134,31 @@ export function PageStage({
     return () => ro.disconnect()
   }, [shown, view.size?.width]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // the inner width of the scroll area drives "fit width"
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!zoom || !el) return undefined
+    const measure = () => {
+      const cs = getComputedStyle(el)
+      setWrapW(el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight))
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [zoom, !!file]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const pageW = view.size?.width
+  const zoomScale = zoom && pageW ? (zoomAt.fit ? (wrapW > 0 ? Math.max(0.1, wrapW / pageW) : PX) : (zoomAt.value / 100) * PX) : null
+  const pct = zoomScale ? Math.round((zoomScale / PX) * 100) : 100
+  const dispW = zoomScale ? Math.round(pageW * zoomScale) : null
+  // sharper bitmap when zoomed in, in steps so each zoom click does not re-render
+  const wantW = dispW ? Math.min(2400, Math.max(1400, Math.ceil((dispW * Math.min(window.devicePixelRatio || 1, 2)) / 400) * 400)) : 1400
+  useEffect(() => setRenderW(wantW), [wantW])
+
   if (!file) return <p className="empty-line">{empty}</p>
   const go = (n) => onTarget({ id: file.id, page: Math.min(Math.max(1, n), file.pageCount) })
+  const setPct = (v) => setZoom({ fit: false, value: Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(v))) })
 
   const toPoint = (e) => {
     const r = boxRef.current.getBoundingClientRect()
@@ -154,16 +198,16 @@ export function PageStage({
         </div>
       </div>
       {hint && <p className="field-help g3-hint">{hint}</p>}
-      <div className="viewer-stage g3-stage-wrap">
+      <div className="viewer-stage g3-stage-wrap" ref={wrapRef}>
         {view.error && <p className="field-error">{view.error}</p>}
         {!view.error && !shown && <p className="empty-line">Rendering page {page}…</p>}
         {shown && (
           <div
             ref={boxRef}
-            className="g3-stage"
+            className={`g3-stage ${dispW ? 'is-zoom' : ''}`}
             data-testid={testId}
             data-page={page}
-            style={{ cursor, '--pt': `${scale}px` }}
+            style={{ cursor, '--pt': `${scale}px`, ...(dispW ? { width: dispW } : {}), ...(zoom && !onDown ? { touchAction: 'pan-x pan-y' } : {}) }}
             onPointerDown={(e) => {
               if (!onDown || e.button !== 0) return
               if (e.target.closest('[data-g3-control]')) return
@@ -191,6 +235,36 @@ export function PageStage({
           </div>
         )}
       </div>
+      {zoom && shown && (
+        <div className="viewer-pill" role="toolbar" aria-label="Zoom">
+          <div className="viewer-zoom">
+            <button type="button" className="icon-btn" onClick={() => setPct(pct - 10)} disabled={pct <= ZOOM_MIN} aria-label="Zoom out" data-testid="g3-zoom-out">
+              <Icon name="zoomout" size={16} />
+            </button>
+            <input
+              type="range"
+              min={ZOOM_MIN}
+              max={ZOOM_MAX}
+              step="5"
+              value={Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, pct))}
+              onChange={(e) => setPct(Number(e.target.value))}
+              aria-label="Zoom"
+              aria-valuetext={`${pct}%`}
+              data-testid="g3-zoom"
+            />
+            <button type="button" className="icon-btn" onClick={() => setPct(pct + 10)} disabled={pct >= ZOOM_MAX} aria-label="Zoom in" data-testid="g3-zoom-in">
+              <Icon name="zoomin" size={16} />
+            </button>
+            <span className="mono viewer-pct" data-testid="g3-pct">
+              {pct}%
+            </span>
+            <button type="button" className={`btn btn-quiet btn-small ${zoomAt.fit ? 'is-on' : ''}`} aria-pressed={zoomAt.fit} onClick={() => setZoom((z) => ({ ...z, fit: true }))} data-testid="g3-fit">
+              <Icon name="fitwidth" size={15} />
+              Fit width
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

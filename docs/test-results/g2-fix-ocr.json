@@ -1,0 +1,818 @@
+{
+  "name": "g2-fix-ocr",
+  "startedAt": "2026-10-27T08:55:43.254Z",
+  "finishedAt": "2026-10-27T08:58:24.550Z",
+  "durationMin": 2.7,
+  "command": "npm run test:corpus -- --case ^(g2-ocr-fax-force|g2-ocr-force-text-pages|g2-ocr-skip-text-pages|ocr-fax-printed|ocr-darwin-with-text-layer|g2-ocr-geometry)$ --layer ops --shards 2 --name g2-fix-ocr",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 6,
+    "fail": 0,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "ocr",
+      "pass": 6,
+      "fail": 0,
+      "skip": 0,
+      "ms": 171184
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no per-render copy counter; large scans now render (JPX fixed in U1), see time and heap on pdf2img-bible-62MB, pdf2img-crooked-104MB, split-911-large"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "ocr-fax-printed: no network fetches outside the page origin",
+        "ocr-darwin-with-text-layer: no network fetches outside the page origin",
+        "g2-ocr-geometry: no network fetches outside the page origin",
+        "g2-ocr-fax-force: no network fetches outside the page origin"
+      ],
+      "passedChecks": 4,
+      "reason": null
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "SOFT WARN",
+      "evidence": [
+        "ocr-darwin-with-text-layer: skips pages that already have text (33 words before, +33 added)"
+      ],
+      "passedChecks": 6,
+      "reason": null
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "CDN pinning is a config review item; font fidelity not scored"
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no PAdES / multi-place API to call)"
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap"
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    }
+  ],
+  "results": [
+    {
+      "id": "ocr-fax-printed",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "397 words, sample \"10/25/2008 15:38 FAX 202 225 1992 Congresswoman Sc\"",
+      "error": null,
+      "ms": 40090,
+      "opMs": 21671,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "searchable text added (20+ words)",
+          "ok": true,
+          "detail": "+246 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "ocr-darwin-with-text-layer",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-darwin-p10-11.pdf"
+      ],
+      "result": "PASS",
+      "detail": "97 words, sample \" CONTENTS PAGE EDITOR'S INTRODUCTION . 5 5 3 e o \"; warn: skips pages that already have text (33 words before, +33 added)",
+      "error": null,
+      "ms": 30566,
+      "opMs": 12112,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "searchable text added (20+ words)",
+          "ok": true,
+          "detail": "+33 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "skips pages that already have text",
+          "ok": false,
+          "detail": "33 words before, +33 added",
+          "soft": true,
+          "audit": 11
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-geometry",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "upright 45/46 median 1.7pt; turned 45/46 median 1.6pt; rot90crop 46/47 median 1.5pt; skew 41/43 median 1.8pt",
+      "error": null,
+      "ms": 73708,
+      "opMs": 73169,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "upright: words recognised",
+          "ok": true,
+          "detail": "46 of 49 probe words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "upright: words placed on the scan",
+          "ok": true,
+          "detail": "45 of 46 within 8 pt, median 1.7 pt",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "turned: words recognised",
+          "ok": true,
+          "detail": "46 of 49 probe words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "turned: words placed on the scan",
+          "ok": true,
+          "detail": "45 of 46 within 8 pt, median 1.6 pt",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "rot90crop: words recognised",
+          "ok": true,
+          "detail": "47 of 49 probe words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rot90crop: words placed on the scan",
+          "ok": true,
+          "detail": "46 of 47 within 8 pt, median 1.5 pt",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "skew: words recognised",
+          "ok": true,
+          "detail": "43 of 49 probe words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "skew: words placed on the scan",
+          "ok": true,
+          "detail": "41 of 43 within 8 pt, median 1.8 pt",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "sideways scan turned by OSD",
+          "ok": true,
+          "detail": "{\"totalWords\":721,\"rotatedPages\":[1]}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-fax-force",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "397 words on 2 pages (0 skipped), turned 0, \"10/25/2008 15:38 FAX 202 225 1992 Congre\"",
+      "error": null,
+      "ms": 16002,
+      "opMs": 15826,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "searchable text added (100+ words)",
+          "ok": true,
+          "detail": "+397 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page read",
+          "ok": true,
+          "detail": "read 2 of 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "old text layer replaced, not doubled",
+          "ok": true,
+          "detail": "\"Schmidt\" 3 -> 3, 3023 -> 3268 chars, replaced on 2 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-skip-text-pages",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-darwin-p10-11.pdf"
+      ],
+      "result": "PASS",
+      "detail": "read 1, skipped 2",
+      "error": null,
+      "ms": 1858,
+      "opMs": 1719,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page with a text layer skipped",
+          "ok": true,
+          "detail": "skipped 2",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "page without text read",
+          "ok": true,
+          "detail": "read 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text layer not duplicated",
+          "ok": true,
+          "detail": "390 chars before, 390 after",
+          "soft": false,
+          "audit": 11
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-force-text-pages",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/oyo.pdf"
+      ],
+      "result": "PASS",
+      "detail": "183 words",
+      "error": null,
+      "ms": 8960,
+      "opMs": 8807,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "force reads the page anyway",
+          "ok": true,
+          "detail": "183 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    }
+  ]
+}

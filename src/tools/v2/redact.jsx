@@ -19,6 +19,22 @@ const termsOf = (o) =>
 const queryOf = (o) => ({ terms: termsOf(o), patterns: o.patterns, regex: o.regex, caseSensitive: o.caseSensitive, wholeWord: o.wholeWord })
 const hasQuery = (o) => termsOf(o).length > 0 || o.patterns.length > 0 || !!o.regex.trim()
 
+// What the redaction removed outside the page content, for the result note.
+function cleanedParts(c) {
+  if (!c) return []
+  return [
+    c.properties > 0 && plural(c.properties, 'document property', 'document properties'),
+    c.xmp && 'XMP metadata',
+    c.bookmarks > 0 && plural(c.bookmarks, 'bookmark'),
+    c.comments > 0 && plural(c.comments, 'comment'),
+    c.links > 0 && plural(c.links, 'link'),
+    c.attachments > 0 && plural(c.attachments, 'attachment'),
+    c.altTexts > 0 && plural(c.altTexts, 'alt text'),
+    c.other > 0 && plural(c.other, 'other text item'),
+    c.xfa && (c.xfaMatch ? 'XFA form data (where the search also matched)' : 'XFA form data'),
+  ].filter(Boolean)
+}
+
 // Search hits on one page of the file in view, for the live preview.
 function useHits(file, page, o) {
   const [state, setState] = useState({ key: null, boxes: [], error: null, total: 0 })
@@ -171,8 +187,8 @@ function Options({ options: o, setOptions, files }) {
         value={o.method}
         onChange={(method) => set({ method })}
         options={[
-          { value: 'remove', title: 'Remove what is marked', caption: 'Text, images and drawings under the boxes are deleted. The rest stays sharp and selectable.' },
-          { value: 'image', title: 'Turn marked pages into images', caption: 'Nothing on those pages stays as text. Bigger file.' },
+          { value: 'remove', title: 'Remove what is marked', caption: 'Text, images and drawings under the boxes are deleted. The rest stays sharp and selectable. A page that cannot be cleaned this way becomes an image. The gap keeps the length of what was removed: for names, use images.' },
+          { value: 'image', title: 'Turn marked pages into images', caption: 'Nothing on those pages stays as text, not even the width of a removed word. Bigger file.' },
         ]}
       />
       <p className="g3-note">Scanned pages have no text to search. Draw boxes over them, or run OCR first.</p>
@@ -198,7 +214,9 @@ export default {
     if (!marked && !hasQuery(o)) return { ready: false, line: 'Type text to find, pick a pattern, or drag boxes on the page.', runLabel: 'Redact' }
     const n = files.length
     const what = [hasQuery(o) && 'every match', marked && 'the marked areas'].filter(Boolean).join(' and ')
-    return { ready: true, line: `${plural(n, 'redacted PDF')} will be created: ${what} removed for good.`, runLabel: `Redact ${plural(n, 'PDF')}` }
+    // a search also cleans properties, bookmarks and comments, and drops attachments
+    const also = hasQuery(o) ? ' Attachments in the file are removed too.' : ''
+    return { ready: true, line: `${plural(n, 'redacted PDF')} will be created: ${what} removed for good.${also}`, runLabel: `Redact ${plural(n, 'PDF')}` }
   },
   async run(files, o, ctx) {
     const { findMatches, redactPdf } = await import('../../lib/redactOps.js')
@@ -220,21 +238,35 @@ export default {
         ...(o.boxes[f.id] ?? []).map((b) => ({ pageNum: b.page, fx: b.fx, fy: b.fy, fw: b.fw, fh: b.fh })),
         ...(o.wholePages[f.id] ?? []).map((p) => ({ pageNum: p, whole: true })),
       ].filter((b) => b.pageNum <= f.pageCount)
-      if (boxes.length === 0) {
+      // with a search, the file is still cleaned when no page matched: the
+      // text may sit in its properties, bookmarks or attachments
+      const query = hasQuery(o) ? queryOf(o) : null
+      if (boxes.length === 0 && !query) {
         empty.push(f.name)
         done += f.pageCount
         continue
       }
       const res = await redactPdf(f.bytes, boxes, {
         method: o.method,
+        query,
         report: true,
         check: ctx.check,
         onPage: (k) => ctx.progress(done + k, total, `Redacting ${f.name}`),
       })
       done += f.pageCount
-      const parts = [`${plural(boxes.length, 'area')} removed on ${plural(res.pages.length, 'page')}`]
+      const extra = cleanedParts(res.cleaned)
+      // attachments and XFA go on every search: they alone are not a match,
+      // unless the search hit the XFA data (Acrobat shows those values)
+      const c = res.cleaned ?? {}
+      if (boxes.length === 0 && !(c.properties || c.xmp || c.bookmarks || c.comments || c.links || c.altTexts || c.other || c.xfaMatch)) {
+        empty.push(f.name)
+        continue
+      }
+      const areas = boxes.filter((b) => !b.annot).length
+      const parts = areas ? [`${plural(areas, 'area')} removed on ${plural(res.pages.length, 'page')}`] : []
       if (o.method === 'remove' && res.rasterPages.length) parts.push(`${plural(res.rasterPages.length, 'page')} turned into images to be safe`)
-      outputs.push({ name: `${baseName(f.name)}-redacted.pdf`, bytes: res.bytes, parentIds: [f.id], note: parts.join(', ') + '.' })
+      const lines = [parts.join(', '), extra.length && `Also cleaned: ${extra.join(', ')}`].filter(Boolean)
+      outputs.push({ name: `${baseName(f.name)}-redacted.pdf`, bytes: res.bytes, parentIds: [f.id], note: lines.map((l) => `${l}.`).join(' ') })
     }
     if (outputs.length === 0) throw new Error(files.length === 1 ? 'Nothing found to redact. Check the search text, or draw boxes on the page.' : 'Nothing found to redact in the selected files.')
     if (empty.length) outputs[0].note += ` Nothing found in ${empty.join(', ')}.`

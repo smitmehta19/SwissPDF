@@ -5,9 +5,12 @@ import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import net from 'node:net'
+import { acquireRunLock } from './runlock.mjs'
 
 export const ROOT = fileURLToPath(new URL('../..', import.meta.url)).replace(/[\\/]$/, '')
-export const OUT_DIR = join(ROOT, 'test-corpus', 'derived', 'outputs')
+// CORPUS_OUT=<name> gives a run its own folder (outputs-<name>), so parallel runs do not collide
+const outName = (process.env.CORPUS_OUT ?? '').replace(/[^\w-]/g, '')
+export const OUT_DIR = join(ROOT, 'test-corpus', 'derived', outName ? `outputs-${outName}` : 'outputs')
 
 function freePort() {
   return new Promise((resolve, reject) => {
@@ -53,6 +56,7 @@ function uploadPlugin() {
 }
 
 export async function startServer() {
+  await acquireRunLock(`${process.argv[1]?.split(/[\\/]/).pop() ?? 'test'} (dev server)`)
   const port = await freePort()
   const server = await createServer({
     root: ROOT,

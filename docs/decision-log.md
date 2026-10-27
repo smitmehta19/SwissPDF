@@ -1,5 +1,22 @@
 # Decision log
 
+## 2026-10-26 - Stirling parity: app only, keep layout, deploy at the end
+- Decision: copy Stirling's tools, options and flows into the current SwissPDF layout; no rail/left library/right tools, no home page; deploy after the blind review passes.
+- Problem that prompted it: Smit asked to replicate stirling.com; live teardown (`docs/research/2026-10-26-stirling-site-rea.md`) showed their web app uploads files to their server.
+- Why this was chosen: Smit's call; layout revisited only if the blind review says it is bad.
+- Alternatives rejected: full layout switch (S2 items 1, 9), home page (S4).
+- What changed in the approach, and how: worktrees G2, U5-A, U5-B reset onto 09146c6 with only owned files restored (backup in session scratchpad), finished in parallel; small new tools assigned to the agent owning that area.
+- Impact and reversibility: reversible, nothing committed until deploy.
+- Status: building.
+
+## 2026-10-26 - G2: Protect key length, auto rotate threshold, Tesseract self-hosted
+- Decision: Protect offers AES 256 (default), AES 128 and RC4 40 like Stirling's keyLength, but defaults to 256 (Stirling: 128). Auto rotate uses Tesseract OSD with a confidence threshold of 2 (Stirling: 14) and turns unclear pages like the confident majority. Tesseract worker, core and language data load only from our origin.
+- Problem that prompted it: Stirling parity for options; review finding #9 (OCR code and models from jsDelivr, no integrity check).
+- Why this was chosen: AES-256 opens in every current reader and is what SwissPDF promised before. Threshold measured on the 3 real scans turned 0/90/180/270: wrong reads reach 1.0 (Lincoln letters); at 14 neither fax page (2.2 to 5.5) would turn. Fax page 1 reads the right way at only 0.3 to 0.4 and is fixed by "turn unclear pages like the rest"; with that off it stays sideways.
+- Alternatives rejected: SHA-pinning the CDN files (still a third-party request with page images nearby); committing the 9 MB worker/core copies (drift from node_modules).
+- Impact and reversibility: reversible. Handwritten vertical Japanese (Konoye) is not turned at threshold 2 (OSD 0.4 to 1.2): reported as "too little text to tell".
+- Status: built in the G2 worktree, pending merge.
+
 ## 2026-10-17 - LibreOffice engine pinned by content hash
 - Decision: engine files from `zetaoffice_latest` are hash-checked (SHA-256, build efaf0670b4d0) before running; mismatch = clear error, Quick mode still works.
 - Problem that prompted it: CDN has no versioned URL; an upstream change could break conversions or run unreviewed code next to documents.

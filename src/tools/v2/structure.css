@@ -1,0 +1,232 @@
+/* U5-B structure tools: bookmark tree, fact lists, attachment rows. */
+
+.st-facts {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+}
+
+.st-fact {
+  display: grid;
+  grid-template-columns: minmax(96px, 40%) minmax(0, 1fr);
+  gap: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--t-sm);
+}
+
+.st-fact + .st-fact {
+  border-top: 1px solid var(--line);
+}
+
+.st-fact dt {
+  color: var(--muted);
+}
+
+.st-fact dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+}
+
+/* bookmark tree */
+.st-tree {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-1);
+  max-height: 46vh;
+  overflow-y: auto;
+}
+
+.st-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  min-height: 40px;
+  padding-right: var(--s-1);
+  padding-left: calc(var(--s-1) + (var(--lvl, 1) - 1) * 16px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+}
+
+.st-row.is-on {
+  border-color: var(--signal);
+  background: var(--signal-wash);
+}
+
+.st-row .input {
+  flex: 1;
+  min-width: 0;
+  min-height: 32px;
+  border-color: transparent;
+  background: transparent;
+  font-size: var(--t-sm);
+}
+
+.st-row .input:hover {
+  border-color: var(--line-strong);
+}
+
+.st-row-page {
+  flex: none;
+  min-width: 36px;
+  text-align: right;
+  font-size: var(--t-sm);
+  color: var(--muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.st-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1);
+}
+
+.st-tools .icon-btn {
+  border-color: var(--line);
+}
+
+/* bookmark markers on the page */
+.st-mark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1.5px dashed var(--signal);
+  pointer-events: none;
+}
+
+.st-mark span {
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  max-width: 60%;
+  padding: 1px 6px;
+  border-radius: var(--r-xs);
+  background: var(--signal);
+  color: var(--on-signal);
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.st-mark.is-on {
+  border-top-style: solid;
+  border-top-width: 2px;
+}
+
+/* attachment and check rows */
+.st-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-1);
+}
+
+.st-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 40px;
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font-size: var(--t-sm);
+}
+
+.st-list li.is-off {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.st-list .st-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.st-list .st-meta {
+  color: var(--muted);
+  flex: none;
+}
+
+.st-checks {
+  display: grid;
+  gap: var(--s-2);
+}
+
+.st-checks .check-line {
+  align-items: flex-start;
+  min-height: 24px;
+}
+
+.st-checks .check-line input {
+  margin-top: 2px;
+}
+
+.st-count {
+  margin-left: auto;
+  color: var(--muted);
+}
+
+.st-warn {
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.st-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--s-2);
+}
+
+/* script list (Show JavaScript) */
+.st-scripts {
+  display: grid;
+  gap: var(--s-2);
+  max-height: 56vh;
+  overflow-y: auto;
+}
+
+.st-script summary {
+  display: flex;
+  gap: var(--s-2);
+  font-size: var(--t-sm);
+  cursor: pointer;
+}
+
+.st-script pre {
+  margin: var(--s-1) 0 0;
+  padding: var(--s-2);
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 420px) {
+  .st-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

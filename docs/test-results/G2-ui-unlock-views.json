@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-27T00:24:10.913Z",
+  "base": "http://127.0.0.1:62108",
+  "summary": [
+    {
+      "tool": "unlock",
+      "pass": 3,
+      "runs": 3,
+      "medianMs": 1393
+    }
+  ],
+  "rows": [
+    {
+      "tool": "unlock",
+      "file": "derived/owner-only-aws-invoice.pdf",
+      "cards": [
+        "1 page, 150.4 KB",
+        "Restrictions removed so the file can be edited"
+      ],
+      "ms": 1432,
+      "ok": true,
+      "detail": "None, 1 pages, 1921 chars, Its protection was already removed when it was added.",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "unlock",
+      "file": "derived/user-pw-TAMReview.pdf (with a plain PDF, Pages and Viewer opened first)",
+      "cards": [
+        "14 pages, 992.5 KB",
+        "Password needed to open this file"
+      ],
+      "ms": 893,
+      "ok": true,
+      "detail": "None, 23 pages, 65271 chars, Password removed. Not protected, left out: pdfjs-tracemonkey.pdf.",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    },
+    {
+      "tool": "unlock",
+      "file": "quirks/pdfjs-saslprep-r6.pdf",
+      "cards": [
+        "Password needed to open this file"
+      ],
+      "ms": 1393,
+      "ok": true,
+      "detail": "None, 1 pages, 18 chars, Password removed.",
+      "external": [],
+      "errors": [],
+      "knownErrors": []
+    }
+  ]
+}
