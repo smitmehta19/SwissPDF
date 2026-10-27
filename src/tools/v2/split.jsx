@@ -294,7 +294,8 @@ export default {
       const push = (part, extra = {}) => outputs.push({ name: `${base}_${rangeLabel(part)}.pdf`, bytes: part.bytes, parentIds: [f.id], ...extra })
       if (o.tab === 'size') {
         ctx.progress(done, total, `Measuring parts of ${f.name}`)
-        await splitBySize(f.bytes, maxBytes(o), f.pageCount, {
+        // restricted files are re-encrypted after the split: leave room for that overhead
+        await splitBySize(f.bytes, f.restrictions ? Math.floor(maxBytes(o) * 0.99) - 4096 : maxBytes(o), f.pageCount, {
           split: (ranges) => ctx.call('split', f.bytes, ranges),
           onPart: (part) => {
             push(part, part.oversize ? { note: `One page is already over ${o.maxSize} ${o.unit}.` } : {})

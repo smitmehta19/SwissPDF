@@ -9,6 +9,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import JSZip from 'jszip'
 import { PDFDocument } from 'pdf-lib'
+import * as mupdf from 'mupdf'
 import { startServer, ROOT } from './server.mjs'
 import { textAt, withPdfjs, wordCoverage } from './validate.mjs'
 
@@ -91,9 +92,17 @@ async function unzip(bytes) {
   const names = Object.keys(zip.files).filter((n) => n.endsWith('.pdf'))
   return { names, read: (n) => zip.file(n).async('uint8array') }
 }
-// restricted inputs (the 911 report) give restricted outputs: open them anyway
-const pages = async (bytes) => (await PDFDocument.load(bytes, { updateMetadata: false, ignoreEncryption: true })).getPageCount()
-const rotations = async (bytes) => (await PDFDocument.load(bytes, { updateMetadata: false, ignoreEncryption: true })).getPages().map((p) => p.getRotation().angle)
+// restricted outputs are encrypted (object streams too): decrypt with MuPDF first
+const plain = (bytes) => {
+  const d = mupdf.Document.openDocument(new Uint8Array(bytes), 'application/pdf')
+  try {
+    return d.saveToBuffer('encrypt=none').asUint8Array().slice()
+  } finally {
+    d.destroy()
+  }
+}
+const pages = async (bytes) => (await PDFDocument.load(plain(bytes), { updateMetadata: false })).getPageCount()
+const rotations = async (bytes) => (await PDFDocument.load(plain(bytes), { updateMetadata: false })).getPages().map((p) => p.getRotation().angle)
 // Top-level bookmarks with their 1-based page, read by pdf.js.
 const chapters = (bytes) =>
   withPdfjs(bytes, async (doc) => {
