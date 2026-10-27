@@ -105,6 +105,11 @@ export function sanitizeHtml(html) {
   const doc = new DOMParser().parseFromString(html, 'text/html')
   flattenTemplates(doc)
   doc.querySelectorAll('script,noscript,iframe,frame,frameset,object,embed,applet,base,link,meta,video,audio,source,track,portal,fencedframe').forEach((el) => el.remove())
+  // SVG animation can set href (feImage, use, a) to a URL after the walk
+  // below: nothing animates in a PDF, so drop it all
+  for (const el of [...doc.querySelectorAll('*')]) {
+    if (/^(animate|animatemotion|animatetransform|animatecolor|set|discard)$/.test(el.localName.toLowerCase())) el.remove()
+  }
   doc.querySelectorAll('img,image,input[type=image]').forEach((el) => {
     const src = el.getAttribute('src') ?? el.getAttribute('href')
     if (/^\s*data:/i.test(src ?? '')) {

@@ -5,6 +5,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import Icon from '../components/Icon.jsx'
 import { isPdfRecord } from './fileStore.js'
 import { metaLine } from './FileGrid.jsx'
+import { matchesAll, searchText } from './toolSearch.js'
 
 const FILTERS = [
   ['all', 'All'],
@@ -22,7 +23,7 @@ function score(q, name, extra = '') {
   const n = name.toLowerCase()
   if (n.startsWith(q)) return 3
   if (n.split(/[\s_.-]+/).some((w) => w.startsWith(q)) || n.includes(q)) return 2
-  return extra.toLowerCase().includes(q) ? 1 : 0
+  return matchesAll(extra.toLowerCase(), q) ? 1 : 0
 }
 
 export default function CommandPalette({ tools, files, theme, onClose, onOpenTool, onOpenFile, onTheme, onHome }) {
@@ -69,7 +70,7 @@ export default function CommandPalette({ tools, files, theme, onClose, onOpenToo
         key: `tool-${t.id}`,
         kind: 'tool',
         label: t.name,
-        extra: `${t.description ?? ''} ${t.category} ${t.io}`,
+        extra: searchText(t),
         hint: t.category,
         icon: t.icon,
         run: () => onOpenTool(t.id),

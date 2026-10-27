@@ -11,7 +11,8 @@ import { parseRangeSpec, sortPreset } from '../lib/pageRanges.js'
 import { assertValidOutput } from '../lib/pdfOps.js'
 import { downloadBytes } from '../lib/download.js'
 import { saveZip } from '../lib/deliver.js'
-import { addVersions, getBytes, getRecord } from './fileStore.js'
+import { addVersions, filesForRun, getBytes, getRecord } from './fileStore.js'
+import { keepRestrictions, prepareRestricted } from '../lib/intake.js'
 import { callOp } from './jobs.js'
 
 let keySeq = 1
@@ -42,7 +43,13 @@ export function usePageEditor(files) {
   const [sel, setSel] = useState(() => new Set()) // `${fileId}|${key}`
   const [history, setHistory] = useState([]) // [{ edits, splits }]
   const [future, setFuture] = useState([])
-  const [busy, setBusy] = useState(false)
+  const [busy, setBusyState] = useState(false)
+  // read at once, so no edit slips in between Save starting and the re-render
+  const busyRef = useRef(false)
+  const setBusy = (v) => {
+    busyRef.current = v
+    setBusyState(v)
+  }
   const [message, setMessage] = useState(null)
   const anchor = useRef(null)
 
@@ -72,7 +79,9 @@ export function usePageEditor(files) {
     }
   }, [files]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // no edits while Save runs: they would be wiped when it ends
   const commit = (next, nextSplits = splits) => {
+    if (busyRef.current) return
     setHistory((h) => [...h.slice(-49), { edits, splits }])
     setFuture([])
     setEdits(next)
@@ -215,7 +224,7 @@ export function usePageEditor(files) {
       commit(next)
     },
     undo() {
-      if (!history.length) return
+      if (!history.length || busyRef.current) return
       const prev = history[history.length - 1]
       setFuture((fu) => [...fu, { edits, splits }])
       setEdits(prev.edits)
@@ -223,7 +232,7 @@ export function usePageEditor(files) {
       setHistory((h) => h.slice(0, -1))
     },
     redo() {
-      if (!future.length) return
+      if (!future.length || busyRef.current) return
       const next = future[future.length - 1]
       setHistory((h) => [...h, { edits, splits }])
       setEdits(next.edits)
@@ -244,8 +253,12 @@ export function usePageEditor(files) {
       try {
         const outs = []
         for (const { f, tiles } of picked) {
-          const bytes = await callOp('pageEdit', [await getBytes(f.id), planOf(tiles)])
-          outs.push({ name: `${baseName(f.name)}-pages.pdf`, bytes })
+          // owner-only (restricted) files: the pages keep the restrictions, as on Save
+          const inputs = await prepareRestricted('organize', await filesForRun([f.id]))
+          const src = inputs[0]?.bytes ?? (await getBytes(f.id))
+          const out = { name: `${baseName(f.name)}-pages.pdf`, bytes: await callOp('pageEdit', [src, planOf(tiles)]), parentIds: [f.id] }
+          await keepRestrictions('organize', [out], inputs)
+          outs.push({ name: out.name, bytes: out.bytes })
         }
         if (outs.length === 1) downloadBytes(outs[0].bytes, outs[0].name)
         else await saveZip(outs, 'swisspdf-pages.zip', { size: outs.reduce((n, o) => n + o.bytes.byteLength, 0) })
@@ -258,6 +271,7 @@ export function usePageEditor(files) {
       }
     },
     async apply() {
+      if (busyRef.current) return
       setBusy(true)
       setMessage(null)
       try {
@@ -273,7 +287,9 @@ export function usePageEditor(files) {
         for (const f of todo) {
           const tiles = tilesOf(f)
           const groups = partsOf(tiles, splitsOf(f))
-          const src = await getBytes(f.id)
+          // owner-only (restricted) files: edit the open copy, the result keeps the restrictions
+          const inputs = await prepareRestricted('organize', await filesForRun([f.id]))
+          const src = inputs[0]?.bytes ?? (await getBytes(f.id))
           const outputs = []
           for (const [i, group] of groups.entries()) {
             const bytes = await callOp('pageEdit', [src, planOf(group)])
@@ -281,6 +297,7 @@ export function usePageEditor(files) {
             const name = groups.length > 1 ? `${baseName(f.name)}-part${i + 1}.pdf` : f.name
             outputs.push({ name, bytes, pageCount, parentIds: [f.id] })
           }
+          await keepRestrictions('organize', outputs, inputs)
           // one change per file, so one undo brings the whole file back
           const change = await addVersions(outputs, { tool: 'page-editor', consumedIds: [f.id] })
           if (!change) continue
@@ -428,15 +445,18 @@ function Track({ file, editor, onView }) {
   )
 }
 
-export default function PageEditor({ files, editor, onView }) {
+// toolOwnsRun: a page tool is open (Extract, Remove, Organize). Its own
+// page field and Run button do the job, so the bar drops its page box and Save.
+export default function PageEditor({ files, editor, onView, toolOwnsRun = false }) {
   const [range, setRange] = useState('')
   const a = editor.actions
   // nothing to act on, or a save is running (its result would drop new edits)
   const none = editor.sel.size === 0 || editor.busy
   if (files.length === 0) return <p className="empty-line">Select files in Files to edit their pages.</p>
   return (
-    <section className="page-editor" aria-label="Page editor" data-testid="page-editor">
+    <section className={`page-editor ${editor.busy ? 'is-busy' : ''}`} aria-label="Page editor" aria-busy={editor.busy} data-testid="page-editor">
       <div className="pe-bar" role="toolbar" aria-label="Page actions">
+        {!toolOwnsRun && (
         <form
           className="pe-range"
           onSubmit={(e) => {
@@ -452,6 +472,7 @@ export default function PageEditor({ files, editor, onView }) {
             Select
           </button>
         </form>
+        )}
         <button type="button" className="btn btn-quiet btn-small" onClick={none ? a.selectAll : a.clear} data-testid="pe-select-all">
           {none ? 'Select all' : `Clear (${editor.sel.size})`}
         </button>
@@ -491,15 +512,17 @@ export default function PageEditor({ files, editor, onView }) {
           <Icon name="redo" size={16} />
         </button>
         <span className="pe-grow" />
-        {editor.dirty && (
+        {!toolOwnsRun && editor.dirty && (
           <button type="button" className="link" onClick={a.reset}>
             Discard
           </button>
         )}
-        <button type="button" className="btn btn-primary btn-small" onClick={a.apply} disabled={!editor.dirty || editor.busy} data-testid="pe-apply" title="Save a new version of each changed file">
-          <Icon name="save" size={15} />
-          {editor.busy ? 'Saving...' : 'Save'}
-        </button>
+        {!toolOwnsRun && (
+          <button type="button" className="btn btn-primary btn-small" onClick={a.apply} disabled={!editor.dirty || editor.busy} data-testid="pe-apply" title="Save a new version of each changed file">
+            <Icon name="save" size={15} />
+            {editor.busy ? 'Saving...' : 'Save'}
+          </button>
+        )}
       </div>
       {editor.message && (
         <p className={`notice notice-${editor.message.kind}`} role="status">

@@ -106,6 +106,7 @@ function problemsOf(steps, files) {
         hints[s.uid] = `Pages ${s.options.pages.trim()} are checked when it runs: step ${changer.n}, ${changer.name}, changes the page count.`
       }
     }
+    if (!out[s.uid] && s.reset?.length) hints[s.uid] = `Some saved settings could not be read and are back to their defaults: ${s.reset.join(', ')}.`
     if (PAGE_CHANGING.includes(s.tool) && !changer) changer = { n: i + 1, name: tool.name }
   }
   return { problems: out, hints }
@@ -228,7 +229,10 @@ function Options({ options: o, setOptions, files }) {
         if (r.reason !== 'corrupt') setStored(r.reason)
         return
       }
-      const mine = mergeStored(latest.current.mine ?? [], r.list)
+      let mine = mergeStored(latest.current.mine ?? [], r.list)
+      // while the name is being typed here, another tab's copy of it is not taken
+      const cur = currentOf(latest.current)
+      if (document.activeElement?.dataset?.testid === 'auto-name' && !cur.template) mine = mine.map((m) => (m.id === cur.id ? { ...m, name: cur.name } : m))
       adopted.current = mine
       setOptions((x) => ({ ...x, mine }))
     }
@@ -262,7 +266,8 @@ function Options({ options: o, setOptions, files }) {
           if (s.uid !== uid) return s
           const tool = STEP_TOOLS[s.tool]
           const prev = s.tool === 'metadata' ? { ...METADATA_STEP, ...s.options } : { ...(tool?.defaults ?? {}), ...s.options }
-          return { ...s, options: typeof next === 'function' ? next(prev) : next }
+          // an edit settles the step: no "settings were reset" hint any more
+          return { uid: s.uid, tool: s.tool, options: typeof next === 'function' ? next(prev) : next }
         }),
       ),
     )
@@ -523,9 +528,10 @@ export default {
     const bad = a.steps.findIndex((s) => problems[s.uid])
     if (bad >= 0) return { ready: false, line: `Step ${bad + 1}, ${STEP_TOOLS[a.steps[bad].tool]?.name ?? a.steps[bad].tool}: ${problems[a.steps[bad].uid]}`, runLabel: label }
     const n = files.length
+    const reset = a.steps.findIndex((s) => s.reset?.length)
     return {
       ready: true,
-      line: `${plural(a.steps.length, 'step')} on each of ${plural(n, 'PDF')}: ${chain(a)}.`,
+      line: `${plural(a.steps.length, 'step')} on each of ${plural(n, 'PDF')}: ${chain(a)}.${reset >= 0 ? ` Step ${reset + 1} has settings back at their defaults (${a.steps[reset].reset.join(', ')}): check it before you run.` : ''}`,
       runLabel: `Run on ${plural(n, 'PDF')}`,
     }
   },

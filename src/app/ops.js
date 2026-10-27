@@ -4,6 +4,19 @@
 const DOC_OPS = new Set(['readBookmarks', 'writeBookmarks', 'readMetadata', 'writeMetadata', 'listAttachments', 'extractAttachments', 'editAttachments', 'annotationSummary', 'removeAnnotations', 'removeImages', 'extractImages', 'sanitizePdf', 'scanActiveContent', 'flattenPdf', 'setPermissions', 'readPermissions', 'pdfInfo', 'unlockForms', 'listJavaScript'])
 
 export const OPS = {
+  // Redaction in a worker of its own (lane 'redact', see jobs.js): MuPDF's
+  // memory grows with every redaction, so that worker is replaced every few
+  // jobs. No callbacks cross into a worker: progress is per file, cancel
+  // ends the worker.
+  async redact(bytes, boxes, opts = {}) {
+    const { redactPdf } = await import('../lib/redactOps.js')
+    return redactPdf(bytes, boxes, { ...opts, onProgress: undefined, onPage: null, check: null })
+  },
+  // Loads pdf-lib and MuPDF ahead of the first Run (cold start).
+  async warm() {
+    await Promise.all([import('../lib/pdfOps.js'), import('../lib/mupdfOps.js'), import('mupdf')])
+    return true
+  },
   async normalize(bytes, opts) {
     const { normalizePdf } = await import('../lib/intake.js')
     return normalizePdf(bytes, opts)
@@ -88,5 +101,14 @@ export const OPS = {
   async compareDiff(pagesA, pagesB, opts) {
     const { diffPages } = await import('../lib/compareOps.js')
     return diffPages(pagesA, pagesB, opts)
+  },
+  // Edit existing text (editTextOps.js): page text model and the edit itself
+  async editTextModel(bytes, pageNum) {
+    const { pageTextModel } = await import('../lib/editTextOps.js')
+    return pageTextModel(bytes, pageNum)
+  },
+  async editText(bytes, edits, opts) {
+    const { editText } = await import('../lib/editTextOps.js')
+    return editText(bytes, edits, opts)
   },
 }

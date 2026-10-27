@@ -63,8 +63,8 @@ function Options({ options: o, setOptions, files }) {
 
 // ---------- report ----------
 // The changed version with added words highlighted, after a summary page.
-async function buildReport(a, b, res) {
-  const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib')
+export async function buildReport(a, b, res) {
+  const { PDFDocument, StandardFonts, rgb, pushGraphicsState, popGraphicsState, setGraphicsState, setFillingRgbColor, rectangle, fill } = await import('pdf-lib')
   const { fontForText } = await import('../../lib/fonts.js')
   const { pageFrame, viewRectToUser } = await import('../../lib/pageFrame.js')
   const src = await PDFDocument.load(b.bytes, { updateMetadata: false })
@@ -72,6 +72,9 @@ async function buildReport(a, b, res) {
   const pages = await doc.copyPages(src, src.getPageIndices())
   pages.forEach((p) => doc.addPage(p))
   const green = rgb(0.32, 0.81, 0.4)
+  // one shared see-through state and one fill per page: drawRectangle with
+  // opacity adds a graphics state per box (246k boxes took about 25 s)
+  const see = doc.context.register(doc.context.obj({ Type: 'ExtGState', ca: 0.35 }))
   for (const p of res.pages) {
     if (!p.bPage) continue
     const page = doc.getPage(p.bPage - 1)
@@ -81,10 +84,14 @@ async function buildReport(a, b, res) {
       page.drawRectangle({ ...r, borderColor: green, borderWidth: 6, opacity: 0, borderOpacity: 0.8 })
       continue
     }
+    if (!p.addedBoxes.length) continue
+    const ops = [pushGraphicsState(), setGraphicsState(page.node.newExtGState('GS', see)), setFillingRgbColor(0.32, 0.81, 0.4)]
     for (const w of p.addedBoxes) {
       const r = viewRectToUser(frame, w.x, w.y, w.w, w.h)
-      page.drawRectangle({ ...r, color: green, opacity: 0.35 })
+      ops.push(rectangle(r.x, r.y, r.width, r.height))
     }
+    ops.push(fill(), popGraphicsState())
+    for (let i = 0; i < ops.length; i += 5000) page.pushOperators(...ops.slice(i, i + 5000))
   }
 
   const helv = await doc.embedFont(StandardFonts.Helvetica)

@@ -56,6 +56,27 @@ export function passwordCandidates(pw) {
   return [...new Set([raw, saslPrep(raw), raw.normalize('NFC'), raw.normalize('NFKC')])]
 }
 
+// A character for an error message: invisible and look-alike ones by name
+// and code ("soft hyphen (U+00AD)"), others quoted with their code.
+const CHAR_NAMES = {
+  '\u00a0': 'non-breaking space',
+  '\u00ad': 'soft hyphen',
+  '\u034f': 'combining grapheme joiner',
+  '\u200b': 'zero-width space',
+  '\u200c': 'zero-width non-joiner',
+  '\u200d': 'zero-width joiner',
+  '\u2060': 'word joiner',
+  '\ufeff': 'zero-width no-break space',
+}
+export function charLabel(c) {
+  const code = `U+${c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}`
+  if (CHAR_NAMES[c]) return `${CHAR_NAMES[c]} (${code})`
+  if (/\p{M}/u.test(c)) return `combining mark (${code})`
+  if (/\p{Z}/u.test(c)) return `special space (${code})`
+  if (/[\p{Cf}\p{Cc}]/u.test(c)) return `hidden character (${code})`
+  return `"${c}" (${code})`
+}
+
 // MuPDF splits its option string on commas, so a comma would silently change
 // the password. Returns an error message or null.
 //
@@ -71,10 +92,14 @@ export function passwordProblem(pw, keyLength = 256) {
   if (pw.includes(',')) return 'Passwords cannot contain a comma.'
   if (keyLength !== 256 && !LATIN1_SAFE.test(pw)) {
     const bad = [...pw].find((c) => !LATIN1_SAFE.test(c))
-    return `${keyLength === 40 ? 'RC4 40-bit' : 'AES 128-bit'} only takes Latin letters, digits and common symbols, not "${bad === ' ' ? 'non-breaking space' : bad}". Choose AES 256-bit for this password.`
+    return `${keyLength === 40 ? 'RC4 40-bit' : 'AES 128-bit'} only takes Latin letters, digits and common symbols, not this one: ${charLabel(bad)}. Choose AES 256-bit for this password.`
   }
   if (keyLength === 256 && saslPrep(pw) !== pw) {
-    return 'This password has a character PDF apps read in different ways (a non-breaking space, soft hyphen, full-width letter or an accent typed as a separate mark). Type it with plain characters.'
+    // the first character SASLprep changes; an accent typed as its own mark
+    // only changes together with its letter
+    const chars = [...pw]
+    const bad = chars.find((c) => saslPrep(c) !== c) ?? chars.find((c) => /\p{M}/u.test(c)) ?? chars.find((c) => c > '\x7e')
+    return `This password has a character PDF apps read in different ways${bad ? `: ${charLabel(bad)}` : ''}. Type it with plain characters.`
   }
   return null
 }

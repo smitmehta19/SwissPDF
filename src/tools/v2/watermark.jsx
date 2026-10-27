@@ -21,7 +21,7 @@ function Options({ options, setOptions }) {
       />
       {options.kind === 'text' ? (
         <>
-          <Field label="Text">
+          <Field label="Watermark text">
             {(id) => (
               <input id={id} className="input" data-testid="wm-text" value={options.text} onChange={(e) => set({ text: e.target.value })} />
             )}

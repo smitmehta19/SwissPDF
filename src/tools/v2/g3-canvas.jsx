@@ -93,6 +93,11 @@ export function usePageView(file, page, width = 1400) {
 const PX = 96 / 72 // CSS px per point at 100%, as in the Viewer
 const ZOOM_MIN = 25
 const ZOOM_MAX = 400
+// Smallest start scale (px per point) on a narrow pane: fit width on a phone
+// drew W-9 fields about 7 px high (inner width 356 px). Wider panes start at
+// fit width; the Fit width button always fits.
+const READABLE = 1
+const NARROW = 480
 
 // One page with overlays. Pointer handlers get { x, y } in points and
 // { fx, fy } fractions of the visible page.
@@ -119,7 +124,7 @@ export function PageStage({
   const dragging = useRef(false)
   // displayed pixels per PDF point, so overlays (text, signatures) scale
   const [scale, setScale] = useState(1)
-  const [zoomAt, setZoom] = useState({ fit: true, value: 100 })
+  const [zoomAt, setZoom] = useState({ fit: 'auto', value: 100 })
   const [wrapW, setWrapW] = useState(0)
   const shown = !!(view.img && view.size && file && view.key === `${file.id}:${page}`)
   useEffect(() => {
@@ -149,7 +154,9 @@ export function PageStage({
   }, [zoom, !!file]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const pageW = view.size?.width
-  const zoomScale = zoom && pageW ? (zoomAt.fit ? (wrapW > 0 ? Math.max(0.1, wrapW / pageW) : PX) : (zoomAt.value / 100) * PX) : null
+  const fitScale = wrapW > 0 && pageW ? Math.max(0.1, wrapW / pageW) : PX
+  const fitted = zoomAt.fit === true || (zoomAt.fit === 'auto' && (fitScale >= READABLE || wrapW >= NARROW))
+  const zoomScale = zoom && pageW ? (zoomAt.fit ? (fitted ? fitScale : READABLE) : (zoomAt.value / 100) * PX) : null
   const pct = zoomScale ? Math.round((zoomScale / PX) * 100) : 100
   const dispW = zoomScale ? Math.round(pageW * zoomScale) : null
   // sharper bitmap when zoomed in, in steps so each zoom click does not re-render
@@ -258,7 +265,7 @@ export function PageStage({
             <span className="mono viewer-pct" data-testid="g3-pct">
               {pct}%
             </span>
-            <button type="button" className={`btn btn-quiet btn-small ${zoomAt.fit ? 'is-on' : ''}`} aria-pressed={zoomAt.fit} onClick={() => setZoom((z) => ({ ...z, fit: true }))} data-testid="g3-fit">
+            <button type="button" className={`btn btn-quiet btn-small ${fitted ? 'is-on' : ''}`} aria-pressed={fitted} onClick={() => setZoom((z) => ({ ...z, fit: true }))} data-testid="g3-fit">
               <Icon name="fitwidth" size={15} />
               Fit width
             </button>

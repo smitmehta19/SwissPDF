@@ -256,7 +256,8 @@ const OPS = {
   },
   async ocr(s, [src]) {
     const { ocrPdf } = await lib('ocrOps')
-    const res = await ocrPdf(src)
+    // 'all': these rows were written for the old default (read every page, keep any text)
+    const res = await ocrPdf(src, { textPages: 'all' })
     return {
       outputs: [await save(s.id, 'ocr.pdf', res.bytes)],
       meta: { totalWords: res.totalWords, pageCount: res.pageCount, sample: res.text.slice(0, 200) },
@@ -381,6 +382,21 @@ const OPS = {
       outputs: [await save(s.id, 'redacted.pdf', bytes)],
       meta: { boxes: boxes.length, pagesHit: [...new Set(boxes.map((b) => b.pageNum))], covered, areas: areasOf(boxes) },
     }
+  },
+  // A scan numbered with our own Page numbers tool, then a box redacted in
+  // remove mode: still a scan (small text on top), so the page becomes a
+  // JPEG picture with the box painted black, not a huge flat image.
+  async redactStampedScan(s, [src]) {
+    const { addPageNumbers, watermarkText } = await lib('stampOps')
+    const { redactPdf } = await lib('redactOps')
+    // our own Page numbers, or our own Watermark (big diagonal text on top)
+    const numbered = s.params?.watermark ? await watermarkText(src, { text: s.params.watermark, fontSize: s.params.fontSize ?? 48 }) : await addPageNumbers(src, { format: 'n-of-total' })
+    const box = { pageNum: 1, fx: 0.2, fy: 0.3, fw: 0.6, fh: 0.2 }
+    const res = await redactPdf(numbered, [box], { method: 'remove', report: true })
+    // the box in fractions of the visible page, a little inside its edges
+    const rect = { page: 1, x: box.fx + 0.01, y: box.fy + 0.01, w: box.fw - 0.02, h: box.fh - 0.02, vw: 1, vh: 1 }
+    const [covered] = await darkShare(res.bytes, [rect])
+    return { outputs: [await save(s.id, 'redacted.pdf', res.bytes)], meta: { rasterPages: res.rasterPages, numberedSize: numbered.byteLength, size: res.bytes.byteLength, covered } }
   },
   async redactFind(s, [src]) {
     const { findTextBoxes } = await lib('redactOps')

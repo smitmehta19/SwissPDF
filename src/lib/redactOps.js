@@ -632,11 +632,13 @@ function shapesUnder(mupdf, page, rects) {
     return samples.some(([x, y]) => (!box || (x >= box[0] && x <= box[2] && y >= box[1] && y <= box[3])) && clips.every((c) => c(x, y)))
   }
   const dev = new mupdf.Device({
-    fillPath(path, evenOdd, ctm) {
+    fillPath(path, evenOdd, ctm, cs) {
       check(path, ctm, -0.25)
+      release(path, cs)
     },
-    strokePath(path, stroke, ctm) {
+    strokePath(path, stroke, ctm, cs) {
       check(path, ctm, 1.5)
+      release(path, stroke, cs)
     },
     beginTile(area) {
       if (rects.some((r) => overlaps(area, r))) found = true
@@ -648,15 +650,19 @@ function shapesUnder(mupdf, page, rects) {
     },
     clipPath(path, evenOdd, ctm) {
       clips.push(insidePath(path, ctm, evenOdd))
+      release(path)
     },
     // text, stroke and mask clips: assume they cover everything
-    clipStrokePath() {
+    clipStrokePath(path, stroke) {
+      release(path, stroke)
       clips.push(() => true)
     },
-    clipText() {
+    clipText(text) {
+      release(text)
       clips.push(() => true)
     },
-    clipStrokeText() {
+    clipStrokeText(text, stroke) {
+      release(text, stroke)
       clips.push(() => true)
     },
     clipImageMask(image) {
@@ -831,13 +837,41 @@ function borrowed(mupdf, obj) {
   for (const cls of [mupdf.Image, mupdf.Shade]) if (obj instanceof cls) cls._finalizer?.unregister(obj)
 }
 
-// Area of the page covered by images (page space units).
-function imageCover(mupdf, page) {
+// Paths, stroke states, colour spaces and text that MuPDF hands to Device
+// callbacks are kept references: drop them at once instead of waiting for
+// the garbage collector.
+function release(...objs) {
+  for (const o of objs) o?.destroy?.()
+}
+
+// A scan: images cover half the page or more and little visible text is
+// drawn on top of them. An OCR layer is invisible (MuPDF ignores it) or sits
+// under the scan (the fax). A page number, Bates number or stamp on a scan
+// is small; a born-digital page with a full-page background picture has its
+// text on top, covering more than 2% of the page. -> { heavy (images cover
+// half the page), scan }
+function scanFacts(mupdf, page) {
+  const b = page.getBounds()
+  const pageArea = (b[2] - b[0]) * (b[3] - b[1])
   let area = 0
+  let onTop = 0
+  const count = (text, ctm) => {
+    if (area < 0.5 * pageArea) return
+    const r = text.getBounds(null, ctm)
+    if (r.every(Number.isFinite)) onTop += Math.max(0, r[2] - r[0]) * Math.max(0, r[3] - r[1])
+  }
   const dev = new mupdf.Device({
     fillImage(image, m) {
       borrowed(mupdf, image)
       area += Math.abs(m[0] * m[3] - m[1] * m[2])
+    },
+    fillText(text, ctm, cs) {
+      count(text, ctm)
+      release(text, cs)
+    },
+    strokeText(text, stroke, ctm, cs) {
+      count(text, ctm)
+      release(text, stroke, cs)
     },
   })
   try {
@@ -846,18 +880,34 @@ function imageCover(mupdf, page) {
     dev.close()
     dev.destroy?.()
   }
-  return area
+  const heavy = area >= 0.5 * pageArea
+  return { heavy, scan: heavy && onTop < 0.02 * pageArea }
 }
 
-// Most of the page is pictures: a scan (with or without an OCR text layer).
-function isScan(mupdf, doc, pageNum) {
+function pageScanFacts(mupdf, doc, pageNum) {
   const page = doc.loadPage(pageNum - 1)
   try {
-    const b = page.getBounds()
-    return imageCover(mupdf, page) >= 0.5 * (b[2] - b[0]) * (b[3] - b[1])
+    return scanFacts(mupdf, page)
   } finally {
     page.destroy?.()
   }
+}
+
+// Stored bytes of the page's image XObjects. Methods on the references only:
+// resolve() after a redaction drops new image data on save.
+function imageBytes(doc, pageNum) {
+  const res = pageAt(doc, pageNum - 1)?.getInheritable('Resources')
+  if (!res || !res.isDictionary()) return 0
+  const xo = res.get('XObject')
+  if (!xo.isDictionary()) return 0
+  let n = 0
+  xo.forEach((v) => {
+    if (!v.isIndirect() || !v.isStream() || !isName(v.get('Subtype'), 'Image')) return
+    const raw = v.readRawStream()
+    n += raw.getLength()
+    raw.destroy?.()
+  })
+  return n
 }
 
 // Paints the boxes (view space) black on a page picture.
@@ -898,7 +948,8 @@ function rasterizePage(mupdf, doc, pageNum, list, maxScale, dead, layers) {
     const H = bounds[3] - bounds[1]
     // a scanned page is stored as JPEG at 144 dpi: as flat RGB, a long scanned
     // book runs out of memory
-    const scan = imageCover(mupdf, page) >= 0.5 * W * H
+    // the memory rule: a page that is mostly picture is stored as JPEG
+    const scan = scanFacts(mupdf, page).heavy
     // posters and plans: at most about 25 megapixels per page
     const scale = Math.min(scan ? 2 : maxScale, Math.sqrt(25e6 / Math.max(1, W * H)))
     const boxes = list.map((b) => resolve(b, W, H))
@@ -912,9 +963,11 @@ function rasterizePage(mupdf, doc, pageNum, list, maxScale, dead, layers) {
       layers.show(true)
     }
     let image = null
+    let jpeg = null
     try {
       paintBoxes(pix, boxes, bounds, scale)
-      image = new mupdf.Image(scan ? pix.asJPEG(85) : pix)
+      jpeg = scan ? pix.asJPEG(85) : null
+      image = new mupdf.Image(jpeg ?? pix)
       const ref = doc.addImage(image)
       const x0 = pix.getX() / scale
       const y0 = pix.getY() / scale
@@ -932,6 +985,7 @@ function rasterizePage(mupdf, doc, pageNum, list, maxScale, dead, layers) {
       obj.delete('StructParents')
     } finally {
       image?.destroy?.()
+      jpeg?.destroy?.()
       pix.destroy?.()
     }
   } finally {
@@ -1386,7 +1440,13 @@ export async function redactPdf(bytes, boxes, { method = 'image', query = null, 
         // a scanned page goes straight to a (JPEG) picture: MuPDF would store
         // the blanked scan as a full-size flat image, and long books run out
         // of memory
-        if (method === 'remove' && !isScan(mupdf, doc, pageNum) && removeOnPage(mupdf, doc, pageNum, list, dead)) continue
+        if (method === 'remove') {
+          const facts = pageScanFacts(mupdf, doc, pageNum)
+          const before = facts.heavy ? imageBytes(doc, pageNum) : 0
+          // a mostly-picture page with text on top (watermark, stamp) whose
+          // pictures grew past 2x when blanked goes on to the JPEG picture
+          if (!facts.scan && removeOnPage(mupdf, doc, pageNum, list, dead) && (!facts.heavy || imageBytes(doc, pageNum) <= 2 * before + 65536)) continue
+        }
         rasterizePage(mupdf, doc, pageNum, list, scale, dead, layers)
         rasterPages.push(pageNum)
         // decoded page images are cached: let go of them between pictures
@@ -1410,12 +1470,16 @@ export async function redactPdf(bytes, boxes, { method = 'image', query = null, 
     layers.show(false)
     // garbage collection drops the old content streams, the XFA and all else
     // unlinked above, so none of it stays behind as an unreferenced object
-    const out = doc.saveToBuffer('garbage=compact,compress,objstms,encrypt=none').asUint8Array().slice()
+    const buf = doc.saveToBuffer('garbage=compact,compress,objstms,encrypt=none')
+    const out = buf.asUint8Array().slice()
+    buf.destroy?.()
     return report ? { bytes: out, pages, rasterPages, cleaned } : out
   } catch (err) {
     throw pageTreeError(err)
   } finally {
     doc.destroy?.()
+    // fonts and images this file left in MuPDF's cache
+    mupdf.emptyStore()
   }
 }
 

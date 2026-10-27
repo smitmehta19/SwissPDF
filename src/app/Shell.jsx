@@ -8,6 +8,7 @@ import Icon from '../components/Icon.jsx'
 import { assertValidOutput } from '../lib/pdfOps.js'
 import * as store from './fileStore.js'
 import { useWorkspace } from './fileStore.js'
+import { keepRestrictions, prepareRestricted } from '../lib/intake.js'
 import { callOp, runJob } from './jobs.js'
 import { Dialog, ProgressBar } from './controls.jsx'
 import FileGrid, { AddFilesInput } from './FileGrid.jsx'
@@ -18,7 +19,8 @@ import ToolPanel from './ToolPanel.jsx'
 import CommandPalette from './CommandPalette.jsx'
 import Reader from './Reader.jsx'
 import { POPULAR, scopedRunLabel, suggestNext } from './nextTools.js'
-import { metaLine } from './FileGrid.jsx'
+import { metaLine, FileName, fewNames } from './FileGrid.jsx'
+import { searchTools } from './toolSearch.js'
 import './shell.css'
 
 const isV2 = (tool) => typeof tool?.run === 'function'
@@ -28,9 +30,51 @@ const isV2 = (tool) => typeof tool?.run === 'function'
 const extOf = (name) => (/\.[^.]+$/.exec(name)?.[0] ?? '').toLowerCase()
 const OTHER_TYPES = new Set(TOOLS.flatMap((t) => t.accepts?.types ?? []).filter((e) => e !== '.pdf'))
 const takesFile = (tool, f) => (tool?.accepts?.types ? tool.accepts.types.includes(extOf(f.name)) : store.isPdfRecord(f))
+// "#/compress", "#/Compress/" and "#compress" all open Compress
+const hashId = () => {
+  const raw = window.location.hash.replace(/^#\/?/, '')
+  let id = raw
+  try {
+    id = decodeURIComponent(raw)
+  } catch {
+    /* keep it as typed */
+  }
+  return id.trim().replace(/\/+$/, '').toLowerCase()
+}
 const idFromHash = () => {
-  const id = window.location.hash.replace(/^#\/?/, '')
+  const id = hashId()
   return TOOLS.some((t) => t.id === id) ? id : null
+}
+// "#/extract-pages": a route that names no tool ("#workbench" is a skip link, not a route)
+const missingFromHash = () => (/^#\//.test(window.location.hash) && hashId() && !idFromHash() ? hashId() : null)
+
+const stemOf = (name) => name.replace(/\.[^.]+$/, '')
+// A chain of tools keeps the name the file started with plus the last tool's
+// suffix: "report-compressed" then Watermark gives "report-watermarked", not
+// "report-compressed-watermarked". Every record a tool names this way keeps
+// that start as baseStem. Split parts ("_1-3") become a start of their own.
+// Names chosen by the user or by Auto rename are never cut.
+const TOOL_SUFFIX = /^-[a-z]+$/i
+const PART_SUFFIX = /^(_\d+(-\d+)?)+$/
+// part: one of several outputs made from the parent (split by bookmarks
+// names parts "-Introduction": that is a part, not a tool suffix)
+function chainName(name, parentId, toolId, part = false) {
+  const parent = store.getRecord(parentId)
+  const stem = stemOf(name)
+  const pStem = parent ? stemOf(parent.name) : null
+  if (!parent || toolId === 'autorename' || stem.length <= pStem.length || !stem.startsWith(pStem)) return { name }
+  const tail = stem.slice(pStem.length)
+  const base = parent.baseStem ?? pStem
+  if (part || PART_SUFFIX.test(tail)) return { name: base + tail + name.slice(stem.length), baseStem: base + tail }
+  if (TOOL_SUFFIX.test(tail)) return { name: base + tail + name.slice(stem.length), baseStem: base }
+  return { name }
+}
+
+function sameBytes(a, b) {
+  if (!a || !b || a.byteLength !== b.byteLength) return false
+  if (a === b) return true
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false
+  return true
 }
 
 const THEMES = ['system', 'light', 'dark']
@@ -61,8 +105,6 @@ const MODES = [
   ['viewer', 'Viewer', 'viewer'],
   ['pages', 'Pages', 'pages'],
 ]
-// Multi-file tools (merge, compare, the converters) open on the Files view.
-const opensOnFiles = (t) => !!t && !t.Canvas && !t.workbench && ((t.accepts?.min ?? 0) >= 2 || t.category === 'Convert')
 // Options steps in the panel. A tool may set its own order and titles with
 // steps: [{ id: 'options', title: 'Automation' }, { id: 'files' }]; Run is always last.
 const STEP_TITLES = { files: 'Files', options: 'Options' }
@@ -72,8 +114,26 @@ function stepsOf(t) {
   return list.map((st) => ({ id: st.id, title: st.title || STEP_TITLES[st.id] }))
 }
 // Tool messages that mean "nothing needed doing", not a failure
-const NEUTRAL = /^(No |Nothing |Every page (already|was already))/
+const NEUTRAL = /^(No |Nothing |Every page (already|was already)|This PDF has no )/
 const isMac = () => /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)
+
+// Same wording as the card undo (FileGrid.jsx)
+function undoText(result) {
+  const removes = result.change.outputIds.map((id) => store.getRecord(id)?.name).filter(Boolean)
+  const restores = result.change.consumedIds.map((id) => store.getRecord(id)?.name).filter(Boolean)
+  return restores.length ? `Undo deletes ${fewNames(removes)} and brings back ${fewNames(restores)}.` : `Undo deletes ${fewNames(removes)}. No other file changes.`
+}
+
+// Before Run: what happens to the selected files ("Replaces the 3 selected
+// files with one merged file"). Null when the inputs stay.
+function replaceLine(tool, options, files) {
+  const keep = typeof tool.keepInputs === 'function' ? tool.keepInputs(options) : !!tool.keepInputs
+  const pdfs = files.filter((f) => store.isPdfRecord(f))
+  if (keep || pdfs.length === 0) return null
+  if (tool.id === 'merge') return `Replaces the ${pdfs.length} selected files with one merged file. Undo brings them back.`
+  if (pdfs.length === 1) return `Replaces ${pdfs[0].name} with the result. Undo brings it back.`
+  return `Replaces the ${pdfs.length} selected files with the results. Undo brings them back.`
+}
 
 function StartArea({ onAdd, tool }) {
   const noun = tool?.accepts?.noun
@@ -166,6 +226,35 @@ function Directory({ onOpen }) {
   )
 }
 
+// "#/extract-pages": say so, offer the closest tools and a way back.
+function NotFound({ id, onOpen, onHome }) {
+  const close = searchTools(TOOLS, id.replace(/[-_/]+/g, ' ')).slice(0, 3)
+  const near = close.length ? close : searchTools(TOOLS, id.split(/[-_/\s]+/)[0] ?? '').slice(0, 3)
+  return (
+    <section className="not-found" aria-labelledby="nf-title" data-testid="not-found">
+      <h1 id="nf-title" className="not-found-title">
+        Tool not found
+      </h1>
+      <p>
+        There is no tool at <code className="mono">#/{id}</code>.{near.length > 0 && near.length < TOOLS.length ? ' Did you mean:' : ''}
+      </p>
+      {near.length > 0 && near.length < TOOLS.length && (
+        <div className="chip-row">
+          {near.map((t) => (
+            <button key={t.id} type="button" className="chip" onClick={() => onOpen(t.id)} data-testid={`nf-${t.id}`}>
+              <Icon name={t.icon} size={15} />
+              {t.name}
+            </button>
+          ))}
+        </div>
+      )}
+      <button type="button" className="btn btn-quiet" onClick={onHome} data-testid="nf-home">
+        Back to the workspace
+      </button>
+    </section>
+  )
+}
+
 function LegacyTool({ tool }) {
   const Component = tool.component
   return (
@@ -189,6 +278,7 @@ function LegacyTool({ tool }) {
 
 export default function Shell() {
   const [activeToolId, setActiveToolId] = useState(() => idFromHash())
+  const [missing, setMissing] = useState(missingFromHash) // route that names no tool
   const [query, setQuery] = useState('')
   const [theme, setTheme] = useState(() => {
     try {
@@ -212,6 +302,7 @@ export default function Shell() {
   const [palette, setPalette] = useState(false)
   const [reader, setReader] = useState(null) // { id, page } while reading
   const [filesOpen, setFilesOpen] = useState(null) // options step 1 list; null = open for 3 files or fewer
+  const [kind, setKind] = useState('all') // Files grid "Show": all, pdf or other
   const searchRef = useRef(null)
   const tabRefs = useRef({})
   const onlyNewRef = useRef(false) // next added files replace the selection
@@ -256,9 +347,25 @@ export default function Shell() {
   // tools with accepts.locked (Unlock) also get files that still need a password
   const takesLocked = v2 && !!tool?.accepts?.locked
   const chosen = files.filter((f) => (f.status === 'ready' || (takesLocked && f.status === 'locked')) && selection.has(f.id))
-  const selected = chosen.filter((f) => takesFile(v2 ? tool : null, f))
+  // the Files grid can show one kind of file: a run takes only the selected
+  // files that are shown, and the Run panel says how many it leaves out
+  const pdfCount = files.filter((f) => store.isPdfRecord(f)).length
+  const filtered = kind !== 'all' && pdfCount > 0 && pdfCount < files.length
+  const shownKind = (f) => !filtered || store.isPdfRecord(f) === (kind === 'pdf')
+  const usable = chosen.filter((f) => takesFile(v2 ? tool : null, f))
+  const selected = usable.filter(shownKind)
+  const hiddenCount = usable.length - selected.length
   // the Pages view only shows files that open
   const editor = usePageEditor(chosen.filter((f) => f.status === 'ready' && store.isPdfRecord(f)))
+
+  // The first tool opened starts the jobs worker and loads its engines, so
+  // the first Run does not wait for them.
+  const warmed = useRef(false)
+  useEffect(() => {
+    if (!tool || !v2 || warmed.current) return
+    warmed.current = true
+    callOp('warm', []).catch(() => {})
+  }, [activeToolId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Tools that work on pages (extract, remove, organize) open the Pages view.
   useEffect(() => {
@@ -275,6 +382,7 @@ export default function Shell() {
     }
     const onPop = () => {
       setActiveToolId(idFromHash())
+      setMissing(missingFromHash())
       setResult(null)
       setDrawer(false)
     }
@@ -361,23 +469,22 @@ export default function Shell() {
   }, [drawer, dialog])
 
   const matches = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return TOOLS
-    return TOOLS.filter((t) => [t.name, t.description, t.io, t.category].join(' ').toLowerCase().includes(q))
+    return searchTools(TOOLS, query)
   }, [query])
 
   const navigate = (id) => {
     const target = TOOLS.find((t) => t.id === id)
     setActiveToolId(id)
+    setMissing(null)
     setResult(null)
-    // tools with an on-page canvas (sign, redact, ...) open on it; tools that
-    // take several files (merge, compare, convert) open on Files
+    // tools with an on-page canvas (sign, redact, forms...) open on it, page
+    // tools on Pages (the workbench effect), every other tool on Files
     if (target?.Canvas) {
       setMode('viewer')
       // on the newest selected file, the one the user most likely means
       const newest = files.filter((f) => selection.has(f.id) && f.status === 'ready').sort((a, b) => b.addedAt - a.addedAt)[0]
       if (newest) setViewerTarget({ id: newest.id, page: 1 })
-    } else if (opensOnFiles(target)) setMode('files')
+    } else if (!target?.workbench) setMode('files')
     setDrawer(false)
     setJob((j) => (j?.cancel ? j : null))
     if (id) {
@@ -402,6 +509,10 @@ export default function Shell() {
   const goHome = () => {
     setDrawer(false)
     setResult(null)
+    if (missing) {
+      history.replaceState(null, '', location.pathname + location.search)
+      setMissing(null)
+    }
     if (idFromHash()) history.back()
     else setActiveToolId(null)
   }
@@ -440,11 +551,16 @@ export default function Shell() {
 
   const rotateFile = async (id) => {
     try {
-      const bytes = await callOp('rotate', [await store.getBytes(id), 90, null])
+      // owner-only (restricted) files: rotate the open copy, then put the restrictions back
+      const inputs = await prepareRestricted('rotate', await store.filesForRun([id]))
+      if (!inputs.length) return
+      const bytes = await callOp('rotate', [inputs[0].bytes, 90, null])
       const { pageCount } = await assertValidOutput(bytes)
       const rec = store.getRecord(id)
       if (!rec) return
-      const change = await store.addVersions([{ name: rec.name, bytes, pageCount, parentIds: [id] }], { tool: 'rotate', consumedIds: [id] })
+      const outs = [{ name: rec.name, bytes, pageCount, parentIds: [id] }]
+      await keepRestrictions('rotate', outs, inputs)
+      const change = await store.addVersions(outs, { tool: 'rotate', consumedIds: [id] })
       if (change) setSelection((prev) => (prev.has(id) ? new Set([...prev, ...change.outputIds]) : prev))
     } catch (err) {
       setNotice(`Could not rotate: ${err.message}`)
@@ -456,6 +572,7 @@ export default function Shell() {
   const setOptions = (o) =>
     setOptionsByTool((prev) => ({ ...prev, [tool.id]: typeof o === 'function' ? o(prev[tool.id] ?? tool.defaults ?? {}) : o }))
   const summary = tool && v2 ? tool.summary(selected, options) : null
+  const replaceText = tool && v2 ? replaceLine(tool, options, selected) : null
   // a tool that uses no files (Health) has no Files step
   const steps = stepsOf(tool).filter((st) => !(st.id === 'files' && tool?.accepts?.min === 0 && !tool?.accepts?.types))
   const filesShown = filesOpen ?? selected.length <= 3
@@ -470,7 +587,7 @@ export default function Shell() {
     let handle
     let inputs
     try {
-      inputs = await store.filesForRun(selected.map((f) => f.id), { locked: !!t.accepts?.locked })
+      inputs = await prepareRestricted(t.id, await store.filesForRun(selected.map((f) => f.id), { locked: !!t.accepts?.locked }), options)
       handle = runJob(t, inputs, options, {
         onProgress: (progress) => setJob((j) => (j?.cancel ? { ...j, progress } : j)),
       })
@@ -494,17 +611,43 @@ export default function Shell() {
         setResult({ toolId: t.id, outputs: [], change: { outputIds: [], consumedIds: [] }, view, stats: { ...stats, ms: performance.now() - t0 } })
         return
       }
+      // keepInputs: the inputs stay as they are (PDF to images, to Word...)
+      const keep = typeof t.keepInputs === 'function' ? t.keepInputs(options) : !!t.keepInputs
+      const inputOf = new Map(inputs.map((f) => [f.id, f]))
+      // an output that is its input unchanged is no new version
+      // (unchanged: false says the change is not in the bytes, e.g. a rename)
+      const noop = (o) => !keep && !o.type && !o.locked && o.parentIds?.length === 1 && o.unchanged !== false && (o.unchanged === true || sameBytes(o.bytes, inputOf.get(o.parentIds[0])?.bytes))
       const checked = []
+      const unchanged = []
+      // outputs per parent: several from one file are parts (split)
+      const perParent = new Map()
+      for (const o of outs) if (o.parentIds?.length === 1) perParent.set(o.parentIds[0], (perParent.get(o.parentIds[0]) ?? 0) + 1)
       for (const out of outs) {
         if (store.getGeneration() !== generation) break
+        if (noop(out)) {
+          unchanged.push(out)
+          continue
+        }
         // a locked output (Protect with an open password) cannot be opened here;
         // the tool checked it by reopening it with the password
         const { pageCount } = out.type ? { pageCount: null } : out.locked ? { pageCount: out.pageCount ?? null } : await assertValidOutput(out.bytes)
-        checked.push({ ...out, pageCount })
+        const named = out.parentIds?.length === 1 ? chainName(out.name, out.parentIds[0], t.id, perParent.get(out.parentIds[0]) > 1) : { name: out.name }
+        checked.push({ ...out, pageCount, ...named })
       }
-      // keepInputs: the inputs stay as they are (PDF to images, to Word...)
-      const keep = typeof t.keepInputs === 'function' ? t.keepInputs(options) : !!t.keepInputs
-      const consumed = keep ? [] : [...new Set(checked.flatMap((o) => o.parentIds ?? []))]
+      // a wipe during the run: drop everything, say nothing
+      if (store.getGeneration() !== generation) {
+        setJob(null)
+        return
+      }
+      if (checked.length === 0 && unchanged.length > 0) {
+        const note = unchanged.find((o) => o.note)?.note
+        setJob({ toolId: t.id, error: note || (unchanged.length === 1 ? 'The file is unchanged.' : 'The files are unchanged.'), neutral: true })
+        return
+      }
+      // owner-only (restricted) inputs: outputs keep the same permission flags
+      await keepRestrictions(t.id, checked, inputs, options)
+      // a conversion keeps its source: Word, Excel, PowerPoint and images stay next to the PDF
+      const consumed = keep ? [] : [...new Set(checked.flatMap((o) => (o.parentIds ?? []).filter((id) => store.isPdfRecord(store.getRecord(id)))))]
       const change = await store.addVersions(checked, { tool: t.id, consumedIds: consumed, generation })
       if (!change || store.getGeneration() !== generation) {
         setJob(null)
@@ -515,14 +658,17 @@ export default function Shell() {
         const src = checked[change.outputIndex[i]]
         return { id, name: rec?.name, size: rec?.size, pageCount: rec?.pageCount, before: src.before ?? null, note: src.note ?? null }
       })
-      // kept inputs stay selected too, so a PDF tool can continue on them
-      setSelection(new Set([...change.outputIds, ...(keep ? inputs.map((f) => f.id) : [])]))
+      // kept inputs stay selected too, so a PDF tool can continue on them; so
+      // do files the tool left unchanged
+      const stayed = unchanged.map((o) => o.parentIds[0])
+      setSelection(new Set([...change.outputIds, ...(keep ? inputs.map((f) => f.id) : []), ...stayed]))
       setJob(null)
       // size before: only the inputs the stored outputs were made from (a file
       // that stopped in an Automate batch is not counted)
       const parents = new Set(change.outputIndex.flatMap((i) => checked[i]?.parentIds ?? []))
       const beforeSize = parents.size ? inputs.filter((f) => parents.has(f.id)).reduce((n, f) => n + (f.size ?? 0), 0) : stats.beforeSize
-      setResult({ toolId: t.id, outputs, change, view, stats: { ms: performance.now() - t0, beforeSize }, inputIds: inputs.map((f) => f.id) })
+      const unchangedNames = stayed.map((id) => inputOf.get(id)?.name).filter(Boolean)
+      setResult({ toolId: t.id, outputs, change, view, stats: { ms: performance.now() - t0, beforeSize }, inputIds: inputs.map((f) => f.id), unchangedNames })
     } catch (err) {
       if (err?.cancelled || err?.name === 'AbortError') setJob(null)
       else setJob({ toolId: t.id, error: err?.message ?? String(err) })
@@ -590,6 +736,13 @@ export default function Shell() {
 
   const workbench = (
     <>
+      {tool && v2 && (
+        <p className="wb-tool" data-testid="wb-tool">
+          <Icon name={tool.icon} size={20} />
+          {tool.name}
+          <code className="io">{tool.io}</code>
+        </p>
+      )}
       {files.length > 0 && (
         <div className="wb-bar">
           <div className="modes" role="tablist" aria-label="Workbench view" onKeyDown={onTabKey}>
@@ -648,13 +801,20 @@ export default function Shell() {
           ) : mode === 'viewer' ? (
             <Viewer files={files.filter(store.isPdfRecord)} target={viewerTarget} onTarget={setViewerTarget} onReader={setReader} />
           ) : mode === 'pages' ? (
-            <PageEditor files={selected.filter((f) => f.status === 'ready')} editor={editor} onView={openFile} />
+            <PageEditor files={selected.filter((f) => f.status === 'ready')} editor={editor} onView={openFile} toolOwnsRun={v2 && !!tool?.workbench} />
           ) : (
             <FileGrid
               files={files}
               selection={selection}
               onToggle={toggleSelect}
-              onSelectAll={(all) => setSelection(all ? new Set(files.filter((f) => f.status === 'ready' && (!v2 || takesFile(tool, f))).map((f) => f.id)) : new Set())}
+              onSelectAll={(all, ids) => {
+                // only the files shown (the grid can show one kind of file)
+                const shownIds = new Set(ids ?? files.map((f) => f.id))
+                setSelection((prev) => {
+                  const rest = [...prev].filter((id) => !shownIds.has(id))
+                  return new Set(all ? [...rest, ...files.filter((f) => shownIds.has(f.id) && f.status === 'ready' && (!v2 || takesFile(tool, f))).map((f) => f.id)] : rest)
+                })
+              }}
               onOpen={(id) => openFile(id)}
               onRotate={rotateFile}
               onAdd={() => pickerRef.current?.click()}
@@ -663,6 +823,9 @@ export default function Shell() {
               onStatus={flash}
               onRestored={(ids) => setSelection((prev) => new Set([...prev, ...ids]))}
               onOpenTool={openTool}
+              kind={kind}
+              onKind={setKind}
+              keepColumns={!v2}
             />
           )}
         </div>
@@ -783,12 +946,13 @@ export default function Shell() {
               setResult(null)
               setMode('files')
             }}
-            onUndo={undoResult}
+            onUndo={() => setDialog({ kind: 'undo-result' })}
             onStartOver={() => setDialog({ kind: 'wipe' })}
           />
         ) : (
           <>
-            {!tool && files.length > 0 && <h1 className="sr-only">Workspace</h1>}
+            {!tool && missing && <NotFound id={missing} onOpen={openTool} onHome={goHome} />}
+            {!tool && files.length > 0 && !missing && <h1 className="sr-only">Workspace</h1>}
             {workbench}
             {!tool && <Directory onOpen={openTool} />}
           </>
@@ -840,9 +1004,7 @@ export default function Shell() {
                         <ul className="step-files">
                           {selected.map((f) => (
                             <li key={f.id}>
-                              <span className="file-name" title={f.name}>
-                                {f.name}
-                              </span>
+                              <FileName name={f.name} />
                               <span className="mono step-file-meta">
                                 {metaLine(f)}
                                 {f.version > 1 ? `, v${f.version}` : ''}
@@ -904,9 +1066,9 @@ export default function Shell() {
             ) : (
               <>
                 {job?.error && job.toolId === tool.id && (
-                  NEUTRAL.test(job.error) ? (
+                  job.neutral || NEUTRAL.test(job.error) ? (
                     <p className="notice notice-ok" role="status" data-testid="run-error">
-                      Nothing to do: {job.error}
+                      {/^nothing/i.test(job.error) ? job.error : `Nothing to do: ${job.error}`}
                     </p>
                   ) : (
                     <p className="field-error" role="alert" data-testid="run-error">
@@ -917,6 +1079,16 @@ export default function Shell() {
                 <p className="live-line" aria-live="polite" data-testid="live-line">
                   {summary.line}
                 </p>
+                {hiddenCount > 0 && (
+                  <p className="field-help run-hidden" data-testid="run-hidden">
+                    {hiddenCount} selected file{hiddenCount === 1 ? ' is' : 's are'} hidden by the Show filter and left out.
+                  </p>
+                )}
+                {summary.ready && replaceText && (
+                  <p className="field-help run-replace" data-testid="run-replace">
+                    {replaceText}
+                  </p>
+                )}
                 {editor.dirty && !tool.workbench && <p className="field-help">Pages has unsaved edits. Save them first to include them.</p>}
                 <div className="run-row">
                   <button
@@ -1018,6 +1190,33 @@ export default function Shell() {
           }
         >
           <p>Pages has edits you have not applied. They are lost if you open this tool.</p>
+        </Dialog>
+      )}
+      {dialog?.kind === 'undo-result' && result && (
+        <Dialog
+          title="Undo the last change?"
+          onClose={() => setDialog(null)}
+          testId="file-confirm"
+          actions={
+            <>
+              <button type="button" className="btn btn-quiet" onClick={() => setDialog(null)}>
+                Keep this version
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                data-testid="file-confirm-ok"
+                onClick={() => {
+                  setDialog(null)
+                  undoResult()
+                }}
+              >
+                Undo change
+              </button>
+            </>
+          }
+        >
+          <p>{undoText(result)}</p>
         </Dialog>
       )}
       {palette && (

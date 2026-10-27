@@ -219,7 +219,7 @@ export default {
     return { ready: true, line: `${plural(n, 'redacted PDF')} will be created: ${what} removed for good.${also}`, runLabel: `Redact ${plural(n, 'PDF')}` }
   },
   async run(files, o, ctx) {
-    const { findMatches, redactPdf } = await import('../../lib/redactOps.js')
+    const { findMatches } = await import('../../lib/redactOps.js')
     const outputs = []
     const empty = []
     const total = files.reduce((n, f) => n + f.pageCount, 0) * 2
@@ -246,13 +246,10 @@ export default {
         done += f.pageCount
         continue
       }
-      const res = await redactPdf(f.bytes, boxes, {
-        method: o.method,
-        query,
-        report: true,
-        check: ctx.check,
-        onPage: (k) => ctx.progress(done + k, total, `Redacting ${f.name}`),
-      })
+      // runs in its own worker lane, recycled every few jobs (MuPDF memory);
+      // no per-page callback crosses into the worker, so progress is per file
+      ctx.progress(done, total, `Redacting ${f.name}`)
+      const res = await ctx.callIn('redact', 'redact', f.bytes, boxes, { method: o.method, query, report: true })
       done += f.pageCount
       const extra = cleanedParts(res.cleaned)
       // attachments and XFA go on every search: they alone are not a match,

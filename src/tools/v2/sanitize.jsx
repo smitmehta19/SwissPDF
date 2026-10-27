@@ -11,6 +11,8 @@ const ITEMS = [
 ]
 
 // "24 scripts, 32 triggers, 1 attached file" from the sanitize report.
+const NOTHING = 'Nothing found to remove.'
+
 export function reportLine(r) {
   const parts = [
     [r.scripts, 'script'],
@@ -26,7 +28,8 @@ export function reportLine(r) {
   ]
     .filter(([n]) => n > 0)
     .map(([n, w, many]) => plural(n, w, many))
-  return parts.length ? `Removed ${parts.join(', ')}.` : 'Nothing found to remove.'
+  if (r.earlier) parts.push('what earlier versions of the file left behind')
+  return parts.length ? `Removed ${parts.join(', ')}.` : NOTHING
 }
 
 function Options({ options: o, setOptions }) {
@@ -72,7 +75,7 @@ export default {
       ctx.check()
       ctx.progress(k, files.length, f.name)
       const res = await ctx.call('doc', 'sanitizePdf', f.bytes, o)
-      outputs.push({ name: `${baseName(f.name)}-sanitized.pdf`, bytes: res.bytes, parentIds: [f.id], note: reportLine(res.report) })
+      outputs.push({ name: `${baseName(f.name)}-sanitized.pdf`, bytes: res.bytes, parentIds: [f.id], note: reportLine(res.report), unchanged: reportLine(res.report) === NOTHING })
     }
     ctx.progress(files.length, files.length, 'Done')
     return outputs

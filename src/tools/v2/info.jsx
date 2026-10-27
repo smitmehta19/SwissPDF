@@ -25,7 +25,7 @@ export function infoRows(i) {
     ['Page sizes', i.pages.sizes.map((s) => `${s.size} pt${i.pages.sizes.length > 1 ? ` (${s.count})` : ''}`).join('; '), true],
     ['Fonts', i.fonts.count ? `${i.fonts.count}, ${i.fonts.notEmbedded ? `${i.fonts.notEmbedded} not embedded` : 'all embedded'}` : 'None'],
     ['Images', i.images.count ? `${i.images.count}: ${kinds}` : 'None'],
-    ['Form', i.forms.fields ? `${plural(i.forms.fields, 'field')}${i.forms.xfa !== 'none' ? `, ${i.forms.xfa} XFA` : ''}${i.forms.signatures ? `, ${i.forms.signed} of ${plural(i.forms.signatures, 'signature field')} signed` : ''}` : i.forms.xfa !== 'none' ? `${i.forms.xfa} XFA only` : 'None'],
+    ['Form', i.forms.fields ? `${plural(i.forms.fields, 'fillable field')}${i.forms.widgets > i.forms.fields ? ` (${i.forms.widgets} boxes on the pages)` : ''}${i.forms.xfa !== 'none' ? `, ${i.forms.xfa} XFA` : ''}${i.forms.signatures ? `, ${i.forms.signed} of ${plural(i.forms.signatures, 'signature field')} signed` : ''}` : i.forms.xfa !== 'none' ? `${i.forms.xfa} XFA only` : 'None'],
     ['Annotations', String(i.annotations), true],
     ['Bookmarks', String(i.outline.items), true],
     ['Attachments', i.attachments.count ? i.attachments.list.map((a) => a.name).join(', ') : 'None'],
@@ -49,7 +49,7 @@ function Options({ options: o, setOptions, files }) {
       {data && <Facts rows={infoRows(data)} testId="info-facts" />}
       {data?.fonts.list.length > 0 && (
         <details className="field">
-          <summary className="field-label">Fonts</summary>
+          <summary className="field-label">Font list</summary>
           <ul className="st-list" data-testid="info-fonts">
             {data.fonts.list.slice(0, 200).map((f, k) => (
               <li key={k}>

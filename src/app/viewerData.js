@@ -61,24 +61,51 @@ export function pageText(bytes, pageNum) {
   })
 }
 
-// Boxes of every match of `q` on one page (part of a text item when the
-// match is inside it; matches across items are not split).
+// Matches of `q` in the page text (items joined with a space, any run of
+// spaces in the query matches any run of white space), as [start, end].
+function matchRanges(entry, q) {
+  const words = q.trim().toLowerCase().split(/\s+/).filter(Boolean)
+  if (!words.length) return []
+  // case-insensitive on the text itself: lower-casing can change its length
+  // (Turkish dotted I), which would move every later box
+  const re = new RegExp(words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+'), 'giu')
+  const hay = entry.text
+  const out = []
+  for (let m = re.exec(hay); m; m = re.exec(hay)) {
+    out.push([m.index, m.index + m[0].length])
+    if (m[0].length === 0) re.lastIndex++
+  }
+  return out
+}
+
+// Boxes of every match of `q` on one page: part of a text item when the match
+// is inside it, one box per item when it runs across items (line breaks,
+// font changes).
 export function matchBoxes(entry, q) {
-  const needle = q.toLowerCase()
-  if (!needle) return []
-  const boxes = []
+  const ranges = matchRanges(entry, q)
+  if (!ranges.length) return []
+  // where each item starts in entry.text
+  const starts = []
+  let pos = 0
   for (const it of entry.items) {
-    const hay = it.str.toLowerCase()
-    let at = hay.indexOf(needle)
-    while (at >= 0) {
-      const f0 = at / it.str.length
-      const f1 = (at + needle.length) / it.str.length
+    starts.push(pos)
+    pos += it.str.length + 1
+  }
+  const boxes = []
+  for (const [a, b] of ranges) {
+    entry.items.forEach((it, i) => {
+      const s0 = starts[i]
+      const len = it.str.length
+      const lo = Math.max(a, s0)
+      const hi = Math.min(b, s0 + len)
+      if (hi <= lo || !len) return
+      const f0 = (lo - s0) / len
+      const f1 = (hi - s0) / len
       // along the text direction; vertical text runs down the page
       const cos = Math.cos(it.angle)
       const sin = Math.sin(it.angle)
       boxes.push({ x: it.x + it.w * f0 * cos, y: it.y + (it.w * f0 * sin * entry.width) / entry.height, w: it.w * (f1 - f0), h: it.h, angle: it.angle })
-      at = hay.indexOf(needle, at + needle.length)
-    }
+    })
   }
   return boxes
 }
@@ -93,13 +120,12 @@ export async function searchDocument(bytes, pageCount, q, { signal, onPage } = {
     if (signal?.aborted) return hits
     const entry = await pageText(bytes, p)
     if (signal?.aborted) return hits
-    const count = matchBoxes(entry, needle).length
-    if (count) {
-      const lower = entry.text.toLowerCase()
-      const at = lower.indexOf(needle)
+    const ranges = matchRanges(entry, needle)
+    if (ranges.length) {
+      const [at, to] = ranges[0]
       const from = Math.max(0, at - 30)
-      const snippet = `${from > 0 ? '...' : ''}${entry.text.slice(from, at + needle.length + 40).trim()}`
-      hits.push({ page: p, count, snippet: at >= 0 ? snippet : '' })
+      const snippet = `${from > 0 ? '...' : ''}${entry.text.slice(from, to + 40).replace(/\s+/g, ' ').trim()}`
+      hits.push({ page: p, count: ranges.length, snippet })
     }
     onPage?.(p, hits)
   }

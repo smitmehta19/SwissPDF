@@ -17,9 +17,12 @@ const AWS = join(CORPUS, 'invoices/aws-invoice.pdf') // 1 page
 const ATT = join(CORPUS, 'reports/arxiv-1706.03762-attention.pdf') // 15 pages, has bookmarks
 const LLAMA = join(CORPUS, 'reports/arxiv-2307.09288-llama2.pdf') // 77 pages, 14 MB
 const LOCKED = join(CORPUS, 'derived/user-pw-TAMReview.pdf')
+const PNG = join(CORPUS, 'images/png-alpha-transparency-demo.png')
 const SHOTS = join(ROOT, 'docs/design/screens/S2')
+const POLISH = join(ROOT, 'docs/design/screens/polish')
 const shots = !process.argv.includes('--no-shots')
 if (shots) mkdirSync(SHOTS, { recursive: true })
+if (shots) mkdirSync(POLISH, { recursive: true })
 
 let failed = 0
 const check = (name, ok, detail = '') => {
@@ -69,9 +72,36 @@ const selectAllFiles = async (page) => {
   if (await b.count()) await b.first().click()
 }
 const noHScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)
+// result screen Undo asks first, like the card undo (blind review P2 14)
+const undoResult = async (page) => {
+  await page.click('[data-testid=result-undo]')
+  await page.click('[data-testid=file-confirm-ok]')
+}
 const shot = async (page, name) => {
   if (shots) await page.screenshot({ path: join(SHOTS, `${name}.png`) })
 }
+const polishShot = async (page, name) => {
+  if (shots) await page.screenshot({ path: join(POLISH, `${name}.png`) })
+}
+// opens a tool from the side panel (groups start folded)
+const openTool = async (page, id) => {
+  await page.$$eval('[data-testid^=fold-][aria-expanded=false]', (els) => els.forEach((el) => el.click()))
+  await page.click(`[data-testid=tool-${id}]`)
+  await page.waitForSelector('[data-testid=options-panel]')
+}
+const runTool = async (page) => {
+  await page.click('[data-testid=run-btn]')
+  await page.waitForSelector('[data-testid=result-screen], [data-testid=run-error]', { timeout: 120_000 })
+}
+const cardsLoaded = (page, n) =>
+  page.waitForFunction(
+    (count) => {
+      const m = [...document.querySelectorAll('[data-testid=file-card] .file-meta')].map((e) => e.textContent)
+      return m.length === count && m.every((t) => /^\d+ pages?|^[A-Z]+, /.test(t))
+    },
+    n,
+    { timeout: 120_000 },
+  )
 async function download(page, sel) {
   const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 120_000 }), page.click(sel)])
   return { name: dl.suggestedFilename(), bytes: new Uint8Array(readFileSync(await dl.path())) }
@@ -123,6 +153,8 @@ try {
     const mergeLabel = (await page.textContent('[data-testid=run-btn]')).trim()
     check('3 Run label states the scope', /^Merge 3 /.test(mergeLabel), mergeLabel)
     await shot(page, 'options-1440')
+    const replaceWarn = ((await page.textContent('[data-testid=run-replace]').catch(() => '')) ?? '').trim()
+    check('A re-check: Run panel warns before inputs are replaced', replaceWarn === 'Replaces the 3 selected files with one merged file. Undo brings them back.', replaceWarn)
 
     // 4. run, review card, undo
     await page.click('[data-testid=run-btn]')
@@ -133,7 +165,7 @@ try {
     const pages = (await page.textContent('[data-testid=review-pages]')) ?? ''
     const next = await page.$$eval('[data-testid=next-tools] button', (els) => els.map((e) => e.dataset.testid))
     check('4 review card: thumbnail', !!(await page.$('.result-preview img')))
-    check('4 review card: size before and after', /\d.*B.*\d.*B/.test(size), size)
+    check('A merge: size of the merged file only, no "% smaller"', /^\d[\d.]* [KM]?B$/.test(size.trim()), size)
     check('4 review card: pages and time', pages === '30' && /^\d+(\.\d)? s$|min/.test(time), `${pages} pages, ${time}`)
     check('4 review card: 4 next tools, merge list first', next.length === 4 && next[0] === 'next-compress', next.join(','))
     check('4 review card: done on this device line', (await page.textContent('[data-testid=result-local]')).trim() === 'Done on this device. Nothing was uploaded.')
@@ -142,6 +174,9 @@ try {
     check('P1 review card names what it replaced', replacedLine.trim() === 'Replaced 3 files with merged.pdf. Undo brings them back.', replacedLine)
     await shot(page, 'result-1440')
     await page.click('[data-testid=result-undo]')
+    const undoAsk = ((await page.textContent('[data-testid=file-confirm]').catch(() => '')) ?? '').replace(/\s+/g, ' ')
+    check('A 14 result Undo asks first, like the card', /Undo deletes merged\.pdf and brings back/.test(undoAsk), undoAsk)
+    await page.click('[data-testid=file-confirm-ok]')
     await waitReady(page, 3)
     check('4 Undo restores the 3 inputs', (await names(page)).length === 3, (await names(page)).join(', '))
     const flashText = (await page.textContent('[data-testid=status-flash]').catch(() => '')) ?? ''
@@ -197,6 +232,8 @@ try {
     await page.click('[data-testid=mode-files]')
     await page.click('[data-testid=run-btn]')
     await page.waitForSelector('[data-testid=result-screen]', { timeout: 300_000 })
+    const csize = (await page.textContent('[data-testid=review-size]')) ?? ''
+    check('A compress: size before and after', /\d.*B to .*\d.*B/.test(csize), csize)
     await page.click('[data-testid=result-back]')
     await waitReady(page, 3)
     const vers = await versions(page)
@@ -304,6 +341,8 @@ try {
     await page.fill('[data-testid=viewer-search-input]', 'reward model')
     await page.waitForFunction(() => /matches? on \d+ page/.test(document.querySelector('[data-testid=viewer-search-count]')?.textContent ?? ''), null, { timeout: 120_000 })
     const searchLine = await page.textContent('[data-testid=viewer-search-count]')
+    const total = Number(searchLine.match(/(\d+) match/)?.[1] ?? 0)
+    check('S2 #10 search counts matches across text items (reward model: 104 in the joined text)', total >= 104, searchLine.trim())
     const hit = page.locator('[data-testid=viewer-hit]').nth(1)
     const hitPage = (await hit.locator('.vs-hit-page').textContent()).match(/Page (\d+)/)?.[1]
     await hit.click()
@@ -505,7 +544,7 @@ try {
     await selectAllFiles(page) // nothing is selected after a reload (P1)
     await page.click('[data-testid=run-btn]')
     await page.waitForSelector('[data-testid=result-screen]', { timeout: 120_000 })
-    await page.click('[data-testid=result-undo]')
+    await undoResult(page)
     await page.waitForFunction(() => [...document.querySelectorAll('[data-testid=file-card] .file-name')].some((e) => e.textContent === 'aws-invoice.pdf'), null, { timeout: 10_000 }).catch(() => {})
     const r1a = await cardsNow()
     check('R1 image, then compress, then undo: the PDF comes back next to its image', r1a.length === 2 && r1a.includes('aws-invoice.pdf|v1') && r1a.some((x) => !/\.pdf\|/.test(x)), r1a.join(', '))
@@ -518,7 +557,7 @@ try {
     await page.waitForFunction(() => /2 files/.test(document.querySelector('[data-testid=live-line]')?.textContent ?? ''), null, { timeout: 60_000 })
     await page.click('[data-testid=run-btn]')
     await page.waitForSelector('[data-testid=result-screen]', { timeout: 120_000 })
-    await page.click('[data-testid=result-undo]')
+    await undoResult(page)
     await page.waitForFunction(() => document.querySelectorAll('[data-testid=file-card]').length === 3, null, { timeout: 10_000 }).catch(() => {})
     const r1b = await cardsNow()
     check('R1 images, then merge, then undo: both PDFs come back', r1b.includes('aws-invoice.pdf|v1') && r1b.includes('pdfjs-tracemonkey.pdf|v1') && r1b.length === 3, r1b.join(', '))
@@ -553,6 +592,184 @@ try {
     const box = await page.locator('[data-testid=health-results]').boundingBox()
     const height = await page.evaluate(() => document.documentElement.scrollHeight)
     check('P1 Health list is wide and the page stays short', box && box.width > 700 && height < 6000, `list ${Math.round(box?.width)} px wide, page ${height} px tall`)
+    await ctx.close()
+  }
+
+  // ---------------- polish batch, group A: desktop ----------------
+  {
+    const { ctx, page, errors } = await open(1440, '#/')
+    check('A 26 favicon: an inline icon under the page, no favicon.ico request', !!(await page.$('link[rel=icon][href^="data:image/svg"]')) && !requests.some((r) => /favicon\.ico/.test(r.url)))
+    const offs = await page.$$eval('.popular-tile', (els) => els.map((t) => Math.round(t.querySelector('.popular-name').getBoundingClientRect().top - t.getBoundingClientRect().top)))
+    check('A 26 Popular tiles: titles line up', offs.length === 6 && new Set(offs).size === 1, offs.join(','))
+    // 15: everyday words
+    const syn = {}
+    for (const [q, want] of [['shrink', 'compress'], ['reduce size', 'compress'], ['join', 'merge'], ['combine', 'merge'], ['delete page', 'remove'], ['esign', 'sign'], ['convert jpg', 'img2pdf']]) {
+      await page.fill('[data-testid=tool-search]', q)
+      const got = await page.$$eval('[data-testid=tool-panel] .tool-row-main', (els) => els.map((e) => e.dataset.testid.replace('tool-', '')))
+      syn[q] = got.includes(want) ? 'ok' : got.slice(0, 3).join('/') || 'none'
+    }
+    await page.fill('[data-testid=tool-search]', '')
+    check('A 15 search: everyday words find the tool', Object.values(syn).every((v) => v === 'ok'), JSON.stringify(syn))
+    const firstOf = async (q) => {
+      await page.fill('[data-testid=tool-search]', q)
+      const got = await page.$$eval('[data-testid=tool-panel] .tool-row-main', (els) => els.map((e) => e.dataset.testid.replace('tool-', '')))
+      await page.fill('[data-testid=tool-search]', '')
+      return got
+    }
+    const w2p = await firstOf('word to pdf')
+    const p2j = await firstOf('pdf to jpg')
+    check('A P3 search: whole words and direction ("word to pdf" has no Protect, "pdf to jpg" is PDF to images first)', w2p[0] === 'word2pdf' && !w2p.includes('protect') && p2j[0] === 'pdf2img', `${w2p.join('/')} | ${p2j.join('/')}`)
+    await page.keyboard.press('Control+k')
+    await page.waitForSelector('[data-testid=palette]')
+    await page.keyboard.type('shrink')
+    const pfirst = await page.textContent('[data-testid=palette-item][aria-selected=true] .palette-label')
+    check('A 15 palette: "shrink" finds Compress first', pfirst === 'Compress', pfirst)
+    await page.keyboard.press('Escape')
+    // 24: unknown route
+    await page.goto(`${base}/#/extract-pages`, { waitUntil: 'load' })
+    await page.waitForSelector('[data-testid=not-found]', { timeout: 10_000 }).catch(() => {})
+    const nf = await page.isVisible('[data-testid=not-found]')
+    const nfChip = await page.isVisible('[data-testid=nf-extract]')
+    await polishShot(page, 'not-found-1440')
+    if (nf) await page.click('[data-testid=nf-home]')
+    const hashAfter = await page.evaluate(() => location.hash)
+    check('A 24 unknown route: "Tool not found", the closest tool, a way back', nf && nfChip && !(await page.$('[data-testid=not-found]')) && hashAfter === '', `shown ${nf}, chip ${nfChip}, hash "${hashAfter}"`)
+    await page.goto(`${base}/#/Compress/`, { waitUntil: 'load' })
+    await page.waitForFunction(() => document.querySelector('.options-title')?.textContent === 'Compress', null, { timeout: 10_000 }).catch(() => {})
+    const caseOk = (await page.textContent('.options-title').catch(() => '')) === 'Compress'
+    await page.goto(`${base}/#/${'x'.repeat(300)}`, { waitUntil: 'load' })
+    await page.waitForSelector('[data-testid=not-found]', { timeout: 10_000 }).catch(() => {})
+    const longOk = await noHScroll(page)
+    await page.click('[data-testid=nf-home]').catch(() => {})
+    check('A P3 routes: "#/Compress/" opens Compress; a 300-character route does not widen the page', caseOk && longOk, `case ${caseOk}, long ${longOk}`)
+    // 8 and 26: grid, card actions, type filter
+    await page.setInputFiles('[data-testid=add-files-input]', [AWS, TRACE, PNG])
+    await cardsLoaded(page, 3)
+    const cols = () => page.$eval('.file-grid', (g) => getComputedStyle(g).gridTemplateColumns.split(' ').length)
+    const homeCols = await cols()
+    const edges = await page.evaluate(() => [document.querySelector('.file-grid').getBoundingClientRect().right, document.querySelector('.grid-toolbar').getBoundingClientRect().right].map(Math.round))
+    check('A P3 home: the grid uses the full width (no empty column)', Math.abs(edges[0] - edges[1]) <= 2, edges.join(' vs '))
+    const rows = await page.$$eval('[data-testid=file-card] .fc-actions', (els) => els.map((a) => new Set([...a.children].map((b) => Math.round(b.getBoundingClientRect().top))).size))
+    check('A 26 card actions stay on one row', rows.every((n) => n === 1), rows.join(','))
+    await page.selectOption('[data-testid=type-filter]', 'pdf')
+    const onlyPdf = await names(page)
+    await page.selectOption('[data-testid=type-filter]', 'other')
+    const onlyOther = await names(page)
+    await page.selectOption('[data-testid=type-filter]', 'all')
+    check('A 8 type filter: PDFs or other files', onlyPdf.length === 2 && onlyPdf.every((n) => /\.pdf$/.test(n)) && onlyOther.join() === 'png-alpha-transparency-demo.png', `${onlyPdf.join(', ')} | ${onlyOther.join(', ')}`)
+    await page.click('[data-testid=mode-viewer]')
+    await openTool(page, 'compress')
+    check('A 13 a tool with no canvas opens on Files, even from the Viewer', (await page.getAttribute('[data-testid=mode-files]', 'aria-selected')) === 'true')
+    check('A 26 the grid keeps its columns when a tool opens', (await cols()) === homeCols, `${homeCols} -> ${await cols()}`)
+    // F4: files hidden by the Show filter do not go into the run, and the panel says so
+    await page.selectOption('[data-testid=type-filter]', 'other')
+    const hiddenLine = ((await page.textContent('[data-testid=run-hidden]').catch(() => '')) ?? '').trim()
+    const runOff = await page.isDisabled('[data-testid=run-btn]')
+    await page.selectOption('[data-testid=type-filter]', 'all')
+    check('A F4 hidden PDFs are left out of the run and the panel says so', hiddenLine === '2 selected files are hidden by the Show filter and left out.' && runOff, `${hiddenLine} | Run disabled ${runOff}`)
+    // 6: a chain keeps one suffix
+    await runTool(page)
+    await page.click('[data-testid=result-back]')
+    // 4 steps: compress, rotate, page numbers, watermark
+    let chainErr = ''
+    for (const id of ['rotate', 'pagenumbers', 'watermark']) {
+      await openTool(page, id)
+      await runTool(page)
+      const err = (await page.textContent('[data-testid=run-error]').catch(() => '')) ?? ''
+      if (err) chainErr += ` ${id}: ${err}`
+      else await page.click('[data-testid=result-back]')
+      await page.click('[data-testid=mode-files]').catch(() => {})
+    }
+    const chained = await names(page)
+    check('A 6 a 4-step chain keeps the base name and one suffix', chained.includes('aws-invoice-watermarked.pdf') && chained.includes('pdfjs-tracemonkey-watermarked.pdf') && !chained.some((n) => /-(compressed|rotated|numbered)-/.test(n)), chained.join(', ') + chainErr)
+    // 2: a run that changes nothing makes no new version
+    // Smart clean on a file it already cleaned keeps the original: run it until
+    // it says so (at most 3 times), then nothing may have changed in that run
+    await openTool(page, 'compress')
+    const traceNo = (await names(page)).findIndex((n) => /tracemonkey/.test(n))
+    if (await page.$(`[data-testid=file-card] >> nth=${traceNo} >> .fc-main[aria-pressed=true]`)) await page.click(`[data-testid=file-card] >> nth=${traceNo} >> .fc-main`)
+    let noop = ''
+    let before = ''
+    let vBefore = ''
+    for (let i = 0; i < 3 && !noop; i++) {
+      before = (await names(page)).join()
+      vBefore = (await versions(page)).join()
+      await runTool(page)
+      noop = ((await page.textContent('[data-testid=run-error]').catch(() => '')) ?? '').trim()
+      if (!noop) await page.click('[data-testid=result-back]')
+    }
+    check('A 2 no-op run: "Nothing to do", no renamed new version', /^Nothing to do: /.test(noop) && (await names(page)).join() === before && (await versions(page)).join() === vBefore, `${noop || 'a result screen each time'} | ${(await names(page)).join(', ')}`)
+    await polishShot(page, 'noop-1440')
+    // re-check: Images to PDF keeps the image
+    await openTool(page, 'img2pdf')
+    const pngAt = (await names(page)).indexOf('png-alpha-transparency-demo.png')
+    if (!(await page.$(`[data-testid=file-card] >> nth=${pngAt} >> .fc-main[aria-pressed=true]`))) await page.click(`[data-testid=file-card] >> nth=${pngAt} >> .fc-main`)
+    await runTool(page)
+    const imgReplaced = await page.$('[data-testid=result-replaced]')
+    await page.click('[data-testid=result-back]').catch(() => {})
+    const afterImg = await names(page)
+    check('A re-check: Images to PDF keeps the image next to the PDF', !imgReplaced && afterImg.includes('png-alpha-transparency-demo.png') && afterImg.includes('png-alpha-transparency-demo.pdf'), afterImg.join(', '))
+    // 10: a converted file that is not a PDF is not called selected
+    await openTool(page, 'pdf2img')
+    await runTool(page)
+    const nextHelp = ((await page.textContent('[data-testid=result-next-help]').catch(() => '')) ?? '').trim()
+    check('A 10 result text: images are in your files, the PDF stays selected', /The PDF stays selected/.test(nextHelp), nextHelp)
+    await page.click('[data-testid=result-back]').catch(() => {})
+    // 26: the inline password field is wide enough for its placeholder
+    await page.setInputFiles('[data-testid=add-files-input]', [LOCKED])
+    await page.waitForSelector('[data-testid=pw-unlock-input]', { timeout: 60_000 })
+    const pw = await page.$eval('[data-testid=pw-unlock-input]', (el) => el.clientWidth)
+    check('A 26 password field is not cut ("Password" fits)', pw >= 90, `${pw} px`)
+    await polishShot(page, 'files-1440')
+    check('A desktop: no page errors', errors.length === 0, errors.slice(0, 3).join(' | '))
+    await ctx.close()
+  }
+
+  // ---------------- polish batch, group A: phone ----------------
+  {
+    const { ctx, page, errors } = await open(390, '#/')
+    await page.setInputFiles('[data-testid=add-files-input]', [TRACE])
+    await waitReady(page, 1)
+    const narrowHint = await page.isVisible('.hint-narrow')
+    const wideHint = await page.isVisible('.hint-wide')
+    check('A 22 phone home: no "on the left" or Ctrl+K hint', narrowHint && !wideHint)
+    await polishShot(page, 'home-390')
+    await page.goto(`${base}/#/split`, { waitUntil: 'load' })
+    await page.waitForSelector('[data-testid=run-bar]')
+    await waitReady(page, 1)
+    await selectAllFiles(page)
+    const title = ((await page.textContent('[data-testid=wb-tool]').catch(() => '')) ?? '').trim()
+    check('A 22 phone: the tool name shows without opening Options', (await page.isVisible('[data-testid=wb-tool]')) && /^Split/.test(title), title)
+    await page.click('[data-testid=options-btn]')
+    await page.waitForTimeout(300)
+    await page.fill('[data-testid=split-from] >> nth=0', '1')
+    await page.fill('[data-testid=split-to] >> nth=0', '2')
+    for (let i = 1; i < 4; i++) {
+      await page.click('[data-testid=split-add-range]')
+      await page.fill(`[data-testid=split-from] >> nth=${i}`, String(i * 2 + 1))
+      await page.fill(`[data-testid=split-to] >> nth=${i}`, String(i * 2 + 2))
+    }
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(300)
+    const cut = await page.$eval('[data-testid=live-line]', (el) => el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1)
+    const line = ((await page.textContent('[data-testid=live-line]')) ?? '').trim()
+    check('A 22 phone: the Run bar line is not cut', !cut, line)
+    await polishShot(page, 'split-390')
+    await runTool(page)
+    await page.waitForSelector('[data-testid=result-list] li', { timeout: 30_000 }).catch(() => {})
+    const tails = await page.$$eval('[data-testid=result-list] .name-tail', (els) => els.map((e) => ({ t: e.textContent, w: e.getBoundingClientRect().width, r: e.getBoundingClientRect().right })))
+    check('A 7 phone split result: the part numbers stay visible', tails.length === 4 && new Set(tails.map((x) => x.t)).size === 4 && tails.every((x) => x.w > 0 && x.r <= 390), tails.map((x) => x.t).join(' '))
+    await polishShot(page, 'split-result-390')
+    await page.click('[data-testid=result-back]')
+    await page.click('[data-testid=mode-viewer]')
+    await page.waitForSelector('[data-testid=viewer-image]', { timeout: 60_000 })
+    await page.waitForTimeout(500)
+    const img = await page.locator('[data-testid=viewer-image]').boundingBox()
+    const pill = await page.locator('.viewer-pill').boundingBox()
+    check('A 23 phone viewer: the page and zoom bar does not cover the page', !!img && !!pill && pill.y >= img.y + img.height - 1, `page bottom ${Math.round(img?.y + img?.height)}, bar top ${Math.round(pill?.y)}`)
+    check('A phone: no horizontal scroll', await noHScroll(page))
+    await polishShot(page, 'viewer-390')
+    check('A phone: no page errors', errors.length === 0, errors.slice(0, 3).join(' | '))
     await ctx.close()
   }
 

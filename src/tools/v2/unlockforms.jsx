@@ -32,7 +32,7 @@ export default {
       ctx.progress(k, files.length, f.name)
       const res = await ctx.call('doc', 'unlockForms', f.bytes)
       const parts = [res.fields && plural(res.fields, 'field'), res.widgets && plural(res.widgets, 'widget'), res.xfa && plural(res.xfa, 'XFA lock')].filter(Boolean)
-      outputs.push({ name: `${baseName(f.name)}-unlocked.pdf`, bytes: res.bytes, parentIds: [f.id], note: parts.length ? `Unlocked ${parts.join(', ')}.` : 'No read-only fields, the file is unchanged.' })
+      outputs.push({ name: `${baseName(f.name)}-unlocked.pdf`, bytes: res.bytes, parentIds: [f.id], note: parts.length ? `Unlocked ${parts.join(', ')}.` : 'No read-only fields, the file is unchanged.', unchanged: !parts.length })
     }
     ctx.progress(files.length, files.length, 'Done')
     return outputs

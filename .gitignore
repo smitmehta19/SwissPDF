@@ -9,3 +9,4 @@ test-corpus/
 .claude/worktrees/
 .claude/snapshots/
 .playwright-mcp/
+scratch-edittext/

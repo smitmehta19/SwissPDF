@@ -84,10 +84,23 @@ function Options({ options: o, setOptions, files }) {
         </p>
       )}
       <p className="field-help" data-testid="annots-found">
-        {counts == null ? 'Counting annotations…' : `${plural(Object.values(counts).reduce((a, b) => a + b, 0), 'annotation')} in the selected files.`}
+        {counts == null ? 'Counting annotations…' : foundLine(counts, groupsOf(o))}
       </p>
     </>
   )
+}
+
+// What Run will remove, with form fields named apart (they need their own tick).
+function foundLine(counts, groups) {
+  const fields = counts.widgets ?? 0
+  const annots = Object.entries(counts).reduce((a, [g, n]) => a + (g === 'widgets' ? 0 : n), 0)
+  const gone = Object.entries(counts).reduce((a, [g, n]) => a + (g !== 'widgets' && groups.includes(g) ? n : 0), 0)
+  if (!annots && !fields) return 'No annotations or form fields in the selected files.'
+  const fieldsGo = groups.includes('widgets') ? fields : 0
+  const parts = [gone && plural(gone, 'annotation'), fieldsGo && plural(fieldsGo, 'form field')].filter(Boolean)
+  const removed = parts.length ? `${parts.join(' and ')} will be removed.` : 'Nothing of the chosen types to remove.'
+  const kept = fields && !fieldsGo ? ` ${plural(fields, 'form field')} will be kept.` : ''
+  return `${removed}${kept}`
 }
 
 export default {
@@ -112,7 +125,7 @@ export default {
       ctx.check()
       ctx.progress(k, files.length, f.name)
       const res = await ctx.call('doc', 'removeAnnotations', f.bytes, { groups: groupsOf(o) })
-      outputs.push({ name: `${baseName(f.name)}-clean.pdf`, bytes: res.bytes, parentIds: [f.id], note: res.total ? `${plural(res.total, 'annotation')} removed.` : 'Nothing to remove, the file is unchanged.' })
+      outputs.push({ name: `${baseName(f.name)}-clean.pdf`, bytes: res.bytes, parentIds: [f.id], note: res.total ? `${plural(res.total, 'annotation')} removed.` : 'Nothing to remove, the file is unchanged.', unchanged: !res.total })
     }
     ctx.progress(files.length, files.length, 'Done')
     return outputs

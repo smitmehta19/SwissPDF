@@ -1,8 +1,8 @@
 {
   "name": "2026-10-27-run-quick",
-  "startedAt": "2026-10-27T15:00:58.630Z",
-  "finishedAt": "2026-10-27T15:08:51.034Z",
-  "durationMin": 7.9,
+  "startedAt": "2026-10-27T19:46:14.449Z",
+  "finishedAt": "2026-10-27T19:49:47.144Z",
+  "durationMin": 3.5,
   "command": "npm run test:corpus -- --quick --light --shards 2",
   "env": {
     "node": "v24.20.0",
@@ -21,392 +21,392 @@
       "pass": 5,
       "fail": 0,
       "skip": 0,
-      "ms": 75781
+      "ms": 24041
     },
     {
       "tool": "excel2pdf",
       "pass": 2,
       "fail": 0,
       "skip": 0,
-      "ms": 4578
+      "ms": 3708
     },
     {
       "tool": "ppt2pdf",
       "pass": 2,
       "fail": 0,
       "skip": 0,
-      "ms": 2506
+      "ms": 1269
     },
     {
       "tool": "html2pdf",
       "pass": 3,
       "fail": 0,
       "skip": 0,
-      "ms": 3483
+      "ms": 4578
     },
     {
       "tool": "merge",
       "pass": 5,
       "fail": 0,
       "skip": 0,
-      "ms": 7817
+      "ms": 8940
     },
     {
       "tool": "split",
       "pass": 3,
       "fail": 0,
       "skip": 0,
-      "ms": 3008
+      "ms": 4069
     },
     {
       "tool": "extract",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 2335
+      "ms": 2056
     },
     {
       "tool": "remove",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 972
+      "ms": 851
     },
     {
       "tool": "rotate",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 452
+      "ms": 794
     },
     {
       "tool": "organize",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 917
+      "ms": 812
     },
     {
       "tool": "compress",
       "pass": 4,
       "fail": 0,
       "skip": 0,
-      "ms": 34853
+      "ms": 8366
     },
     {
       "tool": "repair",
       "pass": 3,
       "fail": 0,
       "skip": 0,
-      "ms": 1120
+      "ms": 1119
     },
     {
       "tool": "watermark",
       "pass": 3,
       "fail": 0,
       "skip": 0,
-      "ms": 1266
+      "ms": 1585
     },
     {
       "tool": "pagenumbers",
       "pass": 6,
       "fail": 0,
       "skip": 0,
-      "ms": 2448
+      "ms": 2688
     },
     {
       "tool": "sign",
       "pass": 4,
       "fail": 0,
       "skip": 0,
-      "ms": 1407
+      "ms": 2500
     },
     {
       "tool": "crop",
       "pass": 3,
       "fail": 0,
       "skip": 0,
-      "ms": 1679
+      "ms": 1666
     },
     {
       "tool": "edit",
       "pass": 3,
       "fail": 0,
       "skip": 0,
-      "ms": 2002
+      "ms": 1621
     },
     {
       "tool": "protect",
       "pass": 3,
       "fail": 0,
       "skip": 0,
-      "ms": 2950
+      "ms": 1594
     },
     {
       "tool": "unlock",
       "pass": 4,
       "fail": 0,
       "skip": 0,
-      "ms": 3557
+      "ms": 3218
     },
     {
       "tool": "ocr",
       "pass": 6,
       "fail": 0,
       "skip": 0,
-      "ms": 148580
+      "ms": 94880
     },
     {
       "tool": "pdf2word",
       "pass": 6,
       "fail": 0,
       "skip": 0,
-      "ms": 6878
+      "ms": 8654
     },
     {
       "tool": "pdf2excel",
       "pass": 2,
       "fail": 0,
       "skip": 0,
-      "ms": 944
+      "ms": 1413
     },
     {
       "tool": "pdf2ppt",
       "pass": 2,
       "fail": 0,
       "skip": 0,
-      "ms": 6601
+      "ms": 12108
     },
     {
       "tool": "pdf2md",
       "pass": 2,
       "fail": 0,
       "skip": 0,
-      "ms": 4374
+      "ms": 5564
     },
     {
       "tool": "img2pdf",
       "pass": 4,
       "fail": 0,
       "skip": 0,
-      "ms": 2801
+      "ms": 3656
     },
     {
       "tool": "pdf2img",
       "pass": 2,
       "fail": 0,
       "skip": 0,
-      "ms": 1396
+      "ms": 1840
     },
     {
       "tool": "redact",
       "pass": 27,
       "fail": 0,
       "skip": 0,
-      "ms": 12644
+      "ms": 16978
     },
     {
       "tool": "forms",
       "pass": 6,
       "fail": 0,
       "skip": 0,
-      "ms": 2461
+      "ms": 4167
     },
     {
       "tool": "compare",
       "pass": 4,
       "fail": 0,
       "skip": 0,
-      "ms": 2932
+      "ms": 4160
     },
     {
       "tool": "health",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 7346
+      "ms": 9263
     },
     {
       "tool": "automate",
       "pass": 5,
       "fail": 0,
       "skip": 0,
-      "ms": 4550
+      "ms": 7694
     },
     {
       "tool": "autorotate",
       "pass": 3,
       "fail": 0,
       "skip": 0,
-      "ms": 17833
+      "ms": 25107
     },
     {
       "tool": "nup",
       "pass": 3,
       "fail": 0,
       "skip": 0,
-      "ms": 4059
+      "ms": 4718
     },
     {
       "tool": "booklet",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 962
+      "ms": 1045
     },
     {
       "tool": "scale",
       "pass": 3,
       "fail": 0,
       "skip": 0,
-      "ms": 2881
+      "ms": 3589
     },
     {
       "tool": "singlepage",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 1066
+      "ms": 934
     },
     {
       "tool": "overlay",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 833
+      "ms": 1252
     },
     {
       "tool": "stamp",
       "pass": 2,
       "fail": 0,
       "skip": 0,
-      "ms": 905
+      "ms": 1118
     },
     {
       "tool": "removeblank",
       "pass": 2,
       "fail": 0,
       "skip": 0,
-      "ms": 5870
+      "ms": 8408
     },
     {
       "tool": "linearize",
       "pass": 2,
       "fail": 0,
       "skip": 0,
-      "ms": 3186
+      "ms": 3453
     },
     {
       "tool": "adjustcolors",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 820
+      "ms": 1316
     },
     {
       "tool": "replacecolors",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 763
+      "ms": 798
     },
     {
       "tool": "bookmarks",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 887
+      "ms": 1100
     },
     {
       "tool": "metadata",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 1159
+      "ms": 1295
     },
     {
       "tool": "attachments",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 1193
+      "ms": 1798
     },
     {
       "tool": "removeannots",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 1003
+      "ms": 1421
     },
     {
       "tool": "removeimages",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 1007
+      "ms": 1112
     },
     {
       "tool": "extractimages",
       "pass": 2,
       "fail": 0,
       "skip": 0,
-      "ms": 867
+      "ms": 1606
     },
     {
       "tool": "flatten",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 1179
+      "ms": 1641
     },
     {
       "tool": "unlockforms",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 962
+      "ms": 1279
     },
     {
       "tool": "sanitize",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 821
+      "ms": 1222
     },
     {
       "tool": "permissions",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 1098
+      "ms": 3096
     },
     {
       "tool": "info",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 788
+      "ms": 1143
     },
     {
       "tool": "autorename",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 856
+      "ms": 1016
     },
     {
       "tool": "showjs",
       "pass": 1,
       "fail": 0,
       "skip": 0,
-      "ms": 676
+      "ms": 1062
     },
     {
       "tool": "intake",
       "pass": 29,
       "fail": 0,
       "skip": 0,
-      "ms": 31669
+      "ms": 33666
     }
   ],
   "audit": [
@@ -901,9 +901,9 @@
       "result": "PASS",
       "detail": "engine loaded; warn: no fetches outside the page origin (cdn.zetaoffice.net)",
       "error": null,
-      "ms": 32683,
-      "opMs": 17297,
-      "heapMB": 28,
+      "ms": 7400,
+      "opMs": 5729,
+      "heapMB": 29,
       "audit": null,
       "checks": [
         {
@@ -926,9 +926,9 @@
       "result": "PASS",
       "detail": "2 pages, 17 KB, text coverage 1.00",
       "error": null,
-      "ms": 2627,
-      "opMs": 2460,
-      "heapMB": 28,
+      "ms": 808,
+      "opMs": 661,
+      "heapMB": 27,
       "audit": null,
       "checks": [
         {
@@ -979,9 +979,9 @@
       "result": "PASS",
       "detail": "2 pages, 30 KB, text coverage 1.00",
       "error": null,
-      "ms": 1956,
-      "opMs": 1837,
-      "heapMB": 21,
+      "ms": 727,
+      "opMs": 650,
+      "heapMB": 28,
       "audit": null,
       "checks": [
         {
@@ -1032,9 +1032,9 @@
       "result": "PASS",
       "detail": "1 pages, 12 KB, text coverage 1.00",
       "error": null,
-      "ms": 1232,
-      "opMs": 1034,
-      "heapMB": 21,
+      "ms": 408,
+      "opMs": 354,
+      "heapMB": 29,
       "audit": null,
       "checks": [
         {
@@ -1081,11 +1081,11 @@
       "category": "office",
       "files": [],
       "result": "PASS",
-      "detail": "cold boot 26341 ms (download 6226 ms, cache false), warm boot 13415 ms",
+      "detail": "cold boot 7185 ms (download 2176 ms, cache false), warm boot 5587 ms",
       "error": null,
-      "ms": 39809,
-      "opMs": 39771,
-      "heapMB": 40,
+      "ms": 12888,
+      "opMs": 12776,
+      "heapMB": 45,
       "audit": null,
       "checks": [
         {
@@ -1157,9 +1157,9 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 756,
-      "opMs": 640,
-      "heapMB": 23,
+      "ms": 710,
+      "opMs": 608,
+      "heapMB": 46,
       "audit": null,
       "checks": [
         {
@@ -1213,11 +1213,11 @@
       "category": "office",
       "files": [],
       "result": "PASS",
-      "detail": "1 page(s), 43 KB, 325 ms, coverage 0.98",
+      "detail": "1 page(s), 43 KB, 265 ms, coverage 0.98",
       "error": null,
-      "ms": 1971,
-      "opMs": 1917,
-      "heapMB": 24,
+      "ms": 891,
+      "opMs": 843,
+      "heapMB": 47,
       "audit": null,
       "checks": [
         {
@@ -1312,8 +1312,8 @@
       "result": "PASS",
       "detail": "42 pages, 2.2 MB",
       "error": null,
-      "ms": 1653,
-      "opMs": 732,
+      "ms": 2639,
+      "opMs": 680,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -1381,9 +1381,9 @@
       "result": "PASS",
       "detail": "23 pages, 648 KB",
       "error": null,
-      "ms": 334,
-      "opMs": 100,
-      "heapMB": 19,
+      "ms": 312,
+      "opMs": 97,
+      "heapMB": 20,
       "audit": null,
       "checks": [
         {
@@ -1449,9 +1449,9 @@
       "result": "PASS",
       "detail": "193 pages, 1.9 MB",
       "error": null,
-      "ms": 2212,
-      "opMs": 1818,
-      "heapMB": 25,
+      "ms": 1990,
+      "opMs": 1677,
+      "heapMB": 22,
       "audit": null,
       "checks": [
         {
@@ -1524,9 +1524,9 @@
       "result": "PASS",
       "detail": "37 pages, 1.5 MB",
       "error": null,
-      "ms": 861,
-      "opMs": 548,
-      "heapMB": 40,
+      "ms": 765,
+      "opMs": 615,
+      "heapMB": 30,
       "audit": 1,
       "checks": [
         {
@@ -1591,9 +1591,9 @@
       "result": "PASS",
       "detail": "14 pages -> 7 + 7",
       "error": null,
-      "ms": 935,
-      "opMs": 329,
-      "heapMB": 9,
+      "ms": 1212,
+      "opMs": 414,
+      "heapMB": 8,
       "audit": null,
       "checks": [
         {
@@ -1693,9 +1693,9 @@
       "result": "PASS",
       "detail": "16 pages -> 8 + 8",
       "error": null,
-      "ms": 315,
-      "opMs": 212,
-      "heapMB": 13,
+      "ms": 429,
+      "opMs": 211,
+      "heapMB": 14,
       "audit": null,
       "checks": [
         {
@@ -1795,8 +1795,8 @@
       "result": "PASS",
       "detail": "3 pages out",
       "error": null,
-      "ms": 2335,
-      "opMs": 1585,
+      "ms": 2056,
+      "opMs": 1573,
       "heapMB": 19,
       "audit": null,
       "checks": [
@@ -1855,8 +1855,8 @@
       "result": "PASS",
       "detail": "13 pages out",
       "error": null,
-      "ms": 972,
-      "opMs": 300,
+      "ms": 851,
+      "opMs": 247,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -1915,8 +1915,8 @@
       "result": "PASS",
       "detail": "2 pages out",
       "error": null,
-      "ms": 452,
-      "opMs": 17,
+      "ms": 794,
+      "opMs": 41,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -1975,8 +1975,8 @@
       "result": "PASS",
       "detail": "14 pages out",
       "error": null,
-      "ms": 917,
-      "opMs": 354,
+      "ms": 812,
+      "opMs": 293,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -2035,8 +2035,8 @@
       "result": "PASS",
       "detail": "529 KB -> 526 KB (99%); warn: shrinks a scanned/image-heavy file by 10%+ (saved 1%)",
       "error": null,
-      "ms": 1052,
-      "opMs": 260,
+      "ms": 977,
+      "opMs": 268,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -2109,8 +2109,8 @@
       "result": "PASS",
       "detail": "13.0 MB -> 12.6 MB (97%)",
       "error": null,
-      "ms": 2237,
-      "opMs": 1533,
+      "ms": 2419,
+      "opMs": 1816,
       "heapMB": 10,
       "audit": null,
       "checks": [
@@ -2176,8 +2176,8 @@
       "result": "PASS",
       "detail": "992 KB -> 992 KB (100%), kept original",
       "error": null,
-      "ms": 2153,
-      "opMs": 1973,
+      "ms": 2462,
+      "opMs": 2272,
       "heapMB": 12,
       "audit": null,
       "checks": [
@@ -2243,8 +2243,8 @@
       "result": "PASS",
       "detail": "recovered 1, rasterized 0, lost 0",
       "error": null,
-      "ms": 785,
-      "opMs": 170,
+      "ms": 792,
+      "opMs": 149,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -2303,7 +2303,7 @@
       "result": "PASS",
       "detail": "",
       "error": "Unrecoverable: the file structure is too damaged to parse (invalid key in dict).",
-      "ms": 113,
+      "ms": 103,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -2328,8 +2328,8 @@
       "result": "PASS",
       "detail": "rewrite, 23 of 23 fields",
       "error": null,
-      "ms": 222,
-      "opMs": 90,
+      "ms": 224,
+      "opMs": 88,
       "heapMB": 10,
       "audit": null,
       "checks": [
@@ -2388,8 +2388,8 @@
       "result": "PASS",
       "detail": "14 marks",
       "error": null,
-      "ms": 941,
-      "opMs": 262,
+      "ms": 792,
+      "opMs": 214,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -2455,9 +2455,9 @@
       "result": "PASS",
       "detail": "2 marks",
       "error": null,
-      "ms": 109,
-      "opMs": 8,
-      "heapMB": 12,
+      "ms": 110,
+      "opMs": 13,
+      "heapMB": 13,
       "audit": null,
       "checks": [
         {
@@ -2522,9 +2522,9 @@
       "result": "PASS",
       "detail": "16 marks",
       "error": null,
-      "ms": 216,
-      "opMs": 85,
-      "heapMB": 12,
+      "ms": 683,
+      "opMs": 125,
+      "heapMB": 9,
       "audit": null,
       "checks": [
         {
@@ -2589,8 +2589,8 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 1144,
-      "opMs": 271,
+      "ms": 753,
+      "opMs": 228,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -2656,9 +2656,9 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 108,
-      "opMs": 12,
-      "heapMB": 13,
+      "ms": 463,
+      "opMs": 28,
+      "heapMB": 9,
       "audit": null,
       "checks": [
         {
@@ -2723,8 +2723,8 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 215,
-      "opMs": 93,
+      "ms": 216,
+      "opMs": 99,
       "heapMB": 14,
       "audit": null,
       "checks": [
@@ -2790,9 +2790,9 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 449,
-      "opMs": 241,
-      "heapMB": 14,
+      "ms": 437,
+      "opMs": 249,
+      "heapMB": 15,
       "audit": null,
       "checks": [
         {
@@ -2864,9 +2864,9 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 320,
-      "opMs": 211,
-      "heapMB": 15,
+      "ms": 382,
+      "opMs": 278,
+      "heapMB": 10,
       "audit": null,
       "checks": [
         {
@@ -2924,9 +2924,9 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 212,
-      "opMs": 99,
-      "heapMB": 16,
+      "ms": 437,
+      "opMs": 135,
+      "heapMB": 13,
       "audit": null,
       "checks": [
         {
@@ -2991,8 +2991,8 @@
       "result": "PASS",
       "detail": "centre (0.50, 0.85)",
       "error": null,
-      "ms": 760,
-      "opMs": 208,
+      "ms": 840,
+      "opMs": 295,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -3058,8 +3058,8 @@
       "result": "PASS",
       "detail": "centre (0.50, 0.85)",
       "error": null,
-      "ms": 103,
-      "opMs": 26,
+      "ms": 102,
+      "opMs": 27,
       "heapMB": 11,
       "audit": null,
       "checks": [
@@ -3125,9 +3125,9 @@
       "result": "PASS",
       "detail": "centre (0.50, 0.85)",
       "error": null,
-      "ms": 210,
-      "opMs": 99,
-      "heapMB": 12,
+      "ms": 1237,
+      "opMs": 204,
+      "heapMB": 9,
       "audit": null,
       "checks": [
         {
@@ -3192,8 +3192,8 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 334,
-      "opMs": 142,
+      "ms": 321,
+      "opMs": 163,
       "heapMB": 12,
       "audit": null,
       "checks": [
@@ -3266,8 +3266,8 @@
       "result": "PASS",
       "detail": "CropBox 61,317,367,713",
       "error": null,
-      "ms": 1356,
-      "opMs": 254,
+      "ms": 850,
+      "opMs": 208,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -3326,9 +3326,9 @@
       "result": "PASS",
       "detail": "CropBox 61,317,367,713",
       "error": null,
-      "ms": 117,
-      "opMs": 18,
-      "heapMB": 12,
+      "ms": 112,
+      "opMs": 11,
+      "heapMB": 11,
       "audit": null,
       "checks": [
         {
@@ -3386,9 +3386,9 @@
       "result": "PASS",
       "detail": "CropBox 93,135,358,511",
       "error": null,
-      "ms": 206,
-      "opMs": 123,
-      "heapMB": 13,
+      "ms": 704,
+      "opMs": 138,
+      "heapMB": 9,
       "audit": null,
       "checks": [
         {
@@ -3446,8 +3446,8 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 1423,
-      "opMs": 298,
+      "ms": 879,
+      "opMs": 237,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -3513,9 +3513,9 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 123,
-      "opMs": 20,
-      "heapMB": 12,
+      "ms": 458,
+      "opMs": 36,
+      "heapMB": 9,
       "audit": null,
       "checks": [
         {
@@ -3580,8 +3580,8 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 456,
-      "opMs": 132,
+      "ms": 284,
+      "opMs": 114,
       "heapMB": 12,
       "audit": null,
       "checks": [
@@ -3647,8 +3647,8 @@
       "result": "PASS",
       "detail": "Standard V5 R6 256-bit AES",
       "error": null,
-      "ms": 2293,
-      "opMs": 542,
+      "ms": 715,
+      "opMs": 189,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -3728,7 +3728,7 @@
       "result": "PASS",
       "detail": "refused: Passwords cannot contain a comma.",
       "error": "Passwords cannot contain a comma.",
-      "ms": 106,
+      "ms": 432,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -3753,8 +3753,8 @@
       "result": "PASS",
       "detail": "Standard V5 R6 256-bit AES, {\"print\":false,\"copy\":false,\"edit\":true,\"annotate\":true,\"form\":true,\"assemble\":true,\"print-hq\":false}",
       "error": null,
-      "ms": 551,
-      "opMs": 291,
+      "ms": 447,
+      "opMs": 215,
       "heapMB": 10,
       "audit": null,
       "checks": [
@@ -3841,8 +3841,8 @@
       "result": "PASS",
       "detail": "removed: none listed, had user password",
       "error": null,
-      "ms": 684,
-      "opMs": 126,
+      "ms": 862,
+      "opMs": 138,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -3908,8 +3908,8 @@
       "result": "PASS",
       "detail": "removed: none listed, had user password",
       "error": null,
-      "ms": 424,
-      "opMs": 161,
+      "ms": 229,
+      "opMs": 110,
       "heapMB": 10,
       "audit": null,
       "checks": [
@@ -3975,9 +3975,9 @@
       "result": "PASS",
       "detail": "removed: printing, high-quality printing, copying text",
       "error": null,
-      "ms": 548,
-      "opMs": 379,
-      "heapMB": 10,
+      "ms": 1030,
+      "opMs": 402,
+      "heapMB": 9,
       "audit": null,
       "checks": [
         {
@@ -4040,11 +4040,11 @@
         "derived/a-owner-only-us-budget.pdf"
       ],
       "result": "PASS",
-      "detail": "683 ms, removed: printing, copying text, editing",
+      "detail": "296 ms, removed: printing, copying text, editing",
       "error": null,
-      "ms": 1901,
-      "opMs": 1440,
-      "heapMB": 9,
+      "ms": 1097,
+      "opMs": 668,
+      "heapMB": 10,
       "audit": null,
       "checks": [
         {
@@ -4099,7 +4099,7 @@
         {
           "name": "owner-only unlock is quick",
           "ok": true,
-          "detail": "683 ms",
+          "detail": "296 ms",
           "soft": true,
           "audit": null
         }
@@ -4114,10 +4114,10 @@
         "scanned/fax-jean-schmidt-doe.pdf"
       ],
       "result": "PASS",
-      "detail": "397 words, sample \"10/25/2008 15:38 FAX 202 225 1992 Congresswoman Sc\"",
+      "detail": "423 words, sample \"10/25/2008 15:38 FAX 202 225 1992 Congresswoman Sc\"",
       "error": null,
-      "ms": 23783,
-      "opMs": 22859,
+      "ms": 11776,
+      "opMs": 11117,
       "heapMB": 10,
       "audit": null,
       "checks": [
@@ -4159,7 +4159,7 @@
         {
           "name": "searchable text added (20+ words)",
           "ok": true,
-          "detail": "+246 words",
+          "detail": "+259 words",
           "soft": false,
           "audit": null
         },
@@ -4181,24 +4181,24 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "upright 45/46 median 1.7pt; turned 45/46 median 1.6pt; rot90crop 46/47 median 1.5pt; skew 41/43 median 1.8pt",
+      "detail": "upright 46/47 median 1.7pt; turned 45/46 median 1.6pt; rot90crop 46/47 median 1.5pt; skew 41/43 median 1.8pt",
       "error": null,
-      "ms": 92978,
-      "opMs": 92801,
-      "heapMB": 11,
+      "ms": 49881,
+      "opMs": 49712,
+      "heapMB": 12,
       "audit": null,
       "checks": [
         {
           "name": "upright: words recognised",
           "ok": true,
-          "detail": "46 of 49 probe words",
+          "detail": "47 of 49 probe words",
           "soft": false,
           "audit": null
         },
         {
           "name": "upright: words placed on the scan",
           "ok": true,
-          "detail": "45 of 46 within 8 pt, median 1.7 pt",
+          "detail": "46 of 47 within 8 pt, median 1.7 pt",
           "soft": false,
           "audit": 11
         },
@@ -4247,7 +4247,7 @@
         {
           "name": "sideways scan turned by OSD",
           "ok": true,
-          "detail": "{\"totalWords\":721,\"rotatedPages\":[1]}",
+          "detail": "{\"totalWords\":732,\"rotatedPages\":[1]}",
           "soft": false,
           "audit": null
         },
@@ -4269,11 +4269,11 @@
         "intl/udhr-chinese-simplified.pdf"
       ],
       "result": "PASS",
-      "detail": "451 words, 0 without a font, coverage 0.92, \"世界 人 权 宣 告 联合 国 大 会 一 九 四 八 年 十 二 月 十 日\"",
+      "detail": "464 words, 0 without a font, coverage 0.94, \"世界 人 权 宣 告 联合 国 大 会 一 九 四 八 年 十 二 月 十 日\"",
       "error": null,
-      "ms": 16942,
-      "opMs": 16824,
-      "heapMB": 11,
+      "ms": 9933,
+      "opMs": 9813,
+      "heapMB": 13,
       "audit": null,
       "checks": [
         {
@@ -4314,7 +4314,7 @@
         {
           "name": "chi_sim text recognised",
           "ok": true,
-          "detail": "coverage 0.92 (want 0.6)",
+          "detail": "coverage 0.94 (want 0.6)",
           "soft": false,
           "audit": 10
         },
@@ -4336,11 +4336,11 @@
         "scanned/fax-jean-schmidt-doe.pdf"
       ],
       "result": "PASS",
-      "detail": "397 words on 2 pages (0 skipped), turned 0, \"10/25/2008 15:38 FAX 202 225 1992 Congre\"",
+      "detail": "423 words on 2 pages (0 skipped), turned 0, \"10/25/2008 15:38 FAX 202 225 1992 Congre\"",
       "error": null,
-      "ms": 5870,
-      "opMs": 5807,
-      "heapMB": 18,
+      "ms": 11393,
+      "opMs": 10769,
+      "heapMB": 13,
       "audit": null,
       "checks": [
         {
@@ -4381,7 +4381,7 @@
         {
           "name": "searchable text added (100+ words)",
           "ok": true,
-          "detail": "+397 words",
+          "detail": "+423 words",
           "soft": false,
           "audit": null
         },
@@ -4395,7 +4395,7 @@
         {
           "name": "old text layer replaced, not doubled",
           "ok": true,
-          "detail": "\"Schmidt\" 3 -> 3, 3023 -> 3268 chars, replaced on 2 pages",
+          "detail": "\"Schmidt\" 3 -> 3, 3023 -> 3477 chars, replaced on 2 pages",
           "soft": false,
           "audit": null
         },
@@ -4419,9 +4419,9 @@
       "result": "PASS",
       "detail": "read 1, skipped 2",
       "error": null,
-      "ms": 762,
-      "opMs": 698,
-      "heapMB": 17,
+      "ms": 1190,
+      "opMs": 1127,
+      "heapMB": 15,
       "audit": null,
       "checks": [
         {
@@ -4491,31 +4491,31 @@
         "scanned/fax-jean-schmidt-doe.pdf"
       ],
       "result": "PASS",
-      "detail": "stopped at 3012 ms during \"Page 1 of 2, recognizing\", next run 334 words",
+      "detail": "stopped at 3003 ms during \"Page 1 of 2, recognizing\", next run 355 words",
       "error": null,
-      "ms": 8245,
-      "opMs": 8129,
-      "heapMB": 14,
+      "ms": 10707,
+      "opMs": 10568,
+      "heapMB": 15,
       "audit": null,
       "checks": [
         {
           "name": "cancel stops the run",
           "ok": true,
-          "detail": "{\"cancelled\":true,\"stopMs\":3012,\"stage\":\"Page 1 of 2, recognizing\",\"againWords\":334}",
+          "detail": "{\"cancelled\":true,\"stopMs\":3003,\"stage\":\"Page 1 of 2, recognizing\",\"againWords\":355}",
           "soft": false,
           "audit": null
         },
         {
           "name": "stops within 2 s of cancel",
           "ok": true,
-          "detail": "3012 ms after start (cancel at 3000)",
+          "detail": "3003 ms after start (cancel at 3000)",
           "soft": false,
           "audit": null
         },
         {
           "name": "a later run still works",
           "ok": true,
-          "detail": "334 words",
+          "detail": "355 words",
           "soft": false,
           "audit": null
         }
@@ -4532,8 +4532,8 @@
       "result": "PASS",
       "detail": "coverage 0.94, 11 tables, 88 images; warn: column lines stay in reading order (30 of 43 line joins kept)",
       "error": null,
-      "ms": 2958,
-      "opMs": 2470,
+      "ms": 3646,
+      "opMs": 2937,
       "heapMB": 13,
       "audit": null,
       "checks": [
@@ -4571,9 +4571,9 @@
       "result": "PASS",
       "detail": "coverage 1.00, 3 tables, 1 images",
       "error": null,
-      "ms": 105,
-      "opMs": 61,
-      "heapMB": 24,
+      "ms": 216,
+      "opMs": 98,
+      "heapMB": 26,
       "audit": null,
       "checks": [
         {
@@ -4601,11 +4601,11 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "108/109 joins, 2 broken hyphens, 11 tables, 1939 ms",
+      "detail": "108/109 joins, 2 broken hyphens, 11 tables, 2040 ms",
       "error": null,
-      "ms": 2061,
-      "opMs": 1950,
-      "heapMB": 36,
+      "ms": 2177,
+      "opMs": 2052,
+      "heapMB": 38,
       "audit": null,
       "checks": [
         {
@@ -4654,11 +4654,11 @@
         "invoices/aws-invoice.pdf"
       ],
       "result": "PASS",
-      "detail": "3 tables, 22 rows, 46 ms",
+      "detail": "3 tables, 22 rows, 379 ms",
       "error": null,
-      "ms": 105,
-      "opMs": 54,
-      "heapMB": 63,
+      "ms": 1005,
+      "opMs": 404,
+      "heapMB": 9,
       "audit": null,
       "checks": [
         {
@@ -4695,9 +4695,9 @@
       "result": "PASS",
       "detail": "4/4 RTL lines in reading order",
       "error": null,
-      "ms": 116,
-      "opMs": 70,
-      "heapMB": 68,
+      "ms": 108,
+      "opMs": 30,
+      "heapMB": 65,
       "audit": null,
       "checks": [
         {
@@ -4727,9 +4727,9 @@
       "result": "PASS",
       "detail": "1 OCR pages, 0 images, 13 words, 1.4 s",
       "error": null,
-      "ms": 1533,
-      "opMs": 1450,
-      "heapMB": 12,
+      "ms": 1502,
+      "opMs": 1406,
+      "heapMB": 13,
       "audit": null,
       "checks": [
         {
@@ -4759,8 +4759,8 @@
       "result": "PASS",
       "detail": "1 sheets, 73 cells, coverage 1.00; warn: leading-zero / long ids kept as text (lost 0000)",
       "error": null,
-      "ms": 831,
-      "opMs": 370,
+      "ms": 1203,
+      "opMs": 515,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -4798,8 +4798,8 @@
       "result": "PASS",
       "detail": "1 sheets, 22 numbers, 0 numeric text, 0.1 s",
       "error": null,
-      "ms": 113,
-      "opMs": 87,
+      "ms": 210,
+      "opMs": 104,
       "heapMB": 11,
       "audit": null,
       "checks": [
@@ -4851,9 +4851,9 @@
       "result": "PASS",
       "detail": "14 slides, 99 images, 2.0 MB",
       "error": null,
-      "ms": 3782,
-      "opMs": 3238,
-      "heapMB": 24,
+      "ms": 9197,
+      "opMs": 8523,
+      "heapMB": 14,
       "audit": null,
       "checks": [
         {
@@ -4881,11 +4881,11 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "14 slides, 83231 chars, 99 media, 2.0 MB, 2.6 s",
+      "detail": "14 slides, 83231 chars, 99 media, 2.0 MB, 2.8 s",
       "error": null,
-      "ms": 2819,
-      "opMs": 2620,
-      "heapMB": 20,
+      "ms": 2911,
+      "opMs": 2762,
+      "heapMB": 28,
       "audit": null,
       "checks": [
         {
@@ -4934,10 +4934,10 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "85800 chars, 14 headings, 11 tables",
+      "detail": "85802 chars, 14 headings, 11 tables",
       "error": null,
-      "ms": 2522,
-      "opMs": 2068,
+      "ms": 2484,
+      "opMs": 2104,
       "heapMB": 12,
       "audit": null,
       "checks": [
@@ -4959,11 +4959,11 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "85800 chars, 11 tables, 14 headings",
+      "detail": "85802 chars, 11 tables, 14 headings",
       "error": null,
-      "ms": 1852,
-      "opMs": 1822,
-      "heapMB": 16,
+      "ms": 3080,
+      "opMs": 2366,
+      "heapMB": 12,
       "audit": null,
       "checks": [
         {
@@ -4993,9 +4993,9 @@
       "result": "PASS",
       "detail": "2 pages, 62 KB, text coverage 0.00; warn: selectable text (coverage 0.00)",
       "error": null,
-      "ms": 1951,
-      "opMs": 1458,
-      "heapMB": 13,
+      "ms": 2900,
+      "opMs": 2237,
+      "heapMB": 12,
       "audit": null,
       "checks": [
         {
@@ -5053,8 +5053,8 @@
       "result": "PASS",
       "detail": "2 pages, 8 KB, text coverage 0.00; warn: selectable text (coverage 0.00)",
       "error": null,
-      "ms": 550,
-      "opMs": 431,
+      "ms": 542,
+      "opMs": 520,
       "heapMB": 12,
       "audit": null,
       "checks": [
@@ -5113,9 +5113,9 @@
       "result": "PASS",
       "detail": "1 pages, 251 KB, text coverage 0.00; warn: selectable text (coverage 0.00)",
       "error": null,
-      "ms": 1301,
-      "opMs": 1209,
-      "heapMB": 15,
+      "ms": 2635,
+      "opMs": 2187,
+      "heapMB": 12,
       "audit": null,
       "checks": [
         {
@@ -5173,8 +5173,8 @@
       "result": "PASS",
       "detail": "1 page(s), 8.5x5.7 in, 455 KB",
       "error": null,
-      "ms": 1601,
-      "opMs": 1053,
+      "ms": 1640,
+      "opMs": 990,
       "heapMB": 12,
       "audit": 23,
       "checks": [
@@ -5233,9 +5233,9 @@
       "result": "PASS",
       "detail": "1 page(s), 23.0x17.5 in, 5.4 MB, EXIF 1; warn: fit page is a sane paper size (<= 17 in) (23.0 x 17.5 in)",
       "error": null,
-      "ms": 879,
-      "opMs": 266,
-      "heapMB": 12,
+      "ms": 1213,
+      "opMs": 373,
+      "heapMB": 13,
       "audit": null,
       "checks": [
         {
@@ -5293,8 +5293,8 @@
       "result": "PASS",
       "detail": "3 page(s), 0.1x0.1 in, 4 KB; warn: output not bloated (<= 3x input) (4.8x input)",
       "error": null,
-      "ms": 209,
-      "opMs": 87,
+      "ms": 685,
+      "opMs": 89,
       "heapMB": 9,
       "audit": 23,
       "checks": [
@@ -5360,8 +5360,8 @@
       "result": "PASS",
       "detail": "1 page(s), 0.9x0.9 in, 8 KB",
       "error": null,
-      "ms": 112,
-      "opMs": 44,
+      "ms": 118,
+      "opMs": 21,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -5420,8 +5420,8 @@
       "result": "PASS",
       "detail": "ink 10.8%, 13.3%",
       "error": null,
-      "ms": 1089,
-      "opMs": 538,
+      "ms": 1515,
+      "opMs": 807,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -5480,9 +5480,9 @@
       "result": "PASS",
       "detail": "ink 16.3%",
       "error": null,
-      "ms": 307,
-      "opMs": 161,
-      "heapMB": 9,
+      "ms": 325,
+      "opMs": 222,
+      "heapMB": 10,
       "audit": null,
       "checks": [
         {
@@ -5519,9 +5519,9 @@
       "result": "PASS",
       "detail": "33 boxes on 9 page(s), 5.9x size; warn: size stays reasonable (<= 3x) (5.9x input)",
       "error": null,
-      "ms": 3630,
-      "opMs": 2703,
-      "heapMB": 16,
+      "ms": 5055,
+      "opMs": 3741,
+      "heapMB": 17,
       "audit": null,
       "checks": [
         {
@@ -5607,9 +5607,9 @@
       "result": "PASS",
       "detail": "59 boxes on 12 page(s), 10.8x size; warn: size stays reasonable (<= 3x) (10.8x input)",
       "error": null,
-      "ms": 3142,
-      "opMs": 2498,
-      "heapMB": 28,
+      "ms": 3378,
+      "opMs": 2451,
+      "heapMB": 29,
       "audit": null,
       "checks": [
         {
@@ -5693,11 +5693,11 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "33 boxes on 9 page(s), 0.94x size, 380 ms",
+      "detail": "33 boxes on 9 page(s), 0.94x size, 526 ms",
       "error": null,
-      "ms": 987,
-      "opMs": 827,
-      "heapMB": 12,
+      "ms": 2674,
+      "opMs": 1788,
+      "heapMB": 14,
       "audit": null,
       "checks": [
         {
@@ -5795,11 +5795,11 @@
         "derived/rot90-cropbox-bert.pdf"
       ],
       "result": "PASS",
-      "detail": "59 boxes on 12 page(s), 1.00x size, 346 ms",
+      "detail": "59 boxes on 12 page(s), 1.00x size, 579 ms",
       "error": null,
-      "ms": 881,
-      "opMs": 718,
-      "heapMB": 12,
+      "ms": 1388,
+      "opMs": 1234,
+      "heapMB": 30,
       "audit": null,
       "checks": [
         {
@@ -5897,11 +5897,11 @@
         "derived/origin-shift-aws-invoice.pdf"
       ],
       "result": "PASS",
-      "detail": "13 boxes on 1 page(s), 0.98x size, 25 ms",
+      "detail": "13 boxes on 1 page(s), 0.98x size, 63 ms",
       "error": null,
-      "ms": 257,
-      "opMs": 175,
-      "heapMB": 30,
+      "ms": 488,
+      "opMs": 351,
+      "heapMB": 12,
       "audit": null,
       "checks": [
         {
@@ -6001,9 +6001,9 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 109,
-      "opMs": 35,
-      "heapMB": 17,
+      "ms": 115,
+      "opMs": 52,
+      "heapMB": 14,
       "audit": null,
       "checks": [
         {
@@ -6089,9 +6089,9 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 216,
-      "opMs": 162,
-      "heapMB": 17,
+      "ms": 307,
+      "opMs": 214,
+      "heapMB": 15,
       "audit": null,
       "checks": [
         {
@@ -6170,9 +6170,9 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 325,
-      "opMs": 42,
-      "heapMB": 17,
+      "ms": 221,
+      "opMs": 29,
+      "heapMB": 14,
       "audit": null,
       "checks": [
         {
@@ -6230,9 +6230,9 @@
       "result": "PASS",
       "detail": "review #1, raster pages none",
       "error": null,
-      "ms": 104,
-      "opMs": 17,
-      "heapMB": 12,
+      "ms": 107,
+      "opMs": 19,
+      "heapMB": 11,
       "audit": null,
       "checks": [
         {
@@ -6290,9 +6290,9 @@
       "result": "PASS",
       "detail": "review #2, raster pages none",
       "error": null,
-      "ms": 114,
-      "opMs": 13,
-      "heapMB": 12,
+      "ms": 109,
+      "opMs": 17,
+      "heapMB": 15,
       "audit": null,
       "checks": [
         {
@@ -6350,9 +6350,9 @@
       "result": "PASS",
       "detail": "review #3, raster pages none",
       "error": null,
-      "ms": 115,
-      "opMs": 28,
-      "heapMB": 12,
+      "ms": 101,
+      "opMs": 74,
+      "heapMB": 16,
       "audit": null,
       "checks": [
         {
@@ -6410,9 +6410,9 @@
       "result": "PASS",
       "detail": "review #3, raster pages none",
       "error": null,
-      "ms": 107,
-      "opMs": 19,
-      "heapMB": 12,
+      "ms": 109,
+      "opMs": 14,
+      "heapMB": 11,
       "audit": null,
       "checks": [
         {
@@ -6470,9 +6470,9 @@
       "result": "PASS",
       "detail": "review #4, raster pages none",
       "error": null,
-      "ms": 112,
-      "opMs": 40,
-      "heapMB": 12,
+      "ms": 113,
+      "opMs": 36,
+      "heapMB": 11,
       "audit": null,
       "checks": [
         {
@@ -6530,9 +6530,9 @@
       "result": "PASS",
       "detail": "review #5, raster pages 1",
       "error": null,
-      "ms": 115,
-      "opMs": 76,
-      "heapMB": 13,
+      "ms": 114,
+      "opMs": 78,
+      "heapMB": 12,
       "audit": null,
       "checks": [
         {
@@ -6590,9 +6590,9 @@
       "result": "PASS",
       "detail": "review #6, raster pages none",
       "error": null,
-      "ms": 107,
+      "ms": 112,
       "opMs": 14,
-      "heapMB": 13,
+      "heapMB": 16,
       "audit": null,
       "checks": [
         {
@@ -6650,9 +6650,9 @@
       "result": "PASS",
       "detail": "review #7, raster pages none",
       "error": null,
-      "ms": 110,
-      "opMs": 25,
-      "heapMB": 13,
+      "ms": 118,
+      "opMs": 27,
+      "heapMB": 12,
       "audit": null,
       "checks": [
         {
@@ -6710,9 +6710,9 @@
       "result": "PASS",
       "detail": "review #8, raster pages none",
       "error": null,
-      "ms": 105,
-      "opMs": 29,
-      "heapMB": 13,
+      "ms": 107,
+      "opMs": 45,
+      "heapMB": 12,
       "audit": null,
       "checks": [
         {
@@ -6770,9 +6770,9 @@
       "result": "PASS",
       "detail": "review #r2-2, raster pages none",
       "error": null,
-      "ms": 114,
-      "opMs": 25,
-      "heapMB": 14,
+      "ms": 106,
+      "opMs": 44,
+      "heapMB": 16,
       "audit": null,
       "checks": [
         {
@@ -6830,9 +6830,9 @@
       "result": "PASS",
       "detail": "review #r2-1, raster pages 1",
       "error": null,
-      "ms": 210,
-      "opMs": 90,
-      "heapMB": 14,
+      "ms": 211,
+      "opMs": 144,
+      "heapMB": 17,
       "audit": null,
       "checks": [
         {
@@ -6890,9 +6890,9 @@
       "result": "PASS",
       "detail": "review #r2-1, raster pages 1",
       "error": null,
-      "ms": 216,
-      "opMs": 85,
-      "heapMB": 14,
+      "ms": 213,
+      "opMs": 143,
+      "heapMB": 11,
       "audit": null,
       "checks": [
         {
@@ -6950,9 +6950,9 @@
       "result": "PASS",
       "detail": "review #r2-3, raster pages none",
       "error": null,
-      "ms": 111,
-      "opMs": 37,
-      "heapMB": 14,
+      "ms": 126,
+      "opMs": 46,
+      "heapMB": 17,
       "audit": null,
       "checks": [
         {
@@ -7017,9 +7017,9 @@
       "result": "PASS",
       "detail": "review #r2-6, raster pages none",
       "error": null,
-      "ms": 118,
-      "opMs": 25,
-      "heapMB": 11,
+      "ms": 107,
+      "opMs": 36,
+      "heapMB": 17,
       "audit": null,
       "checks": [
         {
@@ -7077,9 +7077,9 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 229,
-      "opMs": 121,
-      "heapMB": 12,
+      "ms": 208,
+      "opMs": 169,
+      "heapMB": 17,
       "audit": null,
       "checks": [
         {
@@ -7156,11 +7156,11 @@
         "forms/uk-IPPH353.pdf"
       ],
       "result": "PASS",
-      "detail": "3 boxes, 63 ms",
+      "detail": "3 boxes, 75 ms",
       "error": null,
       "ms": 436,
-      "opMs": 173,
-      "heapMB": 11,
+      "opMs": 204,
+      "heapMB": 13,
       "audit": null,
       "checks": [
         {
@@ -7239,9 +7239,9 @@
       "result": "PASS",
       "detail": "9 boxes: info@qualityhosting.de, +49 6051 916 44 10, +49 6051 916 44 29, 044 241 601 03",
       "error": null,
-      "ms": 112,
-      "opMs": 31,
-      "heapMB": 22,
+      "ms": 114,
+      "opMs": 65,
+      "heapMB": 11,
       "audit": null,
       "checks": [
         {
@@ -7313,9 +7313,9 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 228,
-      "opMs": 48,
-      "heapMB": 26,
+      "ms": 315,
+      "opMs": 100,
+      "heapMB": 17,
       "audit": null,
       "checks": [
         {
@@ -7394,9 +7394,9 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 334,
-      "opMs": 280,
-      "heapMB": 27,
+      "ms": 526,
+      "opMs": 408,
+      "heapMB": 17,
       "audit": null,
       "checks": [
         {
@@ -7473,10 +7473,10 @@
         "forms/irs-fw9.pdf"
       ],
       "result": "PASS",
-      "detail": "23 fields (23 widgets) in 38 ms, pdf.js 23, has XFA",
+      "detail": "23 fields (23 widgets) in 72 ms, pdf.js 23, has XFA",
       "error": null,
-      "ms": 415,
-      "opMs": 42,
+      "ms": 993,
+      "opMs": 123,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -7490,7 +7490,7 @@
         {
           "name": "field scan under 10 s",
           "ok": true,
-          "detail": "38 ms",
+          "detail": "72 ms",
           "soft": true,
           "audit": 21
         }
@@ -7505,11 +7505,11 @@
         "forms/xfa-issue14315.pdf"
       ],
       "result": "PASS",
-      "detail": "0 fields (0 widgets) in 1 ms, pdf.js 0, has XFA",
+      "detail": "0 fields (0 widgets) in 6 ms, pdf.js 0, has XFA",
       "error": null,
-      "ms": 103,
-      "opMs": 2,
-      "heapMB": 11,
+      "ms": 453,
+      "opMs": 11,
+      "heapMB": 9,
       "audit": null,
       "checks": [
         {
@@ -7522,7 +7522,7 @@
         {
           "name": "field scan under 10 s",
           "ok": true,
-          "detail": "1 ms",
+          "detail": "6 ms",
           "soft": true,
           "audit": 21
         }
@@ -7539,8 +7539,8 @@
       "result": "PASS",
       "detail": "3 filled",
       "error": null,
-      "ms": 853,
-      "opMs": 722,
+      "ms": 1046,
+      "opMs": 958,
       "heapMB": 12,
       "audit": null,
       "checks": [
@@ -7620,8 +7620,8 @@
       "result": "PASS",
       "detail": "3 filled, flattened",
       "error": null,
-      "ms": 763,
-      "opMs": 644,
+      "ms": 1354,
+      "opMs": 711,
       "heapMB": 19,
       "audit": null,
       "checks": [
@@ -7708,7 +7708,7 @@
       "result": "PASS",
       "detail": "0 fields, 0 widgets, 1 ms",
       "error": null,
-      "ms": 111,
+      "ms": 115,
       "opMs": 1,
       "heapMB": 26,
       "audit": null,
@@ -7740,8 +7740,8 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 216,
-      "opMs": 131,
+      "ms": 206,
+      "opMs": 128,
       "heapMB": 26,
       "audit": null,
       "checks": [
@@ -7822,8 +7822,8 @@
       "result": "PASS",
       "detail": "+0 -0, changed pages none",
       "error": null,
-      "ms": 733,
-      "opMs": 298,
+      "ms": 1151,
+      "opMs": 553,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -7848,9 +7848,9 @@
       "result": "PASS",
       "detail": "+1213 -0, changed pages 3",
       "error": null,
-      "ms": 326,
-      "opMs": 267,
-      "heapMB": 11,
+      "ms": 1059,
+      "opMs": 552,
+      "heapMB": 9,
       "audit": 27,
       "checks": [
         {
@@ -7872,11 +7872,11 @@
         "derived/compare-tracemonkey-inserted.pdf"
       ],
       "result": "PASS",
-      "detail": "310 ms, +1213 -0, changed 3, overlay max 0.00%",
+      "detail": "242 ms, +1213 -0, changed 3, overlay max 0.00%",
       "error": null,
-      "ms": 1208,
-      "opMs": 1093,
-      "heapMB": 15,
+      "ms": 1191,
+      "opMs": 1060,
+      "heapMB": 12,
       "audit": null,
       "checks": [
         {
@@ -7904,11 +7904,11 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "332 ms, -1260 words, changed pairs 4",
+      "detail": "435 ms, -1260 words, changed pairs 4",
       "error": null,
-      "ms": 665,
-      "opMs": 598,
-      "heapMB": 10,
+      "ms": 759,
+      "opMs": 639,
+      "heapMB": 9,
       "audit": null,
       "checks": [
         {
@@ -7938,9 +7938,9 @@
       "result": "PASS",
       "detail": "1 pages, 230 KB; warn: selectable text (coverage 0.00)",
       "error": null,
-      "ms": 1099,
-      "opMs": 697,
-      "heapMB": 9,
+      "ms": 1838,
+      "opMs": 1160,
+      "heapMB": 12,
       "audit": null,
       "checks": [
         {
@@ -8001,11 +8001,11 @@
       "category": "office",
       "files": [],
       "result": "PASS",
-      "detail": "1 page(s), 152 KB, 288 ms",
+      "detail": "1 page(s), 152 KB, 636 ms",
       "error": null,
-      "ms": 413,
-      "opMs": 369,
-      "heapMB": 10,
+      "ms": 1849,
+      "opMs": 995,
+      "heapMB": 11,
       "audit": null,
       "checks": [
         {
@@ -8061,9 +8061,9 @@
       "result": "PASS",
       "detail": "49 checks, 0 failed; warn: self-test covers real-world fixtures (synthetic pdf-lib fixtures only)",
       "error": null,
-      "ms": 7346,
-      "opMs": 6939,
-      "heapMB": 24,
+      "ms": 9263,
+      "opMs": 8689,
+      "heapMB": 20,
       "audit": null,
       "checks": [
         {
@@ -8091,11 +8091,11 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "run 810 ms; Sanitize nochange, Flatten nochange, Remove annotations nochange, Metadata 342ms, Compress 257ms",
+      "detail": "run 1222 ms; Sanitize nochange, Flatten nochange, Remove annotations nochange, Metadata 181ms, Compress 445ms",
       "error": null,
-      "ms": 1407,
-      "opMs": 919,
-      "heapMB": 9,
+      "ms": 2190,
+      "opMs": 1398,
+      "heapMB": 12,
       "audit": null,
       "checks": [
         {
@@ -8242,11 +8242,11 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "run 707 ms; Compress 217ms, Protect 490ms",
+      "detail": "run 1761 ms; Compress 870ms, Protect 890ms",
       "error": null,
-      "ms": 979,
-      "opMs": 796,
-      "heapMB": 10,
+      "ms": 2545,
+      "opMs": 1918,
+      "heapMB": 13,
       "audit": null,
       "checks": [
         {
@@ -8365,11 +8365,11 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "run 377 ms; Page numbers 171ms, Watermark 197ms",
+      "detail": "run 386 ms; Page numbers 177ms, Watermark 205ms",
       "error": null,
-      "ms": 671,
-      "opMs": 484,
-      "heapMB": 13,
+      "ms": 639,
+      "opMs": 501,
+      "heapMB": 12,
       "audit": null,
       "checks": [
         {
@@ -8476,11 +8476,11 @@
         "forms/irs-fw9.pdf"
       ],
       "result": "PASS",
-      "detail": "batch run 454 ms for 3 files",
+      "detail": "batch run 637 ms for 3 files",
       "error": null,
-      "ms": 751,
-      "opMs": 695,
-      "heapMB": 19,
+      "ms": 1104,
+      "opMs": 977,
+      "heapMB": 13,
       "audit": null,
       "checks": [
         {
@@ -8643,11 +8643,11 @@
         "invoices/aws-invoice.pdf"
       ],
       "result": "PASS",
-      "detail": "batch run 465 ms; failed: This is a dynamic XFA form: the form exists only as XFA, and this change would l",
+      "detail": "batch run 686 ms; failed: This is a dynamic XFA form: the form exists only as XFA, and this change would l",
       "error": null,
-      "ms": 742,
-      "opMs": 590,
-      "heapMB": 17,
+      "ms": 1216,
+      "opMs": 856,
+      "heapMB": 15,
       "audit": null,
       "checks": [
         {
@@ -8780,11 +8780,11 @@
         "scanned/fax-jean-schmidt-doe.pdf"
       ],
       "result": "PASS",
-      "detail": "1498 ms, turned 2 of 2, osd 270/0.4 270/2.2",
+      "detail": "1924 ms, turned 2 of 2, osd 270/0.4 270/2.2",
       "error": null,
-      "ms": 2033,
-      "opMs": 1537,
-      "heapMB": 10,
+      "ms": 2420,
+      "opMs": 1959,
+      "heapMB": 11,
       "audit": null,
       "checks": [
         {
@@ -8847,10 +8847,10 @@
         "scanned/lincoln-ellsworth-letter-1861.pdf"
       ],
       "result": "PASS",
-      "detail": "13847 ms, turned 36 of 36, osd 0/0.0 90/0.1 0/0.0 0/0.0 0/0.0 270/4.2 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 270/21.2 270/27.6 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 270/6.5 270/0.9 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/1.0 0/0.4 180/0.9",
+      "detail": "19241 ms, turned 36 of 36, osd 0/0.0 90/0.1 0/0.0 0/0.0 0/0.0 270/4.2 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 270/21.2 270/27.6 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 270/6.5 270/0.9 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/0.0 0/1.0 0/0.4 180/0.9",
       "error": null,
-      "ms": 14066,
-      "opMs": 13917,
+      "ms": 19871,
+      "opMs": 19316,
       "heapMB": 10,
       "audit": null,
       "checks": [
@@ -8914,10 +8914,10 @@
         "derived/sub-ndl-konoye-p1.pdf"
       ],
       "result": "PASS",
-      "detail": "1594 ms, turned 0 of 1, osd 270/1.2; warn: every page back upright (not detected: p1)",
+      "detail": "2723 ms, turned 0 of 1, osd 270/1.2; warn: every page back upright (not detected: p1)",
       "error": null,
-      "ms": 1734,
-      "opMs": 1626,
+      "ms": 2816,
+      "opMs": 2762,
       "heapMB": 10,
       "audit": null,
       "checks": [
@@ -8983,8 +8983,8 @@
       "result": "PASS",
       "detail": "14 pages on 4 sheets, 2x2, 1.0 MB",
       "error": null,
-      "ms": 1225,
-      "opMs": 633,
+      "ms": 1442,
+      "opMs": 689,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -9064,9 +9064,9 @@
       "result": "PASS",
       "detail": "16 pages on 2 sheets, 3x3, 0.7 MB",
       "error": null,
-      "ms": 324,
-      "opMs": 262,
-      "heapMB": 15,
+      "ms": 309,
+      "opMs": 232,
+      "heapMB": 18,
       "audit": null,
       "checks": [
         {
@@ -9145,9 +9145,9 @@
       "result": "PASS",
       "detail": "15 pages on 8 sheets, 2x1, 1.8 MB",
       "error": null,
-      "ms": 2510,
-      "opMs": 2397,
-      "heapMB": 44,
+      "ms": 2967,
+      "opMs": 2426,
+      "heapMB": 30,
       "audit": null,
       "checks": [
         {
@@ -9233,8 +9233,8 @@
       "result": "PASS",
       "detail": "14 pages on 4 sheets, first sides -|1 / 2|-",
       "error": null,
-      "ms": 962,
-      "opMs": 533,
+      "ms": 1045,
+      "opMs": 557,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -9321,8 +9321,8 @@
       "result": "PASS",
       "detail": "14 pages, first 595x842 pt",
       "error": null,
-      "ms": 926,
-      "opMs": 513,
+      "ms": 1191,
+      "opMs": 528,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -9402,9 +9402,9 @@
       "result": "PASS",
       "detail": "2 pages, first 792x612 pt",
       "error": null,
-      "ms": 105,
-      "opMs": 47,
-      "heapMB": 14,
+      "ms": 544,
+      "opMs": 69,
+      "heapMB": 9,
       "audit": null,
       "checks": [
         {
@@ -9483,9 +9483,9 @@
       "result": "PASS",
       "detail": "15 pages, first 306x396 pt",
       "error": null,
-      "ms": 1850,
-      "opMs": 1786,
-      "heapMB": 27,
+      "ms": 1854,
+      "opMs": 1742,
+      "heapMB": 28,
       "audit": null,
       "checks": [
         {
@@ -9592,8 +9592,8 @@
       "result": "PASS",
       "detail": "14 pages, 612 x 11088 pt",
       "error": null,
-      "ms": 1066,
-      "opMs": 574,
+      "ms": 934,
+      "opMs": 539,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -9674,8 +9674,8 @@
       "result": "PASS",
       "detail": "14 pages, interleaved, foreground",
       "error": null,
-      "ms": 833,
-      "opMs": 385,
+      "ms": 1252,
+      "opMs": 478,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -9762,8 +9762,8 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 704,
-      "opMs": 276,
+      "ms": 891,
+      "opMs": 303,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -9850,9 +9850,9 @@
       "result": "PASS",
       "detail": "",
       "error": null,
-      "ms": 201,
-      "opMs": 128,
-      "heapMB": 12,
+      "ms": 227,
+      "opMs": 115,
+      "heapMB": 13,
       "audit": null,
       "checks": [
         {
@@ -9931,8 +9931,8 @@
       "result": "PASS",
       "detail": "found 1, 3 (inserted 1, 3) in 0.2 s",
       "error": null,
-      "ms": 763,
-      "opMs": 266,
+      "ms": 664,
+      "opMs": 252,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -10010,10 +10010,10 @@
         "scanned/lincoln-ellsworth-letter-1861.pdf"
       ],
       "result": "PASS",
-      "detail": "found 4, 7, 8, 9, 12, 16, 20, 22, 25, 26, 27, 28, 29, 30, 31, 32 (inserted none) in 5.0 s",
+      "detail": "found 4, 7, 8, 9, 12, 16, 20, 22, 25, 26, 27, 28, 29, 30, 31, 32 (inserted none) in 7.0 s",
       "error": null,
-      "ms": 5107,
-      "opMs": 5035,
+      "ms": 7744,
+      "opMs": 7064,
       "heapMB": 11,
       "audit": null,
       "checks": [
@@ -10091,10 +10091,10 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "14 pages, 5 packed objects, 0.95 MB from 0.97 MB (0.98x), page 1 loads 177 -> 153 KB, 84 ms",
+      "detail": "14 pages, 5 packed objects, 0.95 MB from 0.97 MB (0.98x), page 1 loads 177 -> 153 KB, 134 ms",
       "error": null,
-      "ms": 652,
-      "opMs": 131,
+      "ms": 1022,
+      "opMs": 214,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -10193,11 +10193,11 @@
         "reports/us-budget-2024.pdf"
       ],
       "result": "PASS",
-      "detail": "184 pages, 25770 packed objects, 2.57 MB from 2.31 MB (1.11x), page 1 loads 313 -> 295 KB, 2066 ms",
+      "detail": "184 pages, 25770 packed objects, 2.57 MB from 2.31 MB (1.11x), page 1 loads 313 -> 295 KB, 1995 ms",
       "error": null,
-      "ms": 2534,
-      "opMs": 2174,
-      "heapMB": 63,
+      "ms": 2431,
+      "opMs": 2104,
+      "heapMB": 61,
       "audit": null,
       "checks": [
         {
@@ -10295,10 +10295,10 @@
         "scanned/fax-jean-schmidt-doe.pdf"
       ],
       "result": "PASS",
-      "detail": "layers, change 21/24, worst MuPDF p2 mean 1.02 p99 2, 186 KB from 186 KB, 16 ms",
+      "detail": "layers, change 21/24, worst MuPDF p2 mean 1.02 p99 2, 186 KB from 186 KB, 25 ms",
       "error": null,
-      "ms": 820,
-      "opMs": 404,
+      "ms": 1316,
+      "opMs": 629,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -10392,8 +10392,8 @@
       "result": "PASS",
       "detail": "layers, change 224/243, worst pdf.js p2 mean 0.52 p99 0, 186 KB from 186 KB, 15 ms",
       "error": null,
-      "ms": 763,
-      "opMs": 354,
+      "ms": 798,
+      "opMs": 349,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -10485,10 +10485,10 @@
         "quirks/pdfjs-outlines_se.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 309 ms: 6 bookmarks.",
+      "detail": "run to result 289 ms: 6 bookmarks.",
       "error": null,
-      "ms": 887,
-      "opMs": 410,
+      "ms": 1100,
+      "opMs": 450,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -10587,10 +10587,10 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 516 ms: Info and XMP updated.",
+      "detail": "run to result 591 ms: Info and XMP updated.",
       "error": null,
-      "ms": 1159,
-      "opMs": 690,
+      "ms": 1295,
+      "opMs": 780,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -10717,11 +10717,11 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 314 ms: 2 files attached.",
+      "detail": "run to result 447 ms: 2 files attached.",
       "error": null,
-      "ms": 1193,
-      "opMs": 679,
-      "heapMB": 9,
+      "ms": 1798,
+      "opMs": 1001,
+      "heapMB": 10,
       "audit": null,
       "checks": [
         {
@@ -10875,10 +10875,10 @@
         "quirks/pdfjs-tracemonkey_with_annotations.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 357 ms: 4 annotations removed.",
+      "detail": "run to result 501 ms: 4 annotations removed.",
       "error": null,
-      "ms": 1003,
-      "opMs": 475,
+      "ms": 1421,
+      "opMs": 669,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -10956,10 +10956,10 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 330 ms: Images removed on 3 pages, 177.9 KB saved.",
+      "detail": "run to result 320 ms: Images removed on 3 pages, 177.9 KB saved.",
       "error": null,
-      "ms": 1007,
-      "opMs": 431,
+      "ms": 1112,
+      "opMs": 416,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -11065,10 +11065,10 @@
         "invoices/aws-invoice.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 175 ms: 1 image, 1 kept as JPEG.",
+      "detail": "run to result 138 ms: 1 image, 1 kept as JPEG.",
       "error": null,
-      "ms": 648,
-      "opMs": 198,
+      "ms": 531,
+      "opMs": 161,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -11111,10 +11111,10 @@
         "quirks/pdfjs-cmykjpeg.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 61 ms: 1 image.",
+      "detail": "run to result 307 ms: 1 image.",
       "error": null,
-      "ms": 219,
-      "opMs": 73,
+      "ms": 1075,
+      "opMs": 327,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -11157,10 +11157,10 @@
         "forms/irs-fw9.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 412 ms: 23 fields flattened.",
+      "detail": "run to result 641 ms: 23 fields flattened.",
       "error": null,
-      "ms": 1179,
-      "opMs": 670,
+      "ms": 1641,
+      "opMs": 857,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -11252,10 +11252,10 @@
         "forms/irs-fw9.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 323 ms: Unlocked 23 fields, 23 XFA locks.",
+      "detail": "run to result 416 ms: Unlocked 23 fields, 23 XFA locks.",
       "error": null,
-      "ms": 962,
-      "opMs": 490,
+      "ms": 1279,
+      "opMs": 655,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -11361,10 +11361,10 @@
         "forms/irs-fw9.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 350 ms: Removed 6 scripts, 1 XFA form.",
+      "detail": "run to result 427 ms: Removed 3 scripts, 1 XFA form.",
       "error": null,
-      "ms": 821,
-      "opMs": 402,
+      "ms": 1222,
+      "opMs": 630,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -11470,11 +11470,11 @@
         "derived/owner-only-aws-invoice.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 445 ms: Blocked: copy text and images, change the document, add comments, fill in forms, insert, rotate and delete pages.",
+      "detail": "run to result 737 ms: Blocked: copy text and images, change the document, add comments, fill in forms, insert, rotate and delete pages.",
       "error": null,
-      "ms": 1098,
-      "opMs": 620,
-      "heapMB": 9,
+      "ms": 3096,
+      "opMs": 1434,
+      "heapMB": 11,
       "audit": null,
       "checks": [
         {
@@ -11572,10 +11572,10 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 265 ms: 14 pages, 24 fonts, 90 images.",
+      "detail": "run to result 292 ms: 14 pages, 24 fonts, 90 images.",
       "error": null,
-      "ms": 788,
-      "opMs": 347,
+      "ms": 1143,
+      "opMs": 378,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -11632,10 +11632,10 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 281 ms: Named after its heading. Was pdfjs-tracemonkey.pdf.",
+      "detail": "run to result 286 ms: Named after its heading. Was pdfjs-tracemonkey.pdf.",
       "error": null,
-      "ms": 856,
-      "opMs": 394,
+      "ms": 1016,
+      "opMs": 413,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -11685,10 +11685,10 @@
         "forms/irs-fw9.pdf"
       ],
       "result": "PASS",
-      "detail": "run to result 162 ms: 3 XFA <script> tags, 0 self-closing, 0 empty",
+      "detail": "run to result 224 ms: 3 XFA <script> tags, 0 self-closing, 0 empty",
       "error": null,
-      "ms": 676,
-      "opMs": 217,
+      "ms": 1062,
+      "opMs": 287,
       "heapMB": 9,
       "audit": null,
       "checks": [
@@ -11740,7 +11740,7 @@
       "result": "PASS",
       "detail": "expect accept (1 p): \"1 page, 23.2 KB\"",
       "error": null,
-      "ms": 360,
+      "ms": 342,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -11772,7 +11772,7 @@
       "result": "PASS",
       "detail": "expect accept (6 p): \"6 pages, 137.5 KB\"",
       "error": null,
-      "ms": 360,
+      "ms": 342,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -11804,7 +11804,7 @@
       "result": "PASS",
       "detail": "expect accept (1 p): \"1 page, 11.3 KB\"",
       "error": null,
-      "ms": 360,
+      "ms": 342,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -11836,7 +11836,7 @@
       "result": "PASS",
       "detail": "expect accept (36 p): \"36 pages, 528.6 KB\"",
       "error": null,
-      "ms": 360,
+      "ms": 342,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -11868,7 +11868,7 @@
       "result": "PASS",
       "detail": "expect accept (75 p): \"75 pages, 6.45 MB\"",
       "error": null,
-      "ms": 670,
+      "ms": 645,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -11900,7 +11900,7 @@
       "result": "PASS",
       "detail": "expect accept (184 p): \"184 pages, 2.31 MB\"",
       "error": null,
-      "ms": 2210,
+      "ms": 2242,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -11932,7 +11932,7 @@
       "result": "PASS",
       "detail": "expect accept (1 p): \"1 page, 38.4 KB\"",
       "error": null,
-      "ms": 2210,
+      "ms": 2242,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -11964,7 +11964,7 @@
       "result": "PASS",
       "detail": "expect accept (5 p): \"5 pages, 184.8 KB\"",
       "error": null,
-      "ms": 2210,
+      "ms": 2242,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -11996,7 +11996,7 @@
       "result": "PASS",
       "detail": "expect accept (1 p): \"1 page, 8.8 KB\"",
       "error": null,
-      "ms": 348,
+      "ms": 360,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12028,7 +12028,7 @@
       "result": "PASS",
       "detail": "expect accept (1 p): \"1 page, 13.6 KB\"",
       "error": null,
-      "ms": 348,
+      "ms": 360,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12060,7 +12060,7 @@
       "result": "PASS",
       "detail": "expect accept (1 p): \"1 page, 15.9 KB\"",
       "error": null,
-      "ms": 348,
+      "ms": 360,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12092,7 +12092,7 @@
       "result": "PASS",
       "detail": "expect reject: \"Can't open this PDF. The file looks damaged or incomplete.\"",
       "error": null,
-      "ms": 658,
+      "ms": 360,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12117,7 +12117,7 @@
       "result": "PASS",
       "detail": "expect password: \"Password needed to open this file\"",
       "error": null,
-      "ms": 658,
+      "ms": 360,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12149,7 +12149,7 @@
       "result": "PASS",
       "detail": "expect password: \"Password needed to open this file\"",
       "error": null,
-      "ms": 658,
+      "ms": 360,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12181,7 +12181,7 @@
       "result": "PASS",
       "detail": "expect password: \"Password needed to open this file\"",
       "error": null,
-      "ms": 658,
+      "ms": 360,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12213,7 +12213,7 @@
       "result": "PASS",
       "detail": "expect accept (1 p): \"1 page, 2.5 KB\"",
       "error": null,
-      "ms": 658,
+      "ms": 667,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12245,7 +12245,7 @@
       "result": "PASS",
       "detail": "expect reject: \"Can't open this PDF. The file looks damaged or incomplete.\"",
       "error": null,
-      "ms": 335,
+      "ms": 375,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12270,7 +12270,7 @@
       "result": "PASS",
       "detail": "expect reject: \"Can't open this PDF. The file looks damaged or incomplete.\"",
       "error": null,
-      "ms": 335,
+      "ms": 375,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12295,7 +12295,7 @@
       "result": "PASS",
       "detail": "expect accept (14 p): \"14 pages, 997.8 KB\"",
       "error": null,
-      "ms": 649,
+      "ms": 686,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12327,7 +12327,7 @@
       "result": "PASS",
       "detail": "expect accept (1 p): \"1 page, 631 B\"",
       "error": null,
-      "ms": 649,
+      "ms": 686,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12359,7 +12359,7 @@
       "result": "PASS",
       "detail": "expect accept (1 p): \"1 page, 43.7 KB\"",
       "error": null,
-      "ms": 649,
+      "ms": 686,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12389,9 +12389,9 @@
         "derived/a-owner-only-attention.pdf"
       ],
       "result": "PASS",
-      "detail": "expect accept (15 p), encrypted: \"15 pages, 1.99 MB\" (Restrictions removed so the file can be edited)",
+      "detail": "expect accept (15 p), encrypted: \"15 pages, 1.99 MB\" (Restrictions removed so the file can be edited; results keep them)",
       "error": null,
-      "ms": 1275,
+      "ms": 1671,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12413,7 +12413,7 @@
         {
           "name": "says restrictions were removed",
           "ok": true,
-          "detail": "notice \"Restrictions removed so the file can be edited\"",
+          "detail": "notice \"Restrictions removed so the file can be edited; results keep them\"",
           "soft": false,
           "audit": 1
         }
@@ -12428,9 +12428,9 @@
         "derived/a-owner-only-us-budget.pdf"
       ],
       "result": "PASS",
-      "detail": "expect accept (184 p), encrypted: \"184 pages, 10.15 MB\" (Restrictions removed so the file can be edited)",
+      "detail": "expect accept (184 p), encrypted: \"184 pages, 10.15 MB\" (Restrictions removed so the file can be edited; results keep them)",
       "error": null,
-      "ms": 5305,
+      "ms": 5749,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12452,7 +12452,7 @@
         {
           "name": "says restrictions were removed",
           "ok": true,
-          "detail": "notice \"Restrictions removed so the file can be edited\"",
+          "detail": "notice \"Restrictions removed so the file can be edited; results keep them\"",
           "soft": false,
           "audit": 1
         }
@@ -12469,7 +12469,7 @@
       "result": "PASS",
       "detail": "expect accept (5 p): \"5 pages, 456.2 KB\"",
       "error": null,
-      "ms": 5305,
+      "ms": 5749,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12499,9 +12499,9 @@
         "derived/owner-only-aws-invoice.pdf"
       ],
       "result": "PASS",
-      "detail": "expect accept (1 p), encrypted: \"1 page, 150.4 KB\" (Restrictions removed so the file can be edited)",
+      "detail": "expect accept (1 p), encrypted: \"1 page, 150.4 KB\" (Restrictions removed so the file can be edited; results keep them)",
       "error": null,
-      "ms": 443,
+      "ms": 686,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12523,7 +12523,7 @@
         {
           "name": "says restrictions were removed",
           "ok": true,
-          "detail": "notice \"Restrictions removed so the file can be edited\"",
+          "detail": "notice \"Restrictions removed so the file can be edited; results keep them\"",
           "soft": false,
           "audit": 1
         }
@@ -12538,9 +12538,9 @@
         "derived/owner-only-irs-fw9.pdf"
       ],
       "result": "PASS",
-      "detail": "expect accept (6 p), encrypted: \"6 pages, 220.0 KB\" (Restrictions removed so the file can be edited)",
+      "detail": "expect accept (6 p), encrypted: \"6 pages, 220.0 KB\" (Restrictions removed so the file can be edited; results keep them)",
       "error": null,
-      "ms": 754,
+      "ms": 994,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12562,7 +12562,7 @@
         {
           "name": "says restrictions were removed",
           "ok": true,
-          "detail": "notice \"Restrictions removed so the file can be edited\"",
+          "detail": "notice \"Restrictions removed so the file can be edited; results keep them\"",
           "soft": false,
           "audit": 1
         }
@@ -12577,9 +12577,9 @@
         "derived/owner-only-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "expect accept (14 p), encrypted: \"14 pages, 975.7 KB\" (Restrictions removed so the file can be edited)",
+      "detail": "expect accept (14 p), encrypted: \"14 pages, 975.7 KB\" (Restrictions removed so the file can be edited; results keep them)",
       "error": null,
-      "ms": 754,
+      "ms": 1361,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12601,7 +12601,7 @@
         {
           "name": "says restrictions were removed",
           "ok": true,
-          "detail": "notice \"Restrictions removed so the file can be edited\"",
+          "detail": "notice \"Restrictions removed so the file can be edited; results keep them\"",
           "soft": false,
           "audit": 1
         }
@@ -12618,7 +12618,7 @@
       "result": "PASS",
       "detail": "expect accept (16 p): \"16 pages, 647.9 KB\"",
       "error": null,
-      "ms": 1071,
+      "ms": 1361,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12650,7 +12650,7 @@
       "result": "PASS",
       "detail": "expect password: \"Password needed to open this file\"",
       "error": null,
-      "ms": 1071,
+      "ms": 1361,
       "opMs": null,
       "heapMB": null,
       "audit": null,
@@ -12681,9 +12681,9 @@
         "reports/arxiv-1810.04805-bert.pdf"
       ],
       "result": "PASS",
-      "detail": "ready 0.9s, click to download 1.0s: merged.pdf: 30 pages, 1.55 MB",
+      "detail": "ready 1.4s, click to download 1.1s: merged.pdf: 30 pages, 1.55 MB",
       "error": null,
-      "ms": 2757,
+      "ms": 3234,
       "opMs": null,
       "heapMB": 14,
       "audit": null,
@@ -12738,55 +12738,55 @@
       "layer": "flow",
       "category": "flow",
       "files": [
-        "reports/us-budget-2024.pdf"
+        "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "ready 2.3s, click to download 26.4s: us-budget-2024-compressed.pdf: 184 pages, 2.31 MB",
+      "detail": "ready 0.7s, click to download 1.1s: pdfjs-tracemonkey-compressed.pdf: 14 pages, 823.0 KB",
       "error": null,
-      "ms": 29411,
+      "ms": 2508,
       "opMs": null,
       "heapMB": 12,
       "audit": null,
       "checks": [
         {
-          "name": "us-budget-2024-compressed.pdf: opens in pdf.js",
+          "name": "pdfjs-tracemonkey-compressed.pdf: opens in pdf.js",
           "ok": true,
           "detail": "",
           "soft": false,
           "audit": null
         },
         {
-          "name": "us-budget-2024-compressed.pdf: opens in MuPDF",
+          "name": "pdfjs-tracemonkey-compressed.pdf: opens in MuPDF",
           "ok": true,
           "detail": "",
           "soft": false,
           "audit": null
         },
         {
-          "name": "us-budget-2024-compressed.pdf: page count",
+          "name": "pdfjs-tracemonkey-compressed.pdf: page count",
           "ok": true,
-          "detail": "got 184, want 184",
+          "detail": "got 14, want 14",
           "soft": false,
           "audit": null
         },
         {
-          "name": "us-budget-2024-compressed.pdf: page boxes sane",
+          "name": "pdfjs-tracemonkey-compressed.pdf: page boxes sane",
           "ok": true,
           "detail": "",
           "soft": false,
           "audit": null
         },
         {
-          "name": "us-budget-2024-compressed.pdf: engines agree on pages",
+          "name": "pdfjs-tracemonkey-compressed.pdf: engines agree on pages",
           "ok": true,
-          "detail": "pdf.js 184 vs MuPDF 184",
+          "detail": "pdf.js 14 vs MuPDF 14",
           "soft": false,
           "audit": null
         },
         {
-          "name": "never larger than input",
+          "name": "smaller than the input",
           "ok": true,
-          "detail": "2.3 MB -> 2.3 MB",
+          "detail": "992 KB -> 823 KB",
           "soft": false,
           "audit": null
         }
@@ -12801,11 +12801,11 @@
         "reports/pdfjs-tracemonkey.pdf"
       ],
       "result": "PASS",
-      "detail": "ready 0.9s, click to download 0.6s: 2 PDFs, 14 pages in total",
+      "detail": "ready 0.8s, click to download 1.2s: 2 PDFs, 14 pages in total",
       "error": null,
-      "ms": 1758,
+      "ms": 2428,
       "opMs": null,
-      "heapMB": 13,
+      "heapMB": 14,
       "audit": null,
       "checks": [
         {

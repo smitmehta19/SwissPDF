@@ -96,7 +96,7 @@ export default {
       for (let n = 2; used.has(name.toLowerCase()); n++) name = r.name.replace(/\.pdf$/, ` (${n}).pdf`)
       used.add(name.toLowerCase())
       // same bytes, new name: a copy, since the input buffer is pdf.js's cache key
-      outputs.push({ name, bytes: f.bytes.slice(), parentIds: [f.id], note: `Named after its ${r.from}. Was ${f.name}.` })
+      outputs.push({ name, bytes: f.bytes.slice(), parentIds: [f.id], unchanged: false, note: `Named after its ${r.from}. Was ${f.name}.` })
     }
     if (!outputs.length) throw new Error('No title or heading found to name the files after.')
     ctx.progress(files.length, files.length, 'Done')

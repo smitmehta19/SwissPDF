@@ -31,7 +31,8 @@ page.on('pageerror', (e) => check('no page error', false, e.message))
 await page.goto(`${base}/`, { waitUntil: 'load' })
 await page.waitForFunction(() => window.crossOriginIsolated, null, { timeout: 60_000 }).catch(() => {})
 await page.waitForSelector('[data-testid=tool-panel]', { state: 'attached', timeout: 60_000 })
-await page.click('[data-testid=tool-word2pdf]')
+// tool groups start folded since S3: open the tool by its route
+await page.goto(`${base}/#/word2pdf`, { waitUntil: 'load' })
 await page.waitForSelector('[data-testid=options-panel]')
 await page.setInputFiles('[data-testid=add-files-input]', [DOC])
 await page.waitForFunction(() => document.querySelectorAll('[data-testid=file-card]').length >= 1, null, { timeout: 60_000 })
@@ -76,7 +77,7 @@ try {
   const err = await page.$('[data-testid=run-error]')
   check('next run converts', !err, err ? await err.textContent() : `${Date.now() - t0} ms`)
   const s = await engineState()
-  check('next run started the engine from the cache', s.stats.fromCache === true, JSON.stringify(s.stats))
+  check('next run started the engine from the cache', s.stats.fromCache === true, `${JSON.stringify(s.stats)}, ${s.cached} cached files`)
 } finally {
   await ctx.close()
   await dev?.server.close()

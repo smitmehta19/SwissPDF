@@ -1,48 +1,48 @@
 {
-  "date": "2026-10-27T14:59:55.871Z",
-  "base": "http://127.0.0.1:49248",
+  "date": "2026-10-27T21:12:05.914Z",
+  "base": "http://127.0.0.1:59001",
   "summary": [
     {
       "tool": "repair",
       "pass": 5,
       "runs": 5,
-      "medianMs": 417
+      "medianMs": 364
     },
     {
       "tool": "ocr",
       "pass": 3,
       "runs": 3,
-      "medianMs": 18390
+      "medianMs": 17424
     },
     {
       "tool": "autorotate",
       "pass": 3,
       "runs": 3,
-      "medianMs": 5563
+      "medianMs": 6564
     },
     {
       "tool": "protect",
       "pass": 3,
       "runs": 3,
-      "medianMs": 897
+      "medianMs": 926
     },
     {
       "tool": "unlock",
       "pass": 3,
       "runs": 3,
-      "medianMs": 901
+      "medianMs": 941
     },
     {
       "tool": "compare",
       "pass": 3,
       "runs": 3,
-      "medianMs": 912
+      "medianMs": 896
     },
     {
       "tool": "health",
       "pass": 3,
       "runs": 3,
-      "medianMs": 16420
+      "medianMs": 12921
     }
   ],
   "rows": [
@@ -52,7 +52,7 @@
       "cards": [
         "1 page, 631 B"
       ],
-      "ms": 908,
+      "ms": 968,
       "ok": true,
       "detail": "1 pages, Rebuilt the file structure. All 1 page kept as they were, with any bookmarks, links and form fields.",
       "external": [],
@@ -90,9 +90,9 @@
         "1 page, 622 B",
         "File was damaged and has been repaired. 1 of 2 pages could not be recovered"
       ],
-      "ms": 367,
+      "ms": 130,
       "ok": true,
-      "detail": "1 pages, Rebuilt the file structure. All 1 page kept as they were, with any bookmarks, links and form fields. Damage was also found and fixed when the file was added.",
+      "detail": "no new version: Nothing to do: It was already repaired when it was added, nothing more to fix.",
       "external": [],
       "errors": [],
       "knownErrors": []
@@ -103,7 +103,7 @@
       "cards": [
         "1 page, 5.1 KB"
       ],
-      "ms": 417,
+      "ms": 364,
       "ok": true,
       "detail": "1 pages, Rebuilt the file structure. All 1 page kept as they were, with any bookmarks, links and form fields.",
       "external": [],
@@ -116,9 +116,9 @@
       "cards": [
         "2 pages, 186.4 KB"
       ],
-      "ms": 17838,
+      "ms": 16298,
       "ok": true,
-      "detail": "2174 chars of text, 397 words recognised on 2 pages. The old invisible text layer was replaced on 2 pages.",
+      "detail": "2290 chars of text, 414 words recognised on 2 pages. The old invisible text layer was replaced on 2 pages.",
       "external": [],
       "errors": [],
       "knownErrors": []
@@ -129,9 +129,9 @@
       "cards": [
         "36 pages, 528.6 KB"
       ],
-      "ms": 54223,
+      "ms": 54857,
       "ok": true,
-      "detail": "3008 chars of text, 80 words recognised on 24 pages. 12 pages already had text and stayed as they were.",
+      "detail": "3059 chars of text, 95 words recognised on 24 pages. 12 pages already had text and stayed as they were.",
       "external": [],
       "errors": [],
       "knownErrors": []
@@ -142,7 +142,7 @@
       "cards": [
         "1 page, 235.5 KB"
       ],
-      "ms": 18390,
+      "ms": 17424,
       "ok": true,
       "detail": "89 chars of text, 21 words recognised on 1 page.",
       "external": [],
@@ -155,7 +155,7 @@
       "cards": [
         "2 pages, 185.2 KB"
       ],
-      "ms": 3013,
+      "ms": 3654,
       "ok": true,
       "detail": "2 of 2 pages back upright, 0 wrong, 2 pages turned upright (p. 1-2).",
       "external": [],
@@ -168,7 +168,7 @@
       "cards": [
         "36 pages, 520.5 KB"
       ],
-      "ms": 33298,
+      "ms": 34363,
       "ok": true,
       "detail": "36 of 36 pages back upright, 0 wrong, 36 pages turned upright (p. 1-36).",
       "external": [],
@@ -181,9 +181,9 @@
       "cards": [
         "1 page, 235.5 KB"
       ],
-      "ms": 5563,
+      "ms": 6564,
       "ok": true,
-      "detail": "0 of 1 pages back upright, 0 wrong, Every page was already upright. 1 page had too little text to tell and stayed as it was.",
+      "detail": "no new version: Nothing to do: Every page was already upright. 1 page had too little text to tell and stayed as it was.",
       "external": [],
       "errors": [],
       "knownErrors": []
@@ -194,7 +194,7 @@
       "cards": [
         "14 pages, 992.5 KB"
       ],
-      "ms": 897,
+      "ms": 1455,
       "ok": true,
       "detail": "Standard V5 R6 256-bit AES, opens with the password",
       "external": [],
@@ -207,7 +207,7 @@
       "cards": [
         "1 page, 150.9 KB"
       ],
-      "ms": 412,
+      "ms": 330,
       "ok": true,
       "detail": "Standard V4 R4 128-bit AES, opens freely",
       "external": [],
@@ -220,7 +220,7 @@
       "cards": [
         "6 pages, 137.5 KB"
       ],
-      "ms": 945,
+      "ms": 926,
       "ok": true,
       "detail": "Standard V1 R2 40-bit RC4, opens with the password",
       "external": [],
@@ -232,9 +232,9 @@
       "file": "derived/owner-only-aws-invoice.pdf",
       "cards": [
         "1 page, 150.4 KB",
-        "Restrictions removed so the file can be edited"
+        "Restrictions removed so the file can be edited; results keep them"
       ],
-      "ms": 901,
+      "ms": 941,
       "ok": true,
       "detail": "None, 1 pages, 1921 chars, Its protection was already removed when it was added.",
       "external": [],
@@ -248,7 +248,7 @@
         "14 pages, 992.5 KB",
         "Password needed to open this file"
       ],
-      "ms": 900,
+      "ms": 307,
       "ok": true,
       "detail": "None, 23 pages, 65271 chars, Password removed. Not protected, left out: pdfjs-tracemonkey.pdf.",
       "external": [],
@@ -261,7 +261,7 @@
       "cards": [
         "Password needed to open this file"
       ],
-      "ms": 1140,
+      "ms": 1094,
       "ok": true,
       "detail": "None, 1 pages, 18 chars, Password removed.",
       "external": [],
@@ -275,7 +275,7 @@
         "5 pages, 456.2 KB",
         "6 pages, 527.5 KB"
       ],
-      "ms": 912,
+      "ms": 1069,
       "ok": true,
       "detail": "1213 words added, 0 removed, on 1 of 6 page pairs. | Not in the original, changed p. 3 (1 of 1, new page)",
       "external": [],
@@ -289,7 +289,7 @@
         "23 pages, 658.8 KB",
         "23 pages, 658.8 KB"
       ],
-      "ms": 895,
+      "ms": 896,
       "ok": true,
       "detail": "The text of both documents is the same. | ",
       "external": [],
@@ -303,7 +303,7 @@
         "1 page, 150.9 KB",
         "1 page, 147.8 KB"
       ],
-      "ms": 925,
+      "ms": 392,
       "ok": true,
       "detail": "The text of both documents is the same. | ",
       "external": [],
@@ -314,7 +314,7 @@
       "tool": "health",
       "file": "run 1",
       "cards": [],
-      "ms": 16420,
+      "ms": 13376,
       "ok": true,
       "detail": "All 49 checks passed. Every tool works in this browser.",
       "external": [],
@@ -329,7 +329,7 @@
       "tool": "health",
       "file": "run 2",
       "cards": [],
-      "ms": 16568,
+      "ms": 12885,
       "ok": true,
       "detail": "All 49 checks passed. Every tool works in this browser.",
       "external": [],
@@ -344,7 +344,7 @@
       "tool": "health",
       "file": "run 3",
       "cards": [],
-      "ms": 13662,
+      "ms": 12921,
       "ok": true,
       "detail": "All 49 checks passed. Every tool works in this browser.",
       "external": [],

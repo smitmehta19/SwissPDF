@@ -246,7 +246,7 @@ export const OPS = {
     meta.outputs = []
     for (const [i, o] of outs.entries()) {
       const name = `out${i}-${o.name.replace(/[^\w.-]+/g, '_')}`
-      meta.outputs.push({ name, original: o.name, type: o.type ?? 'application/pdf', note: o.note ?? null, size: o.bytes.byteLength })
+      meta.outputs.push({ name, original: o.name, type: o.type ?? 'application/pdf', note: o.note ?? null, unchanged: !!o.unchanged, size: o.bytes.byteLength })
     }
     const saved = []
     for (const [i, o] of outs.entries()) saved.push(await h.save(s.id, meta.outputs[i].name, o.bytes))

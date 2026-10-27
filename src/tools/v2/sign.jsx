@@ -39,7 +39,7 @@ async function typedPng(text, fontId, ink) {
   const size = 120
   ctx.font = `${size}px "${f.family}"`
   const m = ctx.measureText(text)
-  const pad = 24
+  const pad = 12
   c.width = Math.ceil(m.actualBoundingBoxLeft + m.actualBoundingBoxRight) + pad * 2
   c.height = Math.ceil(m.actualBoundingBoxAscent + m.actualBoundingBoxDescent) + pad * 2
   ctx.font = `${size}px "${f.family}"`
@@ -434,8 +434,9 @@ export default {
     initials: null,
     place: 'signature',
     dateFormat: 'iso',
-    sigWidth: 25,
-    iniWidth: 8,
+    // about 100 pt wide on a letter page: fits over a signature line
+    sigWidth: 16,
+    iniWidth: 6,
     placements: [],
   },
   next: ['protect', 'compress', 'merge'],

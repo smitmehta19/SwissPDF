@@ -4,6 +4,12 @@
 (none)
 
 ## Decided
+- 2026-10-27 (Smit): go-ahead to deploy; "everything deployed, full and final" = polish batch plus edit existing text (plan `docs/plans/2026-10-27-edit-existing-text.md` approved).
+- 2026-10-27 (polish C, accepted): restricted outputs are re-encrypted AES-256, no open password, random owner password, same /P; a merge of several restricted inputs takes every restriction of any of them; revision-2 originals get forms/accessibility/assemble allowed. Offline precache costs about 21 MB on the first visit.
+- 2026-10-27 (polish A, accepted): both Undo buttons confirm; Merge shows size only (no "% smaller"); a no-op run (byte-equal output or `unchanged` flag) makes no new version; the "replaces your files" warning shows on desktop only (phone sees it on the result screen); conversions to PDF keep their source files.
+- 2026-10-27 (Smit): Edit PDF must edit text already in the PDF, not only add on top. Un-parked: research now, plan for OK, build after the polish batch.
+- 2026-10-27 (my call): restricted (owner-only) PDFs keep their permission flags on output, re-encrypted with a random owner password; result note says so.
+- 2026-10-27 (my call): offline made real: service worker caches app shell + engines so a new tab works offline after the first visit.
 - 2026-10-27 (Smit): delete the old agent worktrees under `.claude/worktrees/` after the deploy.
 - 2026-10-27 (my call, privacy rule): a PDF opened with a user password is decrypted in memory only; the workspace stores the encrypted original, and after reload the password is asked again (blind review P0).
 - 2026-10-27 (my call): keep "result replaces its inputs as a new version" (Stirling model) but make it visible: result note names replaced files, Undo dialog lists every file it restores, nothing auto-selected after reload.

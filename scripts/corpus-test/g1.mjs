@@ -91,8 +91,9 @@ async function unzip(bytes) {
   const names = Object.keys(zip.files).filter((n) => n.endsWith('.pdf'))
   return { names, read: (n) => zip.file(n).async('uint8array') }
 }
-const pages = async (bytes) => (await PDFDocument.load(bytes, { updateMetadata: false })).getPageCount()
-const rotations = async (bytes) => (await PDFDocument.load(bytes, { updateMetadata: false })).getPages().map((p) => p.getRotation().angle)
+// restricted inputs (the 911 report) give restricted outputs: open them anyway
+const pages = async (bytes) => (await PDFDocument.load(bytes, { updateMetadata: false, ignoreEncryption: true })).getPageCount()
+const rotations = async (bytes) => (await PDFDocument.load(bytes, { updateMetadata: false, ignoreEncryption: true })).getPages().map((p) => p.getRotation().angle)
 // Top-level bookmarks with their 1-based page, read by pdf.js.
 const chapters = (bytes) =>
   withPdfjs(bytes, async (doc) => {

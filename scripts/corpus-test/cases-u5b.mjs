@@ -5,6 +5,7 @@
 // lost its reference still fails.
 import JSZip from 'jszip'
 import * as mupdf from 'mupdf'
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { withPdfjs, openMupdf, formFacts, outlineCount, textOf } from './validate.mjs'
 import { payload, PROBE } from './harness-u5b.js'
 
@@ -152,6 +153,90 @@ export default function register({ add: addCase, checkPdf, inputFacts, readRel, 
     ctx.check('every page keeps its text (99%)', bad.length === 0, bad.slice(0, 4).map(([n, x, y]) => `p${n} ${x}->${y}`).join(', ') || `${a.length} pages`)
   }
   const run = (ctx) => ctx.metric(`run to result ${ctx.meta?.runMs} ms${ctx.meta?.outputs?.[0]?.note ? `: ${ctx.meta.outputs[0].note}` : ''}`)
+
+  // ----- leftovers nothing points to (polish review B #1, #3) -----
+  // A loose object (saved without garbage collection), like an attachment or
+  // picture an incremental update dropped: the bytes stay in the file until a
+  // garbage-collected save. Sanitize and Remove images must count that as a
+  // change, never "nothing to do". Built with MuPDF, before the cases run.
+  const LOOSE_FILE_REL = 'derived/synthetic/loose-attachment.pdf'
+  const LOOSE_IMAGE_REL = 'derived/synthetic/loose-image.pdf'
+  const LOOSE_SECRET = 'SECRET-SALARY-123456'
+  const synthetic = new URL('../../test-corpus/derived/synthetic/', import.meta.url)
+  mkdirSync(synthetic, { recursive: true })
+  const looseFile = (name, dict, data) => {
+    const target = new URL(name, synthetic)
+    if (existsSync(target)) return
+    const doc = new mupdf.PDFDocument()
+    try {
+      const res = doc.addObject(doc.newDictionary())
+      const fonts = doc.newDictionary()
+      fonts.put('F1', doc.addSimpleFont(new mupdf.Font('Helvetica')))
+      res.put('Font', fonts)
+      doc.insertPage(-1, doc.addPage([0, 0, 300, 300], 0, res, 'BT /F1 14 Tf 40 250 Td (Plain page) Tj ET'))
+      const d = doc.newDictionary()
+      for (const [k, v] of Object.entries(dict)) d.put(k, typeof v === 'number' ? v : doc.newName(v))
+      doc.addStream(data, d)
+      writeFileSync(target, doc.saveToBuffer('').asUint8Array().slice())
+    } finally {
+      doc.destroy()
+    }
+  }
+  looseFile('loose-attachment.pdf', { Type: 'EmbeddedFile' }, LOOSE_SECRET)
+  // a loose file spec whose stream has no /Type (allowed), and one whose
+  // names are #-escaped: written by hand so the raw text is exactly that
+  const rawPdf = (name, extra) => {
+    const target = new URL(name, synthetic)
+    if (existsSync(target)) return
+    const objs = [
+      '<< /Type /Catalog /Pages 2 0 R >>',
+      '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+      '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 300] /Contents 4 0 R >>',
+      '<< /Length 0 >>\nstream\n\nendstream',
+      ...extra,
+    ]
+    let out = '%PDF-1.7\n'
+    const offsets = objs.map((o, i) => {
+      const at = out.length
+      out += `${i + 1} 0 obj\n${o}\nendobj\n`
+      return at
+    })
+    const xref = out.length
+    out += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n${offsets.map((o) => `${String(o).padStart(10, '0')} 00000 n \n`).join('')}`
+    out += `trailer\n<< /Size ${objs.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`
+    writeFileSync(target, Buffer.from(out, 'latin1'))
+  }
+  const secretStream = (dict) => `<< ${dict}/Length ${LOOSE_SECRET.length} >>\nstream\n${LOOSE_SECRET}\nendstream`
+  rawPdf('loose-attachment-notype.pdf', ['<< /Type /Filespec /F (secret.txt) /EF << /F 6 0 R >> >>', secretStream('')])
+  rawPdf('loose-attachment-escaped.pdf', ['<< /Type /Filespec /F (secret.txt) /#45F << /F 6 0 R >> >>', secretStream('/Type /Embedded#46ile ')])
+  tool('sanitize-loose-attachment', 'sanitize', [LOOSE_FILE_REL], {}, async (ctx) => {
+    run(ctx)
+    const note = ctx.meta?.outputs?.[0]?.note ?? ''
+    ctx.check('reported as removed, not "nothing found"', /attached file/.test(note), note)
+    const name = outName(ctx, /\.pdf$/)
+    if (!(await checkPdf(ctx, name, { pages: 1 }))?.pdfjs.ok) return
+    const o = objectsOf(ctx.out(name))
+    ctx.check('no file stream left', !o.dicts.some((d) => nameIs(d, 'Type', 'EmbeddedFile')))
+    ctx.check('attachment bytes gone', !o.has(LOOSE_SECRET))
+  })
+  for (const kind of ['notype', 'escaped']) {
+    tool(`sanitize-loose-attachment-${kind}`, 'sanitize', [`derived/synthetic/loose-attachment-${kind}.pdf`], {}, async (ctx) => {
+      run(ctx)
+      const out0 = ctx.meta?.outputs?.[0]
+      ctx.check('reported as removed, not "nothing found"', /attached file/.test(out0?.note ?? '') && !out0?.unchanged, out0?.note ?? 'no output')
+      const name = outName(ctx, /\.pdf$/)
+      if (!(await checkPdf(ctx, name, { pages: 1 }))?.pdfjs.ok) return
+      ctx.check('attachment bytes gone', !objectsOf(ctx.out(name)).has(LOOSE_SECRET))
+    })
+  }
+  tool('removeimages-loose-image', 'removeimages', [LOOSE_IMAGE_REL], {}, async (ctx) => {
+    run(ctx)
+    const out0 = ctx.meta?.outputs?.[0]
+    ctx.check('reported as removed, not "no images"', /earlier version/.test(out0?.note ?? '') && !out0?.unchanged, out0?.note ?? 'no output')
+    const name = outName(ctx, /\.pdf$/)
+    if (!(await checkPdf(ctx, name, { pages: 1 }))?.pdfjs.ok) return
+    ctx.check('no image stream left', !objectsOf(ctx.out(name)).dicts.some((d) => nameIs(d, 'Subtype', 'Image')))
+  })
 
   // ----- bookmarks -----
   for (const [id, rel, quick] of [

@@ -33,8 +33,14 @@ export default {
       const before = f.bytes.byteLength
       const res = await ctx.call('doc', 'removeImages', f.bytes)
       const saved = `${formatBytes(Math.max(0, before - res.bytes.byteLength))} saved`
-      const note = res.pages ? `Images removed on ${plural(res.pages, 'page')}, ${saved}.` : res.blanked ? `Images in patterns or comments removed, ${saved}.` : 'No images found, the file is unchanged.'
-      outputs.push({ name: `${baseName(f.name)}-no-images.pdf`, bytes: res.bytes, parentIds: [f.id], before, note })
+      const note = res.pages
+        ? `Images removed on ${plural(res.pages, 'page')}, ${saved}.`
+        : res.blanked
+          ? `Images in patterns or comments removed, ${saved}.`
+          : res.loose
+            ? `${plural(res.loose, 'image')} left over from an earlier version of the file removed, ${saved}.`
+            : 'No images found, the file is unchanged.'
+      outputs.push({ name: `${baseName(f.name)}-no-images.pdf`, bytes: res.bytes, parentIds: [f.id], before, note, unchanged: !res.pages && !res.blanked && !res.loose })
     }
     ctx.progress(files.length, files.length, 'Done')
     return outputs

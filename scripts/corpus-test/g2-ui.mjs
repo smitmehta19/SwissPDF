@@ -135,11 +135,11 @@ async function jobs() {
       repairRun('quirks/pdfjs-xref_command_missing.pdf'),
       repairRun('quirks/pdfjs-poppler-395-0-fuzzed.pdf', { reject: true }),
       repairRun('quirks/pdfjs-poppler-742-0-fuzzed.pdf', { reject: true }),
-      repairRun('quirks/pdfjs-Pages-tree-refs.pdf', { extra: true }),
+      { ...repairRun('quirks/pdfjs-Pages-tree-refs.pdf', { extra: true }), noop: true },
       repairRun('quirks/pdf20-offset-start.pdf', { extra: true }),
     ],
     ocr: [ocrRun('scanned/fax-jean-schmidt-doe.pdf', [], 50, true),ocrRun('scanned/lincoln-ellsworth-letter-1861.pdf'), ocrRun('derived/sub-ndl-konoye-p1.pdf', ['jpn'], 1)],
-    autorotate: [rotRun('scanned/fax-jean-schmidt-doe.pdf'), rotRun('scanned/lincoln-ellsworth-letter-1861.pdf'), rotRun('derived/sub-ndl-konoye-p1.pdf', true)],
+    autorotate: [rotRun('scanned/fax-jean-schmidt-doe.pdf'), rotRun('scanned/lincoln-ellsworth-letter-1861.pdf'), { ...rotRun('derived/sub-ndl-konoye-p1.pdf', true), noop: true }],
     protect: [
       protectRun(
         'reports/pdfjs-tracemonkey.pdf',
@@ -174,7 +174,7 @@ async function jobs() {
         { user: PW, cipher: /RC4/i },
       ),
     ],
-    unlock: [unlockRun('derived/owner-only-aws-invoice.pdf', null), unlockRun('derived/user-pw-TAMReview.pdf', USER_PW, true), unlockRun('quirks/pdfjs-saslprep-r6.pdf', SASL_PW)],
+    unlock: [unlockRun('derived/owner-only-aws-invoice.pdf', null),unlockRun('derived/user-pw-TAMReview.pdf', USER_PW, true), unlockRun('quirks/pdfjs-saslprep-r6.pdf', SASL_PW)],
     compare: [
       compareRun('derived/compare-tracemonkey-base.pdf', 'derived/compare-tracemonkey-inserted.pdf', /words added, 0 removed, on 1 of/),
       compareRun('reports/pdfjs-TAMReview.pdf', 'reports/pdfjs-TAMReview.pdf', /same/),
@@ -239,7 +239,16 @@ async function one(tool, job) {
     await page.waitForSelector('[data-testid=result-screen], [data-testid=run-error]', { timeout: job.timeout ?? 300_000 })
     row.ms = Date.now() - t0
     const err = await page.$('[data-testid=run-error]')
-    if (err) throw new Error(`run failed: ${await err.textContent()}`)
+    if (err) {
+      const said = await err.textContent()
+      // a no-op run makes no new version (polish batch): fine where expected
+      if (job.noop && /Nothing to do/.test(said)) {
+        row.ok = true
+        row.detail = `no new version: ${said.slice(0, 120)}`
+        throw Object.assign(new Error('done'), { done: true })
+      }
+      throw new Error(`run failed: ${said}`)
+    }
     let out = null
     if (await page.$('[data-testid=result-download]')) {
       const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 120_000 }), page.click('[data-testid=result-download]')])

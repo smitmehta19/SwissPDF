@@ -58,6 +58,7 @@ const TOOLS = [
 
 let failed = 0
 const rows = []
+const NOOP = new Set(['removeannots|forms/irs-fw9.pdf', 'unlockforms|forms/irs-fw9.pdf', 'unlockforms|forms/uscis-i-9.pdf'])
 const dev = await startServer()
 const base = dev.url.replace(/\/$/, '')
 const browser = await chromium.launch()
@@ -105,7 +106,19 @@ try {
           console.log(`PASS  ${label.padEnd(13)} ${rel.padEnd(48)} -  ${detail}`)
           continue
         }
-        if (err) throw new Error(await err.textContent())
+        if (err) {
+          const said = await err.textContent()
+          // no-op runs make no new version (polish batch): W-9 has no annotations
+          // besides its fields, W-9 and I-9 no read-only fields
+          if (NOOP.has(`${id}|${rel}`) && /Nothing to/.test(said)) {
+            detail = `no new version: ${said.slice(0, 100)}`
+            await ctx.close()
+            rows.push({ id: label, rel, ms, ok, detail })
+            console.log(`PASS  ${label.padEnd(13)} ${rel.padEnd(48)} ${ms} ms  ${detail}`)
+            continue
+          }
+          throw new Error(said)
+        }
         // replaced inputs leave 1 card, kept inputs (reports, extract) 2
         const cards = await page.evaluate(async () => (await import('/src/app/fileStore.js')).getFiles().map((f) => f.name))
         detail = cards.join(', ')

@@ -63,7 +63,8 @@ try {
   await run(page)
   const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 60_000 }), page.click('[data-testid=result-download]')])
   const out = new Uint8Array(readFileSync(await dl.path()))
-  check('download named after the whole chain', dl.suggestedFilename() === 'irs-fw9-filled-numbered-redacted.pdf', dl.suggestedFilename())
+  // names keep one tool suffix (the last tool), not the whole chain
+  check('download named after the last tool', dl.suggestedFilename() === 'irs-fw9-numbered-redacted.pdf' || dl.suggestedFilename() === 'irs-fw9-redacted.pdf', dl.suggestedFilename())
 
   // 4. the file itself
   const texts = await textOf(out)

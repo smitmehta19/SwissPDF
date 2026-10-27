@@ -73,7 +73,7 @@ export default {
       const unclear = res.pages.filter((p) => p.confidence < o.threshold && !p.inferred).length
       const parts = [res.turned.length ? `${plural(res.turned.length, 'page')} turned upright (${pagesList(res.turned)}).` : 'Every page was already upright.']
       if (unclear) parts.push(`${plural(unclear, 'page')} had too little text to tell and stayed as ${unclear === 1 ? 'it was' : 'they were'}.`)
-      outputs.push({ name: `${baseName(f.name)}-rotated.pdf`, bytes: res.bytes, parentIds: [f.id], note: parts.join(' ') })
+      outputs.push({ name: `${baseName(f.name)}-rotated.pdf`, bytes: res.bytes, parentIds: [f.id], note: parts.join(' '), unchanged: !res.turned.length })
     }
     ctx.progress(100, 100, 'Done')
     return outputs

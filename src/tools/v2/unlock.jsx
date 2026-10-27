@@ -141,7 +141,8 @@ export default {
         const what = res.removedRestrictions.length ? `Restrictions removed: ${res.removedRestrictions.join(', ')}.` : 'Encryption removed.'
         outputs.push({ name, bytes: res.bytes, parentIds: [f.id], note: what })
       } else if (unlockedOnAdd(f)) {
-        outputs.push({ name, bytes: f.bytes.slice(), parentIds: [f.id], note: 'Its protection was already removed when it was added.' })
+        // same bytes, but this version drops the kept restrictions: a real change
+        outputs.push({ name, bytes: f.bytes.slice(), parentIds: [f.id], unchanged: false, note: 'Its protection was already removed when it was added.' })
       } else {
         plain.push(f.name)
       }

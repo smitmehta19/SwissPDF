@@ -115,7 +115,7 @@ export function registerG2({ add, checkPdf, inputFacts, readRel, MIN }) {
     tool: 'ocr',
     op: 'ocr2',
     files: ['derived/sub-ndl-konoye-p1.pdf'],
-    params: { langs: ['jpn', 'eng'] },
+    params: { langs: ['jpn', 'eng'], textPages: 'all' },
     timeout: 10 * MIN,
     async validate(ctx) {
       const p = await checkPdf(ctx, 'ocr.pdf', { pages: 1 })

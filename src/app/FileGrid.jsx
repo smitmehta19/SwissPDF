@@ -124,6 +124,22 @@ function Cover({ file }) {
   )
 }
 
+// A long name cut in the middle, so the end that tells files apart stays
+// visible ("pdfjs-tracemon…_13-14.pdf"). The text is still the whole name.
+export function FileName({ name, className = 'file-name' }) {
+  const ext = /\.[^.]+$/.exec(name)?.[0] ?? ''
+  const cut = Math.max(0, name.length - ext.length - 8)
+  return (
+    <span className={`${className} name-split`} title={name}>
+      <span className="name-head">{name.slice(0, cut)}</span>
+      <span className="name-tail">{name.slice(cut)}</span>
+    </span>
+  )
+}
+
+// "a.pdf, b.pdf, c.pdf and 953 more": a 956-part split stays readable
+export const fewNames = (names, max = 3) => (names.length > max ? `${names.slice(0, max).join(', ')} and ${names.length - max} more` : names.join(', '))
+
 export function metaLine(file) {
   if (file.status === 'reading') return 'Reading…'
   if (file.status === 'error') return file.error
@@ -171,13 +187,39 @@ function PasswordPrompt({ file }) {
   )
 }
 
+// Home (no tool open) on a wide screen: as many columns as the grid gets
+// when a tool opens its options panel, so cards do not reflow 5 to 4. The
+// cards are wider instead; no empty column is left.
+const CARD_MIN = 176
+function useToolColumns(on) {
+  const ref = useRef(null)
+  const [n, setN] = useState(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!on || !el || typeof ResizeObserver === 'undefined') {
+      setN(null)
+      return undefined
+    }
+    const measure = () => {
+      if (window.innerWidth < 1100) return setN(null)
+      const panel = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--options-w')) || 340
+      const gap = parseFloat(getComputedStyle(el).columnGap) || 16
+      setN(Math.max(1, Math.floor((el.clientWidth - panel + gap) / (CARD_MIN + gap))))
+    }
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [on])
+  return { ref, n }
+}
+
 // Cards rendered at once; more on request.
 const GRID_WINDOW = 120
 
 // What a card says when a file cannot be opened; the engine text sits behind Details.
 const BROKEN = "Can't open this PDF. The file looks damaged or incomplete."
 
-function FileCard({ file, index, count, selected: picked, scope, onToggle, onOpen, onRotate, onConfirm, onRemove, drag }) {
+function FileCard({ file, index, prev, next, selected: picked, scope, onToggle, onOpen, onRotate, onConfirm, onRemove, drag }) {
   const ready = file.status === 'ready'
   const pdf = isPdfRecord(file)
   const versions = file.version > 1 ? historyOf(file.id).length : 0
@@ -226,9 +268,7 @@ function FileCard({ file, index, count, selected: picked, scope, onToggle, onOpe
         )}
       </button>
       <div className="fc-text">
-        <span className="file-name" title={file.name}>
-          {file.name}
-        </span>
+        <FileName name={file.name} />
         <span className={`file-meta ${file.status === 'error' ? 'is-error' : ''}`} role={file.status === 'error' ? 'alert' : undefined}>
           {meta}
         </span>
@@ -264,10 +304,10 @@ function FileCard({ file, index, count, selected: picked, scope, onToggle, onOpe
             <Icon name="undo" size={16} />
           </button>
         )}
-        <button type="button" className="icon-btn" onClick={() => reorder(index, index - 1)} disabled={index === 0} aria-label={`Move ${file.name} earlier`} title="Move earlier">
+        <button type="button" className="icon-btn" onClick={() => reorder(index, prev)} disabled={prev < 0} aria-label={`Move ${file.name} earlier`} title="Move earlier">
           <Icon name="left" size={16} />
         </button>
-        <button type="button" className="icon-btn" onClick={() => reorder(index, index + 1)} disabled={index === count - 1} aria-label={`Move ${file.name} later`} title="Move later">
+        <button type="button" className="icon-btn" onClick={() => reorder(index, next)} disabled={next < 0} aria-label={`Move ${file.name} later`} title="Move later">
           <Icon name="right" size={16} />
         </button>
         <button type="button" className="icon-btn icon-btn-danger" onClick={() => (file.version > 1 ? onConfirm({ kind: 'remove', file }) : onRemove(file))} aria-label={`Remove ${file.name}`} title="Remove file">
@@ -296,7 +336,8 @@ export function AddFilesInput({ inputRef, onFiles, accept = '.pdf,application/pd
   )
 }
 
-export default function FileGrid({ files, selection, onToggle, onSelectAll, onOpen, onRotate, onAdd, onWipe, scope = null, onStatus, onRestored }) {
+export default function FileGrid({ files, selection, onToggle, onSelectAll, onOpen, onRotate, onAdd, onWipe, scope = null, onStatus, onRestored, kind = 'all', onKind = () => {}, keepColumns = false }) {
+  const cols = useToolColumns(keepColumns)
   const fromRef = useRef(null)
   const [from, setFrom] = useState(null)
   const [over, setOver] = useState(null)
@@ -321,9 +362,15 @@ export default function FileGrid({ files, selection, onToggle, onSelectAll, onOp
   const [confirm, setConfirm] = useState(null) // { kind: 'remove' | 'undo', file }
   // a 956-part split must not mount 956 cards in one frame: show a window first
   const [limit, setLimit] = useState(GRID_WINDOW)
-  const shown = files.length > limit ? files.slice(0, limit) : files
+  // DOCX, images, ZIPs made by tools pile up next to the PDFs: show one kind
+  const pdfCount = files.filter((f) => isPdfRecord(f)).length
+  const mixed = pdfCount > 0 && pdfCount < files.length
+  const view = !mixed || kind === 'all' ? files : files.filter((f) => isPdfRecord(f) === (kind === 'pdf'))
+  const shown = view.length > limit ? view.slice(0, limit) : view
   // with a tool open, only the files it can use count
-  const usable = scope ? files.filter((f) => scope.uses(f)) : files.filter((f) => f.status === 'ready')
+  const usable = scope ? view.filter((f) => scope.uses(f)) : view.filter((f) => f.status === 'ready')
+  // place of each file in the whole list: reorder and drag work on it
+  const at = new Map(files.map((f, i) => [f.id, i]))
   const selectedCount = usable.filter((f) => selection.has(f.id)).length
   const doRemove = async (file) => {
     await remove(file.id)
@@ -352,9 +399,19 @@ export default function FileGrid({ files, selection, onToggle, onSelectAll, onOp
             </>
           )}
         </span>
-        <button type="button" className="link" onClick={() => onSelectAll(selectedCount < usable.length)}>
+        <button type="button" className="link" onClick={() => onSelectAll(selectedCount < usable.length, view.map((f) => f.id))}>
           {selectedCount < usable.length ? 'Select all' : 'Select none'}
         </button>
+        {mixed && (
+          <label className="sort">
+            <span>Show</span>
+            <select className="input input-small" value={kind} data-testid="type-filter" onChange={(e) => onKind(e.target.value)}>
+              <option value="all">All files ({files.length})</option>
+              <option value="pdf">PDFs ({pdfCount})</option>
+              <option value="other">Other files ({files.length - pdfCount})</option>
+            </select>
+          </label>
+        )}
         <label className="sort">
           <span>Sort by</span>
           <select
@@ -373,19 +430,21 @@ export default function FileGrid({ files, selection, onToggle, onSelectAll, onOp
             <option value="size:desc">Largest first</option>
             <option value="date:asc">Oldest first</option>
             <option value="date:desc">Newest first</option>
+            <option value="type:asc">PDFs first</option>
           </select>
         </label>
         <button type="button" className="link link-danger" onClick={onWipe} data-testid="wipe-all">
           Remove all
         </button>
       </div>
-      <ul className="file-grid" data-testid="file-grid">
+      <ul className="file-grid" data-testid="file-grid" ref={cols.ref} style={cols.n ? { gridTemplateColumns: `repeat(${cols.n}, minmax(0, 1fr))` } : undefined}>
         {shown.map((f, i) => (
           <FileCard
             key={f.id}
             file={f}
-            index={i}
-            count={files.length}
+            index={at.get(f.id)}
+            prev={i > 0 ? at.get(shown[i - 1].id) : -1}
+            next={i < view.length - 1 ? at.get(view[i + 1].id) : -1}
             selected={selection.has(f.id)}
             scope={scope}
             onToggle={onToggle}
@@ -396,11 +455,11 @@ export default function FileGrid({ files, selection, onToggle, onSelectAll, onOp
             drag={drag}
           />
         ))}
-        {shown.length < files.length && (
+        {shown.length < view.length && (
           <li className="fc fc-add">
             <button type="button" className="fc-add-btn" onClick={() => setLimit((n) => n + GRID_WINDOW)} data-testid="grid-more">
               <span>
-                Show {Math.min(GRID_WINDOW, files.length - shown.length)} more of {files.length - shown.length}
+                Show {Math.min(GRID_WINDOW, view.length - shown.length)} more of {view.length - shown.length}
               </span>
             </button>
           </li>
@@ -450,8 +509,8 @@ export default function FileGrid({ files, selection, onToggle, onSelectAll, onOp
               : blocked
                 ? blocked
                 : preview.restores.length
-                  ? `Undo deletes ${preview.removes.join(', ')} and brings back ${preview.restores.join(', ')}.`
-                  : `Undo deletes ${preview.removes.join(', ')}. No other file changes.`}
+                  ? `Undo deletes ${fewNames(preview.removes)} and brings back ${fewNames(preview.restores)}.`
+                  : `Undo deletes ${fewNames(preview.removes)}. No other file changes.`}
           </p>
         </Dialog>
       )}

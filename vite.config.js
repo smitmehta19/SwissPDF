@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 // COOP/COEP make the page cross-origin isolated: required for SharedArrayBuffer,
@@ -59,10 +61,51 @@ function tesseractAssets() {
   }
 }
 
+// Offline cache: writes the build id and the precache list into
+// dist/coi-serviceworker.js. A new id per build makes the browser install the
+// new worker, which then drops the old build's cache. Precached: every chunk,
+// the pdf.js decoders and the LibreOffice glue (small), so a tool never opened
+// online still opens offline. Language data, fonts and CMaps are cached when
+// first used, in a cache keyed by their content hash that outlives builds.
+function swBuildPlugin() {
+  let outDir
+  const PRECACHE = /^(assets\/(?!.*\.map$)|pdfjs\/(wasm|iccs|standard_fonts)\/|vendor\/)/
+  const DATA = /^(tessdata|fonts|pdfjs\/cmaps)\//
+  const walk = (dir, rel = '') =>
+    readdirSync(dir + rel, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(dir, `${rel}${e.name}/`) : [`${rel}${e.name}`]))
+  return {
+    name: 'sw-build',
+    apply: 'build',
+    configResolved(config) {
+      outDir = resolve(config.root, config.build.outDir) + '/'
+    },
+    closeBundle() {
+      const swFile = outDir + 'coi-serviceworker.js'
+      const files = walk(outDir).sort()
+      const list = ['', 'index.html', 'coi-serviceworker.js', ...files.filter((f) => PRECACHE.test(f))]
+      // every file counts: fixed names (tessdata, fonts) are cached too
+      const hash = createHash('sha256')
+      for (const f of files) hash.update(f + '\n').update(readFileSync(outDir + f))
+      const build = hash.digest('hex').slice(0, 12)
+      // data cached on use that should survive deploys: keyed by content
+      const data = Object.fromEntries(
+        files.filter((f) => DATA.test(f)).map((f) => [f, createHash('sha256').update(readFileSync(outDir + f)).digest('hex').slice(0, 12)]),
+      )
+      const src = readFileSync(swFile, 'utf8')
+      const out = src
+        .replace("'__SWISS_BUILD__'", `'${build}'`)
+        .replace('[] /* __SWISS_PRECACHE__ */', JSON.stringify(list))
+        .replace('{} /* __SWISS_DATA__ */', JSON.stringify(data))
+      if (out === src || out.includes('__SWISS_')) throw new Error('sw-build: placeholders not found in coi-serviceworker.js')
+      writeFileSync(swFile, out)
+    },
+  }
+}
+
 export default defineConfig(({ command }) => ({
   // Project page lives at https://<user>.github.io/SwissPDF/ on build; '/' locally.
   base: command === 'build' ? '/SwissPDF/' : '/',
-  plugins: [react(), pdfjsAssets(), tesseractAssets()],
+  plugins: [react(), pdfjsAssets(), tesseractAssets(), swBuildPlugin()],
   server: {
     port: 5173,
     headers: isolationHeaders,

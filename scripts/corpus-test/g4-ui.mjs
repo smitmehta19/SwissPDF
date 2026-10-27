@@ -106,9 +106,18 @@ if (!arg('--shots-only')) {
   await page.click('[data-testid=next-compress]')
   await page.waitForSelector('[data-testid=options-panel]')
   check('compress: carries the image PDF', /1 compressed PDF/.test(await line(page)), await line(page))
-  await runTool(page)
-  const comp = await download(page)
-  check('compress: 2 pages', (await pdfPages(comp.bytes)) === 2, `${comp.name} ${comp.bytes.length} bytes`)
+  // the image PDF is already tight: Compress keeps it, says "Nothing to do" and
+  // makes no new version (blind review P2 2); the image PDF goes on as it is
+  await page.click('[data-testid=run-btn]')
+  await page.waitForSelector('[data-testid=result-screen], [data-testid=run-error]', { timeout: 300_000 })
+  const neutral = await page.$('[data-testid=run-error].notice-ok')
+  if (neutral) {
+    check('compress: an already tight PDF ends in "Nothing to do", no new version', /^Nothing to do: /.test(await neutral.textContent()), await neutral.textContent())
+  } else {
+    if (await page.$('[data-testid=run-error]')) throw new Error(await page.textContent('[data-testid=run-error]'))
+    const comp = await download(page)
+    check('compress: 2 pages', (await pdfPages(comp.bytes)) === 2, `${comp.name} ${comp.bytes.length} bytes`)
+  }
 
   // 3. continue with PDF to Word: the image-only PDF needs OCR
   await open(page, 'pdf2word')

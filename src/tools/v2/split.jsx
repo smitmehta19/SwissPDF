@@ -92,7 +92,7 @@ function useOutlines(files, options, setOptions, active) {
   }, [ids, active]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
-function RangeRows({ rows, onChange, last }) {
+function RangeRows({ rows, onChange }) {
   const set = (i, field, value) => onChange(rows.map((r, j) => (j === i ? { ...r, [field]: value.replace(/\D/g, '') } : r)))
   return (
     <>
@@ -100,9 +100,9 @@ function RangeRows({ rows, onChange, last }) {
         {rows.map((r, i) => (
           <li key={i} className="range-row">
             <span className="range-row-num">{i + 1}</span>
-            <input className="input" inputMode="numeric" aria-label={`Range ${i + 1} from page`} placeholder="1" value={r.from} onChange={(e) => set(i, 'from', e.target.value)} data-testid="split-from" />
+            <input className="input" inputMode="numeric" aria-label={`Range ${i + 1} from page`} placeholder="first" value={r.from} onChange={(e) => set(i, 'from', e.target.value)} data-testid="split-from" />
             <span>to</span>
-            <input className="input" inputMode="numeric" aria-label={`Range ${i + 1} to page`} placeholder={last ? String(last) : 'last'} value={r.to} onChange={(e) => set(i, 'to', e.target.value)} data-testid="split-to" />
+            <input className="input" inputMode="numeric" aria-label={`Range ${i + 1} to page`} placeholder="last" value={r.to} onChange={(e) => set(i, 'to', e.target.value)} data-testid="split-to" />
             <button type="button" className="icon-btn" onClick={() => onChange(rows.filter((_, j) => j !== i))} disabled={rows.length === 1} aria-label={`Remove range ${i + 1}`} title="Remove range">
               <Icon name="close" size={15} />
             </button>
@@ -156,7 +156,8 @@ function Options({ options: o, setOptions, files }) {
             <>
               <div className="field">
                 <span className="field-label">Ranges</span>
-                <RangeRows rows={o.rows} onChange={(rows) => set({ rows })} last={last} />
+                <RangeRows rows={o.rows} onChange={(rows) => set({ rows })} />
+                <p className="field-help">{last ? `Pages 1 to ${last}. ` : ''}An empty box means the first or the last page.</p>
               </div>
               <label className="check-line">
                 <input type="checkbox" checked={o.mergeRanges} onChange={(e) => set({ mergeRanges: e.target.checked })} data-testid="split-merge-ranges" />
@@ -245,7 +246,7 @@ function summary(files, o) {
   }
   // an empty custom range would copy the whole file: ask for a range first
   if (o.tab === 'range' && o.rangeMode === 'custom' && o.rows.every((r) => !r.from && !r.to)) {
-    return { ...none, line: 'Type a page range, or choose Fixed to split every few pages.' }
+    return { ...none, line: 'Type the pages of a range (for example 1 to 3), or choose Fixed to split every few pages.' }
   }
   let count = 0
   try {

@@ -112,6 +112,45 @@ async function textWorker(langs) {
 
 const osdWorker = () => getWorker('osd', () => makeWorker('osd', OEM_TESSERACT_ONLY, true))
 
+// Canvas PNGs carry no resolution: OSD ignores user_defined_dpi, logs
+// "Invalid resolution 0 dpi" and assumes 70. A pHYs chunk after IHDR fixes it.
+let crcTable = null
+function crc32(bytes) {
+  if (!crcTable) {
+    crcTable = new Uint32Array(256)
+    for (let n = 0; n < 256; n++) {
+      let c = n
+      for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1
+      crcTable[n] = c >>> 0
+    }
+  }
+  let c = 0xffffffff
+  for (const b of bytes) c = crcTable[(c ^ b) & 0xff] ^ (c >>> 8)
+  return (c ^ 0xffffffff) >>> 0
+}
+export function pngWithDpi(png, dpi) {
+  const ppm = Math.round(dpi / 0.0254)
+  const chunk = new Uint8Array(21)
+  const v = new DataView(chunk.buffer)
+  v.setUint32(0, 9)
+  chunk.set([0x70, 0x48, 0x59, 0x73], 4) // pHYs
+  v.setUint32(8, ppm)
+  v.setUint32(12, ppm)
+  chunk[16] = 1 // unit: metre
+  v.setUint32(17, crc32(chunk.subarray(4, 17)))
+  const at = 8 + 25 // signature + IHDR
+  const out = new Uint8Array(png.length + chunk.length)
+  out.set(png.subarray(0, at))
+  out.set(chunk, at)
+  out.set(png.subarray(at), at + chunk.length)
+  return out
+}
+
+async function detectAt(png, dpi, signal) {
+  const osd = await cancellable(osdWorker(), signal)
+  return cancellable(osd.detect(pngWithDpi(png, dpi)), signal)
+}
+
 async function stopWorker(key) {
   const p = workers.get(key)
   workers.delete(key)
@@ -296,23 +335,31 @@ const HAS_TEXT = 30 // characters: a page number or a stamp is not a text layer
 // 1.0; right ones on printed pages start at 2.2.
 export const OSD_THRESHOLD = 2
 
+// Word confidence (0 to 100) needed to go into the text layer. On the fax
+// 20 to 40 holds real words (Samuel, Washington, communities) with junk,
+// below 20 is mostly junk: 397 words at 40, 423 at 20, 450 at 0. Below
+// SURE_CONFIDENCE a word must look like one: 3+ letters, no digits or signs.
+export const MIN_CONFIDENCE = 20
+const SURE_CONFIDENCE = 40
+const WORDLIKE = /^\p{L}[\p{L}\p{M}'\u2019-]{2,}[.,;:]?$/u
+
 // ---------- per-page recognition ----------
 // Returns words with boxes in the page's view space (points from the top-left
 // of the page as displayed), plus the angle of the text as seen.
-async function recognizePage(bytes, n, frame, { langs, autoRotate, deskew, dpi, signal, onStage }) {
+async function recognizePage(bytes, n, frame, { langs, autoRotate, deskew, dpi, minConfidence, signal, onStage }) {
   const width = renderWidth(frame, dpi)
   onStage('rendering', 0)
   // a 300 dpi render takes a moment: do not wait for it after a cancel
   const img = await cancellable(renderPageToImage(bytes, n, { width, format: 'image/png' }), signal)
   const W = img.width
   const H = img.height
+  const realDpi = (W / frame.width) * 72
   let png = img.bytes
   let turn = 0
   if (autoRotate) {
     onStage('detecting orientation', 0)
     try {
-      const osd = await cancellable(osdWorker(), signal)
-      const { data } = await cancellable(osd.detect(png), signal)
+      const { data } = await detectAt(png, realDpi, signal)
       const deg = data?.orientation_degrees ?? 0
       if (deg && (data.orientation_confidence ?? 0) >= OSD_THRESHOLD) turn = deg
     } catch (err) {
@@ -323,7 +370,7 @@ async function recognizePage(bytes, n, frame, { langs, autoRotate, deskew, dpi, 
   }
   const worker = await cancellable(textWorker(langs), signal)
   onStage('recognizing', 0)
-  const { data } = await cancellable(worker.recognize(png, { rotateAuto: !!deskew, user_defined_dpi: String(Math.round((W / frame.width) * 72)) }, { text: true, blocks: true }), signal)
+  const { data } = await cancellable(worker.recognize(png, { rotateAuto: !!deskew, user_defined_dpi: String(Math.round(realDpi)) }, { text: true, blocks: true }), signal)
   const rw = turn === 90 || turn === 270 ? H : W
   const rh = turn === 90 || turn === 270 ? W : H
   const rad = data.rotateRadians || 0
@@ -331,7 +378,8 @@ async function recognizePage(bytes, n, frame, { langs, autoRotate, deskew, dpi, 
   const words = []
   for (const w of flattenWords(data)) {
     const text = (w.text ?? '').trim()
-    if (!text || w.confidence < 40) continue
+    if (!text || w.confidence < minConfidence) continue
+    if (w.confidence < SURE_CONFIDENCE && !WORDLIKE.test(text)) continue
     const { x0, y0, x1, y1 } = w.bbox
     // baseline at the left edge of the word, in the deskewed upright image
     const by = w.baseline && Number.isFinite(w.baseline.y0) && w.baseline.y0 > y0 ? Math.min(y1, w.baseline.y0 + ((w.baseline.y1 - w.baseline.y0) * (x0 - w.baseline.x0)) / Math.max(1, w.baseline.x1 - w.baseline.x0)) : y1
@@ -386,8 +434,18 @@ async function drawWord(doc, page, frame, word) {
 // auto-OCR fallback for scanned pages.
 export async function recognizeWords(bytes, pageNum, lang = 'eng') {
   const img = await renderPageToImage(bytes, pageNum, { width: 1600, format: 'image/png' })
+  // the real resolution: 1600 px across the page as shown
+  const widthPt = await serializedPdfOp(async () => {
+    const page = await (await openPdfDocument(bytes)).getPage(pageNum)
+    try {
+      return page.getViewport({ scale: 1 }).width
+    } finally {
+      page.cleanup()
+    }
+  })
   const worker = await textWorker(lang)
-  const { data } = await worker.recognize(img.bytes, {}, { text: true, blocks: true })
+  const dpi = Math.round((img.width / Math.max(1, widthPt)) * 72)
+  const { data } = await worker.recognize(img.bytes, { user_defined_dpi: String(dpi) }, { text: true, blocks: true })
   return { words: flattenWords(data), imgW: img.width, imgH: img.height }
 }
 
@@ -398,8 +456,7 @@ export async function recognizeWords(bytes, pageNum, lang = 'eng') {
 async function detectPage(bytes, n, frame, { dpi, signal }) {
   const img = await cancellable(renderPageToImage(bytes, n, { width: renderWidth(frame, dpi), format: 'image/png' }), signal)
   try {
-    const osd = await cancellable(osdWorker(), signal)
-    const { data } = await cancellable(osd.detect(img.bytes), signal)
+    const { data } = await detectAt(img.bytes, (img.width / frame.width) * 72, signal)
     return { degrees: ((data?.orientation_degrees ?? 0) + 360) % 360, confidence: data?.orientation_confidence ?? 0 }
   } catch (err) {
     if (err?.cancelled) throw err
@@ -454,17 +511,18 @@ export async function autoRotatePdf(bytes, { threshold = OSD_THRESHOLD, infer = 
 //   textPages    'skip' leaves pages that already have a text layer alone,
 //                'force' reads every page and replaces an old invisible
 //                text layer (visible text stays), 'all' reads every page and
-//                keeps what is there (the default here, as before; the OCR
-//                tool offers 'skip' and 'force')
+//                keeps what is there (doubles an old layer: tests only).
+//                Default 'skip', so a caller that forgets it adds no copy
 //   autoRotate   detect sideways / upside-down scans (OSD)
 //   deskew       straighten slightly tilted scans
 //   dpi          render resolution, 300 by default
+//   minConfidence  words Tesseract is less sure of are left out
 //   pages        page numbers to consider (default all)
 //   onProgress(done, total, label)  done is fractional within a page
 //   signal       AbortSignal: stops the engine at once
 export async function ocrPdf(
   bytes,
-  { langs, lang, textPages = 'all', autoRotate = true, deskew = true, dpi = 300, pages = null, onProgress = () => {}, signal } = {},
+  { langs, lang, textPages = 'skip', autoRotate = true, deskew = true, dpi = 300, minConfidence = MIN_CONFIDENCE, pages = null, onProgress = () => {}, signal } = {},
 ) {
   const languages = langs ?? (lang ? String(lang).split('+') : ['eng'])
   const force = textPages === 'force'
@@ -501,6 +559,7 @@ export async function ocrPdf(
         autoRotate,
         deskew,
         dpi,
+        minConfidence,
         signal,
         onStage: (stage) => onProgress(i, todo.length, label(stage)),
       })

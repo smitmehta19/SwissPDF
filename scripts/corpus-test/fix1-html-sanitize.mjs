@@ -34,14 +34,24 @@ const CASES = {
   'h-ident-escape': `<div style="background: u\\rl(${T}/h); height:40px">x</div>`,
   'i-import-comment': `<style>@im/**/port url(${T}/i);</style><p>x</p>`,
   'j-font-face': `<style>@font-face{font-family:Z;src:\\75rl(${T}/j)}p{font-family:Z}</style><p>x</p>`,
+  // SVG animation setting href after sanitizing (polish C review #6)
+  'k-feimage-animate': `<svg width="80" height="80"><filter id="f"><feImage width="80" height="80"><animate attributeName="href" values="${T}/k" dur="1s" fill="freeze"/></feImage></filter><rect width="80" height="80" filter="url(#f)"/></svg>`,
+  'l-feimage-set': `<svg width="80" height="80"><defs><filter id="g"><feImage width="80" height="80"><set attributeName="href" to="${T}/l"/></feImage></filter></defs><g filter="url(#g)"><rect width="80" height="80"/></g></svg>`,
+  'm-use-animate': `<svg width="80" height="80"><use><animate attributeName="href" values="${T}/m#x" dur="1s" fill="freeze"/></use></svg>`,
+  'n-feimage-set-xlink': `<svg width="80" height="80"><filter id="h"><feImage width="80" height="80"><set attributeName="xlink:href" to="${T}/n"/></feImage></filter><rect width="80" height="80" filter="url(#h)"/></svg>`,
 }
 
 const dev = await startServer()
 const browser = await chromium.launch()
 const context = await browser.newContext()
+// attempts (also ones the CSP blocks) and requests that got an answer
 const seen = []
+const answered = []
 context.on('request', (r) => {
   if (r.url().startsWith(T)) seen.push(r.url())
+})
+context.on('requestfinished', (r) => {
+  if (r.url().startsWith(T)) answered.push(r.url())
 })
 const page = await context.newPage()
 await page.goto(`${dev.url}/`, { waitUntil: 'load' })
@@ -100,6 +110,27 @@ for (const [id, html] of Object.entries(CASES)) {
   check(`${id}: sanitizer alone, no request`, got.length === 0, got.join(', '))
 }
 
+// sanitized HTML never even tries a request
+check('network log: no tracker request attempted with the sanitizer on', seen.length === 0, seen.join(', '))
+
+// the CSP meta of the render frame on its own: raw, unsanitized HTML. The
+// browser may log the attempt, the CSP has to stop it before the network.
+for (const [id, html] of Object.entries(CASES)) {
+  const before = hits.length
+  await page.evaluate(
+    async ({ lib, html }) => {
+      const m = await import(lib)
+      const f = await m.renderFrame(new DOMParser().parseFromString(html, 'text/html'), 700, { base: false })
+      await new Promise((r) => setTimeout(r, 800))
+      f.remove()
+    },
+    { lib, html },
+  )
+  await new Promise((r) => setTimeout(r, 200))
+  const got = hits.slice(before)
+  check(`${id}: CSP alone (no sanitizer), no request`, got.length === 0, got.join(', '))
+}
+
 // #25: script links with a tab or newline in the scheme
 const hrefs = await page.evaluate(async (lib) => {
   const m = await import(lib)
@@ -114,7 +145,8 @@ check('https and mailto links kept', hrefs[2] === 'https://example.com/x' && hre
 const kept = await page.evaluate(async (lib) => (await import(lib)).sanitizeHtml('<div><template shadowrootmode="open"><p>shadow text</p></template></div>').body.textContent, lib)
 check('shadow template text kept', /shadow text/.test(kept), kept)
 
-check('network log (browser context) has no tracker request', seen.length === 0, seen.join(', '))
+check('network log (browser context): no tracker request answered', answered.length === 0, answered.join(', '))
+console.log(`attempts the CSP blocked (raw HTML): ${seen.length}`)
 console.log(`tracker hits: ${hits.length}`)
 await browser.close()
 await dev.server.close()

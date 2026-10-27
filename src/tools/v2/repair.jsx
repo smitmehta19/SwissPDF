@@ -51,11 +51,15 @@ export default {
       ctx.check()
       ctx.progress(i, files.length, `Repairing ${f.name}`)
       const res = await ctx.call('repair', f.bytes)
+      const repairedOnAdd = (f.notices ?? []).includes(NOTICE_REPAIRED)
+      // a rebuild that gives back the same bytes changed nothing: say so
+      const same = res.bytes.byteLength === f.bytes.byteLength && res.bytes.every((b, k) => b === f.bytes[k])
       outputs.push({
         name: `${baseName(f.name)}-repaired.pdf`,
         bytes: res.bytes,
         parentIds: [f.id],
-        note: describe(res, (f.notices ?? []).includes(NOTICE_REPAIRED)),
+        note: same ? (repairedOnAdd ? 'It was already repaired when it was added, nothing more to fix.' : 'No damage found, the file is unchanged.') : describe(res, repairedOnAdd),
+        unchanged: same,
       })
     }
     ctx.progress(files.length, files.length, 'Done')

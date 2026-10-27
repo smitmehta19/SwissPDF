@@ -189,7 +189,10 @@ export function readStore(storage, tools = null) {
           seen.add(uid)
           const known = tools && (s.tool === 'metadata' || tools[s.tool])
           const options = known ? cleanOptions(s.tool === 'metadata' ? 'metadata' : tools[s.tool], s.options) : s.options && typeof s.options === 'object' ? s.options : {}
-          return { uid, tool: s.tool, options }
+          // settings the tool knows whose saved value could not be used: the step says so
+          const defaults = known && s.tool !== 'metadata' ? (tools[s.tool].defaults ?? {}) : {}
+          const reset = Object.keys(s.options && typeof s.options === 'object' ? s.options : {}).filter((k) => k in defaults && defaults[k] !== null && !(k in options))
+          return reset.length ? { uid, tool: s.tool, options, reset } : { uid, tool: s.tool, options }
         })
       return { id: a.id, name: a.name.slice(0, 80), steps }
     })
@@ -374,9 +377,15 @@ export async function runAutomation(files, automation, ctx, { tools, assertValid
         const out = outs[0]
         if (out.type && out.type !== 'application/pdf') throw new Error('did not make a PDF.')
         const bytes = out.bytes instanceof Uint8Array ? out.bytes : new Uint8Array(out.bytes)
-        if (!out.locked && (sameBytes(bytes, cur.bytes) || NO_CHANGE.test(out.note ?? ''))) {
+        const same = sameBytes(bytes, cur.bytes)
+        // a tool can say so (unchanged: true); the note match is for tools that do not yet
+        if (!out.locked && (same || out.unchanged === true || NO_CHANGE.test(out.note ?? ''))) {
+          // re-saved bytes still go on: check them here, so a broken file is blamed on this step
+          if (!same) {
+            const { pageCount } = await assertValid(bytes)
+            cur = { ...cur, id: `${f.id}~${si + 1}`, size: bytes.length, pageCount, bytes, notices: [] }
+          }
           log.push({ tool: tool.name, status: 'nochange', note: out.note ?? 'The file stayed the same.', ms })
-          if (!sameBytes(bytes, cur.bytes)) cur = { ...cur, id: `${f.id}~${si + 1}`, size: bytes.length, bytes, notices: [] }
           continue
         }
         // a locked output (Protect) cannot be opened here; Protect checked it

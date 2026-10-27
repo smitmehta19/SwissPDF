@@ -40,13 +40,13 @@ function Options({ options: o, setOptions }) {
       <div className="field">
         <label className="check-line">
           <input type="checkbox" data-testid="booklet-long-edge" checked={o.longEdge} onChange={(e) => set({ longEdge: e.target.checked })} />
-          My printer only flips on the long edge (turns the backs)
+          Turn the backs upside down (my printer cannot flip on the short edge)
         </label>
         <label className="check-line">
           <input type="checkbox" checked={o.border} onChange={(e) => set({ border: e.target.checked })} />
           Draw a thin line around each page
         </label>
-        <p className="field-help">Print double-sided and flip on the short edge. Tick the first box only if your printer can flip on the long edge alone.</p>
+        <p className="field-help">Print double-sided with "flip on short edge". If your printer only offers "flip on long edge", tick the first box so the backs still come out the right way up.</p>
       </div>
       <ImposeHelp />
     </>

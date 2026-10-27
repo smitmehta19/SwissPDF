@@ -1158,6 +1158,30 @@ redactCase('redact-aws-invoice', 'invoices/aws-invoice.pdf')
 redactCase('redact-rot90-cropbox', 'derived/rot90-cropbox-bert.pdf', { quick: true, audit: 2 })
 redactCase('redact-rotation-quirk', 'quirks/pdfjs-rotation.pdf', { audit: 2 })
 redactCase('redact-origin-shift', 'derived/origin-shift-aws-invoice.pdf', { audit: 2 })
+// Scans with page numbers on top (polish review B #2): still pictures, size sane, box black.
+for (const [rel, params, tag] of [
+  ['scanned/letter-to-benjamin-glover.pdf', {}, 'numbered'],
+  ['scanned/fax-jean-schmidt-doe.pdf', {}, 'numbered'],
+  // our own Watermark covers more than the 2% scan rule: the size check catches it
+  ['scanned/letter-to-benjamin-glover.pdf', { watermark: 'DRAFT' }, 'watermarked'],
+  ['scanned/letter-to-benjamin-glover.pdf', { watermark: 'CONFIDENTIAL COPY', fontSize: 96 }, 'watermarked-96pt'],
+]) {
+  add({
+    id: `redact-${tag}-scan-${rel.split('/').pop().replace(/\.pdf$/, '')}`,
+    tool: 'redact',
+    op: 'redactStampedScan',
+    files: [rel],
+    params,
+    timeout: 3 * MIN,
+    async validate(ctx) {
+      const m = ctx.meta ?? {}
+      ctx.check('numbered scan page still turned into a picture', (m.rasterPages ?? []).includes(1), JSON.stringify(m.rasterPages))
+      ctx.check('output under 2x the numbered input', m.size <= 2 * m.numberedSize, `${Math.round(m.numberedSize / 1024)} KB -> ${Math.round(m.size / 1024)} KB`)
+      ctx.check('box painted black (nothing of the scan left in it)', (m.covered ?? 0) >= 0.95, `${((m.covered ?? 0) * 100).toFixed(1)}% dark`)
+      await checkPdf(ctx, 'redacted.pdf', { pages: (await inputFacts(rel)).pdfjs.pages })
+    },
+  })
+}
 // The only real split in the corpus: pdf.js stores "Acrobat Rea" + "der" as two
 // items. Search only: pdf-lib cannot load these forms for the redact step.
 for (const rel of ['forms/uk-IPPH353.pdf', 'forms/uk-AFPS-Form-17.pdf']) {
@@ -1349,7 +1373,8 @@ export async function intakeExpectation(rel) {
 export const FLOWS = [
   // shell: true = tool runs in the new shell (Run, then Download on the result screen)
   { id: 'flow-merge', tool: 'merge', route: 'merge', files: ['reports/pdfjs-tracemonkey.pdf', 'reports/arxiv-1810.04805-bert.pdf'], shell: true, quick: true },
-  { id: 'flow-compress', tool: 'compress', route: 'compress', files: ['reports/us-budget-2024.pdf'], shell: true, quick: true },
+  // us-budget is already optimal: compress now ends in "Nothing to do" there, so the flow uses a file it can shrink
+  { id: 'flow-compress', tool: 'compress', route: 'compress', files: ['reports/pdfjs-tracemonkey.pdf'], shell: true, quick: true },
   // split ranges 1-3 and 4-14 in the shell's Range rows
   {
     id: 'flow-split',
@@ -1378,8 +1403,8 @@ export async function validateFlow(flow, ctx) {
     }
   } else if (flow.id === 'flow-compress') {
     const before = sizeOf(flow.files[0])
-    await checkPdf(ctx, ctx.downloadName, { pages: 184 })
-    ctx.check('never larger than input', out.length <= before, `${kb(before)} -> ${kb(out.length)}`)
+    await checkPdf(ctx, ctx.downloadName, { pages: 14 })
+    ctx.check('smaller than the input', out.length < before, `${kb(before)} -> ${kb(out.length)}`)
   } else if (flow.id === 'flow-split') {
     const zip = await JSZip.loadAsync(out)
     const names = Object.keys(zip.files).filter((n) => n.endsWith('.pdf')).sort()

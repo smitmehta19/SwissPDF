@@ -24,6 +24,26 @@ function inlineText(runs) {
     .trim()
 }
 
+// Big text that reads like a sentence or a list of names is not a heading:
+// the arXiv licence banner, author lines.
+// An all-caps headline may run longer (FDIC: 22 words).
+const sentenceLike = (t) => /^\p{Ll}/u.test(t) || /,\s*$/.test(t) || (t.match(/,/g) ?? []).length >= 3 || t.split(/\s+/).length > (t === t.toUpperCase() ? 30 : 18)
+
+// Page 1 of a paper: lines between the title and "Abstract" are authors and
+// affiliations, not headings. Returns how many were turned back into text.
+function demoteFrontMatter(out) {
+  const heads = out.flatMap((l, i) => (/^#{1,2} /.test(l) ? [i] : []))
+  const abs = heads.find((i) => /^#{1,2} abstract\b/i.test(out[i]))
+  if (abs == null) return 0
+  let n = 0
+  for (const i of heads) {
+    if (i <= heads[0] || i >= abs) continue
+    out[i] = out[i].replace(/^#{1,2} /, '')
+    n++
+  }
+  return n
+}
+
 const BULLET_RE = /^\s*([•·▪◦‣∙●○■□➢➤►*-])\s+/
 const NUMBER_RE = /^\s*(\d{1,2})[.)]\s+/
 
@@ -54,12 +74,13 @@ export async function pdfToMarkdown(bytes, { onProgress = () => {}, pageRule = t
       const runs = paragraphRuns(p.lines)
       const raw = runsText(runs).trim()
       if (!raw) return
-      if (p.size > body * 1.5 && raw.length < 200) {
+      const heading = raw.length < 200 && !sentenceLike(raw)
+      if (heading && p.size > body * 1.5) {
         out.push(`# ${raw}`, '')
         headingCount++
         return
       }
-      if (p.size > body * 1.2 && raw.length < 200) {
+      if (heading && p.size > body * 1.2) {
         out.push(`## ${raw}`, '')
         headingCount++
         return
@@ -69,7 +90,8 @@ export async function pdfToMarkdown(bytes, { onProgress = () => {}, pageRule = t
       const numbered = raw.match(NUMBER_RE)
       if (bullet) out.push(`- ${text.replace(BULLET_RE, '')}`, '')
       else if (numbered) out.push(`${numbered[1]}. ${text.replace(NUMBER_RE, '')}`, '')
-      else out.push(text, '')
+      // a line of text starting with "#" (#L #H in a BERT table) is not a heading
+      else out.push(text.replace(/^#/, '\\#'), '')
     }
 
     let run = []
@@ -95,6 +117,7 @@ export async function pdfToMarkdown(bytes, { onProgress = () => {}, pageRule = t
       }
     }
     flush()
+    if (pi === 0) headingCount -= demoteFrontMatter(out)
   })
 
   const md = out.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n'

@@ -24,7 +24,11 @@ const ENCRYPTED_MSG = 'This PDF is password-protected. Unlock it first.'
 
 let mupdfPromise = null
 let loadedMupdf = null // set once loaded, for sync use in saveMu
+// MuPDF logs each free xref slot on the console; `leftovers` walks them all
+// with the log muted. Only takes effect when MuPDF loads here first.
+let quiet = 0
 function getMupdf() {
+  globalThis.$libmupdf_wasm_Module ??= { printErr: (...a) => quiet || console.error(...a) }
   if (!mupdfPromise) mupdfPromise = import('mupdf').then((m) => (loadedMupdf = m))
   return mupdfPromise
 }
@@ -102,10 +106,66 @@ const nameOf = (o) => (o && o.isName() ? o.asName() : null)
 const intOf = (o) => (o?.isInteger() ? parseInt(o.toString(), 10) : o?.isNumber() ? Math.trunc(o.asNumber()) : 0)
 const strOf = (o) => (o && o.isString() ? o.asString() : null)
 
-// Every indirect object of the file, resolved.
+// Object numbers reachable from the trailer. Walking 1..countObjects makes
+// MuPDF log "cannot find object in xref" for every free slot, and loose
+// objects go with the save anyway.
+function reachableNums(doc) {
+  const seen = new Set()
+  const stack = [doc.getTrailer()]
+  while (stack.length) {
+    stack.pop().forEach((v) => {
+      if (v.isIndirect()) {
+        const n = v.asIndirect()
+        if (!seen.has(n)) {
+          seen.add(n)
+          stack.push(v)
+        }
+      } else if (v.isDictionary() || v.isArray()) stack.push(v)
+    })
+  }
+  return [...seen].sort((a, b) => a - b)
+}
+
+// What only an earlier version of the file (an incremental update) or a loose
+// object still holds: a garbage-collected save drops it, a change worth
+// reporting. MuPDF reads every in-use object, so names are unescaped and an
+// embedded file stream needs no /Type. -> { objects, files, images, revisions }
+function leftovers(doc, bytes) {
+  const live = new Set(reachableNums(doc))
+  const out = { objects: 0, files: 0, images: 0, revisions: 0 }
+  let specs = 0
+  let streams = 0
+  quiet++
+  try {
+    for (let i = 1; i < doc.countObjects(); i++) {
+      if (live.has(i)) continue
+      let o
+      try {
+        o = doc.newIndirect(i).resolve()
+      } catch {
+        continue
+      }
+      if (!o || o.isNull() || !(o.isDictionary() || o.isArray())) continue
+      const type = nameOf(at(o, 'Type'))
+      if (type === 'ObjStm' || type === 'XRef') continue
+      out.objects++
+      if (o.isDictionary() && at(o, 'EF')) specs++
+      if (type === 'EmbeddedFile') streams++
+      if (nameOf(at(o, 'Subtype')) === 'Image') out.images++
+    }
+  } finally {
+    quiet--
+  }
+  out.files = specs || streams
+  // an earlier xref section (not the first-page one of a linearized file)
+  const head = new TextDecoder('latin1').decode(bytes.subarray(0, Math.min(bytes.byteLength, 1024)))
+  if (doc.countVersions() > 1 && !/\/Linearized\b/.test(head)) out.revisions = 1
+  return out
+}
+
+// Every reachable indirect object of the file, resolved.
 function* objects(doc) {
-  const n = doc.countObjects()
-  for (let i = 1; i < n; i++) {
+  for (const i of reachableNums(doc)) {
     let o
     try {
       o = doc.newIndirect(i).resolve()
@@ -364,6 +424,10 @@ async function textLines(bytes, { from = 1, to = Infinity, onPage, check } = {})
 }
 
 const headingLike = (t) => t.length >= 2 && t.length <= 120 && /\p{L}/u.test(t) && !/^[\d\s.,:;()-]+$/.test(t)
+// Big text that reads like a sentence or a list of names is not a heading:
+// the arXiv licence banner, author lines (tracemonkey).
+// An all-caps headline may run longer (FDIC: 22 words).
+const sentenceLike = (t) => /^\p{Ll}/u.test(t) || /,\s*$/.test(t) || (t.match(/,/g) ?? []).length >= 3 || t.split(/\s+/).length > (t === t.toUpperCase() ? 30 : 18)
 
 // Character-weighted median line size: the body text size.
 function bodySize(lines) {
@@ -394,6 +458,15 @@ export async function headingBookmarks(bytes, { levels = 2, onPage, check } = {}
       prev = { title: l.text, size: l.size, page: l.page, y: p.rotated ? null : Math.max(0, l.y - 4), y2: l.y }
       heads.push(prev)
     }
+  }
+  heads = heads.filter((h) => !sentenceLike(h.title))
+  // page 1 of a paper: between the title and "Abstract" come authors and
+  // affiliations, not headings
+  const first = heads.filter((h) => h.page === 1)
+  const abs = first.findIndex((h) => /^abstract\b/i.test(h.title))
+  if (abs > 1) {
+    const front = new Set(first.slice(1, abs))
+    heads = heads.filter((h) => !front.has(h))
   }
   // the same big text three times or more is a running header or a figure
   // label (attention paper: "Input-Input Layer5" x4), not a heading
@@ -986,6 +1059,8 @@ export function stripInlineImages(s) {
 // -> { bytes, images, pages, inline }
 export async function removeImages(bytes, { onPage, check } = {}) {
   return withMupdf(bytes, (doc) => {
+    // images only an old revision still holds go with the save
+    const loose = leftovers(doc, bytes).images
     const n = doc.countPages()
     const content = new Set() // content stream object numbers
     const drawn = new Set()
@@ -1028,7 +1103,7 @@ export async function removeImages(bytes, { onPage, check } = {}) {
       if (pageOf.has(num)) inlinePages.add(pageOf.get(num))
     }
     let blanked = 0
-    for (let i = 1; i < doc.countObjects(); i++) {
+    for (const i of reachableNums(doc)) {
       const ref = doc.newIndirect(i)
       let o
       try {
@@ -1046,9 +1121,9 @@ export async function removeImages(bytes, { onPage, check } = {}) {
       ref.writeStream(new Uint8Array([0xff]))
       blanked++
     }
-    if (!blanked && !inline) return { bytes: new Uint8Array(bytes.slice(0)), images: 0, pages: 0, inline: 0, blanked: 0 }
+    if (!blanked && !inline && !loose) return { bytes: new Uint8Array(bytes.slice(0)), images: 0, pages: 0, inline: 0, blanked: 0, loose: 0 }
     // blanked also counts soft masks and images outside the pages' resources
-    return { bytes: saveMu(doc), images: drawn.size + inline, pages: pagesWithImages + inlinePages.size, inline, blanked }
+    return { bytes: saveMu(doc), images: drawn.size + inline, pages: pagesWithImages + inlinePages.size, inline, blanked, loose }
   })
 }
 
@@ -1069,9 +1144,16 @@ const isJsAction = (o) => {
 export async function sanitizePdf(bytes, options = {}) {
   const o = { ...SANITIZE_DEFAULTS, ...options }
   return withMupdf(bytes, (doc) => {
-    const r = { scripts: 0, openAction: 0, triggers: 0, xfa: 0, xfaScripts: 0, attachments: 0, xmp: 0, info: 0, links: 0, fonts: 0 }
+    const r = { scripts: 0, openAction: 0, triggers: 0, xfa: 0, xfaScripts: 0, attachments: 0, xmp: 0, info: 0, links: 0, fonts: 0, earlier: 0 }
     const root = doc.getTrailer().get('Root')
     const xfa = new Set(xfaPackets(root).map((p) => (p.stream.isIndirect() ? p.stream.asIndirect() : -1)))
+    // file streams as found before anything is cut (a removal can leave one
+    // hanging off a link that goes later); ones only an old revision still
+    // holds go with the save
+    const isFile = (x) => nameOf(at(x, 'Type')) === 'EmbeddedFile'
+    const startFiles = new Set()
+    if (o.embeddedFiles) for (const [num, x] of objects(doc)) if (isFile(x) && !xfa.has(num)) startFiles.add(num)
+    const left = leftovers(doc, bytes)
     const names = at(root, 'Names')
     if (o.javascript) {
       const js = at(names, 'JavaScript')
@@ -1195,14 +1277,17 @@ export async function sanitizePdf(bytes, options = {}) {
     if (o.embeddedFiles) {
       // any file stream still reachable some other way is emptied. Some
       // writers type XFA packets /EmbeddedFile too (imm1344e, fw9): not those.
-      const files = new Set()
+      const files = new Set(startFiles)
       for (const [num, obj] of objects(doc)) {
         if (nameOf(at(obj, 'Type')) === 'EmbeddedFile' && !xfa.has(num)) files.add(num)
         eachDict(obj, (d) => specStreams(d).forEach((n) => files.add(n)))
       }
       dropFileStreams(doc, files)
       if (!r.attachments && files.size) r.attachments = files.size
+      r.attachments += left.files
     }
+    // anything else an earlier version still holds goes with the save too
+    if (left.revisions || left.objects > left.files) r.earlier = 1
     return { bytes: saveMu(doc), report: r }
   })
 }
@@ -1404,7 +1489,7 @@ function walkResources(res, seenRes, cb, depth = 0) {
 
 function fieldFacts(root) {
   const af = at(root, 'AcroForm')
-  const out = { fields: 0, types: {}, signatures: 0, signed: 0, xfa: 'none', needAppearances: false }
+  const out = { fields: 0, widgets: 0, types: {}, signatures: 0, signed: 0, xfa: 'none', needAppearances: false }
   if (!af) return out
   out.needAppearances = !!at(af, 'NeedAppearances')?.asBoolean?.()
   const seen = new Set()
@@ -1423,6 +1508,8 @@ function fieldFacts(root) {
       return
     }
     out.fields++
+    // a field with several boxes on the page (radio group) has widget kids
+    out.widgets += kids && kids.isArray() && kids.length ? kids.length : 1
     out.types[type ?? 'Unknown'] = (out.types[type ?? 'Unknown'] ?? 0) + 1
     if (type === 'Sig') {
       out.signatures++

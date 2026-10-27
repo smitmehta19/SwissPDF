@@ -8,7 +8,7 @@ import { downloadBytes, formatBytes } from '../lib/download.js'
 import { saveZip } from '../lib/deliver.js'
 import { renderPageImage } from '../lib/pdfText.js'
 import { getBytes, getRecord, isPdfRecord } from './fileStore.js'
-import { OtherCover, typeLabel } from './FileGrid.jsx'
+import { FileName, OtherCover, typeLabel } from './FileGrid.jsx'
 
 // "3 pages, 1.2 MB" for a PDF, "PNG, 240 KB" for anything else.
 const figures = (o) =>
@@ -113,8 +113,16 @@ export default function ResultScreen({ tool, result, nextTools, onOpenTool, onBa
   // "% smaller" only where it means something: PDFs in, as many or fewer PDFs out
   // (not for reports or files made next to the input: Compare, Info, Split parts)
   const consumedCount = result.change.consumedIds.length
-  const sizeCompares = allPdf && consumedCount > 0 && outputs.length <= consumedCount
+  // (and not for Merge: one file for several is no fair "smaller")
+  const sizeCompares = allPdf && consumedCount > 0 && outputs.length === consumedCount
   const smaller = sizeCompares && before && totalSize < before ? Math.round((1 - totalSize / before) * 100) : null
+  // what the next tool gets: PDF outputs are selected; a DOCX or image is
+  // not, the PDF it came from stays selected
+  const nextHelp = !allPdf
+    ? `The result is in your files${sessionOnly ? ' for this session' : ''}. The PDF stays selected for the next tool.`
+    : sessionOnly
+      ? 'The result is in your files for this session and selected for the next tool.'
+      : 'The result is in your files and selected for the next tool.'
   // which files this run replaced in the workspace (they are older versions now)
   const replaced = result.change.consumedIds.map((id) => getRecord(id)?.name).filter(Boolean)
 
@@ -182,6 +190,11 @@ export default function ResultScreen({ tool, result, nextTools, onOpenTool, onBa
             Replaced {replaced.length === 1 ? replaced[0] : `${replaced.length} files`} with {outputs.length === 1 ? first.name : `${outputs.length} files`}. Undo brings {replaced.length === 1 ? 'it' : 'them'} back.
           </p>
         )}
+        {result.unchangedNames?.length > 0 && (
+          <p className="result-replaced" data-testid="result-unchanged">
+            Nothing to do for {result.unchangedNames.join(', ')}: {result.unchangedNames.length === 1 ? 'it stays' : 'they stay'} as {result.unchangedNames.length === 1 ? 'it was' : 'they were'}.
+          </p>
+        )}
         <dl className="review-facts" data-testid="review-facts">
           <div>
             <dt>Size</dt>
@@ -222,9 +235,7 @@ export default function ResultScreen({ tool, result, nextTools, onOpenTool, onBa
           {outputs.map((o) => (
             <li key={o.id}>
               <span className="result-item-text">
-                <span className="file-name" title={o.name}>
-                  {o.name}
-                </span>
+                <FileName name={o.name} />
                 <span className="mono result-figures">
                   {figures(o)}
                   {o.before ? `, ${sizeChange(o.before, o.size)}` : ''}
@@ -286,8 +297,8 @@ export default function ResultScreen({ tool, result, nextTools, onOpenTool, onBa
         </p>
         {nextTools.length > 0 && (
           <div className="result-next">
-            <h3 className="result-next-title">Edit your new file{outputs.length === 1 ? '' : 's'}</h3>
-            <p className="field-help">{sessionOnly ? 'The result is in your files for this session and selected for the next tool.' : 'The result is in your files and selected for the next tool.'}</p>
+            <h3 className="result-next-title">{allPdf ? `Edit your new file${outputs.length === 1 ? '' : 's'}` : 'Keep working on the PDF'}</h3>
+            <p className="field-help" data-testid="result-next-help">{nextHelp}</p>
             <div className="next-grid" data-testid="next-tools">
               {nextTools.map((t) => (
                 <button key={t.id} type="button" className="next-card" onClick={() => onOpenTool(t.id)} data-testid={`next-${t.id}`}>

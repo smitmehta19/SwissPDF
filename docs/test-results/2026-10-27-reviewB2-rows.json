@@ -1,0 +1,2203 @@
+{
+  "name": "2026-10-27-reviewB2-rows",
+  "startedAt": "2026-10-27T20:31:58.050Z",
+  "finishedAt": "2026-10-27T20:32:26.489Z",
+  "durationMin": 0.5,
+  "command": "npm run test:corpus -- --light --case sanitize-loose|redact-numbered|u5b-sanitize|u5b-removeimages --name 2026-10-27-reviewB2-rows",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 18,
+    "fail": 0,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "redact",
+      "pass": 2,
+      "fail": 0,
+      "skip": 0,
+      "ms": 4574
+    },
+    {
+      "tool": "sanitize",
+      "pass": 10,
+      "fail": 0,
+      "skip": 0,
+      "ms": 4817
+    },
+    {
+      "tool": "removeimages",
+      "pass": 6,
+      "fail": 0,
+      "skip": 0,
+      "ms": 3564
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no per-render copy counter; large scans now render (JPX fixed in U1), see time and heap on pdf2img-bible-62MB, pdf2img-crooked-104MB, split-911-large"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "CDN pinning is a config review item; font fidelity not scored"
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no PAdES / multi-place API to call)"
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap"
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    }
+  ],
+  "results": [
+    {
+      "id": "redact-numbered-scan-letter-to-benjamin-glover",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/letter-to-benjamin-glover.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 4046,
+      "opMs": 2285,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "numbered scan page still turned into a picture",
+          "ok": true,
+          "detail": "[1]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "output under 2x the numbered input",
+          "ok": true,
+          "detail": "1755 KB -> 1070 KB",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "box painted black (nothing of the scan left in it)",
+          "ok": true,
+          "detail": "100.0% dark",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "redact-numbered-scan-fax-jean-schmidt-doe",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 528,
+      "opMs": 412,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "numbered scan page still turned into a picture",
+          "ok": true,
+          "detail": "[1]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "output under 2x the numbered input",
+          "ok": true,
+          "detail": "186 KB -> 233 KB",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "box painted black (nothing of the scan left in it)",
+          "ok": true,
+          "detail": "100.0% dark",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-sanitize-loose-attachment",
+      "tool": "sanitize",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/loose-attachment.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 288 ms: Removed 1 attached file.",
+      "error": null,
+      "ms": 773,
+      "opMs": 299,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "reported as removed, not \"nothing found\"",
+          "ok": true,
+          "detail": "Removed 1 attached file.",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-loose-attachment-sanitized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-loose-attachment-sanitized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-loose-attachment-sanitized.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-loose-attachment-sanitized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-loose-attachment-sanitized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no file stream left",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "attachment bytes gone",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-sanitize-facturx",
+      "tool": "sanitize",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 16 ms: Removed 1 attached file.",
+      "error": null,
+      "ms": 213,
+      "opMs": 145,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-aws-invoice-sanitized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-aws-invoice-sanitized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-aws-invoice-sanitized.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-aws-invoice-sanitized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-aws-invoice-sanitized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "probe text gone from every object",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no file stream with data left",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no /AF left",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-sanitize-xfa-imm1344e",
+      "tool": "sanitize",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/xfa-imm1344e-filled.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 81 ms: Removed 39 scripts, 355 XFA scripts, 1 attached file.",
+      "error": null,
+      "ms": 433,
+      "opMs": 104,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-xfa-imm1344e-filled-sanitized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-xfa-imm1344e-filled-sanitized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-xfa-imm1344e-filled-sanitized.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-xfa-imm1344e-filled-sanitized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-xfa-imm1344e-filled-sanitized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "XFA form kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no XFA scripts left",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no JS entries in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "form data kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "XFA fields kept",
+          "ok": true,
+          "detail": "488 -> 488",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "XFA subforms kept",
+          "ok": true,
+          "detail": "258 -> 258",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-sanitize-fw9",
+      "tool": "sanitize",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 82 ms: Removed 3 scripts, 1 XFA form.",
+      "error": null,
+      "ms": 239,
+      "opMs": 125,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-irs-fw9-sanitized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-irs-fw9-sanitized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-irs-fw9-sanitized.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-irs-fw9-sanitized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-irs-fw9-sanitized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no document scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no field scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no attachments (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no JS entries in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "script text gone from the bytes",
+          "ok": true,
+          "detail": "0 of 3 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no embedded files in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page keeps its text (99%)",
+          "ok": true,
+          "detail": "6 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-sanitize-i9",
+      "tool": "sanitize",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uscis-i-9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 210 ms: Removed 28 scripts, 32 triggers.",
+      "error": null,
+      "ms": 542,
+      "opMs": 343,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-uscis-i-9-sanitized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-uscis-i-9-sanitized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-uscis-i-9-sanitized.pdf: page count",
+          "ok": true,
+          "detail": "got 4, want 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-uscis-i-9-sanitized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-uscis-i-9-sanitized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 4 vs MuPDF 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no document scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no field scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no attachments (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no JS entries in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "script text gone from the bytes",
+          "ok": true,
+          "detail": "0 of 24 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no embedded files in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page keeps its text (99%)",
+          "ok": true,
+          "detail": "4 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-sanitize-fileattachment",
+      "tool": "sanitize",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-annotation-fileattachment.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 16 ms: Removed 1 attached file.",
+      "error": null,
+      "ms": 116,
+      "opMs": 38,
+      "heapMB": 18,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-pdfjs-annotation-fileattachment-sanitized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-annotation-fileattachment-sanitized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-annotation-fileattachment-sanitized.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-annotation-fileattachment-sanitized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-annotation-fileattachment-sanitized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no document scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no field scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no attachments (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no JS entries in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "script text gone from the bytes",
+          "ok": true,
+          "detail": "0 of 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no embedded files in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page keeps its text (99%)",
+          "ok": true,
+          "detail": "1 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-sanitize-all-tracemonkey",
+      "tool": "sanitize",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-tracemonkey_with_annotations.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 100 ms: Removed 1 info dictionary, 24 embedded fonts.",
+      "error": null,
+      "ms": 449,
+      "opMs": 262,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-pdfjs-tracemonkey_with_annotations-sanitized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-tracemonkey_with_annotations-sanitized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-tracemonkey_with_annotations-sanitized.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-tracemonkey_with_annotations-sanitized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-tracemonkey_with_annotations-sanitized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no document scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no field scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no attachments (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no JS entries in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "script text gone from the bytes",
+          "ok": true,
+          "detail": "0 of 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no embedded files in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no embedded fonts",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no Info",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no XMP",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no URI actions",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page keeps its text (99%)",
+          "ok": true,
+          "detail": "14 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-sanitize-tracemonkey",
+      "tool": "sanitize",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 152 ms: Nothing found to remove.",
+      "error": null,
+      "ms": 624,
+      "opMs": 469,
+      "heapMB": 19,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-pdfjs-tracemonkey-sanitized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-tracemonkey-sanitized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-tracemonkey-sanitized.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-tracemonkey-sanitized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-tracemonkey-sanitized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no document scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no field scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no attachments (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no JS entries in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "script text gone from the bytes",
+          "ok": true,
+          "detail": "0 of 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no embedded files in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page keeps its text (99%)",
+          "ok": true,
+          "detail": "14 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-sanitize-aws",
+      "tool": "sanitize",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 11 ms: Nothing found to remove.",
+      "error": null,
+      "ms": 116,
+      "opMs": 38,
+      "heapMB": 18,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-aws-invoice-sanitized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-aws-invoice-sanitized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-aws-invoice-sanitized.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-aws-invoice-sanitized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-aws-invoice-sanitized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no document scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no field scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no attachments (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no JS entries in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "script text gone from the bytes",
+          "ok": true,
+          "detail": "0 of 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no embedded files in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page keeps its text (99%)",
+          "ok": true,
+          "detail": "1 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-sanitize-attention",
+      "tool": "sanitize",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 427 ms: Nothing found to remove.",
+      "error": null,
+      "ms": 1312,
+      "opMs": 1079,
+      "heapMB": 26,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-arxiv-1706.03762-attention-sanitized.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-arxiv-1706.03762-attention-sanitized.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-arxiv-1706.03762-attention-sanitized.pdf: page count",
+          "ok": true,
+          "detail": "got 15, want 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-arxiv-1706.03762-attention-sanitized.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-arxiv-1706.03762-attention-sanitized.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no document scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no field scripts (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no attachments (pdf.js)",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no JS entries in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "script text gone from the bytes",
+          "ok": true,
+          "detail": "0 of 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no embedded files in the file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page keeps its text (99%)",
+          "ok": true,
+          "detail": "15 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-removeimages-loose-image",
+      "tool": "removeimages",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/loose-image.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 273 ms: 1 image left over from an earlier version of the file removed, 170 B saved.",
+      "error": null,
+      "ms": 825,
+      "opMs": 283,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "reported as removed, not \"no images\"",
+          "ok": true,
+          "detail": "1 image left over from an earlier version of the file removed, 170 B saved.",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-loose-image-no-images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-loose-image-no-images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-loose-image-no-images.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-loose-image-no-images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-loose-image-no-images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no image stream left",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-removeimages-tracemonkey",
+      "tool": "removeimages",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 172 ms: Images removed on 3 pages, 177.9 KB saved.",
+      "error": null,
+      "ms": 443,
+      "opMs": 296,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-pdfjs-tracemonkey-no-images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-tracemonkey-no-images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-tracemonkey-no-images.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-tracemonkey-no-images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-pdfjs-tracemonkey-no-images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "image objects gone from the file",
+          "ok": true,
+          "detail": "180 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "image data gone from the bytes",
+          "ok": true,
+          "detail": "0 of 0 samples found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page keeps its text (99%)",
+          "ok": true,
+          "detail": "14 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page content unchanged apart from inline images",
+          "ok": true,
+          "detail": "14 pages, 0 inline images in the source",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "form content unchanged apart from inline images",
+          "ok": true,
+          "detail": "8 vs 8 forms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no inline images left",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "smaller file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-removeimages-aws",
+      "tool": "removeimages",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 12 ms: Images removed on 1 page, 66.6 KB saved.",
+      "error": null,
+      "ms": 107,
+      "opMs": 51,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-aws-invoice-no-images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-aws-invoice-no-images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-aws-invoice-no-images.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-aws-invoice-no-images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-aws-invoice-no-images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "image objects gone from the file",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "image data gone from the bytes",
+          "ok": true,
+          "detail": "0 of 0 samples found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page keeps its text (99%)",
+          "ok": true,
+          "detail": "1 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page content unchanged apart from inline images",
+          "ok": true,
+          "detail": "1 pages, 0 inline images in the source",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "form content unchanged apart from inline images",
+          "ok": true,
+          "detail": "0 vs 0 forms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no inline images left",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "smaller file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-removeimages-attention",
+      "tool": "removeimages",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 650 ms: Images removed on 2 pages, 604.8 KB saved.",
+      "error": null,
+      "ms": 1534,
+      "opMs": 1386,
+      "heapMB": 22,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-arxiv-1706.03762-attention-no-images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-arxiv-1706.03762-attention-no-images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-arxiv-1706.03762-attention-no-images.pdf: page count",
+          "ok": true,
+          "detail": "got 15, want 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-arxiv-1706.03762-attention-no-images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-arxiv-1706.03762-attention-no-images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "image objects gone from the file",
+          "ok": true,
+          "detail": "6 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "image data gone from the bytes",
+          "ok": true,
+          "detail": "0 of 0 samples found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page keeps its text (99%)",
+          "ok": true,
+          "detail": "15 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page content unchanged apart from inline images",
+          "ok": true,
+          "detail": "15 pages, 0 inline images in the source",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "form content unchanged apart from inline images",
+          "ok": true,
+          "detail": "2565 vs 2565 forms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no inline images left",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "smaller file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-removeimages-inline-hebrew",
+      "tool": "removeimages",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-hebrew.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 7 ms: No images found, the file is unchanged.",
+      "error": null,
+      "ms": 103,
+      "opMs": 17,
+      "heapMB": 22,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-udhr-hebrew-no-images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-udhr-hebrew-no-images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-udhr-hebrew-no-images.pdf: page count",
+          "ok": true,
+          "detail": "got 4, want 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-udhr-hebrew-no-images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-udhr-hebrew-no-images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 4 vs MuPDF 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "image objects gone from the file",
+          "ok": true,
+          "detail": "0 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "image data gone from the bytes",
+          "ok": true,
+          "detail": "0 of 0 samples found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page keeps its text (99%)",
+          "ok": true,
+          "detail": "4 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page content unchanged apart from inline images",
+          "ok": true,
+          "detail": "4 pages, 0 inline images in the source",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "form content unchanged apart from inline images",
+          "ok": true,
+          "detail": "0 vs 0 forms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no inline images left",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "smaller file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "u5b-removeimages-inline-gpt3",
+      "tool": "removeimages",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-2005.14165-gpt3.pdf"
+      ],
+      "result": "PASS",
+      "detail": "run to result 144 ms: Images removed on 26 pages, 5.97 MB saved.",
+      "error": null,
+      "ms": 552,
+      "opMs": 323,
+      "heapMB": 23,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out0-arxiv-2005.14165-gpt3-no-images.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-arxiv-2005.14165-gpt3-no-images.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-arxiv-2005.14165-gpt3-no-images.pdf: page count",
+          "ok": true,
+          "detail": "got 75, want 75",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-arxiv-2005.14165-gpt3-no-images.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out0-arxiv-2005.14165-gpt3-no-images.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 75 vs MuPDF 75",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "image objects gone from the file",
+          "ok": true,
+          "detail": "148 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "image data gone from the bytes",
+          "ok": true,
+          "detail": "0 of 0 samples found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every page keeps its text (99%)",
+          "ok": true,
+          "detail": "60 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page content unchanged apart from inline images",
+          "ok": true,
+          "detail": "75 pages, 0 inline images in the source",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "form content unchanged apart from inline images",
+          "ok": true,
+          "detail": "0 vs 0 forms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no inline images left",
+          "ok": true,
+          "detail": "0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "smaller file",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no requests outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    }
+  ]
+}

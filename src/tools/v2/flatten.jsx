@@ -49,7 +49,7 @@ export default {
       // formOps.flattenForm uses pdf-lib only, so the whole op runs in the worker
       const res = await ctx.call('doc', 'flattenPdf', f.bytes, { mode: o.mode })
       const parts = [res.fields && plural(res.fields, 'field'), res.annots && plural(res.annots, 'annotation')].filter(Boolean)
-      outputs.push({ name: `${baseName(f.name)}-flat.pdf`, bytes: res.bytes, parentIds: [f.id], note: parts.length ? `${parts.join(' and ')} flattened.` : 'Nothing to flatten, the file is unchanged.' })
+      outputs.push({ name: `${baseName(f.name)}-flat.pdf`, bytes: res.bytes, parentIds: [f.id], note: parts.length ? `${parts.join(' and ')} flattened.` : 'Nothing to flatten, the file is unchanged.', unchanged: !parts.length })
     }
     ctx.progress(files.length, files.length, 'Done')
     return outputs

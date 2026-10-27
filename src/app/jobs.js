@@ -4,7 +4,10 @@
 // lane's worker (the only way to stop a WASM call mid-way); the next call
 // starts a fresh one. If a worker cannot start, ops run inline.
 
-const lanes = new Map() // lane -> { worker, pending: Map<id, {resolve, reject}> }
+const lanes = new Map() // lane -> { worker, pending: Map<id, {resolve, reject}>, jobs }
+// Lanes whose worker is replaced after this many calls: MuPDF keeps memory
+// it never gives back (redaction), a fresh worker starts clean.
+const RECYCLE = { redact: 10 }
 let seq = 1
 let workerBroken = typeof Worker === 'undefined'
 
@@ -27,7 +30,7 @@ function getLane(name) {
   let lane = lanes.get(name)
   if (lane) return lane
   const worker = new Worker(new URL('./opsWorker.js', import.meta.url), { type: 'module' })
-  lane = { worker, pending: new Map() }
+  lane = { worker, pending: new Map(), jobs: 0 }
   worker.onmessage = (e) => {
     const p = lane.pending.get(e.data.id)
     if (!p) return
@@ -80,6 +83,9 @@ export function callOp(op, args, { lane = 'jobs', signal } = {}) {
     const done = (fn) => (v) => {
       signal?.removeEventListener('abort', onAbort)
       fn(v)
+      // an idle lane that did its share of work starts over with a new worker
+      l.jobs++
+      if (RECYCLE[lane] && l.jobs >= RECYCLE[lane] && l.pending.size === 0 && lanes.get(lane) === l) killLane(lane, null)
     }
     l.pending.set(id, {
       resolve: done(resolve),
@@ -96,6 +102,7 @@ export function callOp(op, args, { lane = 'jobs', signal } = {}) {
 //   ctx.signal                        AbortSignal, check it per page
 //   ctx.check()                       throws CancelledError once cancelled
 //   ctx.call(op, ...args)             worker op that cancels with the job
+//   ctx.callIn(lane, op, ...args)     same, in a worker lane of its own ('redact')
 // Returns { promise, cancel }.
 export function runJob(tool, files, options, { onProgress } = {}) {
   const controller = new AbortController()
@@ -109,6 +116,7 @@ export function runJob(tool, files, options, { onProgress } = {}) {
       if (!signal.aborted) onProgress?.({ done, total, label })
     },
     call: (op, ...args) => callOp(op, args, { signal }),
+    callIn: (lane, op, ...args) => callOp(op, args, { signal, lane }),
   }
   const promise = (async () => {
     const outputs = await tool.run(files, options, ctx)

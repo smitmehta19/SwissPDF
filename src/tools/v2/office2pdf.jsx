@@ -148,7 +148,7 @@ function makeOptions(kind) {
             This tab cannot run the Office engine, so Quick mode is used instead.
           </p>
         )}
-        <p className="field-help">The engine runs in this browser. Only the engine files are downloaded; your documents stay here.</p>
+        <p className="field-help">The engine runs in this browser and is checked against a fixed fingerprint. Only engine files are downloaded; your documents stay here.</p>
       </>
     )
   }

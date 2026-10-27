@@ -366,6 +366,7 @@ async function intake(id, password) {
     const decrypted = !!password && !same
     const next = update(id, {
       status: 'ready',
+      restrictions: res.restrictions ?? rec.restrictions ?? null,
       blob: same ? rec.blob : new Blob([bytes], { type: 'application/pdf' }),
       encryptedBlob: decrypted ? (rec.encryptedBlob ?? rec.blob) : rec.encryptedBlob,
       size: bytes.byteLength,
@@ -460,6 +461,8 @@ export async function addVersions(outputs, { tool, consumedIds = [], generation:
       memoryOnly: !out.locked && parents.some((p) => p.memoryOnly || p.encryptedBlob || p.status === 'locked') ? true : undefined,
       isLeaf: true,
       changeId,
+      // the name the file started with, before tool suffixes (see chainName in Shell.jsx)
+      ...(out.baseStem ? { baseStem: out.baseStem } : {}),
     }
     records.set(rec.id, rec)
     if (out.locked) locked.set(rec.id, out.bytes)
@@ -646,6 +649,8 @@ const SORTS = {
   name: (a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }),
   size: (a, b) => a.size - b.size,
   date: (a, b) => a.addedAt - b.addedAt,
+  // PDFs first, each kind in its current order
+  type: (a, b) => (isPdfRecord(a) ? 0 : 1) - (isPdfRecord(b) ? 0 : 1) || a.order - b.order,
 }
 export function sortBy(key, dir = 'asc') {
   const list = getFiles().slice().sort(SORTS[key] ?? SORTS.name)
@@ -694,7 +699,7 @@ export async function filesForRun(ids, { locked: withLocked = false } = {}) {
     const isLocked = rec?.status === 'locked'
     if (!rec || !(rec.status === 'ready' || (withLocked && isLocked))) continue
     const bytes = isLocked ? (locked.get(id) ?? new Uint8Array(await rec.blob.arrayBuffer())) : await getBytes(id)
-    out.push({ id, name: rec.name, size: rec.size, pageCount: rec.pageCount, type: rec.type ?? PDF, notices: rec.notices ?? [], locked: isLocked, bytes })
+    out.push({ id, name: rec.name, size: rec.size, pageCount: rec.pageCount, type: rec.type ?? PDF, notices: rec.notices ?? [], locked: isLocked, restrictions: rec.restrictions ?? null, bytes })
   }
   return out
 }
