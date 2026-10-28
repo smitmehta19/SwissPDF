@@ -1,0 +1,289 @@
+/* Edit PDF > Edit text: line outlines, inline editor, notes, banners.
+   Tokens from src/styles.css :root. */
+
+.et-line {
+  z-index: 1;
+  border-radius: 2px;
+  cursor: text;
+  outline: 1px solid transparent;
+  outline-offset: 1px;
+  transition: outline-color var(--d-fast, 120ms) var(--ease-out, ease-out), background-color var(--d-fast, 120ms) var(--ease-out, ease-out);
+}
+
+.et-line:hover {
+  outline-color: var(--signal);
+  background: color-mix(in srgb, var(--signal) 8%, transparent);
+}
+
+.et-line:focus {
+  outline: none;
+}
+
+.et-line:focus-visible {
+  outline: 2px solid var(--signal);
+  background: color-mix(in srgb, var(--signal) 10%, transparent);
+}
+
+.et-line.is-locked {
+  cursor: not-allowed;
+}
+
+.et-line.is-locked:hover,
+.et-line.is-locked:focus {
+  outline: 1px dashed color-mix(in srgb, var(--muted) 80%, transparent);
+  background: color-mix(in srgb, var(--muted) 8%, transparent);
+}
+
+.et-line.is-editing {
+  outline-color: transparent;
+  background: none;
+}
+
+/* reason for a line that cannot be edited: after a short pause on hover,
+   at once on focus or tap */
+.et-tip {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 6px);
+  z-index: 3;
+  padding: 3px 8px;
+  border-radius: var(--r-xs, 4px);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms var(--ease-out, ease-out), transform 120ms var(--ease-out, ease-out);
+}
+
+.et-line.is-locked:hover .et-tip {
+  opacity: 1;
+  transform: none;
+  transition-delay: 250ms;
+}
+
+.et-line.is-locked:focus .et-tip {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0ms;
+}
+
+/* the inline editor sits on the baseline-left point of the line and turns
+   with it (rotated pages) */
+.et-anchor {
+  z-index: 4;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+}
+
+.et-input {
+  position: absolute;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 2px;
+  background: #fff;
+  outline: 1.5px solid var(--signal);
+  outline-offset: 0;
+  box-shadow: 0 1px 6px rgb(16 24 40 / 0.18);
+  line-height: normal;
+  white-space: pre;
+  caret-color: var(--signal);
+}
+
+.et-input::selection {
+  background: color-mix(in srgb, var(--signal) 28%, #fff);
+}
+
+.et-input:disabled {
+  opacity: 0.6;
+}
+
+/* note under an applied edit */
+.et-note {
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  max-width: min(320px, 80vw);
+  padding: 4px 4px 4px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-1);
+  font-family: var(--sans);
+  font-size: 12px;
+  line-height: 16px;
+  /* only its buttons take clicks: the text under it stays editable */
+  pointer-events: none;
+  transition: opacity 150ms var(--ease-out, ease-out), transform 150ms var(--ease-out, ease-out);
+}
+
+@starting-style {
+  .et-note {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+
+/* near-miss taps go to the closest line (24 px targets) */
+.et-catch {
+  inset: 0;
+  z-index: 0;
+  cursor: text;
+}
+
+.et-note.is-warn {
+  border-color: color-mix(in srgb, var(--warn) 60%, var(--line-strong));
+}
+
+.et-input-error {
+  position: absolute;
+  z-index: 6;
+  width: max-content;
+  max-width: min(300px, 80vw);
+  padding: 4px 8px;
+  border: 1px solid color-mix(in srgb, var(--err) 60%, var(--line-strong));
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--err-text, var(--err));
+  box-shadow: var(--shadow-1);
+  font-family: var(--sans);
+  font-size: 12px;
+  line-height: 16px;
+  white-space: normal;
+}
+
+.et-note.is-refused {
+  border-color: color-mix(in srgb, var(--warn) 60%, var(--line-strong));
+  color: var(--warn);
+}
+
+.et-note-text {
+  min-width: 0;
+}
+
+.et-note-btn {
+  flex: none;
+  pointer-events: auto;
+  min-height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--signal);
+  border-radius: var(--r-xs, 4px);
+  background: var(--signal-wash);
+  color: var(--signal);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.et-note-x {
+  flex: none;
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-xs, 4px);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.et-note-btn:focus-visible,
+.et-note-x:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 1px;
+}
+
+.et-note-x:hover {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+
+/* blocks clicks while an edit is applied */
+.et-busy {
+  inset: 0;
+  z-index: 6;
+  cursor: progress;
+}
+
+.et-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  margin: 0;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--signal-wash);
+  color: var(--ink);
+  font-size: var(--t-sm);
+}
+
+.et-banner > span {
+  flex: 1 1 200px;
+}
+
+.et-banner .btn {
+  flex: none;
+}
+
+/* mode switch and undo in the canvas bar */
+.et-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+
+.et-bar .segmented {
+  margin-right: var(--s-2);
+}
+
+.et-status {
+  color: var(--muted);
+  font-size: var(--t-xs);
+}
+
+.et-panel {
+  display: grid;
+  gap: var(--s-2);
+}
+
+.et-panel .field-help,
+.et-panel .notice {
+  margin: 0;
+}
+
+.et-notes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--s-1);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.et-add-label {
+  margin-top: var(--s-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .et-line,
+  .et-tip,
+  .et-note {
+    transition: none;
+  }
+}

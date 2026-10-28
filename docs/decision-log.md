@@ -1,5 +1,19 @@
 # Decision log
 
+## 2026-10-28 - Edit existing text: remove and redraw with MuPDF
+- Decision: edit text in place by removing the word's glyphs with MuPDF text-only redaction and redrawing the new text in the original font when the file already draws every needed letter with it, else a standard font (Latin, keeps bold/italic) or Noto (other scripts); the rest of the line moves right.
+- Problem that prompted it: Smit: Edit PDF must change text already in the PDF, not only add on top.
+- Why this was chosen: prototype on 44 real edits: 0 pixels changed outside the edit, old word gone 44/44, original font kept 27/44, 8 ms to 1 s per edit; reuses redaction code and fonts.js.
+- Alternatives rejected: rewriting content-stream strings in place (same result, much more code); PDFium like Stirling (a third PDF engine).
+- What changed in the approach, and how: new `src/lib/editTextOps.js` (page text model + editText), worker ops, Edit PDF "Edit text" mode (`edittext.jsx`).
+- Impact and reversibility: reversible (new mode, old Add mode kept).
+- Status: built, in review.
+- Assumptions: a letter counts as present in a subset font only if the file already draws it with that font.
+- Open questions / low confidence: paragraph re-wrap, right-to-left reflow and vertical text are phase 2.
+- Cost impact: none.
+- What failed: two-byte codes in simple fonts drew garbage; MuPDF truncates font names at 31 chars (match full name first); fallback via full pdf-lib reparse was 5.8 s (now a grafted form XObject, 0.9 s).
+- Versions pinned: mupdf 1.28.
+
 ## 2026-10-26 - Stirling parity: app only, keep layout, deploy at the end
 - Decision: copy Stirling's tools, options and flows into the current SwissPDF layout; no rail/left library/right tools, no home page; deploy after the blind review passes.
 - Problem that prompted it: Smit asked to replicate stirling.com; live teardown (`docs/research/2026-10-26-stirling-site-rea.md`) showed their web app uploads files to their server.

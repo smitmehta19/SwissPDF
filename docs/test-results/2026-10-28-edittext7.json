@@ -1,0 +1,6429 @@
+{
+  "name": "2026-10-28-edittext7",
+  "startedAt": "2026-10-28T14:03:33.913Z",
+  "finishedAt": "2026-10-28T14:05:12.892Z",
+  "durationMin": 1.6,
+  "command": "npm run test:corpus -- --light --shards 2 --case ^edittext- --name 2026-10-28-edittext7",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 42,
+    "fail": 0,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "edittext",
+      "pass": 37,
+      "fail": 0,
+      "skip": 0,
+      "ms": 48953
+    },
+    {
+      "tool": "redact",
+      "pass": 5,
+      "fail": 0,
+      "skip": 0,
+      "ms": 1899
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no per-render copy counter; large scans now render (JPX fixed in U1), see time and heap on pdf2img-bible-62MB, pdf2img-crooked-104MB, split-911-large"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "CDN pinning is a config review item; font fidelity not scored"
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no PAdES / multi-place API to call)"
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap"
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    }
+  ],
+  "results": [
+    {
+      "id": "edittext-invoice-aws-invoice",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"estimated\" p1 (HelveticaNeue-Roman); model 605ms; same 170+6ms orig; longer 116+3ms orig; missing 178+5ms Helvetica",
+      "error": null,
+      "ms": 7422,
+      "opMs": 1125,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": "browser \"estimated\" why null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"etsimated\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"etsimated\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: ink in the edited box",
+          "ok": true,
+          "detail": "312 px (35/glyph vs 35 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: same letters keep the original font",
+          "ok": true,
+          "detail": "font original ",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 3 s",
+          "ok": true,
+          "detail": "170 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 1.5 s",
+          "ok": true,
+          "detail": "170 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: finalize under 10 s",
+          "ok": true,
+          "detail": "6 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"etsimatedest\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"etsimatedest\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: ink in the edited box",
+          "ok": true,
+          "detail": "401 px (33/glyph vs 35 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 3 s",
+          "ok": true,
+          "detail": "116 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 1.5 s",
+          "ok": true,
+          "detail": "116 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: finalize under 10 s",
+          "ok": true,
+          "detail": "3 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"eZtimated\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"eZtimated\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: ink in the edited box",
+          "ok": true,
+          "detail": "320 px (36/glyph vs 35 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: letter not in the file uses a fallback font",
+          "ok": true,
+          "detail": "font fallback",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 3 s",
+          "ok": true,
+          "detail": "178 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 1.5 s",
+          "ok": true,
+          "detail": "178 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: finalize under 10 s",
+          "ok": true,
+          "detail": "5 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-invoice-flipkart-invoice",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/flipkart-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"manufacturer\" p1 (Times-Italic); model 35ms; same 72+2ms orig; longer 87+2ms orig; missing 81+3ms Times-Italic",
+      "error": null,
+      "ms": 522,
+      "opMs": 314,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": "browser \"manufacturer\" why null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"mnaufacturer\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"mnaufacturer\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: ink in the edited box",
+          "ok": true,
+          "detail": "185 px (15/glyph vs 15 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: same letters keep the original font",
+          "ok": true,
+          "detail": "font original ",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 3 s",
+          "ok": true,
+          "detail": "72 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 1.5 s",
+          "ok": true,
+          "detail": "72 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: finalize under 10 s",
+          "ok": true,
+          "detail": "2 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"mnaufacturerman\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"mnaufacturerman\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: ink in the edited box",
+          "ok": true,
+          "detail": "248 px (17/glyph vs 15 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 3 s",
+          "ok": true,
+          "detail": "87 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 1.5 s",
+          "ok": true,
+          "detail": "87 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: finalize under 10 s",
+          "ok": true,
+          "detail": "2 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"mZnufacturer\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"mZnufacturer\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: ink in the edited box",
+          "ok": true,
+          "detail": "202 px (17/glyph vs 15 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: letter not in the file uses a fallback font",
+          "ok": true,
+          "detail": "font fallback",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 3 s",
+          "ok": true,
+          "detail": "81 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 1.5 s",
+          "ok": true,
+          "detail": "81 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: finalize under 10 s",
+          "ok": true,
+          "detail": "3 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-invoice-azure-interior",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/azure-interior.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Beeswax\" p1 (Lato-Regular); model 103ms; same 207+6ms orig; longer 110+4ms orig; missing 102+3ms Helvetica",
+      "error": null,
+      "ms": 765,
+      "opMs": 569,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": "browser \"Beeswax\" why null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old word gone from the page bytes",
+          "ok": true,
+          "detail": "0 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"Besewax\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"Besewax\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: ink in the edited box",
+          "ok": true,
+          "detail": "427 px (61/glyph vs 61 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: same letters keep the original font",
+          "ok": true,
+          "detail": "font original ",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 3 s",
+          "ok": true,
+          "detail": "207 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 1.5 s",
+          "ok": true,
+          "detail": "207 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: finalize under 10 s",
+          "ok": true,
+          "detail": "6 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old word gone from the page bytes",
+          "ok": true,
+          "detail": "0 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"BesewaxBee\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"BesewaxBee\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: ink in the edited box",
+          "ok": true,
+          "detail": "637 px (64/glyph vs 61 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 3 s",
+          "ok": true,
+          "detail": "110 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 1.5 s",
+          "ok": true,
+          "detail": "110 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: finalize under 10 s",
+          "ok": true,
+          "detail": "4 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old word gone from the page bytes",
+          "ok": true,
+          "detail": "0 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"BZeswax\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"BZeswax\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: ink in the edited box",
+          "ok": true,
+          "detail": "480 px (69/glyph vs 61 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: letter not in the file uses a fallback font",
+          "ok": true,
+          "detail": "font fallback",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 3 s",
+          "ok": true,
+          "detail": "102 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 1.5 s",
+          "ok": true,
+          "detail": "102 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: finalize under 10 s",
+          "ok": true,
+          "detail": "3 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-report-pdfjs-tracemonkey",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Andreas\" p1 (NimbusRomNo9L-Regu); model 64ms; same 286+20ms orig; longer 268+20ms orig; missing 517+17ms Times-Roman",
+      "error": null,
+      "ms": 2102,
+      "opMs": 1395,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": "browser \"Andreas\" why null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"Adnreas\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"Adnreas\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: ink in the edited box",
+          "ok": true,
+          "detail": "331 px (47/glyph vs 47 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: same letters keep the original font",
+          "ok": true,
+          "detail": "font original ",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 3 s",
+          "ok": true,
+          "detail": "286 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 1.5 s",
+          "ok": true,
+          "detail": "286 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: finalize under 10 s",
+          "ok": true,
+          "detail": "20 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"AdnreasAnd\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"AdnreasAnd\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: ink in the edited box",
+          "ok": true,
+          "detail": "369 px (37/glyph vs 47 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 3 s",
+          "ok": true,
+          "detail": "268 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 1.5 s",
+          "ok": true,
+          "detail": "268 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: finalize under 10 s",
+          "ok": true,
+          "detail": "20 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"Aédreas\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"Aédreas\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: ink in the edited box",
+          "ok": true,
+          "detail": "333 px (48/glyph vs 47 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: letter not in the file uses a fallback font",
+          "ok": true,
+          "detail": "font fallback",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 3 s",
+          "ok": true,
+          "detail": "517 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 1.5 s",
+          "ok": true,
+          "detail": "517 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: finalize under 10 s",
+          "ok": true,
+          "detail": "17 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-report-arxiv-1706-03762-attenti",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Provided\" p1 (NimbusRomNo9L-Regu); model 41ms; same 170+141ms orig; longer 269+195ms orig; missing 553+185ms Times-Roman",
+      "error": null,
+      "ms": 2863,
+      "opMs": 1976,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": "browser \"Provided\" why null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page count",
+          "ok": true,
+          "detail": "got 15, want 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"Porvided\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"Porvided\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: ink in the edited box",
+          "ok": true,
+          "detail": "469 px (59/glyph vs 59 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: same letters keep the original font",
+          "ok": true,
+          "detail": "font original ",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 3 s",
+          "ok": true,
+          "detail": "170 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 1.5 s",
+          "ok": true,
+          "detail": "170 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: finalize under 10 s",
+          "ok": true,
+          "detail": "141 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page count",
+          "ok": true,
+          "detail": "got 15, want 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"PorvidedPro\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"PorvidedPro\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: ink in the edited box",
+          "ok": true,
+          "detail": "653 px (59/glyph vs 59 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 3 s",
+          "ok": true,
+          "detail": "269 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 1.5 s",
+          "ok": true,
+          "detail": "269 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: finalize under 10 s",
+          "ok": true,
+          "detail": "195 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page count",
+          "ok": true,
+          "detail": "got 15, want 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"Péovided\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"Péovided\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: ink in the edited box",
+          "ok": true,
+          "detail": "497 px (62/glyph vs 59 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: letter not in the file uses a fallback font",
+          "ok": true,
+          "detail": "font fallback",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 3 s",
+          "ok": true,
+          "detail": "553 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 1.5 s",
+          "ok": true,
+          "detail": "553 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: finalize under 10 s",
+          "ok": true,
+          "detail": "185 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-report-us-budget-2024",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"summary\" p3 (NewCenturySchlbkLTStd-Ro); model 323ms; same 356+583ms orig; longer 373+567ms orig; missing 845+648ms Times-Roman",
+      "error": null,
+      "ms": 6825,
+      "opMs": 4208,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": "browser \"summary\" why null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page count",
+          "ok": true,
+          "detail": "got 184, want 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 184 vs MuPDF 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"smumary\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"smumary\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: ink in the edited box",
+          "ok": true,
+          "detail": "447 px (64/glyph vs 63 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: same letters keep the original font",
+          "ok": true,
+          "detail": "font original ",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 3 s",
+          "ok": true,
+          "detail": "356 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 1.5 s",
+          "ok": true,
+          "detail": "356 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: finalize under 10 s",
+          "ok": true,
+          "detail": "583 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page count",
+          "ok": true,
+          "detail": "got 184, want 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 184 vs MuPDF 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"smumarysum\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"smumarysum\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: ink in the edited box",
+          "ok": true,
+          "detail": "656 px (66/glyph vs 63 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 3 s",
+          "ok": true,
+          "detail": "373 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 1.5 s",
+          "ok": true,
+          "detail": "373 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: finalize under 10 s",
+          "ok": true,
+          "detail": "567 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page count",
+          "ok": true,
+          "detail": "got 184, want 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 184 vs MuPDF 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"sZmmary\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"sZmmary\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: ink in the edited box",
+          "ok": true,
+          "detail": "366 px (52/glyph vs 63 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: letter not in the file uses a fallback font",
+          "ok": true,
+          "detail": "font fallback",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 3 s",
+          "ok": true,
+          "detail": "845 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 1.5 s",
+          "ok": true,
+          "detail": "845 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: finalize under 10 s",
+          "ok": true,
+          "detail": "648 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-rotated-irs-fw9",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Before\" p1 (HelveticaNeueLTStd-Bd); model 180ms; same 476+25ms orig; longer 1464+20ms orig; missing 754+15ms Helvetica-Bold",
+      "error": null,
+      "ms": 3762,
+      "opMs": 3028,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": "browser \"Before\" why null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"Bfeore\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"Bfeore\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: ink in the edited box",
+          "ok": true,
+          "detail": "315 px (53/glyph vs 52 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: same letters keep the original font",
+          "ok": true,
+          "detail": "font original ",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 3 s",
+          "ok": true,
+          "detail": "476 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 1.5 s",
+          "ok": true,
+          "detail": "476 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: finalize under 10 s",
+          "ok": true,
+          "detail": "25 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"BfeoreBef\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"BfeoreBef\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: ink in the edited box",
+          "ok": true,
+          "detail": "492 px (55/glyph vs 52 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 3 s",
+          "ok": true,
+          "detail": "1464 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 1.5 s",
+          "ok": true,
+          "detail": "1464 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: finalize under 10 s",
+          "ok": true,
+          "detail": "20 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"BQfore\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"BQfore\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: ink in the edited box",
+          "ok": true,
+          "detail": "338 px (56/glyph vs 52 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: letter not in the file uses a fallback font",
+          "ok": true,
+          "detail": "font fallback",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 3 s",
+          "ok": true,
+          "detail": "754 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 1.5 s",
+          "ok": true,
+          "detail": "754 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: finalize under 10 s",
+          "ok": true,
+          "detail": "15 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-rotated-rot90-cropbox-bert",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Kristina\" p1 (NimbusRomNo9L-Medi); model 42ms; same 181+48ms orig; longer 372+67ms orig; missing 359+28ms Times-Bold",
+      "error": null,
+      "ms": 1866,
+      "opMs": 1259,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": "browser \"Kristina\" why null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"Kirstina\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"Kirstina\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: ink in the edited box",
+          "ok": true,
+          "detail": "594 px (74/glyph vs 75 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: same letters keep the original font",
+          "ok": true,
+          "detail": "font original ",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 3 s",
+          "ok": true,
+          "detail": "181 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 1.5 s",
+          "ok": true,
+          "detail": "181 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: finalize under 10 s",
+          "ok": true,
+          "detail": "48 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"KirstinaKri\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"KirstinaKri\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: ink in the edited box",
+          "ok": true,
+          "detail": "865 px (79/glyph vs 75 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 3 s",
+          "ok": true,
+          "detail": "372 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 1.5 s",
+          "ok": true,
+          "detail": "372 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: finalize under 10 s",
+          "ok": true,
+          "detail": "67 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"Kéistina\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"Kéistina\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: ink in the edited box",
+          "ok": true,
+          "detail": "618 px (77/glyph vs 75 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: letter not in the file uses a fallback font",
+          "ok": true,
+          "detail": "font fallback",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 3 s",
+          "ok": true,
+          "detail": "359 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 1.5 s",
+          "ok": true,
+          "detail": "359 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: finalize under 10 s",
+          "ok": true,
+          "detail": "28 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-rotated-c-rot270-cropbox",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot270-cropbox.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Type\" p1 (NimbusRomNo9L-Medi); model 47ms; same 291+6ms orig; longer 311+7ms orig; missing 357+12ms Times-Bold",
+      "error": null,
+      "ms": 1423,
+      "opMs": 1083,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": "browser \"Type\" why null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"Tpye\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"Tpye\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: ink in the edited box",
+          "ok": true,
+          "detail": "758 px (190/glyph vs 190 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: same letters keep the original font",
+          "ok": true,
+          "detail": "font original ",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 3 s",
+          "ok": true,
+          "detail": "291 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 1.5 s",
+          "ok": true,
+          "detail": "291 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: finalize under 10 s",
+          "ok": true,
+          "detail": "6 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"TpyeTyp\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"TpyeTyp\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: ink in the edited box",
+          "ok": true,
+          "detail": "1362 px (195/glyph vs 190 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 3 s",
+          "ok": true,
+          "detail": "311 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 1.5 s",
+          "ok": true,
+          "detail": "311 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: finalize under 10 s",
+          "ok": true,
+          "detail": "7 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old word gone from the page bytes",
+          "ok": true,
+          "detail": "1 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"TQpe\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"TQpe\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: ink in the edited box",
+          "ok": true,
+          "detail": "951 px (238/glyph vs 190 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: letter not in the file uses a fallback font",
+          "ok": true,
+          "detail": "font fallback",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 3 s",
+          "ok": true,
+          "detail": "357 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 1.5 s",
+          "ok": true,
+          "detail": "357 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: finalize under 10 s",
+          "ok": true,
+          "detail": "12 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-intl-udhr-arabic",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-arabic.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"اعتُمد\" p1 (SegoeUI); model 38ms; same 379+11ms NotoSansArabic-Regular overflow; longer 92+17ms NotoSansArabic-Regular overflow; missing 111+10ms NotoSansArabic-Regular overflow; warn: longer: new text in MuPDF text with every mark (a combining mark is missing)",
+      "error": null,
+      "ms": 942,
+      "opMs": 703,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": "browser \"اعتُمد\" why null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old word gone from the page bytes",
+          "ok": true,
+          "detail": "0 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"اتُعمد\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in MuPDF text with every mark",
+          "ok": true,
+          "detail": "a combining mark is missing",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"اتُعمد\" not found",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: ink in the edited box",
+          "ok": true,
+          "detail": "365 px (73/glyph vs 50 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 3 s",
+          "ok": true,
+          "detail": "379 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 1.5 s",
+          "ok": true,
+          "detail": "379 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: finalize under 10 s",
+          "ok": true,
+          "detail": "11 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old word gone from the page bytes",
+          "ok": true,
+          "detail": "0 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"اتُعمداعتُ\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in MuPDF text with every mark",
+          "ok": false,
+          "detail": "a combining mark is missing",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"اتُعمداعتُ\" not found",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: ink in the edited box",
+          "ok": true,
+          "detail": "711 px (89/glyph vs 50 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 3 s",
+          "ok": true,
+          "detail": "92 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 1.5 s",
+          "ok": true,
+          "detail": "92 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: finalize under 10 s",
+          "ok": true,
+          "detail": "17 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page count",
+          "ok": true,
+          "detail": "got 5, want 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 5 vs MuPDF 5",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old word gone from the page bytes",
+          "ok": true,
+          "detail": "0 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"اڤتُمد\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in MuPDF text with every mark",
+          "ok": true,
+          "detail": "a combining mark is missing",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"اڤتُمد\" not found",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: ink in the edited box",
+          "ok": true,
+          "detail": "437 px (87/glyph vs 50 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 3 s",
+          "ok": true,
+          "detail": "111 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 1.5 s",
+          "ok": true,
+          "detail": "111 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: finalize under 10 s",
+          "ok": true,
+          "detail": "10 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-intl-udhr-chinese-simplified",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-chinese-simplified.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"一九\" p1 (ArialUnicodeMS+1); model 235ms; same 222+19ms orig; longer 166+9ms orig; missing 142+6ms NotoSansSC-Regular",
+      "error": null,
+      "ms": 1680,
+      "opMs": 963,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": "browser \"一九\" why null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page count",
+          "ok": true,
+          "detail": "got 7, want 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 7 vs MuPDF 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old word gone from the page bytes",
+          "ok": true,
+          "detail": "0 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"九一\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"九一\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: ink in the edited box",
+          "ok": true,
+          "detail": "185 px (93/glyph vs 93 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 3 s",
+          "ok": true,
+          "detail": "222 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 1.5 s",
+          "ok": true,
+          "detail": "222 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: finalize under 10 s",
+          "ok": true,
+          "detail": "19 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page count",
+          "ok": true,
+          "detail": "got 7, want 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 7 vs MuPDF 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old word gone from the page bytes",
+          "ok": true,
+          "detail": "0 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"九一一\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"九一一\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: ink in the edited box",
+          "ok": true,
+          "detail": "240 px (80/glyph vs 93 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 3 s",
+          "ok": true,
+          "detail": "166 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 1.5 s",
+          "ok": true,
+          "detail": "166 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: finalize under 10 s",
+          "ok": true,
+          "detail": "9 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page count",
+          "ok": true,
+          "detail": "got 7, want 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 7 vs MuPDF 7",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old word gone from the page bytes",
+          "ok": true,
+          "detail": "0 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"一猫\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in pdf.js text",
+          "ok": true,
+          "detail": "\"一猫\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: ink in the edited box",
+          "ok": true,
+          "detail": "315 px (158/glyph vs 93 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 3 s",
+          "ok": true,
+          "detail": "142 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 1.5 s",
+          "ok": true,
+          "detail": "142 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: finalize under 10 s",
+          "ok": true,
+          "detail": "6 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-intl-edittext-hindi",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/edittext-hindi.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"सावर्भौम\" p1 (NotoSansDevanagari-Regular-2000); model 4ms; same 91+1ms NotoSansDevanagari-Regular; longer 64+1ms NotoSansDevanagari-Regular; missing 52+2ms NotoSansDevanagari-Regular; warn: same: new text in pdf.js text (\"सार्भौवम\" not found); longer: new text in pdf.js text (\"सार्भौवमसावर्भौ\" not found); missing: new text in pdf.js text (\"साऋर्भौम\" not found)",
+      "error": null,
+      "ms": 358,
+      "opMs": 242,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": "browser \"सावर्भौम\" why null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: old word gone from the page bytes",
+          "ok": true,
+          "detail": "0 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"सार्भौवम\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: new text in pdf.js text",
+          "ok": false,
+          "detail": "\"सार्भौवम\" not found",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: ink in the edited box",
+          "ok": true,
+          "detail": "752 px (188/glyph vs 187 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 3 s",
+          "ok": true,
+          "detail": "91 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "same: edit under 1.5 s",
+          "ok": true,
+          "detail": "91 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "same: finalize under 10 s",
+          "ok": true,
+          "detail": "1 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: old word gone from the page bytes",
+          "ok": true,
+          "detail": "0 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"सार्भौवमसावर्भौ\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: new text in pdf.js text",
+          "ok": false,
+          "detail": "\"सार्भौवमसावर्भौ\" not found",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: ink in the edited box",
+          "ok": true,
+          "detail": "1361 px (194/glyph vs 187 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 3 s",
+          "ok": true,
+          "detail": "64 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "longer: edit under 1.5 s",
+          "ok": true,
+          "detail": "64 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "longer: finalize under 10 s",
+          "ok": true,
+          "detail": "1 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (MuPDF)",
+          "ok": true,
+          "detail": "0 / 0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old text gone (pdf.js)",
+          "ok": true,
+          "detail": "1 -> 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: old word gone from the page bytes",
+          "ok": true,
+          "detail": "0 -> 0 (visible 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: no loose objects",
+          "ok": true,
+          "detail": "0 orphans",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in MuPDF text",
+          "ok": true,
+          "detail": "\"साऋर्भौम\" not found",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: new text in pdf.js text",
+          "ok": false,
+          "detail": "\"साऋर्भौम\" not found",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: ink in the edited box",
+          "ok": true,
+          "detail": "839 px (210/glyph vs 187 before)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 3 s",
+          "ok": true,
+          "detail": "52 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "missing: edit under 1.5 s",
+          "ok": true,
+          "detail": "52 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "missing: finalize under 10 s",
+          "ok": true,
+          "detail": "2 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-refuse-scanned-fax-jean-schmidt-doe",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "model 27ms, 46 runs, refused \"scanned\" in 22ms",
+      "error": null,
+      "ms": 139,
+      "opMs": 55,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "model marks the text scanned",
+          "ok": true,
+          "detail": "why scanned",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edit refused as scanned",
+          "ok": true,
+          "detail": "refused scanned",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "file unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page reported as scanned",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-refuse-vertical-pdfjs-vertical",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/pdfjs-vertical.pdf"
+      ],
+      "result": "PASS",
+      "detail": "model 3ms, 8 runs, refused \"vertical\" in 2ms",
+      "error": null,
+      "ms": 108,
+      "opMs": 6,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "model marks the text vertical",
+          "ok": true,
+          "detail": "why vertical",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edit refused as vertical",
+          "ok": true,
+          "detail": "refused vertical",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "file unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-refuse-no-unicode-udhr-hebrew",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-hebrew.pdf"
+      ],
+      "result": "PASS",
+      "detail": "model 124ms, 1191 runs, refused \"no-unicode\" in 88ms",
+      "error": null,
+      "ms": 438,
+      "opMs": 213,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "model marks the text no-unicode",
+          "ok": true,
+          "detail": "why no-unicode",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edit refused as no-unicode",
+          "ok": true,
+          "detail": "refused no-unicode",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "file unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-batch-aws-invoice",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "3 edits in 202ms; original, fallback shift 11.98, original",
+      "error": null,
+      "ms": 378,
+      "opMs": 222,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "all three applied",
+          "ok": true,
+          "detail": ",,",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "batch.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "batch.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "batch.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "batch.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "batch.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"estimated\" gone",
+          "ok": true,
+          "detail": "1 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"estimatedxyz\" found",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"sales\" gone",
+          "ok": true,
+          "detail": "0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"SALES\" found",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"Check\" gone",
+          "ok": true,
+          "detail": "0 left",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"Ch\" found",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no pixel changed outside the edited boxes",
+          "ok": true,
+          "detail": "0 px (max 0)",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-fit-pdfjs-tracemonkey",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Andreas\" -> +abc at 0.7059 in 380ms",
+      "error": null,
+      "ms": 1124,
+      "opMs": 566,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "squeezed",
+          "ok": true,
+          "detail": "fit 0.7059",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nothing moved, no overflow",
+          "ok": true,
+          "detail": "shift 0 overflow false",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no pixel changed outside the old word",
+          "ok": true,
+          "detail": "0 px",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "new text found",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-overflow-short-usage",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Usage\" -> \"UQage\" in \"† Usage and recurring charges for this s\": overflow false, pushed 2.09, fallback, ms {\"edit\":150,\"save\":1,\"total\":151}",
+      "error": null,
+      "ms": 386,
+      "opMs": 219,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no overflow reported",
+          "ok": true,
+          "detail": "overflow false noPush null fit null refused null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ms { edit, save, total } numbers through the worker",
+          "ok": true,
+          "detail": "{\"edit\":150,\"save\":1,\"total\":151}",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-overflow-short-check",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Check\" -> \"Checkabc\" in \"*** Check the GST statement attached at \": overflow false, pushed 13.34, original, ms {\"edit\":94,\"save\":0,\"total\":94}",
+      "error": null,
+      "ms": 257,
+      "opMs": 135,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no overflow reported",
+          "ok": true,
+          "detail": "overflow false noPush null fit null refused null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ms { edit, save, total } numbers through the worker",
+          "ok": true,
+          "detail": "{\"edit\":94,\"save\":0,\"total\":94}",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-overflow-widest-tracemonkey",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"and\" -> \"andabcdefgh\" in \"and is used for the application logic of\": overflow false, pushed 0, null, ms {\"edit\":40,\"save\":0,\"total\":40}",
+      "error": null,
+      "ms": 392,
+      "opMs": 198,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied",
+          "ok": true,
+          "detail": "no-room",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overflow reported (or squeezed / no-room when the line cannot move)",
+          "ok": true,
+          "detail": "overflow false noPush encoding fit null refused no-room",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ms { edit, save, total } numbers through the worker",
+          "ok": true,
+          "detail": "{\"edit\":40,\"save\":0,\"total\":40}",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-overflow-widest-attention",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"less\" -> \"lessabcdefgh\" in \"less time to train. Our model achieves 2\": overflow true, pushed 37.17, original, ms {\"edit\":158,\"save\":8,\"total\":166}",
+      "error": null,
+      "ms": 843,
+      "opMs": 481,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "overflow reported (or squeezed / no-room when the line cannot move)",
+          "ok": true,
+          "detail": "overflow true noPush null fit null refused null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ms { edit, save, total } numbers through the worker",
+          "ok": true,
+          "detail": "{\"edit\":158,\"save\":8,\"total\":166}",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-actualtext-synthetic",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/edittext-actualtext.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"PATIENTNAME\" p1: jane fallback 9+1ms; delete null 3+1ms",
+      "error": null,
+      "ms": 121,
+      "opMs": 35,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "jane: applied",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "jane: PATIENTNAME and Johnny gone from the page bytes",
+          "ok": true,
+          "detail": "Tail lineJaneJane",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "jane: other line kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "jane: new text extracts",
+          "ok": true,
+          "detail": "Tail line\n\nJane\n\n",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "delete: applied",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "delete: PATIENTNAME and Johnny gone from the page bytes",
+          "ok": true,
+          "detail": "Tail line",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "delete: other line kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-actualtext-us-budget",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"foreclosures\" p11: at original 620+557ms",
+      "error": null,
+      "ms": 5586,
+      "opMs": 1917,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "old word gone from the text, with and without ActualText",
+          "ok": true,
+          "detail": "0 / 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "its ActualText piece \"for\" is cut from the page strings",
+          "ok": true,
+          "detail": "13 -> 12",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "new text extracts",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edit under 3 s, finalize under 10 s",
+          "ok": true,
+          "detail": "620 + 557 ms",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-whitebox-no-push",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/edittext-whitebox.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Visible\" p1: grow original fit 0.8549 noPush covered 8+1ms",
+      "error": null,
+      "ms": 114,
+      "opMs": 22,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied squeezed or refused no-room",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rest of the line not pushed",
+          "ok": true,
+          "detail": "pushed 0 noPush covered",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "hidden text stays hidden (no pixel changed outside the old word)",
+          "ok": true,
+          "detail": "0 px",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-tight-075",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/edittext-tight.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Kilo\" p1: grow tight-lines 11+1ms",
+      "error": null,
+      "ms": 123,
+      "opMs": 25,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "refused as tight-lines",
+          "ok": true,
+          "detail": "tight-lines",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page unchanged",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-tight-090",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/edittext-tight.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Kilo\" p2: grow fallback 9+1ms",
+      "error": null,
+      "ms": 123,
+      "opMs": 21,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "neighbour lines unchanged",
+          "ok": true,
+          "detail": "\"line one alpha bravo charlie\\nline two delta echo foxtrot\\n\\nline four golf hotel india\\nline five juliet mike oscar\\n\\nKiloWide middle Lima word here\\n\\n\"",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no pixel changed outside the edited line",
+          "ok": true,
+          "detail": "0 px",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-inline-synthetic",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/edittext-inline.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"image\" p1: ed fallback 13+1ms",
+      "error": null,
+      "ms": 122,
+      "opMs": 33,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "inline images unchanged, byte for byte",
+          "ok": true,
+          "detail": "2 -> 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max 0)",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-inline-tam-password",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/edittext-tam.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Indiana\" p1: ed original 69+11ms",
+      "error": null,
+      "ms": 355,
+      "opMs": 154,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "inline images unchanged, byte for byte",
+          "ok": true,
+          "detail": "2 -> 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max 0)",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-inline-tam",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Indiana\" p1: ed original 82+10ms",
+      "error": null,
+      "ms": 374,
+      "opMs": 157,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "inline images unchanged, byte for byte",
+          "ok": true,
+          "detail": "2 -> 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px (max 0)",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-collision-flipkart-billing",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/flipkart-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"near Fun republic mall and nehru\" p1: ed fallback fit 0.8575 noPush collision 96+2ms",
+      "error": null,
+      "ms": 254,
+      "opMs": 134,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "squeezed or refused no-room, overflow reported",
+          "ok": true,
+          "detail": "{\"noPush\":\"collision\",\"fit\":0.8575,\"refused\":null,\"overflow\":true}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "new text does not overlap other text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-collision-attention-email",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"noam@google.com\" p1: ed fallback fit 0.9421 noPush collision 298+313ms",
+      "error": null,
+      "ms": 1409,
+      "opMs": 924,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "squeezed or refused no-room, overflow reported",
+          "ok": true,
+          "detail": "{\"noPush\":\"collision\",\"fit\":0.9421,\"refused\":null,\"overflow\":true}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "new text does not overlap other text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no pixel changed outside the edited box",
+          "ok": true,
+          "detail": "0 px",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-whole-line-flipkart-soldby",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/flipkart-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"WS Retail Services Pvt. Ltd :\" p1: ed original 194+5ms",
+      "error": null,
+      "ms": 397,
+      "opMs": 267,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied (not stale)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "line replaced",
+          "ok": true,
+          "detail": "3 -> 2",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-covered-faint-us-budget",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"OFFICE\" p1: ed fallback 619+576ms",
+      "error": null,
+      "ms": 2663,
+      "opMs": 1891,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "model: editable, not covered",
+          "ok": true,
+          "detail": "why null",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "applied",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-pull-left-flipkart",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/flipkart-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Services\" p1: ed original 72+2ms",
+      "error": null,
+      "ms": 252,
+      "opMs": 114,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied, rest of the line pulled left",
+          "ok": true,
+          "detail": "pushed -7.51",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "word gap kept",
+          "ok": true,
+          "detail": "2.08 -> 2.09",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-centred-attention-title",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"Attention Is All You Need\" p1: ed fallback noPush aligned 148+120ms",
+      "error": null,
+      "ms": 709,
+      "opMs": 426,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "applied, kept centred",
+          "ok": true,
+          "detail": "align centre",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "new line centred on the old centre",
+          "ok": true,
+          "detail": "305.7 vs 305.7",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-repeat-aws-invoice",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "10 edits 95/97/142/93/97/63/67/69/63/72 ms, finalize 5 ms, 153685 B vs 149804 B",
+      "error": null,
+      "ms": 1465,
+      "opMs": 1327,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "all 10 edits applied",
+          "ok": true,
+          "detail": "[\"ok\",\"ok\",\"ok\",\"ok\",\"ok\",\"ok\",\"ok\",\"ok\",\"ok\",\"ok\"]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no growth: within 4 KB of one direct edit",
+          "ok": true,
+          "detail": "153685 vs 149804",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "earlier values gone from the page text and bytes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "last value shown",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no stray glyphs outside the edited boxes",
+          "ok": true,
+          "detail": "0 px",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-signed-aws-invoice",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/edittext-signed.pdf"
+      ],
+      "result": "PASS",
+      "detail": "\"estimated\" edited in 91ms, signature removed",
+      "error": null,
+      "ms": 291,
+      "opMs": 138,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "model says signed",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edit applied",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signatureRemoved reported",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signature field and widget gone",
+          "ok": true,
+          "detail": "0 left",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-redact-inline-away",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "raster pages [] in 236 ms",
+      "error": null,
+      "ms": 1009,
+      "opMs": 273,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output written",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nothing left under the box (leak checks)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page stays vector",
+          "ok": true,
+          "detail": "[]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "inline images unchanged, byte for byte",
+          "ok": true,
+          "detail": "2 -> 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "header bar and everything away from the box render the same",
+          "ok": true,
+          "detail": "0 px",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-redact-inline-over",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "raster pages [1] in 141 ms",
+      "error": null,
+      "ms": 358,
+      "opMs": 141,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output written",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nothing left under the box (leak checks)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page becomes a picture",
+          "ok": true,
+          "detail": "[1]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "box painted black",
+          "ok": true,
+          "detail": "12964/12964",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-redact-split-translate-half",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/edittext-split-translate.pdf"
+      ],
+      "result": "PASS",
+      "detail": "raster pages [1] in 72 ms",
+      "error": null,
+      "ms": 148,
+      "opMs": 72,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output written",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nothing left under the box (leak checks)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page becomes a picture",
+          "ok": true,
+          "detail": "[1]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no inline image data left on the page",
+          "ok": true,
+          "detail": "0 inline images",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "box painted black",
+          "ok": true,
+          "detail": "9604/9604",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-redact-split-scale-half",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/edittext-split-scale.pdf"
+      ],
+      "result": "PASS",
+      "detail": "raster pages [1] in 189 ms",
+      "error": null,
+      "ms": 252,
+      "opMs": 190,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output written",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nothing left under the box (leak checks)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page becomes a picture",
+          "ok": true,
+          "detail": "[1]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no inline image data left on the page",
+          "ok": true,
+          "detail": "0 inline images",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "box painted black",
+          "ok": true,
+          "detail": "9604/9604",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-redact-split-translate-away",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/edittext-split-translate.pdf"
+      ],
+      "result": "PASS",
+      "detail": "raster pages [] in 62 ms",
+      "error": null,
+      "ms": 132,
+      "opMs": 62,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output written",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nothing left under the box (leak checks)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page stays vector",
+          "ok": true,
+          "detail": "[]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "inline image unchanged, byte for byte",
+          "ok": true,
+          "detail": "1 -> 1",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    }
+  ]
+}

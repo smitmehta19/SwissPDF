@@ -132,3 +132,71 @@ P0: 0 · P1: 0 · P2: 0 · P3: 3
 - The browser UI, Health, `npm run build`, and the full 838-page bible run (the author reports about 21 min and 173 MB; only a page subset was run here).
 - Whether `borrowed()` leaks or double-frees in the browser worker over long sessions (R3-2). Measured in Node only.
 - The new JPEG scan path at 144 dpi: readability of small print was not judged.
+
+---
+
+# Round 4: inline-image restore in removeOnPage (2026-10-28, about 25 min budget)
+
+Scope: `src/lib/redactOps.js` `inlineImages` / `restoreInline` / `removeOnPage` (lines 792-910), main tree, read-only.
+
+## Verdict: reject (1 P0)
+
+The restore decides whether an inline image touches a box by working out its placement **one content stream at a time, starting from the identity matrix**. A `cm` set in an earlier part of a split `/Contents` array is therefore ignored. MuPDF has merged the streams and blanked the covered half of the image correctly, but the restore then writes the original bytes back, so the full image comes back under the black box. pdf-lib's `translateContent` / `scaleContent` produce exactly this layout: they prepend a separate `q tx ty cm` stream.
+
+P0: 1 · P1: 0 · P2: 0 · P3: 1
+
+| # | Sev | Location | Problem | Failure scenario (evidence) | Fix |
+|---|---|---|---|---|---|
+| R4-1 | P0 | `src/lib/redactOps.js:825` (`before.flatMap(([, b]) => inlineImages(b) ...)`), `:796-812` | Each content stream is parsed on its own, with a fresh CTM and q stack. The graphics state carries across the parts of `/Contents`, so an image whose `cm` (or an outer `q ... cm`) sits in an earlier stream gets the wrong placement. The overlap test then passes, the counts match (MuPDF keeps a half-covered image), and the original pixels are restored. | Synthetic `inl2.mjs` case A: `/Contents [ (q 1 0 0 1 300 0 cm) (100 0 0 100 0 600 cm BI /W 4 /H 4 /CS /RGB /BPC 8 ID <0x123456 x16> EI Q ...) ]`, with a box over the left half of the image (view 300,92 to 350,192), method remove. `rasterPages []`. MuPDF's merged output obj 5 reads `q 100 0 0 100 300 600 cm BI ... ID .4V.4V... EI Q`, the untouched original bytes. With the black overlay removed, 4704 of 4704 px under the box show the original colour. Case A2 (`q 2 0 0 2 0 0 cm` in the first stream) behaves the same. When the box covers the whole image, MuPDF drops it, the counts differ and the page is turned into an image (safe), so only a partial box leaks. | Work out the placement over all parts joined with white space, as `pruneResources` already does (`:911-914`). Better: get the bounds from MuPDF itself by running a Device over the original page and recording every `fillImage`, inline images included, then fall back when any of them touches a box. Add a corpus row with split contents and a half box. |
+| R4-2 | P3 | `src/lib/redactOps.js:792-794` | Inline images inside Form XObjects are not restored, so MuPDF's re-encoding bug (`/CS [/I /RGB ...]` -> `/CS /I true`) can still damage them there. This is data loss away from the box, not a leak. Inline images inside forms that are under a box are blanked by MuPDF (case D: 0 px left, no original bytes). | Code reading, plus case D with an RGB inline image (not the Indexed form that triggers the bug). | Also check the inline images of forms the page draws, or treat a form with inline images as a reason to fall back to an image. |
+
+## Verified OK (round 4)
+
+- **Corpus:** `CORPUS_OUT=reviewR4 timeout 900 npm run test:corpus -- --case redact --name review-redact-4` gave 62 pass, 0 fail, including `edittext-redact-inline-away` and `-over`. No row covers split contents with a partly covered inline image, which is why #R4-1 passes the suite.
+
+- **The success path does not reintroduce removed content.** Restored resources are used only on the fallback path, where `rasterizePage` replaces `/Resources` and `/Contents` straight away. On the success path the page keeps MuPDF's filtered resources. Cases B, C and E all fell back to an image, and their only stream with the colour bytes is the new raster (obj 4, a 1980x1530 Flate image of the uncovered half). The page content has no original bytes.
+- **Correct placement math in the single-stream cases:**
+  - B: `/Rotate 90` with the image under a half box: falls back to an image, 0 px under the box.
+  - C: nested `q 0 1 -1 0 ... cm q 100 0 0 50 ... cm`: falls back to an image, 0 px.
+  - With a full box, A and A2 also fall back (MuPDF drops the image, so the counts differ).
+- **ASCII85 data with " EI " in it** (case E): MuPDF and the lexer both stop at the false EI. The image is already truncated in the input (1176 px rendered). Under a half box the page falls back to an image and no original bytes remain.
+- **Inline image in a Form XObject under a box** (case D): blanked by MuPDF, `raster []`, 0 px, no original bytes.
+
+## Not verified (round 4)
+
+- Inline images in Type3 CharProcs and in tiling patterns. Patterns already force an image; Type3 was not tested.
+- The real-file rows `edittext-redact-inline-away` and `-over` (TAMReview p1) were not inspected beyond the runner result.
+
+---
+
+# Round 5: R4-1 fix re-check (2026-10-28, about 20 min budget)
+
+Scope: `inlinePlacement` / `restoreInline` / `removeOnPage` in `src/lib/redactOps.js`, main tree, read-only.
+
+## Verdict: approve
+
+R4-1 is fixed. Placement now comes from MuPDF's own drawing of the original page, so a `cm` in an earlier content stream is taken into account. In every leaking or mixed case the page either falls back to an image or keeps only the images that are away from the boxes. No original pixel bytes from under a box survive anywhere outside the new raster.
+
+P0: 0 · P1: 0 (R4-2, inline images in forms, is now covered by the form path: see N2)
+
+## Evidence
+
+| Case | Result |
+|---|---|
+| `inl2.mjs` A, A2 (round-4 leak: split-stream `cm`, half box) | Now rasterized. With the overlay stripped, 0 px under the box (was 4704). The only object holding the colour bytes is the new 1530x1980 raster of the uncovered half. |
+| `inl2.mjs` B, C, E (rotate 90, nested rotated `cm`, ASCII85 " EI ") | Rasterized, 0 px, as in round 4 |
+| `inl.mjs` A-E (full box) | Rasterized, or blanked for the form case D. 0 px and no original bytes. |
+| N1: image XObject half under the box (`cm` from a split stream) plus an inline image away from it | Stays vector. Under the box 4704 -> 0 px. The inline image away is intact (9604/9604 px). |
+| N2: inline image inside a Form XObject drawn from a split stream, half under the box | Stays vector, 0 px under the box, no original bytes in any stream |
+| N3: inline image away plus inline image half under the box, `cm` carried across streams | Rasterized, 0 px under the box. The away image renders intact (9604/9604). |
+| N4: inline stencil mask (`/IM true`) half under the box, split stream | Rasterized, 0 px |
+| N5: only an inline image away from the box (split stream), box over text | Stays vector. The image is restored byte for byte and renders intact (9604/9604). |
+| N6: inline image in an OFF layer, half under the box, split stream | Rasterized, no original bytes left |
+| Corpus | `CORPUS_OUT=reviewR5 timeout 900 npm run test:corpus -- --case redact --name review-redact-5`: 65 pass, 0 fail. The new rows `edittext-redact-split-translate-half` and `-split-scale-half` go to an image; `-split-translate-away` stays vector. |
+
+Scripts: `inl.mjs`, `inl2.mjs`, `inl5.mjs` (N1-N6) in the round-1 scratch `atk\` folder.
+
+## Not verified (round 5)
+
+- Inline images inside Type3 glyph procedures and inside annotation appearance streams.
+- Pages with more than 6 levels of nested forms: the code says they go to an image; not tested.

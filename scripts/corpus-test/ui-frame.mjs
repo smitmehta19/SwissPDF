@@ -23,7 +23,7 @@ async function openTool(browser, tool, rel, stage) {
   const ctx = await browser.newContext({ acceptDownloads: true, viewport: { width: 1300, height: 1000 } })
   const page = await ctx.newPage()
   page.on('pageerror', (e) => console.log(`  page error (${tool}): ${e.message}`))
-  await page.goto(`${url}/#/${tool}`, { waitUntil: 'load' })
+  await page.goto(`${url}/#/${tool}`, { waitUntil: 'load', timeout: 120_000 })
   await page.waitForSelector('[data-testid=add-files-input]', { state: 'attached' })
   await page.setInputFiles('[data-testid=add-files-input]', join(CORPUS, rel))
   await page.waitForSelector(`[data-testid=${stage}] img`, { timeout: 60_000 })
@@ -208,7 +208,7 @@ try {
   for (const rel of ['derived/c-fw9-rot90.pdf', 'forms/xfa-imm1344e-filled.pdf']) {
     const ctx = await browser.newContext()
     const page = await ctx.newPage()
-    await page.goto(`${url}/#/forms`, { waitUntil: 'load' })
+    await page.goto(`${url}/#/forms`, { waitUntil: 'load', timeout: 120_000 })
     const fields = await page.evaluate(async (path) => {
       const bytes = new Uint8Array(await (await fetch(path)).arrayBuffer())
       const { listFields } = await import('/src/lib/formOps.js')

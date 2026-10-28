@@ -128,7 +128,8 @@ function undoText(result) {
 // files with one merged file"). Null when the inputs stay.
 function replaceLine(tool, options, files) {
   const keep = typeof tool.keepInputs === 'function' ? tool.keepInputs(options) : !!tool.keepInputs
-  const pdfs = files.filter((f) => store.isPdfRecord(f))
+  // a tool can say which of the selected files it will actually change (Edit)
+  const pdfs = (tool.changes ? tool.changes(files, options) : files).filter((f) => store.isPdfRecord(f))
   if (keep || pdfs.length === 0) return null
   if (tool.id === 'merge') return `Replaces the ${pdfs.length} selected files with one merged file. Undo brings them back.`
   if (pdfs.length === 1) return `Replaces ${pdfs[0].name} with the result. Undo brings it back.`
@@ -298,6 +299,12 @@ export default function Shell() {
   const [result, setResult] = useState(null) // { toolId, outputs, change }
   const [dialog, setDialog] = useState(null)
   const [notice, setNotice] = useState(null)
+  // notices are one-off: they go away on their own
+  useEffect(() => {
+    if (!notice) return undefined
+    const t = setTimeout(() => setNotice(null), 8000)
+    return () => clearTimeout(t)
+  }, [notice])
   const [sheet, setSheet] = useState(false) // phone: options as a bottom sheet
   const [palette, setPalette] = useState(false)
   const [reader, setReader] = useState(null) // { id, page } while reading
@@ -780,7 +787,10 @@ export default function Shell() {
       {ws.storageNote && files.length > 0 && <p className="notice notice-warn">{ws.storageNote}</p>}
       {notice && (
         <p className="notice notice-warn" role="status">
-          {notice}
+          {notice}{' '}
+          <button type="button" className="link" onClick={() => setNotice(null)} aria-label="Dismiss">
+            Dismiss
+          </button>
         </p>
       )}
       {status && (

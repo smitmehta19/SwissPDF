@@ -25,6 +25,14 @@ Prototype numbers: 0 pixels changed outside the edited box (44/44), old word gon
 - UI script: click, edit, apply, undo, refusal messages, phone 390 and desktop 1440.
 - Independent code review + a fresh no-context user test of Edit PDF.
 
+## Open after review + blind test (P2, all P0/P1 fixed 2026-10-28)
+- Single-word edit shorter than the original inside a line can leave a gap (whole-line edits close up).
+- Bold Arabic falls back to regular weight (no bold Noto Arabic bundled).
+- Phone: dense lines give 6 to 10 px tap targets; enlarged 16 px edit box covers nearby words.
+- Refusal note on a right-edge heading can be clipped; squeezed text is visibly smaller than neighbours.
+- Edited words move to the end of the reading order; structure-tree /Alt not cleaned (marked content is).
+- Inline images inside Form XObjects are not restored after MuPDF redaction (data loss risk, not a leak).
+
 ## Out of scope (phase 2, 4 to 6 days, later)
 Paragraph re-wrap across lines, right-to-left line reflow, vertical text, editing font/size/colour of existing text.
 

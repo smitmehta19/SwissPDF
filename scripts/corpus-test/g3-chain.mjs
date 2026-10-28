@@ -34,7 +34,7 @@ try {
   const page = await ctx.newPage()
   const errors = []
   page.on('pageerror', (e) => errors.push(String(e.message ?? e)))
-  await page.goto(`${base}/#/forms`, { waitUntil: 'load' })
+  await page.goto(`${base}/#/forms`, { waitUntil: 'load', timeout: 120_000 })
   await page.waitForFunction(() => window.crossOriginIsolated, null, { timeout: 60_000 }).catch(() => {})
   await page.waitForSelector('[data-testid=add-files-input]', { state: 'attached', timeout: 60_000 })
   await page.setInputFiles('[data-testid=add-files-input]', join(ROOT, 'test-corpus', REL))

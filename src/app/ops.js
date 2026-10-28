@@ -111,4 +111,8 @@ export const OPS = {
     const { editText } = await import('../lib/editTextOps.js')
     return editText(bytes, edits, opts)
   },
+  async editTextFinalize(bytes) {
+    const { finalizeEdits } = await import('../lib/editTextOps.js')
+    return finalizeEdits(bytes)
+  },
 }

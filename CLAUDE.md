@@ -34,8 +34,8 @@ Privacy-first PDF toolkit that runs fully in the browser: files never leave the 
 Understand → Plan → Build → Review → Report (see global CLAUDE.md). One unit per sprint from the unit map; new ideas go to the plan's Parking lot.
 
 ## Current phase / Next step
-- **Phase:** 2026-10-27 Stirling parity done and deployed (`docs/plans/2026-10-26-stirling-parity.md`). All units built and independently approved; full corpus 829/829; blind no-context review passed (`docs/reviews/2026-10-27-blind-review.md`). Next: the plan's "Fix list" and "Parking lot" (P2 polish, edit existing text, offline app shell). `HANDOFF.md` is stale.
-- **Done:** U0 runner; U1 engine + review fixes; U2a shell; U4 conversions; G1/G3/G4 tools migrated + fixed (integ-1: 573/577 real-file rows, 0 regressions, Health 44/44 dev + build)
-- **Open:** fix batch for integ-1 review stopped mid-way (redact P0s NOT fixed, partial untested edits in main); G2, U5-A, U5-B unfinished in agent worktrees; U5-C, U5-D, re-review, live design critique, U6
-- **Next step:** build + quick corpus resume check, then redact P0 fixes (see HANDOFF.md)
-- **Updated:** 2026-10-18
+- **Phase:** 2026-10-28 release deployed: Stirling parity, polish batch (offline app, kept restrictions), edit existing text in Edit PDF, redact inline-image fix. `HANDOFF.md` is stale.
+- **Done:** all parity units; final gate full corpus 888/888, 12 UI scripts 0 fails; code reviews + blind no-context tests approved (`docs/reviews/2026-10-28-*`)
+- **Open:** P2 lists only: `docs/plans/2026-10-27-edit-existing-text.md` ("Open after review"), polish carry-overs in `docs/plans/2026-10-27-polish-batch.md`; edit-text phase 2 (paragraph re-wrap, RTL reflow) is out of scope
+- **Next step:** none required; pick a P2 list or phase 2 when wanted
+- **Updated:** 2026-10-28

@@ -789,6 +789,134 @@ function dropAnnotations(page, boxes, bounds, dead) {
   dropLinks(page, (a, ctm) => !a.get('Rect').isArray() || !hit(rectOf(a.get('Rect'), ctm)), dead)
 }
 
+// Inline images (BI ... EI) of one content stream, as byte ranges in order.
+function inlineSegments(b) {
+  const out = []
+  let start = -1
+  for (const { op, end } of contentOps(b)) {
+    if (op === 'BI') start = end - 2
+    else if (op === 'EI' && start >= 0) {
+      out.push({ start, end })
+      start = -1
+    }
+  }
+  return out
+}
+const pageContent = (obj) =>
+  asList(obj.get('Contents'))
+    .filter((r) => r.isStream())
+    .map((r) => [r, new Uint8Array(streamBytes(r))])
+
+// The images a content stream draws, in drawing order: 'inline' (BI on the
+// page itself), 'other' (an image XObject, or an inline image inside a
+// form, which is followed with its own resources). Null when a draw cannot
+// be followed for sure (unknown XObject, deep nesting).
+function imageEvents(b, res, depth = 0) {
+  const out = []
+  for (const { op, operands } of contentOps(b)) {
+    if (op === 'BI') out.push(depth ? 'other' : 'inline')
+    else if (op === 'Do') {
+      const name = operands[0]?.type === 'name' ? operands[0].value : null
+      const xo = res?.isDictionary() ? res.get('XObject') : null
+      const x = name && xo?.isDictionary() ? xo.get(name) : null
+      if (!x || !x.isDictionary()) return null
+      if (isName(x.get('Subtype'), 'Image')) out.push('other')
+      else if (isName(x.get('Subtype'), 'Form')) {
+        if (depth > 6 || !x.isStream()) return null
+        const r = x.get('Resources')
+        const inner = imageEvents(new Uint8Array(streamBytes(x)), r.isDictionary() ? r : res, depth + 1)
+        if (!inner) return null
+        out.push(...inner)
+      } else return null
+    }
+  }
+  return out
+}
+
+// Where MuPDF draws each inline image of the page (page space, in order),
+// from a device run with the real transforms. The device sees every image
+// draw (image XObjects and inline images inside forms too); they are matched
+// to the content's image draws by order. Null when the counts differ (a
+// pattern or hidden layer, say): no certainty, the caller makes a picture.
+function inlinePlacement(mupdf, page) {
+  const obj = page.getObject()
+  const res = obj.getInheritable('Resources')
+  const events = []
+  for (const [, b] of pageContent(obj)) {
+    const ev = imageEvents(b, res)
+    if (!ev) return null
+    events.push(...ev)
+  }
+  if (!events.includes('inline')) return []
+  const boxes = []
+  const box = (m) => {
+    const pts = [[0, 0], [1, 0], [0, 1], [1, 1]].map(([u, v]) => [m[0] * u + m[2] * v + m[4], m[1] * u + m[3] * v + m[5]])
+    return [Math.min(...pts.map((p) => p[0])), Math.min(...pts.map((p) => p[1])), Math.max(...pts.map((p) => p[0])), Math.max(...pts.map((p) => p[1]))]
+  }
+  const dev = new mupdf.Device({
+    fillImage(image, ctm) {
+      borrowed(mupdf, image)
+      boxes.push(box(ctm))
+    },
+    fillImageMask(image, ctm, cs) {
+      borrowed(mupdf, image)
+      boxes.push(box(ctm))
+      release(cs)
+    },
+    clipImageMask(image, ctm) {
+      borrowed(mupdf, image)
+      boxes.push(box(ctm))
+    },
+  })
+  try {
+    page.runPageContents(dev, mupdf.Matrix.identity)
+  } finally {
+    dev.close()
+    dev.destroy?.()
+  }
+  if (boxes.length !== events.length) return null
+  return events.flatMap((e, i) => (e === 'inline' ? [boxes[i]] : []))
+}
+
+const hitsAny = (box, rects) => rects.some((r) => box[0] < r[2] && box[2] > r[0] && box[1] < r[3] && box[3] > r[1])
+
+// MuPDF's redaction filter re-writes every inline image of the page and
+// breaks some (an abbreviated Indexed colour space /CS [/I /RGB ...] comes
+// out as /CS /I true: the image is lost, the stream has syntax errors).
+// Puts the original bytes back when no inline image touches a box. False
+// (the page becomes a picture) when one does (it must be blanked), when the
+// images cannot be placed for sure, when the counts differ, or when a second
+// placement run on the restored page puts an inline image under a box.
+// placed: inlinePlacement of the original page.
+function restoreInline(mupdf, page, before, rects, placed) {
+  const orig = before.flatMap(([, b]) => inlineSegments(b).map((x) => b.slice(x.start, x.end)))
+  if (!orig.length) return true
+  if (!placed || placed.length !== orig.length || placed.some((b) => hitsAny(b, rects))) return false
+  const now = pageContent(page.getObject()).map(([r, b]) => ({ r, b, segs: inlineSegments(b) }))
+  if (now.reduce((n, x) => n + x.segs.length, 0) !== orig.length) return false
+  let k = 0
+  for (const x of now) {
+    if (!x.segs.length) continue
+    const parts = []
+    let at = 0
+    for (const s of x.segs) {
+      parts.push(x.b.subarray(at, s.start), orig[k++])
+      at = s.end
+    }
+    parts.push(x.b.subarray(at))
+    const out = new Uint8Array(parts.reduce((n, p) => n + p.length, 0))
+    let o = 0
+    for (const p of parts) {
+      out.set(p, o)
+      o += p.length
+    }
+    x.r.writeStream(out)
+  }
+  // safety net: place them again on the page as it is now
+  const again = inlinePlacement(mupdf, page)
+  return !!again && again.length === orig.length && !again.some((b) => hitsAny(b, rects))
+}
+
 // MuPDF redaction of one page. False when the page is not provably clean:
 // a character still inside a box, a drawing still running through one,
 // ActualText that still reads differently, or MuPDF failed. That page then
@@ -799,16 +927,30 @@ function removeOnPage(mupdf, doc, pageNum, list, dead) {
     const bounds = page.getBounds()
     const boxes = list.map((b) => resolve(b, bounds[2] - bounds[0], bounds[3] - bounds[1]))
     dropAnnotations(page, boxes, bounds, dead)
-    for (const b of boxes) {
-      const annot = page.createAnnotation('Redact')
-      annot.setRect([bounds[0] + b.x, bounds[1] + b.y, bounds[0] + b.x + b.w, bounds[1] + b.y + b.h])
-    }
+    const rects = boxes.map((b) => [bounds[0] + b.x, bounds[1] + b.y, bounds[0] + b.x + b.w, bounds[1] + b.y + b.h])
+    for (const r of rects) page.createAnnotation('Redact').setRect(r)
+    // the page as it was, for the inline images (and to picture it whole)
+    const obj = page.getObject()
+    const before = pageContent(obj)
+    const placed = inlinePlacement(mupdf, page)
+    const snapContents = obj.get('Contents')
+    const snapResources = obj.get('Resources')
     page.applyRedactions(
       true,
       mupdf.PDFPage.REDACT_IMAGE_PIXELS,
       mupdf.PDFPage.REDACT_LINE_ART_REMOVE_IF_COVERED,
       mupdf.PDFPage.REDACT_TEXT_REMOVE,
     )
+    if (!restoreInline(mupdf, page, before, rects, placed)) {
+      // back to the original page so the picture keeps its inline images;
+      // the picture paints the boxes and nothing under them survives
+      for (const [r, b] of before) r.writeStream(b)
+      obj.put('Contents', snapContents)
+      if (snapResources.isNull()) obj.delete('Resources')
+      else obj.put('Resources', snapResources)
+      page.destroy?.()
+      return false
+    }
     stripPageMarkedText(page)
   } catch {
     page.destroy?.()

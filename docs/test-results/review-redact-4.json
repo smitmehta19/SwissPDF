@@ -1,0 +1,4850 @@
+{
+  "name": "review-redact-4",
+  "startedAt": "2026-10-28T13:56:04.910Z",
+  "finishedAt": "2026-10-28T13:58:06.127Z",
+  "durationMin": 2,
+  "command": "npm run test:corpus -- --case redact --name review-redact-4",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 62,
+    "fail": 0,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "redact",
+      "pass": 62,
+      "fail": 0,
+      "skip": 0,
+      "ms": 85712
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "redact-tracemonkey: black box covers the word on screen",
+        "redact-aws-invoice: black box covers the word on screen",
+        "redact-rot90-cropbox: black box covers the word on screen",
+        "redact-rotation-quirk: black box covers the word on screen",
+        "redact-origin-shift: black box covers the word on screen",
+        "g3-redact-remove-tracemonkey: \"dynamic\" gone from extracted text",
+        "g3-redact-remove-tracemonkey: black box covers the word on screen",
+        "g3-redact-remove-rot90-cropbox: \"language\" gone from extracted text",
+        "g3-redact-remove-rot90-cropbox: black box covers the word on screen",
+        "g3-redact-remove-rotation-quirk: \"first\" gone from extracted text",
+        "g3-redact-remove-rotation-quirk: black box covers the word on screen",
+        "g3-redact-remove-origin-shift: \"charges\" gone from extracted text",
+        "g3-redact-remove-origin-shift: black box covers the word on screen",
+        "g3-redact-remove-rot270-cropbox: \"dynamic\" gone from extracted text",
+        "g3-redact-remove-rot270-cropbox: black box covers the word on screen",
+        "g3-redact-remove-rot180-origin: \"dynamic\" gone from extracted text",
+        "g3-redact-remove-rot180-origin: black box covers the word on screen",
+        "g3-redact-remove-aws-invoice: \"charges\" gone from extracted text",
+        "g3-redact-remove-aws-invoice: black box covers the word on screen",
+        "g3-redact-image-rot90-cropbox: \"language\" gone from extracted text",
+        "g3-redact-image-rot90-cropbox: black box covers the word on screen",
+        "g3-redact-remove-flipkart: \"invoice\" gone from extracted text",
+        "g3-redact-remove-flipkart: black box covers the word on screen",
+        "g3-redact-image-tracemonkey: \"dynamic\" gone from extracted text",
+        "g3-redact-image-tracemonkey: black box covers the word on screen"
+      ],
+      "passedChecks": 25,
+      "reason": null
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "redact-find-split-uk-IPPH353: search finds a phrase split across text items",
+        "redact-find-split-uk-AFPS-Form-17: search finds a phrase split across text items",
+        "g3-redact-phrase-split-ipph353: search finds a phrase split across text items",
+        "g3-redact-phrase-split-ipph353: phrase gone from extracted text"
+      ],
+      "passedChecks": 4,
+      "reason": null
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no per-render copy counter; large scans now render (JPX fixed in U1), see time and heap on pdf2img-bible-62MB, pdf2img-crooked-104MB, split-911-large"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "CDN pinning is a config review item; font fidelity not scored"
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no PAdES / multi-place API to call)"
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "SOFT WARN",
+      "evidence": [
+        "redact-tracemonkey: size stays reasonable (<= 3x) (5.9x input)",
+        "redact-rot90-cropbox: size stays reasonable (<= 3x) (10.8x input)",
+        "redact-rotation-quirk: size stays reasonable (<= 3x) (4.4x input)"
+      ],
+      "passedChecks": 28,
+      "reason": null
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap"
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    }
+  ],
+  "results": [
+    {
+      "id": "redact-tracemonkey",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "33 boxes on 9 page(s), 5.9x size; warn: size stays reasonable (<= 3x) (5.9x input)",
+      "error": null,
+      "ms": 19429,
+      "opMs": 11688,
+      "heapMB": 17,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"dynamic\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"dynamic\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 1.00, 1.00, 1.00, 1.00, 1.00, 1.00",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "size stays reasonable (<= 3x)",
+          "ok": false,
+          "detail": "5.9x input",
+          "soft": true,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "redact-aws-invoice",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "13 boxes on 1 page(s), 1.6x size",
+      "error": null,
+      "ms": 1750,
+      "opMs": 1283,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"charges\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"charges\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 0.93, 1.00, 0.96, 1.00, 1.00, 1.00",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "size stays reasonable (<= 3x)",
+          "ok": true,
+          "detail": "1.6x input",
+          "soft": true,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "redact-rot90-cropbox",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "59 boxes on 12 page(s), 10.8x size; warn: size stays reasonable (<= 3x) (10.8x input)",
+      "error": null,
+      "ms": 10426,
+      "opMs": 6838,
+      "heapMB": 25,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"language\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"language\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 1.00, 1.00, 1.00, 1.00, 1.00, 1.00",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "size stays reasonable (<= 3x)",
+          "ok": false,
+          "detail": "10.8x input",
+          "soft": true,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "redact-rotation-quirk",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 boxes on 1 page(s), 4.4x size; warn: size stays reasonable (<= 3x) (4.4x input)",
+      "error": null,
+      "ms": 564,
+      "opMs": 411,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"first\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"first\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 0.89",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "size stays reasonable (<= 3x)",
+          "ok": false,
+          "detail": "4.4x input",
+          "soft": true,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "redact-origin-shift",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/origin-shift-aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "13 boxes on 1 page(s), 1.6x size",
+      "error": null,
+      "ms": 3376,
+      "opMs": 2973,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"charges\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"charges\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 0.93, 1.00, 0.96, 1.00, 1.00, 1.00",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "size stays reasonable (<= 3x)",
+          "ok": true,
+          "detail": "1.6x input",
+          "soft": true,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "redact-numbered-scan-letter-to-benjamin-glover",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/letter-to-benjamin-glover.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 1657,
+      "opMs": 1246,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "numbered scan page still turned into a picture",
+          "ok": true,
+          "detail": "[1]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "output under 2x the numbered input",
+          "ok": true,
+          "detail": "1755 KB -> 1070 KB",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "box painted black (nothing of the scan left in it)",
+          "ok": true,
+          "detail": "100.0% dark",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "redact-numbered-scan-fax-jean-schmidt-doe",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 538,
+      "opMs": 441,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "numbered scan page still turned into a picture",
+          "ok": true,
+          "detail": "[1]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "output under 2x the numbered input",
+          "ok": true,
+          "detail": "186 KB -> 233 KB",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "box painted black (nothing of the scan left in it)",
+          "ok": true,
+          "detail": "100.0% dark",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "redact-watermarked-scan-letter-to-benjamin-glover",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/letter-to-benjamin-glover.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 2034,
+      "opMs": 1511,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "numbered scan page still turned into a picture",
+          "ok": true,
+          "detail": "[1]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "output under 2x the numbered input",
+          "ok": true,
+          "detail": "1755 KB -> 1067 KB",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "box painted black (nothing of the scan left in it)",
+          "ok": true,
+          "detail": "100.0% dark",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "redact-watermarked-96pt-scan-letter-to-benjamin-glover",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/letter-to-benjamin-glover.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 3700,
+      "opMs": 3192,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "numbered scan page still turned into a picture",
+          "ok": true,
+          "detail": "[1]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "output under 2x the numbered input",
+          "ok": true,
+          "detail": "1755 KB -> 1073 KB",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "box painted black (nothing of the scan left in it)",
+          "ok": true,
+          "detail": "100.0% dark",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "redact-find-split-uk-IPPH353",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uk-IPPH353.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 457,
+      "opMs": 219,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "phrase is in the page text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "search finds a phrase split across text items",
+          "ok": true,
+          "detail": "3 matches",
+          "soft": false,
+          "audit": 3
+        }
+      ]
+    },
+    {
+      "id": "redact-find-split-uk-AFPS-Form-17",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uk-AFPS-Form-17.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 114,
+      "opMs": 54,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "phrase is in the page text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "search finds a phrase split across text items",
+          "ok": true,
+          "detail": "3 matches",
+          "soft": false,
+          "audit": 3
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-remove-tracemonkey",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "33 boxes on 9 page(s), 0.94x size, 583 ms",
+      "error": null,
+      "ms": 1856,
+      "opMs": 1618,
+      "heapMB": 27,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"dynamic\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "raw file clean of \"dynamic\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 1.00, 1.00, 1.00, 1.00, 1.00, 1.00",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text outside the boxes stays selectable",
+          "ok": true,
+          "detail": "1.00, 1.00, 1.00, 1.00, 1.00, 1.00",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "no page fell back to an image",
+          "ok": true,
+          "detail": "raster pages ",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "size stays close to the input (<= 1.5x)",
+          "ok": true,
+          "detail": "0.94x input",
+          "soft": false,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-remove-rot90-cropbox",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "59 boxes on 12 page(s), 1.00x size, 747 ms",
+      "error": null,
+      "ms": 2220,
+      "opMs": 2090,
+      "heapMB": 28,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"language\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "raw file clean of \"language\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 1.00, 1.00, 1.00, 1.00, 1.00, 1.00",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text outside the boxes stays selectable",
+          "ok": true,
+          "detail": "1.00, 1.00, 1.00, 1.00, 1.00, 1.00",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "no page fell back to an image",
+          "ok": true,
+          "detail": "raster pages ",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "size stays close to the input (<= 1.5x)",
+          "ok": true,
+          "detail": "1.00x input",
+          "soft": false,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-remove-rotation-quirk",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf"
+      ],
+      "result": "PASS",
+      "detail": "1 boxes on 1 page(s), 0.83x size, 9 ms",
+      "error": null,
+      "ms": 118,
+      "opMs": 70,
+      "heapMB": 19,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"first\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "raw file clean of \"first\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 0.87",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text outside the boxes stays selectable",
+          "ok": true,
+          "detail": "1.00",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "no page fell back to an image",
+          "ok": true,
+          "detail": "raster pages ",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "size stays close to the input (<= 1.5x)",
+          "ok": true,
+          "detail": "0.83x input",
+          "soft": false,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-remove-origin-shift",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/origin-shift-aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "13 boxes on 1 page(s), 0.98x size, 57 ms",
+      "error": null,
+      "ms": 536,
+      "opMs": 466,
+      "heapMB": 19,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"charges\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "raw file clean of \"charges\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 0.91, 1.00, 0.93, 0.98, 1.00, 1.00",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text outside the boxes stays selectable",
+          "ok": true,
+          "detail": "1.00",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "no page fell back to an image",
+          "ok": true,
+          "detail": "raster pages ",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "size stays close to the input (<= 1.5x)",
+          "ok": true,
+          "detail": "0.98x input",
+          "soft": false,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-remove-rot270-cropbox",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot270-cropbox.pdf"
+      ],
+      "result": "PASS",
+      "detail": "16 boxes on 2 page(s), 0.99x size, 141 ms",
+      "error": null,
+      "ms": 771,
+      "opMs": 528,
+      "heapMB": 15,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"dynamic\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "raw file clean of \"dynamic\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 1.00, 1.00, 1.00, 1.00, 1.00, 1.00",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text outside the boxes stays selectable",
+          "ok": true,
+          "detail": "1.00, 1.00",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "no page fell back to an image",
+          "ok": true,
+          "detail": "raster pages ",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "size stays close to the input (<= 1.5x)",
+          "ok": true,
+          "detail": "0.99x input",
+          "soft": false,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-remove-rot180-origin",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot180-origin.pdf"
+      ],
+      "result": "PASS",
+      "detail": "16 boxes on 2 page(s), 0.99x size, 210 ms",
+      "error": null,
+      "ms": 1178,
+      "opMs": 980,
+      "heapMB": 37,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"dynamic\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "raw file clean of \"dynamic\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 1.00, 1.00, 1.00, 1.00, 1.00, 1.00",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text outside the boxes stays selectable",
+          "ok": true,
+          "detail": "1.00, 1.00",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "no page fell back to an image",
+          "ok": true,
+          "detail": "raster pages ",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "size stays close to the input (<= 1.5x)",
+          "ok": true,
+          "detail": "0.99x input",
+          "soft": false,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-remove-aws-invoice",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "13 boxes on 1 page(s), 0.96x size, 112 ms",
+      "error": null,
+      "ms": 884,
+      "opMs": 798,
+      "heapMB": 33,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"charges\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "raw file clean of \"charges\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 0.91, 1.00, 0.93, 0.98, 1.00, 1.00",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text outside the boxes stays selectable",
+          "ok": true,
+          "detail": "1.00",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "no page fell back to an image",
+          "ok": true,
+          "detail": "raster pages ",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "size stays close to the input (<= 1.5x)",
+          "ok": true,
+          "detail": "0.96x input",
+          "soft": false,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-image-rot90-cropbox",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "59 boxes on 12 page(s), 10.77x size, 2858 ms",
+      "error": null,
+      "ms": 7984,
+      "opMs": 5702,
+      "heapMB": 46,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"language\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "raw file clean of \"language\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 1.00, 1.00, 1.00, 1.00, 1.00, 1.00",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every hit page became an image",
+          "ok": true,
+          "detail": "12 of 12",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-remove-flipkart",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/flipkart-invoice.pdf"
+      ],
+      "result": "PASS",
+      "detail": "6 boxes on 1 page(s), 1.01x size, 31 ms",
+      "error": null,
+      "ms": 567,
+      "opMs": 329,
+      "heapMB": 15,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"invoice\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "raw file clean of \"invoice\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 1.00, 1.00, 1.00, 1.00, 0.97, 1.00",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text outside the boxes stays selectable",
+          "ok": true,
+          "detail": "1.00",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "no page fell back to an image",
+          "ok": true,
+          "detail": "raster pages ",
+          "soft": false,
+          "audit": 25
+        },
+        {
+          "name": "size stays close to the input (<= 1.5x)",
+          "ok": true,
+          "detail": "1.01x input",
+          "soft": false,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-image-tracemonkey",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "33 boxes on 9 page(s), 5.93x size, 3139 ms",
+      "error": null,
+      "ms": 6769,
+      "opMs": 5934,
+      "heapMB": 43,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "\"dynamic\" gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "raw file clean of \"dynamic\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "black box covers the word on screen",
+          "ok": true,
+          "detail": "coverage 1.00, 1.00, 1.00, 1.00, 1.00, 1.00",
+          "soft": false,
+          "audit": 2
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every hit page became an image",
+          "ok": true,
+          "detail": "9 of 9",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-hidden-secretname-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-secretname.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 275,
+      "opMs": 124,
+      "heapMB": 16,
+      "audit": null,
+      "checks": [
+        {
+          "name": "search finds the page text, the sticky note and the FreeText",
+          "ok": true,
+          "detail": "3 matches",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bookmark kept (title cleaned)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 2 keeps its text",
+          "ok": true,
+          "detail": "Second page without the name Plain words for coverage checks",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 1 keeps the other line",
+          "ok": true,
+          "detail": "Agreement with   and others This line stays readable on the ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-hidden-secretname-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-secretname.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 657,
+      "opMs": 558,
+      "heapMB": 17,
+      "audit": null,
+      "checks": [
+        {
+          "name": "search finds the page text, the sticky note and the FreeText",
+          "ok": true,
+          "detail": "3 matches",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bookmark kept (title cleaned)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 2 keeps its text",
+          "ok": true,
+          "detail": "Second page without the name Plain words for coverage checks",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-xfa-imm1344e",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/xfa-imm1344e-filled.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 319,
+      "opMs": 64,
+      "heapMB": 17,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 1, want 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"Leonhard\", \"Euler\", \"Brunswick\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-objr-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-objr.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #1, raster pages none",
+      "error": null,
+      "ms": 104,
+      "opMs": 36,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-objr-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-objr.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #1, raster pages none",
+      "error": null,
+      "ms": 115,
+      "opMs": 39,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-replies-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-replies.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #2, raster pages none",
+      "error": null,
+      "ms": 112,
+      "opMs": 34,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-replies-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-replies.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #2, raster pages none",
+      "error": null,
+      "ms": 121,
+      "opMs": 28,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-inherited-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-inherited.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #3, raster pages none",
+      "error": null,
+      "ms": 110,
+      "opMs": 43,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-inherited-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-inherited.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #3, raster pages 1",
+      "error": null,
+      "ms": 328,
+      "opMs": 243,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-sharedPhoto-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-sharedPhoto.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #3, raster pages none",
+      "error": null,
+      "ms": 109,
+      "opMs": 25,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-sharedPhoto-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-sharedPhoto.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #3, raster pages 1",
+      "error": null,
+      "ms": 217,
+      "opMs": 124,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-bdc-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-bdc.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #4, raster pages none",
+      "error": null,
+      "ms": 106,
+      "opMs": 60,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-bdc-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-bdc.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #4, raster pages 1",
+      "error": null,
+      "ms": 549,
+      "opMs": 485,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-lineArt-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-lineArt.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #5, raster pages 1",
+      "error": null,
+      "ms": 208,
+      "opMs": 123,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-lineArt-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-lineArt.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #5, raster pages 1",
+      "error": null,
+      "ms": 232,
+      "opMs": 116,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-pattern-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-pattern.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #6, raster pages none",
+      "error": null,
+      "ms": 113,
+      "opMs": 31,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-pattern-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-pattern.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #6, raster pages 1",
+      "error": null,
+      "ms": 218,
+      "opMs": 117,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-hiddenLayer-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-hiddenLayer.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #7, raster pages none",
+      "error": null,
+      "ms": 109,
+      "opMs": 48,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-hiddenLayer-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-hiddenLayer.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #7, raster pages 1",
+      "error": null,
+      "ms": 329,
+      "opMs": 274,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-carriers-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-carriers.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #8, raster pages none",
+      "error": null,
+      "ms": 113,
+      "opMs": 55,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-carriers-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-carriers.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #8, raster pages 1",
+      "error": null,
+      "ms": 324,
+      "opMs": 263,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-ocmd-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-ocmd.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #r2-2, raster pages none",
+      "error": null,
+      "ms": 114,
+      "opMs": 45,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-ocmd-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-ocmd.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #r2-2, raster pages 1",
+      "error": null,
+      "ms": 553,
+      "opMs": 506,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-shading-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-shading.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #r2-1, raster pages 1",
+      "error": null,
+      "ms": 216,
+      "opMs": 130,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-shading-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-shading.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #r2-1, raster pages 1",
+      "error": null,
+      "ms": 218,
+      "opMs": 125,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-mesh-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-mesh.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #r2-1, raster pages 1",
+      "error": null,
+      "ms": 223,
+      "opMs": 129,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-mesh-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-mesh.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #r2-1, raster pages 1",
+      "error": null,
+      "ms": 218,
+      "opMs": 125,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-type3Shared-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-type3Shared.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #r2-3, raster pages none",
+      "error": null,
+      "ms": 114,
+      "opMs": 45,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 2 (Type3 glyphs, pruned resources) renders the same",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-type3Shared-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-type3Shared.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #r2-3, raster pages 1",
+      "error": null,
+      "ms": 320,
+      "opMs": 249,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 2 (Type3 glyphs, pruned resources) renders the same",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-nameDests-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-nameDests.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #r2-6, raster pages none",
+      "error": null,
+      "ms": 115,
+      "opMs": 54,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-leak-nameDests-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-nameDests.pdf"
+      ],
+      "result": "PASS",
+      "detail": "review #r2-6, raster pages 1",
+      "error": null,
+      "ms": 320,
+      "opMs": 251,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRETNAME\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-shared-resources-free-fiber-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/free-fiber.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 320,
+      "opMs": 201,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "finds the word on page 1",
+          "ok": true,
+          "detail": "2 matches",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 2 (pruned resources) renders the same",
+          "ok": true,
+          "detail": "mean grey diff 0.000",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-shared-resources-free-fiber-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/free-fiber.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 857,
+      "opMs": 738,
+      "heapMB": 15,
+      "audit": null,
+      "checks": [
+        {
+          "name": "finds the word on page 1",
+          "ok": true,
+          "detail": "2 matches",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 2 (pruned resources) renders the same",
+          "ok": true,
+          "detail": "mean grey diff 0.000",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-actualtext-us-budget",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 4664,
+      "opMs": 3765,
+      "heapMB": 101,
+      "audit": null,
+      "checks": [
+        {
+          "name": "finds \"Econ\" on page 23",
+          "ok": true,
+          "detail": "6 matches",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 184, want 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 184 vs MuPDF 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 23 text no longer reads \"Econ\" (ActualText gone)",
+          "ok": true,
+          "detail": "18   G ROWING   TH e   OMY   FROM   TH e B OTTOM   U P   AND   M IDDL e O UT  co",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "untouched pages keep exactly their text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-phrase-split-ipph353",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uk-IPPH353.pdf"
+      ],
+      "result": "PASS",
+      "detail": "3 boxes, 129 ms",
+      "error": null,
+      "ms": 552,
+      "opMs": 328,
+      "heapMB": 73,
+      "audit": null,
+      "checks": [
+        {
+          "name": "search finds a phrase split across text items",
+          "ok": true,
+          "detail": "3 matches",
+          "soft": false,
+          "audit": 3
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 4, want 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 4 vs MuPDF 4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "phrase gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 3
+        },
+        {
+          "name": "raw file clean of \"Acrobat Reader\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text outside the boxes stays selectable",
+          "ok": true,
+          "detail": "1.00",
+          "soft": false,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-patterns-quality-hosting",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/quality-hosting.pdf"
+      ],
+      "result": "PASS",
+      "detail": "9 boxes: info@qualityhosting.de, +49 6051 916 44 10, +49 6051 916 44 29, 044 241 601 03",
+      "error": null,
+      "ms": 107,
+      "opMs": 66,
+      "heapMB": 84,
+      "audit": null,
+      "checks": [
+        {
+          "name": "finds emails and phone numbers",
+          "ok": true,
+          "detail": "info@qualityhosting.de | +49 6051 916 44 10 | +49 6051 916 44 29 | 044 241 601 03 | buchhaltung@qualityhosting.de",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "every match gone from extracted text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"info@qualityhosting.de\", \"+49 6051 916 44 10\", \"+49 6051 916 44 29\", \"044 241 601 03\", \"buchhaltung@qualityhosting.de\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text outside the boxes stays selectable",
+          "ok": true,
+          "detail": "1.00, 1.00",
+          "soft": false,
+          "audit": 25
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-regex-budget-phones",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "6 boxes, (202) 512-1530, (888) 293-6498, (202) 512-1800",
+      "error": null,
+      "ms": 3495,
+      "opMs": 3339,
+      "heapMB": 115,
+      "audit": null,
+      "checks": [
+        {
+          "name": "regex finds the phone numbers",
+          "ok": true,
+          "detail": "(202) 512-1530 | (888) 293-6498 | (202) 512-1800 | (866) 512-1800 | (202) 512-2104",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 184, want 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 184 vs MuPDF 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no phone number left on pages 1-4",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-whole-page-tracemonkey",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 297,
+      "opMs": 99,
+      "heapMB": 73,
+      "audit": null,
+      "checks": [
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 1 has no text left",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page 2 keeps its text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "size stays close to the input (<= 1.5x)",
+          "ok": true,
+          "detail": "0.91x",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g3-redact-form-value-fw9",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 649,
+      "opMs": 526,
+      "heapMB": 73,
+      "audit": null,
+      "checks": [
+        {
+          "name": "search finds the value inside a form field",
+          "ok": true,
+          "detail": "1 matches",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "redacted.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "field value gone",
+          "ok": true,
+          "detail": "undefined",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "value gone from text and file bytes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "raw file clean of \"SECRET4455\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-redact-inline-away",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "raster pages [] in 91 ms",
+      "error": null,
+      "ms": 336,
+      "opMs": 91,
+      "heapMB": 94,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output written",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nothing left under the box (leak checks)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page stays vector",
+          "ok": true,
+          "detail": "[]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "inline images unchanged, byte for byte",
+          "ok": true,
+          "detail": "2 -> 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "header bar and everything away from the box render the same",
+          "ok": true,
+          "detail": "0 px",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-redact-inline-over",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "raster pages [1] in 223 ms",
+      "error": null,
+      "ms": 328,
+      "opMs": 223,
+      "heapMB": 75,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output written",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "nothing left under the box (leak checks)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page becomes a picture",
+          "ok": true,
+          "detail": "[1]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "box painted black",
+          "ok": true,
+          "detail": "12964/12964",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    }
+  ]
+}

@@ -50,43 +50,45 @@ export function currentOf(files, target) {
   return { file, page }
 }
 
-// Rendered image and visible size (points) of one page. A new `width` keeps
-// the old image on screen until the sharper one is ready.
-export function usePageView(file, page, width = 1400) {
-  const [view, setView] = useState({ img: null, size: null, error: null, key: null })
+// Rendered image and visible size (points) of one page. A new `width` or new
+// `bytes` (a tool's own working copy, else the workspace file) keeps the old
+// image on screen until the new one is ready.
+export function usePageView(file, page, width = 1400, bytes = null) {
+  const [view, setView] = useState({ img: null, size: null, error: null, key: null, src: null })
   const key = file ? `${file.id}:${page}` : null
   const loaded = useRef(null)
   useEffect(() => {
     if (!file) return undefined
     let active = true
-    setView((v) => (v.key === key ? v : { img: null, size: null, error: null, key }))
-    // only a re-render of the page already shown waits, so zoom steps batch
+    setView((v) => (v.key === key ? v : { img: null, size: null, error: null, key, src: null }))
+    // only a sharper re-render of the page already shown waits, so zoom steps batch
+    const sameSrc = loaded.current?.key === key && loaded.current.bytes === bytes
     const t = setTimeout(
       () =>
         (async () => {
-          const bytes = await getBytes(file.id)
+          const src = bytes ?? (await getBytes(file.id))
           const size = await serializedPdfOp(async () => {
-            const doc = await openPdfDocument(bytes)
+            const doc = await openPdfDocument(src)
             const vp = (await doc.getPage(page)).getViewport({ scale: 1 })
             return { width: vp.width, height: vp.height }
           })
-          const img = await renderPageImage(bytes, page, width)
-          return { img, size }
+          const img = await renderPageImage(src, page, width)
+          return { img, size, src: bytes }
         })().then(
           (res) => {
             if (!active) return
-            loaded.current = key
+            loaded.current = { key, bytes }
             setView({ ...res, error: null, key })
           },
-          (err) => active && setView({ img: null, size: null, error: err.message, key }),
+          (err) => active && setView({ img: null, size: null, error: err.message, key, src: null }),
         ),
-      loaded.current === key ? 180 : 0,
+      sameSrc ? 180 : 0,
     )
     return () => {
       active = false
       clearTimeout(t)
     }
-  }, [key, width]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [key, width, bytes]) // eslint-disable-line react-hooks/exhaustive-deps
   return view
 }
 
@@ -115,10 +117,15 @@ export function PageStage({
   children,
   empty = 'Select a PDF in Files to work on it here.',
   zoom = false,
+  bytes = null, // a tool's working copy of the file to show instead of the stored one
+  onRendered, // (bytes) once the image of those bytes is on screen
+  banner,
+  stageRef,
+  fitNarrow = false, // auto zoom fits the width on narrow panes too (no 1 px per pt floor)
 }) {
   const { file, page } = currentOf(files, target)
   const [renderW, setRenderW] = useState(1400)
-  const view = usePageView(file, page, renderW)
+  const view = usePageView(file, page, renderW, bytes)
   const boxRef = useRef(null)
   const wrapRef = useRef(null)
   const dragging = useRef(false)
@@ -127,6 +134,9 @@ export function PageStage({
   const [zoomAt, setZoom] = useState({ fit: 'auto', value: 100 })
   const [wrapW, setWrapW] = useState(0)
   const shown = !!(view.img && view.size && file && view.key === `${file.id}:${page}`)
+  useEffect(() => {
+    if (shown) onRendered?.(view.src)
+  }, [shown, view.img]) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!shown || !boxRef.current) return undefined
     const measure = () => {
@@ -155,7 +165,7 @@ export function PageStage({
 
   const pageW = view.size?.width
   const fitScale = wrapW > 0 && pageW ? Math.max(0.1, wrapW / pageW) : PX
-  const fitted = zoomAt.fit === true || (zoomAt.fit === 'auto' && (fitScale >= READABLE || wrapW >= NARROW))
+  const fitted = zoomAt.fit === true || (zoomAt.fit === 'auto' && (fitScale >= READABLE || wrapW >= NARROW || fitNarrow))
   const zoomScale = zoom && pageW ? (zoomAt.fit ? (fitted ? fitScale : READABLE) : (zoomAt.value / 100) * PX) : null
   const pct = zoomScale ? Math.round((zoomScale / PX) * 100) : 100
   const dispW = zoomScale ? Math.round(pageW * zoomScale) : null
@@ -205,12 +215,16 @@ export function PageStage({
         </div>
       </div>
       {hint && <p className="field-help g3-hint">{hint}</p>}
+      {banner}
       <div className="viewer-stage g3-stage-wrap" ref={wrapRef}>
         {view.error && <p className="field-error">{view.error}</p>}
         {!view.error && !shown && <p className="empty-line">Rendering page {page}…</p>}
         {shown && (
           <div
-            ref={boxRef}
+            ref={(el) => {
+              boxRef.current = el
+              if (stageRef) stageRef.current = el
+            }}
             className={`g3-stage ${dispW ? 'is-zoom' : ''}`}
             data-testid={testId}
             data-page={page}

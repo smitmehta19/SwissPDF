@@ -288,7 +288,7 @@ export default function ResultScreen({ tool, result, nextTools, onOpenTool, onBa
         )}
         {sessionOnly && (
           <p className="notice result-session-note" role="status" data-testid="result-session-note">
-            Made from an unlocked file, so it is kept for this session only. Download it before you reload or close this tab.
+            Made from an unlocked file: the result has no password and is kept for this session only. Download it before you reload or close this tab, and use Protect if it needs a password again.
           </p>
         )}
         <p className="result-local" data-testid="result-local">
