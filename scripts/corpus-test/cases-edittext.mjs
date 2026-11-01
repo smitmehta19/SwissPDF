@@ -1140,11 +1140,18 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
       return
     }
     ctx.check('applied', !r.refused, r.refused)
-    ctx.check(want.close ? 'closed up a line' : `spilled onto ${want.lines ?? '1+'} new line(s)`, want.close ? r.spill?.lines === -1 : r.spill?.lines >= (want.lines ?? 1), JSON.stringify(r.spill))
+    if (want.lines === 0) ctx.check('laid out again on its own line', r.spill?.lines === 0, JSON.stringify(r.spill))
+    else ctx.check(want.close ? 'closed up a line' : `spilled onto ${want.lines ?? '1+'} new line(s)`, want.close ? r.spill?.lines === -1 : r.spill?.lines >= (want.lines ?? 1), JSON.stringify(r.spill))
     if (want.moved != null) ctx.check(`moved ${want.moved}+ rows`, r.spill?.moved >= want.moved, JSON.stringify(r.spill))
     ctx.check('no overflow, no squeeze', !r.overflow && !r.fit, JSON.stringify({ overflow: r.overflow, fit: r.fit }))
     charsCheck()
     if (!r.changedBox) return
+    // a justified line that still fits stays justified: it ends at the column edge
+    if (want.lines === 0) {
+      const m2 = await pageTextModel(ctx.out(`${e.name}.pdf`), t.pageNum)
+      const run = m2.runs.find((x) => x.text === e.text)
+      ctx.check('still ends at the column edge', !!run && Math.abs(run.bbox[2] - t.bbox[2]) < 0.6, run ? `${run.bbox[2].toFixed(2)} vs ${t.bbox[2].toFixed(2)}` : 'line not found')
+    }
     // nothing outside the changed box moved or vanished
     const before = glyphsOf(input, idx)
     const after = glyphsOf(out, idx)
@@ -1232,6 +1239,10 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
   spillRow('close-attention', 'reports/arxiv-1706.03762-attention.pdf', (s) => s.startsWith('reduced to a constant number of operations'), () => '', { close: true, either: true }, 2)
   spillRow('close-ligature-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('iteration of a loop. Some variables'), () => '', { close: true, either: true }, 5)
   spillRow('words-apart-free-fiber', 'invoices/free-fiber.pdf', (s) => s.startsWith('Free SAS au capital'), (t) => t.old.replace('capital', 'capital plus several more inserted words here to push it over'), { either: true, reads: ['Euros − B 421', 'Paris − Siège'] })
+  // review 2: a justified line that still fits after re-laying, and a word
+  // replaced mid-line
+  spillRow('same-line-justified-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('Dynamic languages such as JavaScript are more'), (t) => t.old.replace(' such as ', ' such ases '), { lines: 0, reads: ['such ases JavaScript'] })
+  spillRow('mid-line-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('deployment as easy as distributing'), (t) => t.old.replace(' easy ', ' easy, fast and safe for everyone, '), { moved: 1, reads: ['easy, fast and safe for everyone, as distributing'] })
   spillRow('guard-opacity', SPILL_ALPHA, (s) => s.startsWith('The quick brown'), plus(' plus several extra words'), { fallback: 'half-opacity line below' })
   spillRow('fallback-no-room-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('is available, traditional compilers'), plus(' plus a lot of extra words'), { fallback: 'no blank space below' })
   spillRow('refused-no-room-below', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('Categories and Subject Descriptors'), plus(' plus a lot of extra words to spill over the edge'), { fallback: 'no room', refused: 'no-room-below' })

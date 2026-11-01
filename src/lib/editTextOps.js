@@ -2563,7 +2563,10 @@ function spillPlan(P, t) {
   const base = g.rows.map((r) => P.lines[r.lines[0]].chars.find((c) => c.c.trim())).map((c) => (c ? dot(c.origin, g.frame.down) : null))
   const gaps = base.slice(1).map((v, k) => (v != null && base[k] != null ? v - base[k] : 0)).filter((d) => d > 0.5 * g.size && d < 2.5 * g.size).sort((a, b) => a - b)
   const lead = gaps.length ? gaps[gaps.length >> 1] : g.leading
-  return { g, r0, words, diff, lead }
+  // the edited row's own baseline (row v is on a 0.2 pt grid): new words sit on it
+  const vs = g.rows[r0].lines.flatMap((li) => P.lines[li].chars.filter((c) => c.c.trim()).map((c) => dot(c.origin, g.frame.down))).sort((a, b) => a - b)
+  const v0 = vs.length ? vs[vs.length >> 1] : null
+  return { g, r0, words, diff, lead, v0 }
 }
 
 // ---------- one paragraph ----------
@@ -2876,6 +2879,9 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch,
       const at = under(to)
       if (at.length !== from.length || at.some((p) => !from.includes(p))) return refuse('spill-blocked')
     }
+    // new words on the re-laid rows: on the row's real baseline
+    const nudge = spill.v0 != null && Math.abs(spill.v0 - g.rows[r0].v) < 0.2 ? spill.v0 - g.rows[r0].v : 0
+    for (const row of w.rows) if (row.kept == null) row.nv = row.v + nudge
     layout = w.rows
     last = w.last
     spilled = w
@@ -2949,12 +2955,12 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch,
             d += `BT /${fontName(t.draw.ref)} ${f4(c0.size)} Tf ${show} ET\n`
           }
         } else if (it.kind === 'same') {
-          const o = pointAt(p.x, row.v, p.w)
+          const o = pointAt(p.x, row.nv ?? row.v, p.w)
           d = `BT /${fontName(it.draw.ref)} ${f4(it.size)} Tf ${f4(it.draw.tc)} Tc ${Tz}${colorOp(it.color)} ${tm(o, dir).map(f4).join(' ')} Tm <${hexOf(it.draw.info, it.draw.codes)}> Tj ET\n`
         } else {
           const f = forms.get(p)
           const name = formName(f)
-          const m = tm(pointAt(p.x, row.v, p.w), dir)
+          const m = tm(pointAt(p.x, row.nv ?? row.v, p.w), dir)
           const cm = [m[0] * scale, m[1] * scale, m[2], m[3], m[4], m[5]]
           const bold = needsFakeBold(it.style.font, f) ? fakeBold(it.color, it.size) : ''
           d = `q ${colorOp(it.color)} ${bold}${cm.map(f4).join(' ')} cm /${name} Do Q\n`

@@ -112,6 +112,9 @@ try {
   await page.goto(`${base}/#/compare`, { waitUntil: 'load' })
   await page.waitForSelector('[data-testid=options-panel]')
   await waitCards(page, 'list.length === 2 && list.every((t) => /^2 pages/.test(t))', 'two files after reload')
+  // adding a file while a tool is open drops earlier results from the
+  // selection (polish batch): pick both, as a user would
+  await page.click('button.link:has-text("Select all")')
   // workspace order: the unlocked OCR file first; make the plain scan the original
   await page.click('[data-testid=compare-swap]')
   await runAndWait(page)

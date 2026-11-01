@@ -766,7 +766,9 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
         const ids = e?.paragraphId ? (paras.find((p) => p.id === e.paragraphId)?.runIds ?? []) : e?.wordIndex == null && e?.runId ? [e.runId] : []
         return ids.some((rid) => runs.find((r) => r.id === rid)?.words.some((w) => !UNREADABLE.test(w.text) && !w.covered))
       }
-      const notes = res.report.map((r, i) => ({ ...r, anchor: edits[i]?.anchor ?? edits[0]?.anchor, ...(UNREAD_WHY.has(r.refused) && wordsOk(edits[i]) ? { wordsOk: true } : {}) }))
+      // a character the user did not type (it was in the old text): say so
+      const wasThere = (r, e) => r.refused === 'unsupported-char' && !!r.char && String(e?.old ?? '').includes(r.char)
+      const notes = res.report.map((r, i) => ({ ...r, anchor: edits[i]?.anchor ?? edits[0]?.anchor, ...(UNREAD_WHY.has(r.refused) && wordsOk(edits[i]) ? { wordsOk: true } : {}), ...(wasThere(r, edits[i]) ? { charWasThere: true } : {}) }))
       if (!notes.some((r) => !r.refused)) {
         refusedWith(notes, parent, from)
         // the page is not read again: keyboard focus goes back now
@@ -1215,6 +1217,7 @@ function noteBody(n, byUser = false) {
   if (n.action === 'forms') return reasonText('form-field')
   if (n.refused && n.wordsOk) return `Not changed: ${reasonText(n.refused, n.char, !!n.paragraphId)}. ${WORDS_OK}`
   if (n.refused === 'error') return `Not changed: ${n.message}`
+  if (n.charWasThere) return `Not changed: this line already has a character no font here can draw again ("${n.char}"). Edit single words around it instead`
   if (n.refused) return `Not changed: ${reasonText(n.refused, n.char, !!n.paragraphId)}`
   const parts = []
   if (n.paragraphId) {

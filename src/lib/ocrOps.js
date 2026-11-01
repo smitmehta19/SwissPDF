@@ -526,7 +526,8 @@ export async function ocrPdf(
 ) {
   const languages = langs ?? (lang ? String(lang).split('+') : ['eng'])
   const force = textPages === 'force'
-  const layers = await pageTextLayers(bytes, { withModes: force })
+  // reading and stripping an old text layer takes seconds: Cancel does not wait for it
+  const layers = await cancellable(pageTextLayers(bytes, { withModes: force }), signal)
   const pageCount = layers.length
   const list = (pages ?? Array.from({ length: pageCount }, (_, i) => i + 1)).filter((n) => n >= 1 && n <= pageCount)
   const todo = list.filter((n) => textPages !== 'skip' || layers[n - 1].chars < HAS_TEXT)
@@ -536,8 +537,8 @@ export async function ocrPdf(
   const replacedPages = force ? todo.filter((n) => layers[n - 1].chars > 0 && !layers[n - 1].visible) : []
   const visibleTextPages = force ? todo.filter((n) => layers[n - 1].visible) : []
   const source = bytes
-  if (replacedPages.length) bytes = await stripText(bytes, replacedPages)
-  const doc = await PDFDocument.load(bytes, { updateMetadata: false })
+  if (replacedPages.length) bytes = await cancellable(stripText(bytes, replacedPages), signal)
+  const doc = await cancellable(PDFDocument.load(bytes, { updateMetadata: false }), signal)
 
   let totalWords = 0
   let skippedWords = 0
