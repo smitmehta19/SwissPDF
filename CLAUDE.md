@@ -34,8 +34,8 @@ Privacy-first PDF toolkit that runs fully in the browser: files never leave the 
 Understand → Plan → Build → Review → Report (see global CLAUDE.md). One unit per sprint from the unit map; new ideas go to the plan's Parking lot.
 
 ## Current phase / Next step
-- **Phase:** PAUSED 2026-10-29 mid edit-text phase 2 ship prep (uncommitted). Read `HANDOFF.md` first. Live = 39c54fc (Stirling parity, polish batch, edit text phase 1).
-- **Done:** all parity units; final gate full corpus 888/888, 12 UI scripts 0 fails; code reviews + blind no-context tests approved (`docs/reviews/2026-10-28-*`)
-- **Open:** P2 lists only: `docs/plans/2026-10-27-edit-existing-text.md` ("Open after review"), polish carry-overs in `docs/plans/2026-10-27-polish-batch.md`; edit-text phase 2 (paragraph re-wrap, RTL reflow) is out of scope
-- **Next step:** finish the 2 partial tasks in `HANDOFF.md`, full gate, deploy (paragraph re-wrap stays hidden and parked)
-- **Updated:** 2026-10-29
+- **Phase:** 2026-11-01 deployed ce0368a: edit text phase 2 (RTL line reflow, leak fixes, UI fixes); paragraph re-wrap parked behind `PARAGRAPH_EDIT` flag. `HANDOFF.md` is stale.
+- **Done:** ship gate full corpus 958/958, 12 UI scripts 0 fails, live Health 49/49
+- **Open:** parked paragraph re-wrap (`docs/team/status-engine.md` "Parked"), P2 lists in the edit-text plans, polish carry-overs
+- **Next step:** none required; pick a parked item when wanted
+- **Updated:** 2026-11-01
