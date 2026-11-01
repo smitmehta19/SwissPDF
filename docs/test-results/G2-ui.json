@@ -1,48 +1,48 @@
 {
-  "date": "2026-10-28T15:08:47.613Z",
-  "base": "http://127.0.0.1:50199",
+  "date": "2026-11-01T15:08:59.464Z",
+  "base": "http://127.0.0.1:49683",
   "summary": [
     {
       "tool": "repair",
       "pass": 5,
       "runs": 5,
-      "medianMs": 981
+      "medianMs": 473
     },
     {
       "tool": "ocr",
       "pass": 3,
       "runs": 3,
-      "medianMs": 19540
+      "medianMs": 17343
     },
     {
       "tool": "autorotate",
       "pass": 3,
       "runs": 3,
-      "medianMs": 4464
+      "medianMs": 3938
     },
     {
       "tool": "protect",
       "pass": 3,
       "runs": 3,
-      "medianMs": 906
+      "medianMs": 890
     },
     {
       "tool": "unlock",
       "pass": 3,
       "runs": 3,
-      "medianMs": 410
+      "medianMs": 880
     },
     {
       "tool": "compare",
       "pass": 3,
       "runs": 3,
-      "medianMs": 893
+      "medianMs": 992
     },
     {
       "tool": "health",
       "pass": 3,
       "runs": 3,
-      "medianMs": 12232
+      "medianMs": 8999
     }
   ],
   "rows": [
@@ -52,7 +52,7 @@
       "cards": [
         "1 page, 631 B"
       ],
-      "ms": 1028,
+      "ms": 473,
       "ok": true,
       "detail": "1 pages, Rebuilt the file structure. All 1 page kept as they were, with any bookmarks, links and form fields.",
       "external": [],
@@ -90,7 +90,7 @@
         "1 page, 622 B",
         "File was damaged and has been repaired. 1 of 2 pages could not be recovered"
       ],
-      "ms": 163,
+      "ms": 53,
       "ok": true,
       "detail": "no new version: Nothing to do: It was already repaired when it was added, nothing more to fix.",
       "external": [],
@@ -103,7 +103,7 @@
       "cards": [
         "1 page, 5.1 KB"
       ],
-      "ms": 981,
+      "ms": 940,
       "ok": true,
       "detail": "1 pages, Rebuilt the file structure. All 1 page kept as they were, with any bookmarks, links and form fields.",
       "external": [],
@@ -116,7 +116,7 @@
       "cards": [
         "2 pages, 186.4 KB"
       ],
-      "ms": 19540,
+      "ms": 14124,
       "ok": true,
       "detail": "2290 chars of text, 414 words recognised on 2 pages. The old invisible text layer was replaced on 2 pages.",
       "external": [],
@@ -129,7 +129,7 @@
       "cards": [
         "36 pages, 528.6 KB"
       ],
-      "ms": 58116,
+      "ms": 61391,
       "ok": true,
       "detail": "3059 chars of text, 95 words recognised on 24 pages. 12 pages already had text and stayed as they were.",
       "external": [],
@@ -142,7 +142,7 @@
       "cards": [
         "1 page, 235.5 KB"
       ],
-      "ms": 16242,
+      "ms": 17343,
       "ok": true,
       "detail": "89 chars of text, 21 words recognised on 1 page.",
       "external": [],
@@ -155,7 +155,7 @@
       "cards": [
         "2 pages, 185.2 KB"
       ],
-      "ms": 2962,
+      "ms": 3666,
       "ok": true,
       "detail": "2 of 2 pages back upright, 0 wrong, 2 pages turned upright (p. 1-2).",
       "external": [],
@@ -168,7 +168,7 @@
       "cards": [
         "36 pages, 520.5 KB"
       ],
-      "ms": 30122,
+      "ms": 27674,
       "ok": true,
       "detail": "36 of 36 pages back upright, 0 wrong, 36 pages turned upright (p. 1-36).",
       "external": [],
@@ -181,7 +181,7 @@
       "cards": [
         "1 page, 235.5 KB"
       ],
-      "ms": 4464,
+      "ms": 3938,
       "ok": true,
       "detail": "no new version: Nothing to do: Every page was already upright. 1 page had too little text to tell and stayed as it was.",
       "external": [],
@@ -194,7 +194,7 @@
       "cards": [
         "14 pages, 992.5 KB"
       ],
-      "ms": 906,
+      "ms": 920,
       "ok": true,
       "detail": "Standard V5 R6 256-bit AES, opens with the password",
       "external": [],
@@ -207,7 +207,7 @@
       "cards": [
         "1 page, 150.9 KB"
       ],
-      "ms": 300,
+      "ms": 384,
       "ok": true,
       "detail": "Standard V4 R4 128-bit AES, opens freely",
       "external": [],
@@ -220,7 +220,7 @@
       "cards": [
         "6 pages, 137.5 KB"
       ],
-      "ms": 906,
+      "ms": 890,
       "ok": true,
       "detail": "Standard V1 R2 40-bit RC4, opens with the password",
       "external": [],
@@ -234,7 +234,7 @@
         "1 page, 150.4 KB",
         "Restrictions removed so the file can be edited; results keep them"
       ],
-      "ms": 410,
+      "ms": 880,
       "ok": true,
       "detail": "None, 1 pages, 1921 chars, Its protection was already removed when it was added.",
       "external": [],
@@ -248,7 +248,7 @@
         "14 pages, 992.5 KB",
         "Password needed to open this file"
       ],
-      "ms": 322,
+      "ms": 300,
       "ok": true,
       "detail": "None, 23 pages, 65271 chars, Password removed. Not protected, left out: pdfjs-tracemonkey.pdf.",
       "external": [],
@@ -261,7 +261,7 @@
       "cards": [
         "Password needed to open this file"
       ],
-      "ms": 1131,
+      "ms": 918,
       "ok": true,
       "detail": "None, 1 pages, 18 chars, Password removed.",
       "external": [],
@@ -275,7 +275,7 @@
         "5 pages, 456.2 KB",
         "6 pages, 527.5 KB"
       ],
-      "ms": 893,
+      "ms": 992,
       "ok": true,
       "detail": "1213 words added, 0 removed, on 1 of 6 page pairs. | Not in the original, changed p. 3 (1 of 1, new page)",
       "external": [],
@@ -289,7 +289,7 @@
         "23 pages, 658.8 KB",
         "23 pages, 658.8 KB"
       ],
-      "ms": 914,
+      "ms": 1388,
       "ok": true,
       "detail": "The text of both documents is the same. | ",
       "external": [],
@@ -303,7 +303,7 @@
         "1 page, 150.9 KB",
         "1 page, 147.8 KB"
       ],
-      "ms": 887,
+      "ms": 875,
       "ok": true,
       "detail": "The text of both documents is the same. | ",
       "external": [],
@@ -314,7 +314,7 @@
       "tool": "health",
       "file": "run 1",
       "cards": [],
-      "ms": 12394,
+      "ms": 11043,
       "ok": true,
       "detail": "All 49 checks passed. Every tool works in this browser.",
       "external": [],
@@ -329,7 +329,7 @@
       "tool": "health",
       "file": "run 2",
       "cards": [],
-      "ms": 12232,
+      "ms": 8999,
       "ok": true,
       "detail": "All 49 checks passed. Every tool works in this browser.",
       "external": [],
@@ -344,7 +344,7 @@
       "tool": "health",
       "file": "run 3",
       "cards": [],
-      "ms": 12226,
+      "ms": 8955,
       "ok": true,
       "detail": "All 49 checks passed. Every tool works in this browser.",
       "external": [],

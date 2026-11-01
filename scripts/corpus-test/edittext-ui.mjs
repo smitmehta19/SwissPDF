@@ -1,7 +1,10 @@
 // UI test for Edit PDF > Edit text on the real shell (dev server) with real
 // corpus files: click a word or line, type, apply, notes, undo/redo, Escape,
-// Tab, signed and scanned files, phone 390 tap-to-edit, Run and download.
+// Tab, signed and scanned files, phone 390 tap-to-edit and editor bar,
+// notes kept in view, paragraph editing (desktop and phone), right-to-left
+// editors, Run and download.
 // Output text is checked with pdf.js; requests are watched for file data.
+// Sections: aws, trace, flip, rot, arabic, scan, fw9, signed, phone, note, para, shell, noparagraph, session, rtl
 // Usage: CORPUS_OUT=edittextui node scripts/corpus-test/edittext-ui.mjs [--only aws,phone] [--no-shots]
 import { chromium } from 'playwright'
 import { mkdirSync, readFileSync } from 'node:fs'
@@ -11,6 +14,9 @@ import { findTextPositions, textOf } from './validate.mjs'
 import { pageTextModel } from '../../src/lib/editTextOps.js'
 
 const CORPUS = join(ROOT, 'test-corpus')
+// the app's paragraph switch (edittext.jsx): paragraph sections run only when it is on
+const PARAGRAPH_EDIT = /export const PARAGRAPH_EDIT = true/.test(readFileSync(join(ROOT, 'src', 'tools', 'v2', 'edittext.jsx'), 'utf8'))
+const modelOf = (bytes, page) => pageTextModel(bytes, page, { paragraphs: PARAGRAPH_EDIT })
 const SHOTS = join(ROOT, 'docs', 'design', 'screens', 'edit-text')
 const arg = (k) => (process.argv.includes(k) ? process.argv[process.argv.indexOf(k) + 1] : null)
 const ONLY = arg('--only')?.split(',') ?? null
@@ -25,13 +31,16 @@ const check = (name, ok, detail = '') => {
 }
 const timings = [] // { file, kind, total, engine }
 const squash = (s) => String(s ?? '').normalize('NFKC').replace(/\s+/g, '')
+const fold = (s) => String(s ?? '').replace(/\s+/g, ' ').trim()
 const count = (hay, needle) => (needle ? hay.split(needle).length - 1 : 0)
+// text the app refuses at once (no letter mapping)
+const UNREADABLE = /[�\u0000-\u0008\u000e-\u001f\u007f-\u009f-]/u
 const readRel = (rel) => new Uint8Array(readFileSync(join(CORPUS, rel)))
 
 // A unique word in an editable line, not the last word of its line.
 async function pickWords(rel, n, { script = /^[A-Za-z]{4,}$/, page = 1, skip = new Set() } = {}) {
   const bytes = readRel(rel)
-  const m = await pageTextModel(bytes, page)
+  const m = await modelOf(bytes, page)
   const all = squash((await textOf(bytes)).join(' '))
   const out = []
   for (const run of m.runs) {
@@ -123,11 +132,29 @@ async function clickWord(page, size, w, how = 'click') {
 
 async function runAndDownload(page) {
   await page.waitForSelector('[data-testid=run-btn]:not([disabled])', { timeout: 30_000 })
-  await page.click('[data-testid=run-btn]')
-  await page.waitForSelector('[data-testid=result-screen]', { timeout: 180_000 })
+  // wall time from the click to the done screen with its Download button,
+  // measured in the page (no test-tool polling in it)
+  const wallP = page.evaluate(
+    () =>
+      new Promise((resolve) => {
+        const t0 = performance.now()
+        const obs = new MutationObserver(() => {
+          if (!document.querySelector('[data-testid=result-download]')) return
+          obs.disconnect()
+          resolve(Math.round(performance.now() - t0))
+        })
+        obs.observe(document.body, { childList: true, subtree: true })
+        document.querySelector('[data-testid=run-btn]').click()
+      }),
+  )
+  const wall = await Promise.race([wallP, page.waitForTimeout(180_000).then(() => null)])
+  await page.waitForSelector('[data-testid=result-screen]', { timeout: 10_000 })
   const note = (await page.textContent('[data-testid=result-screen]')) ?? ''
+  // "Time 0.4 s", or "Time under 0.1 s" (counted as 100 ms)
+  const t = note.match(/Time\s*(under\s)?([\d.]+)\s(ms|s)/)
+  const shownMs = t ? Number(t[2]) * (t[3] === 's' ? 1000 : 1) : null
   const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 60_000 }), page.click('[data-testid=result-download]')])
-  return { out: new Uint8Array(readFileSync(await dl.path())), note }
+  return { out: new Uint8Array(readFileSync(await dl.path())), note, wall, shownMs }
 }
 
 const shot = async (page, name) => SHOOT && page.screenshot({ path: join(SHOTS, `${name}.png`) })
@@ -236,7 +263,7 @@ try {
   if (want('trace')) {
     const rel = 'reports/pdfjs-tracemonkey.pdf'
     const bytes = readRel(rel)
-    const m = await pageTextModel(bytes, 1)
+    const m = await modelOf(bytes, 1)
     const all = squash((await textOf(bytes)).join(' '))
     // a long body line that is unique in the file
     const run = m.runs.find((r) => r.editable && r.text.length > 50 && r.bbox[1] > 300 && count(all, squash(r.text)) === 1 && r.dir[0] === 1)
@@ -251,6 +278,15 @@ try {
     check('trace: whole-line edit applied', r.ok, r.ms ? `${r.ms.total} ms` : '')
     const note = await page.waitForSelector('[data-testid=et-note]', { timeout: 10_000 }).then((h) => h.textContent()).catch(() => '')
     check('trace: overflow note with Fit to width', /Runs past the margin/.test(note) && !!(await page.$('[data-testid=et-fit]')), note)
+    // P2-7: the note sits outside the edited line, not on it
+    {
+      const nb = await page.locator('[data-testid=et-note]').first().boundingBox().catch(() => null)
+      const sb = await stage(page).boundingBox()
+      const k = sb.width / m.page.width
+      const lb = { x0: sb.x + run.bbox[0] * k, y0: sb.y + run.bbox[1] * k, x1: sb.x + run.bbox[2] * k, y1: sb.y + run.bbox[3] * k }
+      const hits = nb && nb.x < lb.x1 && lb.x0 < nb.x + nb.width && nb.y < lb.y1 && lb.y0 < nb.y + nb.height
+      check('trace: the note does not cover the edited line (P2-7)', !!nb && !hits, nb ? `note y ${nb.y.toFixed(0)}..${(nb.y + nb.height).toFixed(0)}, line y ${lb.y0.toFixed(0)}..${lb.y1.toFixed(0)}` : 'no note')
+    }
     await shot(page, 'overflow-1440')
     const v = await version(page)
     const ms0 = await page.getAttribute('[data-testid=et-live]', 'data-apply-ms')
@@ -274,7 +310,7 @@ try {
   // ---------- flipkart: Sold By line, longer billing line ----------
   if (want('flip')) {
     const rel = 'invoices/flipkart-invoice.pdf'
-    const m = await pageTextModel(readRel(rel), 1)
+    const m = await modelOf(readRel(rel), 1)
     const sold = m.runs.find((r) => r.editable && /^WS Retail Services Pvt\. Ltd\.,/.test(r.text))
     const bill = m.runs.find((r) => r.editable && /near Fun republic mall/.test(r.text))
     const { ctx, page } = await open(rel)
@@ -350,7 +386,7 @@ try {
       const { out } = await runAndDownload(page)
       const text = squash((await textOf(out)).join(' '))
       // a word whose text layer has no letter mapping: refused before typing
-      const bad = (await pageTextModel(readRel(rel), 1)).runs.flatMap((r) => (r.editable ? r.words.filter((w) => /\ufffd/.test(w.text)) : []))[0]
+      const bad = (await modelOf(readRel(rel), 1)).runs.flatMap((r) => (r.editable ? r.words.filter((w) => /\ufffd/.test(w.text)) : []))[0]
       if (bad) {
         const { ctx: c2, page: p2 } = await open(rel)
         await p2.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
@@ -368,7 +404,7 @@ try {
   // ---------- scanned page: banner, reason on hover, Open OCR ----------
   if (want('scan')) {
     const rel = 'scanned/fax-jean-schmidt-doe.pdf'
-    const m = await pageTextModel(readRel(rel), 1)
+    const m = await modelOf(readRel(rel), 1)
     const { ctx, page } = await open(rel)
     const banner = await page.waitForSelector('[data-testid=et-scanned]', { timeout: 30_000 }).then((h) => h.textContent()).catch(() => '')
     check('scan: banner says run OCR first', /Scanned page: run OCR first/.test(banner), banner)
@@ -387,7 +423,7 @@ try {
   // ---------- form field: reason says use Forms ----------
   if (want('fw9')) {
     const rel = 'forms/irs-fw9.pdf'
-    const m = await pageTextModel(readRel(rel), 1)
+    const m = await modelOf(readRel(rel), 1)
     const run = m.runs.find((r) => r.why === 'form-field')
     const { ctx, page } = await open(rel)
     await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
@@ -400,7 +436,56 @@ try {
     await page.click(lineSel(run), { force: true })
     await page.waitForTimeout(300)
     check('fw9: clicking it opens no editor', !(await page.$('[data-testid=et-input]')))
+    // P2-6: an empty text field (no text on the page there) says to use Forms
+    {
+      const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs')
+      const doc = await pdfjs.getDocument({ data: readRel(rel), isEvalSupported: false }).promise
+      const pg = await doc.getPage(1)
+      const vp = pg.getViewport({ scale: 1 })
+      const boxes = (await pg.getAnnotations())
+        .filter((a) => a.subtype === 'Widget' && a.fieldType === 'Tx' && !a.fieldValue)
+        .map((a) => {
+          const [x0, y0, x1, y1] = vp.convertToViewportRectangle(a.rect)
+          return [Math.min(x0, x1), Math.min(y0, y1), Math.max(x0, x1), Math.max(y0, y1)]
+        })
+      await doc.destroy()
+      const inB = (b, x, y) => x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]
+      const field = boxes.sort((a, b) => b[2] - b[0] - (a[2] - a[0])).find((b) => !m.runs.some((r) => inB(r.bbox, (b[0] + b[2]) / 2, (b[1] + b[3]) / 2)))
+      if (!field) check('fw9: an empty form field click says use Forms', false, 'no empty field found')
+      else {
+        await stage(page).click({ position: await at(page, m.page, (field[0] + field[2]) / 2, (field[1] + field[3]) / 2) })
+        const note = await page.waitForSelector('[data-testid=et-note]', { timeout: 5000 }).then((h) => h.textContent()).catch(() => '')
+        check('fw9: an empty form field click says use Forms, with a way there (P2-6)', /This is a form field: use Forms/.test(note) && !!(await page.$('[data-testid=et-open-forms]')), note)
+        await shot(page, 'form-field-1440')
+        await page.click('[data-testid=et-open-forms]')
+        await page.waitForFunction(() => location.hash === '#/forms', null, { timeout: 5000 }).catch(() => null)
+        check('fw9: Open Forms goes to Forms', (await page.evaluate(() => location.hash)) === '#/forms')
+      }
+    }
     await ctx.close()
+    // P2-8: a word edit low on the W-9 page does not scroll the view
+    {
+      const { ctx: c2, page: p2 } = await open(rel)
+      await p2.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+      const { picks } = await pickWords(rel, 8)
+      const low = picks.filter((x) => x.word.bbox[1] > m.page.height * 0.45)[0]
+      if (!low) check('fw9: found a word low on the page', false)
+      else {
+        await p2.locator(lineSel(low.run)).scrollIntoViewIfNeeded()
+        const scrollOf = () => p2.evaluate(() => ({ win: window.scrollY, wrap: document.querySelector('.g3-stage-wrap')?.scrollTop ?? 0 }))
+        const s0 = await scrollOf()
+        await clickWord(p2, m.page, low.word)
+        const r = await typeApply(p2, swap(low.word.text), rel, 'fw9 low word')
+        // hybrid form: the engine drops the XFA copy and the UI says so once
+        const xn = await p2.$$eval('[data-testid=et-note]', (ns) => ns.map((n) => n.textContent).join(' | ')).catch(() => '')
+        if (/XFA copy/.test(xn)) check('fw9: the note says the XFA copy was removed', /This form also had an XFA copy; it was removed so the old text can't be read from it/.test(xn), xn.slice(0, 160))
+        else console.log(`SKIP  fw9: no XFA note (engine xfaRemoved not returned yet?): "${xn.slice(0, 80)}"`)
+        await p2.waitForTimeout(800)
+        const s1 = await scrollOf()
+        check('fw9: an edit low on the page does not scroll the view (P2-8)', r.ok && JSON.stringify(s0) === JSON.stringify(s1), `${JSON.stringify(s0)} -> ${JSON.stringify(s1)}`)
+      }
+      await c2.close()
+    }
   }
 
   // ---------- signed file: confirm first, result says the signature went ----------
@@ -431,6 +516,51 @@ try {
     const { ctx, page } = await open(rel, { phone: true })
     await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
     const [a, b] = picks
+    // a tap just off a line still hits it: a finger picks the closest
+    // editable line within 22 px (measured to its box), as the app does
+    {
+      const sb = await stage(page).boundingBox()
+      const k = sb.width / model.page.width
+      const inB = (b, x, y) => x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]
+      const dist = (b, x, y) => Math.hypot(Math.max(b[0] - x, 0, x - b[2]), Math.max(b[1] - y, 0, y - b[3])) * k
+      // the word whose point `off` px above it lies on no box, with its own line
+      // the clear closest (2 px margin) and within 22 px
+      const used = new Set([a.run.id, b.run.id]) // edited below
+      const pick = (off, dense) => {
+        for (const r of model.runs) {
+          if (!r.editable || used.has(r.id)) continue
+          // dense: another line within 12 px above or below (P2 #3)
+          if (dense && !model.runs.some((q) => q !== r && q.editable && Math.abs(q.bbox[1] - r.bbox[1]) * k < 12 && Math.abs(q.bbox[1] - r.bbox[1]) > 0.5 && q.bbox[0] < r.bbox[2] && r.bbox[0] < q.bbox[2])) continue
+          for (const cand of r.words) {
+            const x = (cand.bbox[0] + cand.bbox[2]) / 2
+            const y = cand.bbox[1] - off / k
+            if (model.runs.some((q) => inB(q.bbox, x, y))) continue
+            const near = model.runs.filter((q) => q.editable).map((q) => ({ q, d: dist(q.bbox, x, y) })).sort((p, q) => p.d - q.d)
+            if (near[0]?.q === r && near[0].d <= 22 && (!near[1] || near[1].d - near[0].d > 2)) return { r, w: cand, x, y }
+          }
+        }
+        return null
+      }
+      for (const [name, off, dense] of [
+        ['a tap 4 px above a word still opens it', 4, false],
+        ['P2 #3 dense lines: a tap 3 px off a 6 to 10 px line opens the closest line', 3, true],
+        ['a tap 15 px above a lone line still opens it (22 px reach)', 15, false],
+      ]) {
+        const hit = pick(off, dense)
+        if (!hit) {
+          check(`phone: ${name}`, false, 'no suitable line found')
+          continue
+        }
+        used.add(hit.r.id)
+        await page.waitForSelector('[data-testid=et-line]')
+        const position = await at(page, model.page, hit.x, hit.y)
+        await stage(page).tap({ position })
+        const got = await page.waitForSelector('[data-testid=et-input]', { timeout: 5000 }).then(() => page.inputValue('[data-testid=et-input]')).catch(() => '')
+        check(`phone: ${name}`, hit.r.words.some((x) => x.text === got), `"${got}" in "${hit.r.text.slice(0, 50)}" (${((hit.r.bbox[3] - hit.r.bbox[1]) * k).toFixed(1)} px tall)`)
+        await page.keyboard.press('Escape')
+        await page.waitForTimeout(150)
+      }
+    }
     await page.locator(lineSel(a.run)).scrollIntoViewIfNeeded()
     await page.hover(lineSel(a.run))
     await page.waitForTimeout(250)
@@ -445,44 +575,31 @@ try {
       return { font: parseFloat(getComputedStyle(el).fontSize), w: document.documentElement.scrollWidth, fits: wrap.scrollWidth <= wrap.clientWidth + 1 }
     })
     check('phone: page fitted to width, input at least 16 px', sizes.fits && sizes.font >= 16, `fits ${sizes.fits}, font ${sizes.font} px`)
+    // P2 #3: the editor is a bar at the bottom, the page only highlights the word
+    {
+      await page.waitForTimeout(400) // the bar slides in
+      const bar = await page.evaluate(() => {
+        const b = document.querySelector('[data-testid=et-bar]')
+        const input = document.querySelector('[data-testid=et-input]')
+        if (!b) return null
+        const r = b.getBoundingClientRect()
+        const btns = [...b.querySelectorAll('button')].map((x) => Math.round(x.getBoundingClientRect().height))
+        return { top: r.top, bottom: r.bottom, vh: window.innerHeight, inStage: !!input.closest('[data-testid=edit-canvas]'), inBar: b.contains(input), btns, focused: document.activeElement === input }
+      })
+      check('phone: editor opens as a bar at the bottom, not over the page', !!bar && bar.inBar && !bar.inStage && Math.abs(bar.bottom - bar.vh) <= 2 && bar.focused, JSON.stringify(bar))
+      check('phone: bar buttons are at least 44 px tall', !!bar && bar.btns.length >= 2 && bar.btns.every((h) => h >= 44), `${bar?.btns}`)
+      const hl = await page.locator('[data-testid=et-hl]').first().boundingBox().catch(() => null)
+      const sb = await stage(page).boundingBox()
+      const k = sb.width / model.page.width
+      const want = { x: sb.x + a.word.bbox[0] * k, y: sb.y + a.word.bbox[1] * k }
+      check('phone: the page highlights the word being edited', !!hl && Math.abs(hl.x - want.x) < 3 && Math.abs(hl.y - want.y) < 3, hl ? `(${hl.x.toFixed(1)}, ${hl.y.toFixed(1)}) vs (${want.x.toFixed(1)}, ${want.y.toFixed(1)})` : 'no highlight')
+    }
     await page.fill('[data-testid=et-input]', `${a.word.text}xyz`)
     await shot(page, 'inline-390')
+    await shot(page, 'bar-390')
     await page.press('[data-testid=et-input]', 'Enter')
     const ok = await waitVersion(page, 1)
     check('phone: edit applied', ok, `input font ${sizes.font.toFixed(1)} px`)
-    // a tap just above a line with room around it still hits it (24 px target)
-    {
-      const sb = await stage(page).boundingBox()
-      const k = sb.width / model.page.width
-      // a word whose point 4 px above it lies on no glyph box and is closest to its own line
-      const inB = (b, x, y) => x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]
-      const mid = (b) => (b[1] + b[3]) / 2
-      let lone = null
-      let w = null
-      for (const r of model.runs) {
-        if (!r.editable || lone) continue
-        for (const cand of r.words) {
-          const x = (cand.bbox[0] + cand.bbox[2]) / 2
-          const y = cand.bbox[1] - 4 / k
-          if (model.runs.some((q) => inB(q.bbox, x, y))) continue
-          const pads = model.runs.filter((q) => inB([q.bbox[0] - 4 / k, q.bbox[1] - Math.max(0, (24 / k - (q.bbox[3] - q.bbox[1])) / 2), q.bbox[2] + 4 / k, q.bbox[3] + Math.max(0, (24 / k - (q.bbox[3] - q.bbox[1])) / 2)], x, y))
-          const best = pads.sort((a, b) => Math.abs(mid(a.bbox) - y) - Math.abs(mid(b.bbox) - y))[0]
-          if (best === r) {
-            lone = r
-            w = cand
-            break
-          }
-        }
-      }
-      if (lone) {
-        await page.waitForSelector('[data-testid=et-line]')
-        const position = await at(page, model.page, (w.bbox[0] + w.bbox[2]) / 2, w.bbox[1] - 4 / k)
-        await stage(page).tap({ position })
-        const got = await page.waitForSelector('[data-testid=et-input]', { timeout: 5000 }).then(() => page.inputValue('[data-testid=et-input]')).catch(() => '')
-        check('phone: a tap 4 px above a word still opens it', got === w.text, `"${got}" vs "${w.text}"`)
-        await page.keyboard.press('Escape')
-      } else check('phone: a tap 4 px above a word still opens it', false, 'no isolated line found')
-    }
     // a fallback note at phone width
     await page.waitForSelector('[data-testid=et-line]')
     await clickWord(page, model.page, b.word, 'tap')
@@ -507,7 +624,7 @@ try {
     }
     {
       const rel = 'forms/irs-fw9.pdf'
-      const m = await pageTextModel(readRel(rel), 1)
+      const m = await modelOf(readRel(rel), 1)
       const run = m.runs.find((r) => r.why === 'form-field')
       const { ctx, page } = await open(rel, { phone: true })
       await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
@@ -521,7 +638,7 @@ try {
     }
     {
       const rel = 'reports/pdfjs-tracemonkey.pdf'
-      const m = await pageTextModel(readRel(rel), 1)
+      const m = await modelOf(readRel(rel), 1)
       const all = squash((await textOf(readRel(rel))).join(' '))
       const run = m.runs.find((r) => r.editable && r.text.length > 50 && r.bbox[1] > 300 && count(all, squash(r.text)) === 1 && r.dir[0] === 1)
       const { ctx, page } = await open(rel, { phone: true })
@@ -533,6 +650,422 @@ try {
       await page.waitForSelector('[data-testid=et-note]', { timeout: 10_000 }).catch(() => null)
       await page.locator('[data-testid=et-note]').first().scrollIntoViewIfNeeded().catch(() => null)
       await shot(page, 'overflow-390')
+      await ctx.close()
+    }
+  }
+
+  // ---------- P2 #4: a note at the right edge stays inside the visible canvas ----------
+  if (want('note')) {
+    const rel = 'intl/udhr-arabic.pdf'
+    const m = await modelOf(readRel(rel), 1)
+    // the unreadable word furthest right: clicking it gives a refusal note at once
+    const bad = m.runs
+      .flatMap((r) => (r.editable ? r.words.filter((w) => UNREADABLE.test(w.text)) : []))
+      .sort((p, q) => q.bbox[0] - p.bbox[0])[0]
+    if (!bad) check('note: found a right-edge word with a refusal', false)
+    else {
+      for (const phone of [false, true]) {
+        const tag = phone ? '390' : '1440'
+        const { ctx, page } = await open(rel, { phone })
+        await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+        // desktop: also zoomed in, where the wrap clips the page
+        for (const zoom of phone ? [0] : [0, 3]) {
+          for (let i = 0; i < zoom; i++) await page.click('[data-testid=g3-zoom-in]')
+          if (zoom) await page.waitForTimeout(400)
+          await clickWord(page, m.page, bad, phone ? 'tap' : 'click')
+          await page.waitForSelector('[data-testid=et-note]', { timeout: 10_000 }).catch(() => null)
+          await page.waitForTimeout(250)
+          const r = await page.evaluate(() => {
+            const n = document.querySelector('[data-testid=et-note]')
+            const wrap = document.querySelector('.g3-stage-wrap')
+            const st = document.querySelector('[data-testid=edit-canvas]')
+            if (!n) return null
+            const a = n.getBoundingClientRect()
+            const w = wrap.getBoundingClientRect()
+            const s = st.getBoundingClientRect()
+            const right = Math.min(w.left + wrap.clientLeft + wrap.clientWidth, s.right, window.innerWidth)
+            const left = Math.max(w.left + wrap.clientLeft, s.left, 0)
+            return { l: a.left, r: a.right, left, right, text: n.textContent }
+          })
+          const inside = !!r && r.l >= r.left - 0.5 && r.r <= r.right + 0.5
+          check(`note: refusal note at the right edge stays in view (${tag}${zoom ? ', zoomed in' : ''})`, inside && /Not changed/.test(r.text), r ? `note ${r.l.toFixed(0)}..${r.r.toFixed(0)}, visible ${r.left.toFixed(0)}..${r.right.toFixed(0)}` : 'no note')
+          await shot(page, `refusal-edge-${tag}${zoom ? '-zoom' : ''}`)
+        }
+        await ctx.close()
+      }
+    }
+  }
+
+  // ---------- paragraph: open, type, apply, undo, refusal, keyboard ----------
+  const parasOf = (m) => (PARAGRAPH_EDIT ? (m.paragraphs ?? null) : null)
+  if (want('para')) {
+    const rel = 'reports/pdfjs-tracemonkey.pdf'
+    const bytes = readRel(rel)
+    const m = await modelOf(bytes, 1)
+    const all = squash((await textOf(bytes)).join(' '))
+    const ps = parasOf(m)
+    if (!ps) {
+      console.log(PARAGRAPH_EDIT ? 'SKIP  para: the page model has no paragraphs yet (engine)' : 'SKIP  para: paragraph editing is off (PARAGRAPH_EDIT false in edittext.jsx)')
+    } else {
+      const byId = new Map(m.runs.map((r) => [r.id, r]))
+      // an editable left-to-right body paragraph of 3+ lines, with a unique
+      // word of 5+ letters in its middle line
+      let para = null
+      let word = null
+      for (const p of ps) {
+        // body text: plain ASCII (the author block has U+2217 marks)
+        if (!p.editable || p.dir === 'rtl' || p.runIds.length < 3 || p.text.length < 150 || !/^[\x20-\x7e\n]+$/.test(p.text)) continue
+        const mid = byId.get(p.runIds[1])
+        const w = mid?.words.find((x) => /^[A-Za-z]{5,}$/.test(x.text) && count(all, x.text) === 1 && count(p.text, x.text) === 1)
+        if (w) {
+          para = p
+          word = { run: mid, w }
+          break
+        }
+      }
+      if (!para) check('para: found a body paragraph to edit', false)
+      else {
+        const { ctx, page } = await open(rel)
+        await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+        const [cx, cy] = center(word.w.bbox)
+        await stage(page).click({ position: await at(page, m.page, cx, cy), clickCount: 3 })
+        await page.waitForSelector('[data-testid=et-para]', { timeout: 10_000 }).catch(() => null)
+        const val = await page.inputValue('[data-testid=et-para]').catch(() => '')
+        check('para: triple-click opens the whole paragraph', fold(val) === fold(para.text), `"${val.slice(0, 60)}..."`)
+        const tb = await page.locator('[data-testid=et-para]').boundingBox().catch(() => null)
+        const sb = await stage(page).boundingBox()
+        const k = sb.width / m.page.width
+        check('para: the editor sits over the paragraph', !!tb && Math.abs(tb.x - (sb.x + para.bbox[0] * k)) < 6 && Math.abs(tb.width - (para.bbox[2] - para.bbox[0]) * k) < 12, tb ? `x ${tb.x.toFixed(0)} w ${tb.width.toFixed(0)}` : '')
+        // Enter is a new line in a paragraph, not apply
+        await page.press('[data-testid=et-para]', 'Control+End')
+        await page.keyboard.press('Enter')
+        const nl = await page.inputValue('[data-testid=et-para]').catch(() => '')
+        check('para: Enter adds a new line', nl.endsWith('\n') && (await version(page)) === 0)
+        await page.keyboard.press('Escape')
+        await page.waitForTimeout(200)
+        check('para: Escape cancels', !(await page.$('[data-testid=et-para]')) && (await version(page)) === 0)
+        // mouse: the toolbar's Paragraph button switches an open word editor;
+        // nothing in the toolbar moves when it turns on (P2-10)
+        const undoBefore = await page.locator('[data-testid=et-undo]').boundingBox()
+        await clickWord(page, m.page, word.w)
+        await page.waitForSelector('[data-testid=et-para-tool]:not([disabled])', { timeout: 5000 }).catch(() => null)
+        const undoAfter = await page.locator('[data-testid=et-undo]').boundingBox()
+        check('para: toolbar stays put when a word editor opens', !!undoBefore && !!undoAfter && Math.abs(undoBefore.x - undoAfter.x) < 0.5 && Math.abs(undoBefore.y - undoAfter.y) < 0.5, `undo x ${undoBefore?.x.toFixed(1)} -> ${undoAfter?.x.toFixed(1)}`)
+        await page.click('[data-testid=et-para-tool]').catch(() => null)
+        const tv = await page.waitForSelector('[data-testid=et-para]', { timeout: 5000 }).then(() => page.inputValue('[data-testid=et-para]')).catch(() => '')
+        check('para: Paragraph in the toolbar opens the paragraph, nothing applied', fold(tv) === fold(para.text) && (await version(page)) === 0)
+        await page.keyboard.press('Escape')
+        await page.waitForTimeout(200)
+        // keyboard: Shift+Enter on a focused line opens its paragraph
+        await page.locator(lineSel(word.run)).focus()
+        await page.keyboard.press('Shift+Enter')
+        const kv = await page.waitForSelector('[data-testid=et-para]', { timeout: 5000 }).then(() => page.inputValue('[data-testid=et-para]')).catch(() => '')
+        check('para: Shift+Enter on a line opens its paragraph', fold(kv) === fold(para.text))
+        const newWord = swap(word.w.text)
+        const newText = para.text.replace(word.w.text, newWord)
+        await page.fill('[data-testid=et-para]', newText)
+        await shot(page, 'paragraph-1440')
+        const scrollOf = () => page.evaluate(() => ({ win: window.scrollY, wrap: document.querySelector('.g3-stage-wrap')?.scrollTop ?? 0, main: document.querySelector('.main')?.scrollTop ?? 0 }))
+        const scroll0 = await scrollOf()
+        await page.keyboard.press('Control+Enter')
+        const ok = await waitVersion(page, 1)
+        await page.waitForTimeout(600)
+        const notes = await page.$$eval('[data-testid=et-note]', (ns) => ns.map((n) => n.textContent).join(' | ')).catch(() => '')
+        check('para: Ctrl+Enter applies the paragraph', ok, notes || 'no note')
+        const scroll1 = await scrollOf()
+        check('para: the view does not scroll by itself after the apply (P2-8)', JSON.stringify(scroll0) === JSON.stringify(scroll1), `${JSON.stringify(scroll0)} -> ${JSON.stringify(scroll1)}`)
+        const focusBack = await page.evaluate(() => document.activeElement?.dataset?.testid ?? document.activeElement?.tagName)
+        check('para: focus returns to the page text', focusBack === 'et-line', focusBack)
+        // P2-7: the note sits outside the changed paragraph
+        {
+          const nb = await page.locator('[data-testid=et-note]').first().boundingBox().catch(() => null)
+          const sb2 = await stage(page).boundingBox()
+          const k2 = sb2.width / m.page.width
+          const pb = { x0: sb2.x + para.bbox[0] * k2, y0: sb2.y + para.bbox[1] * k2, x1: sb2.x + para.bbox[2] * k2, y1: sb2.y + para.bbox[3] * k2 }
+          const hits = nb && nb.x < pb.x1 && pb.x0 < nb.x + nb.width && nb.y < pb.y1 && pb.y0 < nb.y + nb.height
+          if (nb) check('para: the note does not cover the changed paragraph (P2-7)', !hits, `note y ${nb.y.toFixed(0)}..${(nb.y + nb.height).toFixed(0)}, paragraph y ${pb.y0.toFixed(0)}..${pb.y1.toFixed(0)}`)
+          else console.log('SKIP  para: no note after the paragraph edit, placement not checked')
+        }
+        const countText = () => page.textContent('[data-testid=et-count]').catch(() => '')
+        check('para: a paragraph edit counts as 1 text edit (P2-9)', /^1 text edit applied/.test(await countText()), await countText())
+        if (!ok) check('para: undo, refusal and output', false, 'nothing applied, skipped')
+        else {
+          await page.click('[data-testid=et-undo]')
+          const undone = await waitVersion(page, 0, 10_000)
+          const c0 = await countText()
+          await page.click('[data-testid=et-redo]')
+          const redone = await waitVersion(page, 1, 10_000)
+          check('para: undo and redo, the counter follows', undone && redone && /No text changed/.test(c0) && /^1 text edit applied/.test(await countText()), `${c0} / ${await countText()}`)
+          // refusal: far too long for the room below
+          const fresh = await modelOf(readRel(rel), 1)
+          const p2 = parasOf(fresh).find((p) => p.editable && p.dir !== 'rtl' && p.runIds.length >= 3 && p.id !== para.id && p.text.length > 150 && /^[\x20-\x7e\n]+$/.test(p.text) && p.bbox[1] > para.bbox[3])
+          if (p2) {
+            await page.waitForSelector('[data-testid=et-line]')
+            const r2 = fresh.runs.find((r) => r.id === p2.runIds[0])
+            await page.locator(lineSel(r2)).focus()
+            await page.keyboard.press('Shift+Enter')
+            await page.waitForSelector('[data-testid=et-para]', { timeout: 5000 }).catch(() => null)
+            const tooLong = `${p2.text} `.repeat(8).trim()
+            await page.fill('[data-testid=et-para]', tooLong)
+            await page.keyboard.press('Control+Enter')
+            // P1-6: refused, the editor comes back with the typed text and the reason
+            let why = ''
+            for (let i = 0; i < 600 && !why; i++) {
+              why = (await page.textContent('[data-testid=et-input-error]').catch(() => '')) || ''
+              if (!why) await page.waitForTimeout(100)
+            }
+            const kept = await page.inputValue('[data-testid=et-para]').catch(() => '')
+            check('para: too long is refused in plain words, nothing changes', /Not changed: Not enough room/.test(why) && (await version(page)) === 1, `${why}; version ${await version(page)}`)
+            check('para: the refused text stays in the editor to shorten (P1-6)', kept === tooLong, `${kept.length} of ${tooLong.length} chars`)
+            await shot(page, 'paragraph-refusal-1440')
+            await page.keyboard.press('Escape')
+            await page.waitForTimeout(200)
+            // a word edit after the paragraph: the counter goes to 2
+            const wr = fresh.runs.find((r) => r.id === p2.runIds[1])
+            const w2 = wr?.words.find((x) => /^[a-z]{4,}$/.test(x.text))
+            if (w2) {
+              await clickWord(page, m.page, w2)
+              await typeApply(page, swap(w2.text), rel, 'word after paragraph')
+              check('para: then a word edit makes 2 text edits (P2-9)', /^2 text edits applied/.test(await countText()), await countText())
+            }
+          } else check('para: found a second paragraph for the refusal', false)
+          const { out, wall, shownMs, note: doneText } = await runAndDownload(page)
+          const text = squash((await textOf(out)).join(' '))
+          check('para: output has the new word, not the old (pdf.js)', text.includes(newWord) && count(text, word.w.text) === 0, `new ${text.includes(newWord)}, old ${count(text, word.w.text)}`)
+          check('para: Apply to the done screen is quick and the shown time matches (P2-11)', wall < 1500 && shownMs != null && Math.abs(wall - shownMs) < 400, `wall ${wall} ms, shown ${shownMs} ms`)
+          check('para: the done screen never says "0.0 s"', !/Time\s*0\.0 s/.test(doneText) && /Time\s*(under 0\.1 s|\d)/.test(doneText), (doneText.match(/Time[^A-Za-z]*(under [\d.]+ s)?/) ?? [''])[0])
+        }
+        await ctx.close()
+      }
+
+      // phone: tap a word, Paragraph in the bar, edit, Apply
+      if (para) {
+        const { ctx, page } = await open(rel, { phone: true })
+        await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+        await page.locator(lineSel(word.run)).scrollIntoViewIfNeeded()
+        await clickWord(page, m.page, word.w, 'tap')
+        await page.waitForSelector('[data-testid=et-para-btn]', { timeout: 10_000 }).catch(() => null)
+        await page.tap('[data-testid=et-para-btn]').catch(() => null)
+        const val = await page.waitForSelector('[data-testid=et-bar] [data-testid=et-para]', { timeout: 5000 }).then(() => page.inputValue('[data-testid=et-para]')).catch(() => '')
+        check('para phone: Paragraph in the bar opens the paragraph', fold(val) === fold(para.text))
+        const hl = await page.locator('[data-testid=et-hl]').first().boundingBox().catch(() => null)
+        const sb = await stage(page).boundingBox()
+        const k = sb.width / m.page.width
+        check('para phone: the page highlights the whole paragraph', !!hl && Math.abs(hl.y - (sb.y + para.bbox[1] * k)) < 3 && Math.abs(hl.height - (para.bbox[3] - para.bbox[1]) * k) < 3, hl ? `${hl.y.toFixed(0)} h ${hl.height.toFixed(0)}` : 'none')
+        const newWord = swap(word.w.text)
+        await page.fill('[data-testid=et-para]', para.text.replace(word.w.text, newWord))
+        await shot(page, 'paragraph-390')
+        await page.tap('[data-testid=et-apply]')
+        check('para phone: Apply applies', await waitVersion(page, 1))
+        await ctx.close()
+      }
+    }
+  }
+
+  // ---------- shell: notice does not move the page, Run with an editor open ----------
+  if (want('shell')) {
+    const rel = 'invoices/aws-invoice.pdf'
+    const { picks } = await pickWords(rel, 1)
+    const { model } = await pickWords(rel, 0)
+    const { ctx, page } = await open(rel)
+    await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+    // the "already in your files" notice floats: the page does not move when it comes or goes
+    const top0 = (await stage(page).boundingBox()).y
+    await page.setInputFiles('[data-testid=add-files-input]', join(CORPUS, rel))
+    const shown = await page.waitForSelector('[data-testid=shell-notice]', { timeout: 10_000 }).then((h) => h.textContent()).catch(() => '')
+    await page.waitForSelector('[data-testid=edit-canvas] img', { timeout: 30_000 })
+    await page.waitForTimeout(300)
+    const top1 = (await stage(page).boundingBox()).y
+    await page.click('[data-testid=shell-notice] button')
+    await page.waitForTimeout(300)
+    const top2 = (await stage(page).boundingBox()).y
+    check('shell: the "already in your files" notice does not move the page (P2-8)', /already in your files/.test(shown) && Math.abs(top1 - top0) < 1 && Math.abs(top2 - top0) < 1, `stage top ${top0.toFixed(1)} -> ${top1.toFixed(1)} -> ${top2.toFixed(1)}`)
+    // one click on Run with a word still open in its editor: the edit goes in, then the run
+    const { word } = picks[0]
+    await page.waitForSelector('[data-testid=et-line]')
+    await clickWord(page, model.page, word)
+    await page.waitForSelector('[data-testid=et-input]')
+    const newWord = swap(word.text)
+    await page.fill('[data-testid=et-input]', newWord)
+    await page.click('[data-testid=run-btn]')
+    const done = await page.waitForSelector('[data-testid=result-screen]', { timeout: 60_000 }).then(() => true).catch(() => false)
+    let ok = false
+    if (done) {
+      const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 60_000 }), page.click('[data-testid=result-download]')])
+      const text = squash((await textOf(new Uint8Array(readFileSync(await dl.path())))).join(' '))
+      ok = text.includes(newWord) && count(text, word.text) === 0
+    }
+    check('shell: one Run click with an editor open applies the edit, then runs (P2-11)', done && ok, `done ${done}, edit in output ${ok}`)
+    await ctx.close()
+  }
+  // one Run click on a word the engine refuses (a character no font has,
+  // sent by the click away): no run, the editor keeps the text
+  if (want('shell')) {
+    const rel = 'invoices/aws-invoice.pdf'
+    const { model, picks } = await pickWords(rel, 1)
+    const { word } = picks[0]
+    const { ctx, page } = await open(rel)
+    await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+    await clickWord(page, model.page, word)
+    await page.waitForSelector('[data-testid=et-input]')
+    const typed = `${word.text}😀`
+    await page.fill('[data-testid=et-input]', typed)
+    await page.click('[data-testid=run-btn]')
+    let why = ''
+    for (let i = 0; i < 300 && !why; i++) {
+      why = (await page.textContent('[data-testid=et-input-error]').catch(() => '')) || ''
+      if (!why) await page.waitForTimeout(100)
+    }
+    await page.waitForTimeout(500)
+    const ran = !!(await page.$('[data-testid=result-screen]'))
+    const kept = await page.inputValue('[data-testid=et-input]').catch(() => '')
+    check('shell: a refused edit stops the held Run, the text stays in its editor (P1-6)', !ran && /Not changed|No font/.test(why) && kept === typed, `ran ${ran}, "${why.slice(0, 60)}", kept "${kept}"`)
+    await ctx.close()
+  }
+
+  // ---------- paragraph editing off: no Paragraph button, triple-click edits the line ----------
+  if (want('noparagraph') && !PARAGRAPH_EDIT) {
+    const rel = 'reports/pdfjs-tracemonkey.pdf'
+    const m = await modelOf(readRel(rel), 1)
+    const all = squash((await textOf(readRel(rel))).join(' '))
+    const run = m.runs.find((r) => r.editable && r.text.length > 40 && r.bbox[1] > 300 && count(all, squash(r.text)) === 1 && r.dir[0] === 1)
+    for (const phone of [false, true]) {
+      const tag = phone ? '390' : '1440'
+      const { ctx, page } = await open(rel, { phone })
+      await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+      check(`noparagraph ${tag}: no Paragraph button in the toolbar`, !(await page.$('[data-testid=et-para-tool]')))
+      await page.locator(lineSel(run)).scrollIntoViewIfNeeded()
+      const [cx, cy] = center(run.words[1].bbox)
+      const position = await at(page, m.page, cx, cy)
+      if (phone) await stage(page).tap({ position })
+      else await stage(page).click({ position, clickCount: 3 })
+      await page.waitForSelector('[data-testid=et-input]', { timeout: 10_000 }).catch(() => null)
+      await page.waitForTimeout(300)
+      const val = await page.inputValue('[data-testid=et-input]').catch(() => '')
+      const para = await page.$('[data-testid=et-para]')
+      if (phone) {
+        check('noparagraph 390: the bar has no Paragraph button', !!(await page.$('[data-testid=et-bar]')) && !(await page.$('[data-testid=et-para-btn]')))
+        const btns = await page.$$eval('[data-testid=et-bar] button', (bs) => bs.map((b) => b.textContent.trim()))
+        check('noparagraph 390: the bar shows Cancel and Apply only', btns.join(',') === 'Cancel,Apply', btns.join(','))
+        await shot(page, 'bar-noparagraph-390')
+      } else {
+        check('noparagraph 1440: triple-click opens the whole line, no paragraph editor', val === run.text && !para, `"${val.slice(0, 50)}"`)
+        await page.keyboard.press('Escape')
+        await page.locator(lineSel(run)).focus()
+        await page.keyboard.press('Shift+Enter')
+        await page.waitForSelector('[data-testid=et-input]', { timeout: 5000 }).catch(() => null)
+        const kv = await page.inputValue('[data-testid=et-input]').catch(() => '')
+        check('noparagraph 1440: Shift+Enter edits the line, no paragraph editor', kv === run.text && !(await page.$('[data-testid=et-para]')), `"${kv.slice(0, 50)}"`)
+        // apply the line, then the done screen time is honest
+        const r = await typeApply(page, `${run.text} more`, rel, 'line via Shift+Enter')
+        const c = await page.textContent('[data-testid=et-count]').catch(() => '')
+        check('noparagraph 1440: the counter counts the edit', r.ok && /^1 text edit applied/.test(c), c)
+        await shot(page, 'toolbar-noparagraph-1440')
+        const { wall, shownMs, note } = await runAndDownload(page)
+        check('noparagraph 1440: Apply is quick, the shown time matches, never "0.0 s"', wall < 1500 && shownMs != null && Math.abs(wall - shownMs) < 400 && !/Time\s*0\.0 s/.test(note), `wall ${wall} ms, shown ${shownMs} ms`)
+      }
+      await ctx.close()
+    }
+  }
+
+
+  // ---------- unsaved edits: never applied to a file the user is not on ----------
+  if (want('session')) {
+    const aws = 'invoices/aws-invoice.pdf'
+    const flip = 'invoices/flipkart-invoice.pdf'
+    const { model, picks } = await pickWords(aws, 2)
+    const fm = await pickWords(flip, 1)
+    const [a, b] = picks
+    const { ctx, page } = await open(aws)
+    page.on('dialog', (d) => d.accept()) // the unsaved-edits prompt on reload
+    await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+    // 1. an edit applied on screen but not saved (no Run), then a reload
+    await clickWord(page, model.page, a.word)
+    const r1 = await typeApply(page, swap(a.word.text), aws, 'session first')
+    await page.reload({ waitUntil: 'load' })
+    await page.waitForSelector('.modes [role=tab]', { timeout: 60_000 })
+    await page.click('.modes [role=tab]:has-text("Files")')
+    const sel = page.locator('.grid-toolbar .link', { hasText: 'Select all' })
+    if (await sel.count()) await sel.first().click()
+    await page.click('.modes [role=tab]:has-text("Viewer")')
+    await page.waitForSelector('[data-testid=et-line]', { timeout: 60_000 })
+    const count0 = await page.textContent('[data-testid=et-count]').catch(() => '')
+    await clickWord(page, model.page, b.word)
+    await typeApply(page, swap(b.word.text), aws, 'session after reload')
+    // 2. add another file while editing: it becomes the only selection
+    await page.setInputFiles('[data-testid=add-files-input]', join(CORPUS, flip))
+    await page.waitForFunction(() => document.querySelector('.g3-file-name')?.textContent?.includes('flipkart'), null, { timeout: 30_000 }).catch(() => null)
+    await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+    await clickWord(page, fm.model.page, fm.picks[0].word)
+    const nf = swap(fm.picks[0].word.text)
+    await typeApply(page, nf, flip, 'session added file')
+    const { out, note } = await runAndDownload(page)
+    const text = squash((await textOf(out)).join(' '))
+    check('session: an edit left unsaved before a reload is gone after it', r1.ok && /No text changed/.test(count0), count0)
+    check('session: after Add, one Apply changes only the added file (P2-0)', /flipkart-invoice-edited\.pdf/.test(note) && !/aws-invoice-edited/.test(note) && text.includes(nf), note.slice(0, 200))
+    await ctx.close()
+  }
+
+  // ---------- right to left: line and paragraph editors run right to left ----------
+  if (want('rtl')) {
+    const rel = 'intl/udhr-arabic.pdf'
+    const m = await modelOf(readRel(rel), 1)
+    const { picks } = await pickWords(rel, 1, { script: /^[\p{Script=Arabic}]{4,}$/u })
+    const { ctx, page } = await open(rel)
+    await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+    if (picks.length) {
+      const { run, word } = picks[0]
+      await clickWord(page, m.page, word, 'dbl')
+      await page.waitForFunction((t) => document.querySelector('[data-testid=et-input]')?.value === t, run.text, { timeout: 10_000 }).catch(() => null)
+      const st = await page.$eval('[data-testid=et-input]', (el) => ({ dir: el.dir, align: getComputedStyle(el).textAlign, right: el.getBoundingClientRect().right })).catch(() => null)
+      const sb = await stage(page).boundingBox()
+      const wantRight = sb.x + (run.bbox[2] / m.page.width) * sb.width
+      check('rtl: line editor is right to left, right aligned, anchored at the line end', !!st && st.dir === 'rtl' && st.align === 'right' && Math.abs(st.right - wantRight) < 8, st ? `${st.dir} ${st.align}, right ${st.right.toFixed(0)} vs ${wantRight.toFixed(0)}` : '')
+      await page.keyboard.press('Escape')
+    } else check('rtl: found an Arabic word', false)
+    // P1-7: triple-click on a readable word of a line that is refused as a
+    // whole: a note only, no editor left open next to it
+    {
+      const bad = m.runs.find((r) => r.editable && UNREADABLE.test(r.text) && r.words.some((w) => !UNREADABLE.test(w.text) && w.text.length > 2))
+      if (!bad) console.log('SKIP  rtl: no line with a readable word and unreadable text')
+      else {
+        await page.waitForTimeout(200)
+        const w = bad.words.find((x) => !UNREADABLE.test(x.text) && x.text.length > 2)
+        const [cx, cy] = center(w.bbox)
+        await stage(page).click({ position: await at(page, m.page, cx, cy), clickCount: 3 })
+        await page.waitForTimeout(400)
+        const editors = await page.$$eval('[data-testid=et-input], [data-testid=et-para]', (els) => els.length)
+        const note = await page.$$eval('[data-testid=et-note]', (ns) => ns.map((n) => n.textContent).join(' | ')).catch(() => '')
+        check('rtl: triple-click on a refused line shows the note only, no editor (P1-7)', editors === 0 && /Not changed/.test(note), `${editors} editor(s), "${note.slice(0, 80)}"`)
+        check('rtl: the refusal says single readable words can still be edited (P1-7)', /You can still click single words that read correctly/.test(note), note.slice(0, 160))
+      }
+    }
+    await ctx.close()
+    // udhr-arabic paragraphs all hold unmapped glyphs: a multi-line one from pdf.js's Arabic test file
+    const prel = 'intl/pdfjs-ArabicCIDTrueType.pdf'
+    const pm = await modelOf(readRel(prel), 1)
+    const p = parasOf(pm)?.find((x) => x.editable && x.dir === 'rtl' && !UNREADABLE.test(x.text) && /\p{Script=Arabic}{4,}/u.test(x.text))
+    if (!parasOf(pm)) console.log(PARAGRAPH_EDIT ? 'SKIP  rtl: the page model has no paragraphs yet (engine)' : 'SKIP  rtl paragraph: paragraph editing is off (PARAGRAPH_EDIT false)')
+    else if (!p) check('rtl: found an editable right-to-left paragraph', false)
+    else {
+      const { ctx, page } = await open(prel)
+      await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+      const r0 = pm.runs.find((r) => r.id === p.runIds[0])
+      await page.locator(lineSel(r0)).focus()
+      await page.keyboard.press('Shift+Enter')
+      await page.waitForSelector('[data-testid=et-para]', { timeout: 5000 }).catch(() => null)
+      const st = await page.$eval('[data-testid=et-para]', (el) => ({ dir: el.dir, align: getComputedStyle(el).textAlign })).catch(() => null)
+      check('rtl: paragraph editor is right to left and right aligned', !!st && st.dir === 'rtl' && st.align === 'right', JSON.stringify(st))
+      await shot(page, 'paragraph-rtl-1440')
+      // swap two letters of one Arabic word and apply
+      const aw = p.text.split(/\s+/).find((x) => /^[\p{Script=Arabic}]{4,}$/u.test(x))
+      if (aw) {
+        await page.fill('[data-testid=et-para]', p.text.replace(aw, swap(aw)))
+        await page.keyboard.press('Control+Enter')
+        const ok = await waitVersion(page, 1, 90_000)
+        const note = await page.$$eval('[data-testid=et-note]', (ns) => ns.map((n) => n.textContent).join(' | ')).catch(() => '')
+        check('rtl: paragraph edit applies', ok, ok ? `applied ${note}` : note)
+      }
       await ctx.close()
     }
   }

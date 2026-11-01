@@ -105,6 +105,96 @@
   opacity: 0.6;
 }
 
+/* paragraph: a text area over the paragraph that grows with its text */
+.et-input.et-para {
+  padding: 0 2px;
+  resize: none;
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+/* the text the bar edits, marked on the page */
+.et-hl {
+  z-index: 2;
+  border-radius: 2px;
+  outline: 2px solid var(--signal);
+  outline-offset: 1px;
+  background: color-mix(in srgb, var(--signal) 14%, transparent);
+  pointer-events: none;
+}
+
+/* narrow screens: the editor is a bar at the bottom (above the keyboard),
+   over the Run bar while it is open */
+.et-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: calc(var(--z-sticky) + 5);
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4) calc(var(--s-3) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line-strong);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  background: var(--surface);
+  box-shadow: 0 -8px 24px -12px rgb(23 21 31 / 0.28);
+  font-family: var(--sans);
+  transition: transform var(--d-panel) var(--ease-drawer);
+}
+
+@starting-style {
+  .et-sheet {
+    transform: translateY(100%);
+  }
+}
+
+.et-sheet .et-input {
+  position: static;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  outline: none;
+  box-shadow: none;
+  background: var(--surface);
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.et-sheet .et-input:focus-visible,
+.et-sheet .et-input:focus {
+  border-color: var(--signal);
+  box-shadow: var(--glow);
+}
+
+.et-sheet .et-input.et-para {
+  max-height: 34vh;
+  overflow-y: auto;
+}
+
+.et-sheet .et-input-error {
+  position: static;
+  width: auto;
+  max-width: none;
+  box-shadow: none;
+}
+
+.et-sheet-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+}
+
+.et-sheet-actions .btn {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.et-sheet-actions .et-sheet-para {
+  margin-right: auto;
+}
+
 /* note under an applied edit */
 .et-note {
   z-index: 5;
@@ -283,7 +373,8 @@
 @media (prefers-reduced-motion: reduce) {
   .et-line,
   .et-tip,
-  .et-note {
+  .et-note,
+  .et-sheet {
     transition: none;
   }
 }

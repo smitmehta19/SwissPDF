@@ -24,6 +24,8 @@ const sizeChange = (before, after) => {
 
 export function formatTime(ms) {
   if (ms == null) return null
+  // never "0.0 s"
+  if (ms < 100) return 'under 0.1 s'
   if (ms < 60_000) return `${(ms / 1000).toFixed(ms < 10_000 ? 1 : 0)} s`
   const s = Math.round(ms / 1000)
   return `${Math.floor(s / 60)} min ${s % 60} s`

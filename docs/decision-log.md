@@ -1,5 +1,19 @@
 # Decision log
 
+## 2026-11-01 - Paragraph re-wrap parked; edit-text phase 2 ships without it
+- Decision: hide paragraph editing (flag `PARAGRAPH_EDIT = false` in `edittext.jsx`, model read with `{ paragraphs: false }`); ship word/line edits, RTL line push, leak fixes and UI fixes.
+- Problem that prompted it: paragraph re-wrap failed 3 review and blind-test rounds; each fix moved the damage to untouched words (hyphens, ligatures, justify, column merge). Review 3 still had a P0 ("Trace-Monkey" printed mid-line).
+- Why this was chosen: logged convergence rule (one more round, then hide); credits and time; the rest of the release closes live leaks (structure tree, XFA copy) and should not wait.
+- Alternatives rejected: a 4th paragraph round (not converging); shipping re-wrap with known P0 (changes words the user did not touch).
+- What changed in the approach, and how: re-wrap code stays behind the flag with its own corpus rows (harness passes `{ paragraphs: true }`); open findings listed in `docs/team/status-engine.md` "Parked: paragraph re-wrap".
+- Impact and reversibility: fully reversible (one constant); triple-click now edits the whole line.
+- Status: done, pending deploy.
+- Assumptions: word/line paths are unaffected by the paragraph code when the flag is off (row `edittext-word-p3g6-pdfjs-tracemonkey`).
+- Open questions / low confidence: whether a PDFium-style text-object rewrite would make re-wrap tractable later.
+- Cost impact: n/a (no money).
+- What failed: whole-paragraph redraw, then windowed redraw with hyphen heuristics.
+- Versions pinned: n/a
+
 ## 2026-10-28 - Edit existing text: remove and redraw with MuPDF
 - Decision: edit text in place by removing the word's glyphs with MuPDF text-only redaction and redrawing the new text in the original font when the file already draws every needed letter with it, else a standard font (Latin, keeps bold/italic) or Noto (other scripts); the rest of the line moves right.
 - Problem that prompted it: Smit: Edit PDF must change text already in the PDF, not only add on top.

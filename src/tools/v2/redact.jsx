@@ -31,7 +31,6 @@ function cleanedParts(c) {
     c.attachments > 0 && plural(c.attachments, 'attachment'),
     c.altTexts > 0 && plural(c.altTexts, 'alt text'),
     c.other > 0 && plural(c.other, 'other text item'),
-    c.xfa && (c.xfaMatch ? 'XFA form data (where the search also matched)' : 'XFA form data'),
   ].filter(Boolean)
 }
 
@@ -262,7 +261,8 @@ export default {
       const areas = boxes.filter((b) => !b.annot).length
       const parts = areas ? [`${plural(areas, 'area')} removed on ${plural(res.pages.length, 'page')}`] : []
       if (o.method === 'remove' && res.rasterPages.length) parts.push(`${plural(res.rasterPages.length, 'page')} turned into images to be safe`)
-      const lines = [parts.join(', '), extra.length && `Also cleaned: ${extra.join(', ')}`].filter(Boolean)
+      // the XFA copy of a form keeps every caption and value: it always goes
+      const lines = [parts.join(', '), extra.length && `Also cleaned: ${extra.join(', ')}`, c.xfa && "The XFA copy of the form was removed so redacted text can't be read from it", !query && 'Boxes clean the page. To also remove a word from the document properties, bookmarks and comments, search for it'].filter(Boolean)
       outputs.push({ name: `${baseName(f.name)}-redacted.pdf`, bytes: res.bytes, parentIds: [f.id], note: lines.map((l) => `${l}.`).join(' ') })
     }
     if (outputs.length === 0) throw new Error(files.length === 1 ? 'Nothing found to redact. Check the search text, or draw boxes on the page.' : 'Nothing found to redact in the selected files.')

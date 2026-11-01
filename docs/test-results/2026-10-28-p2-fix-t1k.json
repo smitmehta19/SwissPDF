@@ -1,0 +1,883 @@
+{
+  "name": "2026-10-28-p2-fix-t1k",
+  "startedAt": "2026-10-28T18:15:11.942Z",
+  "finishedAt": "2026-10-28T18:16:02.487Z",
+  "durationMin": 0.8,
+  "command": "npm run test:corpus -- --light --shards 2 --case ^edittext-para-bold --name 2026-10-28-p2-fix-t1k",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 3,
+    "fail": 0,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "edittext",
+      "pass": 3,
+      "fail": 0,
+      "skip": 0,
+      "ms": 10079
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no per-render copy counter; large scans now render (JPX fixed in U1), see time and heap on pdf2img-bible-62MB, pdf2img-crooked-104MB, split-911-large"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "CDN pinning is a config review item; font fidelity not scored"
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no PAdES / multi-place API to call)"
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap"
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    }
+  ],
+  "results": [
+    {
+      "id": "edittext-para-bold-pdfjs-tracemonkey",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "p1-g13 (justify, 2 lines): bold 2L original 452+16ms",
+      "error": null,
+      "ms": 4477,
+      "opMs": 1069,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": " Categories and Subject Descriptors D.3.4",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: removed words gone (MuPDF, with and without ActualText)",
+          "ok": true,
+          "detail": "1 checked, left: ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: removed words gone from the page bytes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: added words in MuPDF text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: new text in MuPDF text, in order",
+          "ok": true,
+          "detail": "\"Categories and Subject Descriptors D.3.4 [Programm\" not found",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "bold: added words in pdf.js text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: new text in pdf.js text, in order",
+          "ok": true,
+          "detail": "not found",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "bold: no pixel changed outside the paragraph box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: other glyphs unmoved",
+          "ok": true,
+          "detail": "0 moved: ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: ink in the new box",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: re-read as an editable paragraph",
+          "ok": true,
+          "detail": "p1-g23 2 lines",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: every word reads back whole (model, spaces kept)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: words read back in order (model)",
+          "ok": true,
+          "detail": "\"Categories and Subject Descriptors D.3.4 [Programming Lan-gu\"",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "bold: edit under 5 s",
+          "ok": true,
+          "detail": "452 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: edit under 2.5 s",
+          "ok": true,
+          "detail": "452 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "bold: bold word \"Categories\" still bold",
+          "ok": true,
+          "detail": "1 -> 1 bold",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-para-bold-irs-fw9",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "PASS",
+      "detail": "p1-g8 (left, 2 lines): bold 2L original 641+24ms",
+      "error": null,
+      "ms": 1164,
+      "opMs": 884,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": " 1 Name of entity/individual. An entry is",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: page count",
+          "ok": true,
+          "detail": "got 6, want 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 6 vs MuPDF 6",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: removed words gone (MuPDF, with and without ActualText)",
+          "ok": true,
+          "detail": "0 checked, left: ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: removed words gone from the page bytes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: added words in MuPDF text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: new text in MuPDF text, in order",
+          "ok": true,
+          "detail": "\"1 Name of entity/individual. An entry is required.\" not found",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "bold: added words in pdf.js text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: new text in pdf.js text, in order",
+          "ok": true,
+          "detail": "not found",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "bold: no pixel changed outside the paragraph box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: other glyphs unmoved",
+          "ok": true,
+          "detail": "0 moved: ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: ink in the new box",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: re-read as an editable paragraph",
+          "ok": true,
+          "detail": "p1-g45 2 lines",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: every word reads back whole (model, spaces kept)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: words read back in order (model)",
+          "ok": true,
+          "detail": "\"1 Name of entity/individual. An entry is required. (For a so\"",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "bold: edit under 5 s",
+          "ok": true,
+          "detail": "641 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: edit under 2.5 s",
+          "ok": true,
+          "detail": "641 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "bold: bold word \"the\" still bold",
+          "ok": true,
+          "detail": "3 -> 3 bold",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "edittext-para-bold-arxiv-1706-03762-attenti",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "PASS",
+      "detail": "p1-g10 (left, 3 lines): bold 3L original 165+80ms",
+      "error": null,
+      "ms": 4438,
+      "opMs": 731,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "browser model agrees with Node",
+          "ok": true,
+          "detail": " Aidan N. Gomez∗†\nUniversity of Toronto\na",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: not refused",
+          "ok": true,
+          "detail": "no report",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: page count",
+          "ok": true,
+          "detail": "got 15, want 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 15 vs MuPDF 15",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: removed words gone (MuPDF, with and without ActualText)",
+          "ok": true,
+          "detail": "1 checked, left: ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: removed words gone from the page bytes",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: added words in MuPDF text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: new text in MuPDF text, in order",
+          "ok": true,
+          "detail": "\"Aidan N. Gomez∗† Changed of Toronto aidan@cs.toron\" not found",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "bold: added words in pdf.js text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: new text in pdf.js text, in order",
+          "ok": true,
+          "detail": "not found",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "bold: no pixel changed outside the paragraph box",
+          "ok": true,
+          "detail": "0 px (max delta 0)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: other glyphs unmoved",
+          "ok": true,
+          "detail": "0 moved: ",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: ink in the new box",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: re-read as an editable paragraph",
+          "ok": true,
+          "detail": "p1-g19 3 lines",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: every word reads back whole (model, spaces kept)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: words read back in order (model)",
+          "ok": true,
+          "detail": "\"Aidan N. Gomez∗† Changed of Toronto aidan@cs.toronto.edu\"",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "bold: edit under 5 s",
+          "ok": true,
+          "detail": "165 ms",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bold: edit under 2.5 s",
+          "ok": true,
+          "detail": "165 ms",
+          "soft": true,
+          "audit": null
+        },
+        {
+          "name": "bold: bold word \"Aidan\" still bold",
+          "ok": true,
+          "detail": "1 -> 1 bold",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    }
+  ]
+}

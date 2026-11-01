@@ -15,7 +15,9 @@
 //    file is never re-parsed by pdf-lib.
 // 4. Longer text pushes the rest of its line right; nothing else moves. With
 //    fit, the new text is squeezed to the old width instead.
-// 5. Every new run sits in an ActualText span, so complex scripts extract.
+// 5. Shaped-script fallbacks (Devanagari) sit in an ActualText span so they
+//    extract; other text reads back from its own glyphs (an ActualText over
+//    Latin made poppler read words reversed and out of place).
 // 6. Interactive edits save fast (appended); finalizeEdits does the garbage
 //    collected save so the old text is really gone from the file.
 //
@@ -27,7 +29,7 @@
 //   signed: boolean, // a signed signature field: editing removes it
 //   runs: [{ id, text, bbox: [x0, y0, x1, y1], baseline, origin: [x, y], dir: [dx, dy],
 //            fontName, fontSize, color: [r, g, b] (0..1), bold, italic, script,
-//            editable, why: null | 'scanned' | 'hidden' | 'vertical' | 'no-unicode'
+//            editable, why: null | 'scanned' | 'hidden' | 'vertical' | 'no-unicode' | 'xfa-dynamic'
 //                 | 'type3' | 'covered' | 'form-field' | 'comment',
 //            words: [{ i, text, bbox, covered }] }] }
 //   covered: something opaque is painted over it after the text (a box
@@ -40,7 +42,9 @@
 //   fontName '', dir [1, 0] and no words.
 //
 // editText(bytes, edits, { fit = false, final = false })
-//   -> { bytes, report, signatureRemoved, ms: { edit, save, total } (numbers) }
+//   -> { bytes, report, signatureRemoved, xfaRemoved, ms: { edit, save, total } (numbers) }
+//   xfaRemoved: the file had an XFA copy of its form (/AcroForm /XFA, which
+//   keeps the old text); it was dropped
 //   final false (interactive): a fast appending save; the old text is still
 //   in the bytes. Call finalizeEdits once before the file leaves the tool.
 //   edits: [{ pageNum, runId, wordIndex (null = whole line), text, old? }]
@@ -62,6 +66,17 @@
 //   painted over the word), 'no-room', 'tight-lines' (removing the word
 //   would touch the next line; page left unchanged). Other edits still apply.
 //
+// Paragraphs (phase 2). pageTextModel also returns
+//   paragraphs: [{ id 'p<n>-g<k>', runIds, bbox, text ('\n' = hard break),
+//     align: left|right|centre|justify, dir: ltr|rtl, editable, why
+//     (run whys, 'no-unicode', 'covered', 'layout', 'encoding'), lines, fontSize }]
+// and editText takes { pageNum, paragraphId, text, old? } ('' deletes), one
+// per page per call. Report: { paragraphId, font: 'original' | 'fallback' |
+//   'mixed' | null, fallbackName, lines, overflow, refused, char, fit, box,
+//   changedBox }. Source line breaks are kept while the text fits them, else
+//   it re-wraps; more lines use free space below, then a squeeze to 85%,
+//   then 'no-room'. Layout math lives in editParagraph.js.
+//
 // finalizeEdits(bytes) -> { bytes, ms }: garbage-collected save that drops
 //   every earlier version and loose object (old text included).
 //
@@ -75,6 +90,8 @@
 // that named a removed word are cut. Known limit: new text is drawn after
 // the page content, so it reads last in copy/paste and is not in the
 // structure tree.
+import { findParagraphs, diffWords, splitWords, layoutWindow } from './editParagraph.js'
+
 let mupdfPromise = null
 const getMupdf = () => (mupdfPromise ??= import('mupdf'))
 
@@ -198,6 +215,13 @@ function colorOp(c) {
   return `${c.slice(0, 3).map(f4).join(' ')} rg`
 }
 
+// Stroke colour (same colour space as the fill).
+const strokeOp = (c) => colorOp(c).replace(/ (g|rg|k)$/, (m, op) => ` ${op.toUpperCase()}`)
+// Synthetic bold for a fallback with no bold face (Noto Arabic, Devanagari):
+// fill plus a thin outline in the text colour.
+const fakeBold = (c, size) => `${strokeOp(c)} 2 Tr ${f4(0.03 * size)} w `
+const needsFakeBold = (orig, draw) => draw?.kind === 'form' && isBold(orig) && !/bold/i.test(draw.name)
+
 // UTF-16BE hex with BOM, for ActualText
 function utf16Hex(s) {
   let h = 'FEFF'
@@ -294,6 +318,9 @@ function parseToUnicode(text) {
 // glyph names for simple fonts without ToUnicode
 const NAMED = { space: ' ', hyphen: '-', period: '.', comma: ',', colon: ':', semicolon: ';', zero: '0', one: '1', two: '2', three: '3', four: '4', five: '5', six: '6', seven: '7', eight: '8', nine: '9', parenleft: '(', parenright: ')', slash: '/', ampersand: '&', quoteright: '\u2019', quoteleft: '\u2018', fi: 'fi', fl: 'fl' }
 
+// WinAnsi codes 0x80..0x9f
+const WIN_ANSI_HIGH = ['\u20ac', '', '\u201a', '\u0192', '\u201e', '\u2026', '\u2020', '\u2021', '\u02c6', '\u2030', '\u0160', '\u2039', '\u0152', '', '\u017d', '', '', '\u2018', '\u2019', '\u201c', '\u201d', '\u2022', '\u2013', '\u2014', '\u02dc', '\u2122', '\u0161', '\u203a', '\u0153', '', '\u017e', '\u0178']
+
 // What we need to write with a font dict: unicode -> code, widths, code size.
 function fontInfo(mupdf, ref) {
   const info = { ref, base: '', sub: '', rev: new Map(), bytes: 1, widths: new Map(), dw: 0, ok: true }
@@ -310,6 +337,11 @@ function fontInfo(mupdf, ref) {
       if (!/Identity-[HV]/.test(ref.get('Encoding').toString())) info.ok = false
       const df = ref.get('DescendantFonts').get(0)
       info.dw = df.get('DW').isNull() ? 1000 : df.get('DW').asNumber()
+      // code = glyph id: moved glyphs can be drawn again by id (shaped Arabic)
+      const c2g = df.get('CIDToGIDMap')
+      // embedded only: for a substituted font MuPDF's glyph ids are the substitute's
+      const fdsc = df.get('FontDescriptor')
+      info.byGid = info.ok && df.get('Subtype').toString() === '/CIDFontType2' && (c2g.isNull() || c2g.toString() === '/Identity') && fdsc.isDictionary() && !fdsc.get('FontFile2').isNull()
       const W = df.get('W')
       if (W.isArray()) {
         for (let i = 0; i < W.length; ) {
@@ -339,6 +371,13 @@ function fontInfo(mupdf, ref) {
       info.bytes = info.sub === '/Type0' ? p.bytes : 1
     } else if (info.sub !== '/Type0') {
       for (let c = 32; c < 127; c++) info.rev.set(String.fromCharCode(c), c)
+      // WinAnsi (the usual base encoding) has curly quotes, dashes and Latin-1 up top
+      const encName = ref.get('Encoding')
+      const base = encName.isDictionary() ? encName.get('BaseEncoding').toString() : encName.toString()
+      if (base === '/WinAnsiEncoding') {
+        WIN_ANSI_HIGH.forEach((u, k) => u && info.rev.set(u, 0x80 + k))
+        for (let c = 0xa1; c < 0x100; c++) if (c !== 0xad) info.rev.set(String.fromCharCode(c), c)
+      }
       const enc = ref.get('Encoding')
       const diff = enc.isDictionary() ? enc.get('Differences') : null
       if (diff && diff.isArray()) {
@@ -543,7 +582,7 @@ function readPage(mupdf, doc, idx) {
   const page = doc.loadPage(idx)
   const bounds = page.getBounds()
   const obj = page.getObject()
-  const P = { page, obj, bounds, idx }
+  const P = { page, obj, bounds, idx, mupdf, doc }
   P.lines = readLines(page)
   const hid = hiddenFacts(mupdf, page, bounds)
   P.F = paintFacts(mupdf, page)
@@ -591,6 +630,153 @@ function publicRun(P, run) {
     editable: !run.why,
     why: run.why,
     words: run.words.map((w, i) => ({ i, text: textOf(chars.slice(w.a, w.b + 1)), bbox: toView(unionBox(chars.slice(w.a, w.b + 1).map((c) => qbox(c.quad))), b), covered: chars.slice(w.a, w.b + 1).some((c) => c.c.trim() && coveredChar(P.F, c)) })),
+  }
+}
+
+// Paragraphs of a page (stext blocks split where the text size changes),
+// computed once per read.
+function paragraphsOf(P) {
+  if (P.paras) return P.paras
+  P.paras = findParagraphs(ownLinesHome(P), P.runs, { bad: (c) => BAD_CHAR.test(c.c), covered: (c) => coveredChar(P.F, c), stuck: (c) => !canRedraw(P, c), bold: (c) => isBold(c.font), hyphen: (a, b) => hyphenKind(P, a, b), pageBox: P.bounds })
+  return P.paras
+}
+// A re-wrap redraws every glyph: in its own font when the char re-encodes
+// there, else through a fallback, which has WinAnsi and the Noto scripts.
+// A math sign from a font with a built-in encoding (TeX CMSY "∗") has neither.
+const WIN_ANSI_EXTRA = /[\u0152\u0153\u0160\u0161\u0178\u017d\u017e\u0192\u02c6\u02dc\u2013\u2014\u2018-\u201a\u201c-\u201e\u2020-\u2022\u2026\u2030\u2039\u203a\u20ac\u2122]/u
+const NOTO_SCRIPT = /[\p{Script=Arabic}\p{Script=Hebrew}\p{Script=Devanagari}\p{Script=Bengali}\p{Script=Tamil}\p{Script=Thai}\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\p{Script=Cyrillic}\p{Script=Greek}\p{Script=Latin}\p{M}]/u
+// a scratch document for probes while reading the model (freed with the page)
+const scratchOf = (P) => (P.S ??= { doc: new P.mupdf.PDFDocument() })
+function canRedraw(P, c) {
+  P.redrawCache ??= new Map()
+  const k = `${c.font}|${c.c}`
+  if (!P.redrawCache.has(k)) {
+    const cp = c.c.codePointAt(0)
+    // ... or by glyph id (an unchanged word keeps its own glyphs, see gidDraw)
+    const ok = cp < 0x250 || WIN_ANSI_EXTRA.test(c.c) || NOTO_SCRIPT.test(c.c) || fontDicts(P.mupdf, P, c.font).some((i) => (i.ok && encode(i, c.c)) || i.byGid || (i.ok && i.sub !== '/Type0' && i.sub !== '/Type3' && i.widths.size && P.F.gidsAt(c).length > 0 && P.F.gidsAt(c).every((x) => codeMap(P.mupdf, scratchOf(P), i).has(x.gid))))
+    P.redrawCache.set(k, ok)
+  }
+  return P.redrawCache.get(k)
+}
+// A hyphen at a line end, between `a` and `b`: decided from the document's
+// own words (3 pages on each side, mid-line words only; not this page, so
+// an edit here cannot flip the decision for its next read): the joined
+// form appears -> 'soft'; the hyphenated form appears, or `b` has its own
+// hyphen or a capital -> 'real'; else 'keep' (the break stays where it is).
+function hyphenKind(P, a, b) {
+  const bare = (s) => s.replace(/^[\p{P}\p{S}]+|[\p{P}\p{S}]+$/gu, '')
+  const r = bare(b)
+  if (/[-\u2010]/.test(r) || /^\p{Lu}/u.test(r)) return 'real'
+  if (!P.midWords) {
+    P.midWords = new Set()
+    const n = P.doc.countPages()
+    for (let i = Math.max(0, P.idx - 3); i <= Math.min(n - 1, P.idx + 3); i++) {
+      if (i === P.idx) continue
+      const lines = (() => {
+        const pg = P.doc.loadPage(i)
+        try {
+          return readLines(pg)
+        } finally {
+          pg.destroy?.()
+        }
+      })()
+      for (const l of lines) {
+        const toks = textOf(l.chars).split(/\s+/).filter(Boolean)
+        for (const t of toks.slice(0, -1)) P.midWords.add(bare(t).toLowerCase())
+      }
+    }
+  }
+  const left = bare(a).toLowerCase()
+  if (P.midWords.has(`${left}-${r.toLowerCase()}`)) return 'real'
+  if (P.midWords.has(`${left}${r.toLowerCase()}`)) return 'soft'
+  return 'keep'
+}
+
+// A line we drew again (word or line edit) comes after the page content, so
+// MuPDF reads it as a block of its own and its paragraph gets a hole. Put
+// such a one-line block back into the block it sits in: same size, inside
+// its column, within a line gap of its lines. -> lines with `block` set
+// (copies; P.lines stays as read) and `own` marking our redrawn lines.
+function ownLinesHome(P) {
+  const spans = [...ownSpans(P.obj), ...ownSpans(P.obj, 'SPDFRun')]
+  if (!spans.length) return P.lines
+  const inBox = (c, b) => {
+    const q = qbox(c.quad)
+    const x = (q[0] + q[2]) / 2
+    const y = (q[1] + q[3]) / 2
+    return x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]
+  }
+  const lines = P.lines.map((l) => {
+    const v = l.chars.filter((c) => c.c.trim())
+    return { ...l, own: v.length > 0 && v.every((c) => spans.some((s) => inBox(c, s.box))) }
+  })
+  const blocks = new Map()
+  lines.forEach((l, i) => l.block && (blocks.get(l.block) ?? blocks.set(l.block, []).get(l.block)).push(i))
+  const geo = (idx) => {
+    const l = lines[idx[0]]
+    const dir = l.dir
+    const down = [-dir[1], dir[0]]
+    const v = idx.flatMap((i) => lines[i].chars.filter((c) => c.c.trim()))
+    const vs = idx.map((i) => dot(lines[i].chars.find((c) => c.c.trim()).origin, down))
+    const xs = v.map((c) => along(c.quad, dir))
+    return { dir, top: Math.min(...vs), bottom: Math.max(...vs), x0: Math.min(...xs.map((x) => x[0])), x1: Math.max(...xs.map((x) => x[1])), size: v[0]?.size ?? 0, rows: new Set(vs.map((x) => Math.round(x))).size }
+  }
+  // lines a paragraph edit drew (span tagged with the paragraph's top-left):
+  // back into the block that still starts there, else together
+  const anchors = new Map()
+  lines.forEach((l, i) => {
+    if (!l.own) return
+    const v = l.chars.filter((c) => c.c.trim())
+    const sp = spans.find((x) => x.para && v.some((c) => inBox(c, x.box)))
+    if (!sp) return
+    const k = sp.para.map((x) => x.toFixed(1)).join()
+    ;(anchors.get(k) ?? anchors.set(k, { at: sp.para, idx: [] }).get(k)).idx.push(i)
+  })
+  for (const { at, idx } of anchors.values()) {
+    const tops = [...blocks.entries()].filter(([, ix]) => !ix.every((i) => lines[i].own)).map(([b, ix]) => [b, unionBox(ix.flatMap((i) => lines[i].chars.filter((c) => c.c.trim()).map((c) => qbox(c.quad))))])
+    const home = tops.find(([, bb]) => Math.abs(bb[0] - at[0]) < 1.5 && Math.abs(bb[1] - at[1]) < 1.5)?.[0] ?? lines[idx[0]].block
+    for (const i of idx) lines[i].block = home
+    // the paragraph's own lines left as they were (below the window) too
+    if (at.length === 4) {
+      lines.forEach((l) => {
+        const v = l.chars.filter((c) => c.c.trim())
+        if (v.length && v.every((c) => {
+          const q = qbox(c.quad)
+          const x = (q[0] + q[2]) / 2
+          const y = (q[1] + q[3]) / 2
+          return x >= at[0] - 1 && x <= at[2] + 1 && y >= at[1] - 1 && y <= at[3] + 1
+        })) l.block = home
+      })
+    }
+  }
+  blocks.clear()
+  lines.forEach((l, i) => l.block && (blocks.get(l.block) ?? blocks.set(l.block, []).get(l.block)).push(i))
+  const all = [...blocks.entries()].map(([b, idx]) => ({ b, idx, own: idx.every((i) => lines[i].own), g: geo(idx) }))
+  for (const o of all.filter((x) => x.own && x.g.rows === 1)) {
+    const lead = 1.25 * o.g.size
+    const home = all
+      .filter((x) => !x.own && Math.abs(x.g.dir[0] - o.g.dir[0]) < 0.01 && Math.abs(x.g.dir[1] - o.g.dir[1]) < 0.01 && Math.abs(x.g.size - o.g.size) <= 0.06 * o.g.size)
+      .filter((x) => o.g.top > x.g.top - 1.2 * lead && o.g.top < x.g.bottom + 1.2 * lead && o.g.x0 > x.g.x0 - 2 && o.g.x0 < x.g.x1 && o.g.x1 > x.g.x0)
+      .sort((p, q) => Math.abs(o.g.top - (p.g.top + p.g.bottom) / 2) - Math.abs(o.g.top - (q.g.top + q.g.bottom) / 2))[0]
+    if (home) for (const i of o.idx) lines[i].block = home.b
+  }
+  return lines
+}
+
+const ALIGN = { start: ['left', 'right'], end: ['right', 'left'], centre: ['centre', 'centre'], justify: ['justify', 'justify'] }
+function publicParagraph(P, g) {
+  const quads = g.lineIdx.flatMap((li) => P.lines[li].chars.filter((c) => c.c.trim()).map((c) => qbox(c.quad)))
+  return {
+    id: `p${P.idx + 1}-g${g.k}`,
+    runIds: g.lineIdx.map((li) => P.runs[li].id),
+    bbox: toView(unionBox(quads), P.bounds),
+    text: g.text,
+    align: ALIGN[g.align][g.frame.rtl ? 1 : 0],
+    dir: g.frame.rtl ? 'rtl' : 'ltr',
+    editable: g.editable,
+    why: g.why,
+    lines: g.rows.length,
+    fontSize: r2(g.size),
   }
 }
 
@@ -750,11 +936,41 @@ function proveUse(doc, usage, font, need) {
 // Same font: the first dict with this name that can encode the text, with
 // the char spacing the original word implies. exact: one TJ that puts every
 // glyph at its original origin (moved text keeps its kerning).
+// A ToUnicode map can give one letter to two codes (us-budget maps an "E"
+// glyph code to "e" too), and the first one is not always the glyph the
+// file draws for it. Where the page shows which glyph a font draws for a
+// letter, use that glyph's code. Once per font dict per page read.
+function drawnCodes(mupdf, P, info, name) {
+  if (info.drawnFixed || !info.ok || !P.F) return
+  info.drawnFixed = true
+  const simple = info.sub !== '/Type0'
+  if (!simple && !info.byGid) return
+  const map = simple ? codeMap(mupdf, scratchOf(P), info) : null
+  const votes = new Map()
+  for (const l of P.lines) {
+    for (const c of l.chars) {
+      if (c.font !== name || [...c.c].length !== 1 || !c.c.trim()) continue
+      const gs = P.F.gidsAt(c)
+      if (gs.length !== 1) continue
+      const code = simple ? codeFor(info, map, gs[0].gid, c.c) : gs[0].gid
+      if (code == null || !info.widths.get(code)) continue
+      const v = votes.get(c.c) ?? votes.set(c.c, new Map()).get(c.c)
+      v.set(code, (v.get(code) ?? 0) + 1)
+    }
+  }
+  for (const [u, v] of votes) info.rev.set(u, [...v].sort((a, b) => b[1] - a[1])[0][0])
+}
+
+// spacing accents (TeX draws "¨" then a dotless "ı") and combining marks
+const ACCENT = /^[\u00a8\u00b4`\u02c6-\u02dd\u00b8\u00af\p{M}]$/u
+
 function sameFont(mupdf, P, chars, text, dir, { exact = false } = {}) {
   const sz = chars[0].size
   const orig = textOf(chars)
   const oneFont = chars.every((c) => c.font === chars[0].font)
-  for (const info of fontDicts(mupdf, P, chars[0].font)) {
+  const infos = fontDicts(mupdf, P, chars[0].font)
+  if (infos.length === 1) drawnCodes(mupdf, P, infos[0], chars[0].font)
+  for (const info of infos) {
     if (!info.ok) continue
     const codes = encode(info, text)
     if (!codes || !codes.every((c) => info.widths.has(c.code) || info.dw)) continue
@@ -770,6 +986,10 @@ function sameFont(mupdf, P, chars, text, dir, { exact = false } = {}) {
     let tj = null
     if (exact) {
       if (codes.length !== chars.length) continue
+      // a ligature glyph read as two chars: the second sits inside the first,
+      // and drawing both at their origins overprints
+      // (an accent placed over the next letter is not a ligature: keep it)
+      if (codes.slice(0, -1).some((c, i) => !ACCENT.test(chars[i].c) && !ACCENT.test(chars[i + 1].c) && dot(chars[i + 1].origin, dir) - dot(chars[i].origin, dir) < 0.5 * ((widthOf(info, c.code) * sz) / 1000))) continue
       tj = codes
         .map((c, i) => {
           const hx = `<${hexOf(info, [c])}>`
@@ -814,7 +1034,7 @@ async function fallbackForm(mupdf, doc, text, standard, size) {
     // ActualText makes shaped scripts (Devanagari) extract in logical order.
     // Not for right-to-left text: MuPDF and pdf.js already read those glyphs
     // back in logical order, and MuPDF reverses an ActualText over them.
-    if (!RTL.test(text)) content = `/Span <</ActualText <${utf16Hex(text)}>>> BDC\n${content}\nEMC\n`
+    if (COMPLEX.test(text) && !RTL.test(text)) content = `/Span <</ActualText <${utf16Hex(text)}>>> BDC\n${content}\nEMC\n`
     const dict = doc.newDictionary()
     dict.put('Type', doc.newName('XObject'))
     dict.put('Subtype', doc.newName('Form'))
@@ -824,6 +1044,53 @@ async function fallbackForm(mupdf, doc, text, standard, size) {
     dict.put('Resources', doc.graftObject(sp.get('Resources')))
     const form = doc.addStream(content, dict)
     return { kind: 'form', form, adv, name: [...new Set(runs.map((r) => r.font.name))].join(' + ') }
+  } finally {
+    src.destroy?.()
+  }
+}
+
+// Many fallback texts in one tiny pdf-lib file: pages [{ pieces: [{ text, x,
+// standard, size }] }], one form per page (origin on the baseline, pieces at
+// x). The caller's tagged span carries the ActualText. -> [{ kind, form, adv, name }]
+async function fallbackForms(mupdf, doc, pages) {
+  const [{ PDFDocument }, fonts] = await Promise.all([import('pdf-lib'), import('./fonts.js')])
+  const tmp = await PDFDocument.create()
+  const meta = []
+  for (const pg of pages) {
+    const laid = []
+    let adv = 0
+    const names = new Set()
+    for (const pc of pg.pieces) {
+      const runs = await fonts.layoutText(tmp, pc.text, { standard: pc.standard })
+      laid.push([pc, runs])
+      adv = Math.max(adv, pc.x + fonts.runsWidth(runs, pc.size))
+      for (const r of runs) names.add(r.font.name)
+    }
+    const H = Math.max(...pg.pieces.map((p) => p.size))
+    const page = tmp.addPage([adv + 4 * H, 4 * H])
+    for (const [pc, runs] of laid) fonts.drawRuns(page, runs, { x: pc.x, y: 0, size: pc.size })
+    meta.push({ adv, H, name: [...names].join(' + ') })
+  }
+  const src = mupdf.Document.openDocument(await tmp.save({ useObjectStreams: false }), 'application/pdf').asPDF()
+  try {
+    const map = doc.newGraftMap()
+    return meta.map((m, i) => {
+      const sp = src.findPage(i)
+      const contents = sp.get('Contents')
+      const list = contents.isArray() ? Array.from({ length: contents.length }, (_, k) => contents.get(k)) : [contents]
+      const content = list
+        .map((s) => new TextDecoder('latin1').decode(takeBytes(s.readStream())))
+        .join('\n')
+        .replace(/^(?:-?[\d.]+\s+){1,4}(?:rg|g|k)\s*$/gm, '')
+      const dict = doc.newDictionary()
+      dict.put('Type', doc.newName('XObject'))
+      dict.put('Subtype', doc.newName('Form'))
+      const bbox = doc.newArray()
+      for (const v of [-2 * m.H, -2 * m.H, m.adv + 2 * m.H, 3 * m.H]) bbox.push(v)
+      dict.put('BBox', bbox)
+      dict.put('Resources', map.graftObject(sp.get('Resources')))
+      return { kind: 'form', form: doc.addStream(content, dict), adv: m.adv, name: m.name }
+    })
   } finally {
     src.destroy?.()
   }
@@ -1031,17 +1298,29 @@ const squashS = (s) => String(s).replace(/\s+/g, '')
 // nothing (their glyphs were removed) or that still name an edited word.
 const MC_TEXT = new Set(['ActualText', 'Alt', 'E'])
 const SHOWS = new Set(['Tj', 'TJ', "'", '"', 'Do'])
-function cleanMarked(b, olds, props) {
+// Does a string still name removed text? Words of 4+ letters match inside
+// it (ActualText can hold pieces of words); shorter ones (an initial, "of")
+// only as whole words of a short string, so common words elsewhere stay.
+function namesOld(v, olds) {
+  const toks = new Set(String(v).split(/[\s\p{P}]+/u).filter(Boolean))
+  return olds.some((w) => {
+    const t = String(w).replace(/^\p{P}+|\p{P}+$/gu, '')
+    return t.length >= 4 && toks.has(t)
+  })
+}
+
+// lost(index): the span with that page-wide index (BDC/BMC in order) lost
+// glyphs in this edit. Empty spans are cut too. counter: { n } across streams.
+function cleanMarked(b, lost, props, counter = { n: 0 }) {
   const cuts = []
   const stack = []
-  const hasOld = (v) => olds.some((w) => squashS(w) && squashS(v).includes(squashS(w)))
   for (const o of contentOps(b)) {
-    if (o.op === 'BDC' || o.op === 'BMC') stack.push({ o, shows: 0 })
+    if (o.op === 'BDC' || o.op === 'BMC') stack.push({ o, shows: 0, idx: counter.n++ })
     else if (SHOWS.has(o.op)) stack.forEach((s) => s.shows++)
     else if (o.op === 'EMC') {
       const s = stack.pop()
       if (!s || s.o.op !== 'BDC') continue
-      const strip = (v) => (s.shows === 0 && v.trim() !== '') || hasOld(v)
+      const strip = (v) => (s.shows === 0 && v.trim() !== '') || lost(s.idx)
       const p = s.o.operands[1]
       if (p?.type === 'dict') {
         for (let k = 0; k + 1 < p.items.length; k += 2) {
@@ -1080,11 +1359,13 @@ function cleanMarked(b, olds, props) {
 }
 
 // cleanMarked on the page streams and every form XObject they draw.
-function cleanPageMarked(pobj, olds) {
+function cleanPageMarked(pobj, lost) {
   const seen = new Set()
-  const fix = (ref, props) => {
+  const counter = { n: 0 }
+  // forms are not compared before/after: only their emptied spans go
+  const fix = (ref, props, test = lost) => {
     if (!ref.isStream()) return
-    const out = cleanMarked(takeBytes(ref.readStream()), olds, props)
+    const out = cleanMarked(takeBytes(ref.readStream()), test, props, test === lost ? counter : { n: 0 })
     if (out) ref.writeStream(out)
   }
   const walk = (res) => {
@@ -1095,7 +1376,7 @@ function cleanPageMarked(pobj, olds) {
       if (!x.isIndirect() || seen.has(x.asIndirect()) || x.get('Subtype').toString() !== '/Form') return
       seen.add(x.asIndirect())
       const r = x.get('Resources')
-      fix(x, r.isDictionary() ? r.get('Properties') : null)
+      fix(x, r.isDictionary() ? r.get('Properties') : null, () => false)
       walk(r)
     })
   }
@@ -1104,9 +1385,101 @@ function cleanPageMarked(pobj, olds) {
   walk(res)
 }
 
+// Per marked-content span of a page (BDC/BMC in order): its MCID and how
+// many bytes of glyph codes it shows (nested spans count for each level).
+function markedShows(b, props) {
+  const out = []
+  const stack = []
+  const bytesOf = (t) => (t.type === 'str' || t.type === 'hex' ? strValue(b, t).length : t.type === 'array' ? t.items.reduce((n, x) => n + bytesOf(x), 0) : 0)
+  for (const o of contentOps(b)) {
+    if (o.op === 'BDC' || o.op === 'BMC') {
+      let mcid = null
+      const p = o.operands[1]
+      if (p?.type === 'dict') {
+        const k = p.items.findIndex((x) => x.type === 'name' && x.value === 'MCID')
+        if (k >= 0 && p.items[k + 1]?.type === 'num') mcid = p.items[k + 1].value
+      } else if (p?.type === 'name' && props?.isDictionary()) {
+        const d = props.get(p.value)
+        if (d.isDictionary() && d.get('MCID').isNumber()) mcid = d.get('MCID').asNumber()
+      }
+      const e = { mcid, shown: 0 }
+      out.push(e)
+      stack.push(e)
+    } else if (o.op === 'EMC') stack.pop()
+    else if (SHOWS.has(o.op) && o.op !== 'Do') {
+      const n = o.operands.reduce((m, t) => m + bytesOf(t), 0)
+      for (const e of stack) e.shown += n
+    }
+  }
+  return out
+}
+const joinStreams = (pobj) => {
+  const parts = asList(pobj.get('Contents')).filter((r) => r.isStream()).map((r) => takeBytes(r.readStream()))
+  const b = new Uint8Array(parts.reduce((n, p) => n + p.length + 1, 0))
+  let o = 0
+  for (const p of parts) {
+    b.set(p, o)
+    b[o + p.length] = 10
+    o += p.length + 1
+  }
+  return b
+}
+
+// The structure tree can hold the text too (StructElem /ActualText, /Alt,
+// /E, /T). Elements of this page whose strings name removed text lose those
+// entries. Walks only from the StructTreeRoot, with a node budget (us-budget
+// has a large tree); elements on other pages are left alone.
+const STRUCT_TEXT = ['ActualText', 'Alt', 'E', 'T']
+function cleanStruct(doc, pobj, mcids, olds = null) {
+  if (!mcids.size && !olds?.length) return 0
+  const root = doc.getTrailer().get('Root').get('StructTreeRoot')
+  if (!root.isDictionary()) return 0
+  const pageNum = pobj.isIndirect() ? pobj.asIndirect() : null
+  const pgOf = (o, inherited) => {
+    const p = o.isDictionary() ? o.get('Pg') : null
+    return p && p.isIndirect() ? p.asIndirect() : inherited
+  }
+  const seen = new Set()
+  let budget = 200000
+  let cut = 0
+  const stack = [[root.get('K'), null]]
+  while (stack.length && budget-- > 0) {
+    const [node, pg] = stack.pop()
+    if (node.isArray()) {
+      for (let i = 0; i < node.length; i++) stack.push([node.get(i), pg])
+      continue
+    }
+    if (!node.isDictionary()) continue
+    if (node.isIndirect()) {
+      const n = node.asIndirect()
+      if (seen.has(n)) continue
+      seen.add(n)
+    }
+    const type = node.get('Type').toString()
+    if (type === '/MCR' || type === '/OBJR') continue
+    const page = pgOf(node, pg)
+    // its own marked content on this page: MCID numbers, or MCRs (with their /Pg)
+    const k = node.get('K')
+    const kids = k.isArray() ? Array.from({ length: k.length }, (_, i) => k.get(i)) : [k]
+    const mine = kids.some((x) => (x.isNumber() ? page === pageNum && mcids.has(x.asNumber()) : x.isDictionary() && x.get('Type').toString() === '/MCR' && pgOf(x, page) === pageNum && x.get('MCID').isNumber() && mcids.has(x.get('MCID').asNumber())))
+    // spans that could not be compared: whole removed words, this page only
+    const named = (v) => olds && page === pageNum && namesOld(v, olds)
+    for (const key of STRUCT_TEXT) {
+      const v = node.get(key)
+      if (v.isString() && (mine || named(v.asString()))) {
+        node.delete(key)
+        cut++
+      }
+    }
+    stack.push([k, page])
+  }
+  return cut
+}
+
 // Our own earlier draws: /Span <</SPDFBox [x0 y0 x1 y1] ...>> BDC ... EMC in
 // the page streams (box in MuPDF page space), with the resources they use.
-function ownSpans(pobj) {
+// key 'SPDFRun' finds the rest-of-line runs a line edit moved (not cut whole).
+function ownSpans(pobj, key = 'SPDFBox') {
   const out = []
   for (const ref of asList(pobj.get('Contents'))) {
     if (!ref.isStream()) continue
@@ -1121,9 +1494,11 @@ function ownSpans(pobj) {
         const s = stack.pop()
         const p = s?.o.operands[1]
         if (p?.type !== 'dict') continue
-        const k = p.items.findIndex((x) => x.type === 'name' && x.value === 'SPDFBox')
+        const k = p.items.findIndex((x) => x.type === 'name' && x.value === key)
         const arr = k >= 0 ? p.items[k + 1] : null
-        if (arr?.type === 'array' && arr.items.length === 4) out.push({ ref, start: s.o.start, end: o.end, box: arr.items.map((x) => x.value), names: s.names })
+        const pk = p.items.findIndex((x) => x.type === 'name' && x.value === 'SPDFPara')
+        const para = pk >= 0 && p.items[pk + 1]?.type === 'array' ? p.items[pk + 1].items.map((x) => x.value) : null
+        if (arr?.type === 'array' && arr.items.length === 4) out.push({ ref, start: s.o.start, end: o.end, box: arr.items.map((x) => x.value), names: s.names, para })
       }
     }
   }
@@ -1138,6 +1513,19 @@ function cutOwn(doc, pobj, spans) {
     let b = takeBytes(ref.readStream())
     for (const s of list.sort((x, y) => y.start - x.start)) b = new Uint8Array([...b.subarray(0, s.start), 32, ...b.subarray(s.end)])
     ref.writeStream(b)
+  }
+  // what earlier edits left empty: run tags whose glyphs a later redaction
+  // removed, placement wrappers whose draw was cut (see placeContent)
+  const W = String.raw`q\s+(?:-?[\d.]+\s+){6}cm\s+0\s+Tc\s+0\s+Tw\s+100\s+Tz\s+0\s+TL\s+0\s+Ts\s+0\s+Tr\s+Q\s`
+  const EMPTY = [new RegExp(String.raw`/Span\s*<<\s*/SPDFRun\s*\[[^\]]*\]\s*>>\s*BDC\s+(?:BT\s+ET\s+)?EMC`, 'g'), new RegExp(String.raw`ET\s+${W}BT\s+(?:-?[\d.]+\s+){6}Tm\s`, 'g'), new RegExp(W, 'g')]
+  for (const ref of asList(pobj.get('Contents'))) {
+    if (!ref.isStream()) continue
+    const raw = takeBytes(ref.readStream())
+    const txt = latin1(raw, 0, raw.length)
+    // a run span whose text a later redaction removed shows nothing any more
+    const runs = txt.replace(/\/Span\s*<<\s*\/SPDFRun\s*\[[^\]]*\]\s*>>\s*BDC([\s\S]*?)EMC/g, (m, inner) => (/T[jJ]|Do|['"]\s/.test(inner) ? m : ' '))
+    const clean = EMPTY.reduce((t, re) => t.replace(re, ' '), runs)
+    if (clean !== txt) ref.writeStream(Uint8Array.from(clean, (c) => c.charCodeAt(0)))
   }
   const used = new Set()
   for (const ref of asList(pobj.get('Contents'))) {
@@ -1170,6 +1558,8 @@ const release = (...objs) => objs.forEach((o) => o?.destroy?.())
 // region: only text objects that touch it get their glyphs walked (cost).
 function paintFacts(mupdf, page, region = null) {
   const glyphs = new Map()
+  // glyph ids by origin key, in drawing order (several glyphs can share one)
+  const gids = new Map()
   const paints = []
   const clips = []
   let seq = 0
@@ -1181,11 +1571,14 @@ function paintFacts(mupdf, page, region = null) {
     if (region && !overlaps(text.getBounds(null, ctm), region)) return
     try {
       text.walk({
-        showGlyph(font, trm) {
+        showGlyph(font, trm, gid) {
           font.constructor._finalizer?.unregister(font)
-          const k = key(apply(ctm, [trm[4], trm[5]]))
+          const p = apply(ctm, [trm[4], trm[5]])
+          const k = key(p)
+          if (mode === 'fill') (gids.get(k) ?? gids.set(k, []).get(k)).push({ gid, p })
           const g = glyphs.get(k)
-          glyphs.set(k, g && g.seq === seq ? { ...g, mode: `${g.mode}+${mode}` } : { seq, alpha, mode, clip })
+          // two glyphs of one text object on one origin (an accent) are not a second mode
+          glyphs.set(k, g && g.seq === seq ? (g.mode.split('+').includes(mode) ? g : { ...g, mode: `${g.mode}+${mode}` }) : { seq, alpha, mode, clip })
         },
       })
     } catch {
@@ -1290,7 +1683,109 @@ function paintFacts(mupdf, page, region = null) {
   }
   // annotations are not counted: they render above all page content, the
   // new text included, so moving text under one reveals nothing
-  return { glyph: (c) => glyphs.get(key(c.origin)) ?? null, paints }
+  return { glyph: (c) => glyphs.get(key(c.origin)) ?? null, gidsAt: (c) => gids.get(key(c.origin)) ?? [], paints }
+}
+
+// Digits and spaces inside a right-to-left line, in page order (exact).
+function visualExact(mupdf, P, chars, dir) {
+  const v = chars.slice().sort((a, b) => dot(a.origin, dir) - dot(b.origin, dir))
+  const d = sameFont(mupdf, P, v, textOf(v), dir, { exact: true })
+  return d && { ...d, origin: v[0].origin }
+}
+
+// Glyph id -> code of a simple font, found by drawing codes 0..255 once on a
+// scratch page and reading back the glyph each one shows (a built-in
+// encoding, TeX CMSY "∗", has no other way back from glyph to code).
+function codeMap(mupdf, S, info) {
+  if (info.gidCodes) return info.gidCodes
+  const map = new Map()
+  info.gidCodes = map
+  const doc = S.doc
+  const res = doc.newDictionary()
+  const fd = doc.newDictionary()
+  fd.put('F', doc.graftObject(info.ref))
+  res.put('Font', fd)
+  // each code at its own height, so a code with no glyph cannot shift the rest
+  const shows = Array.from({ length: 256 }, (_, i) => `1 0 0 1 0 ${i * 2} Tm <${i.toString(16).padStart(2, '0')}> Tj`).join(' ')
+  doc.insertPage(-1, doc.addPage([0, 0, 10, 600], 0, res, `BT /F 1 Tf ${shows} ET`))
+  const n = doc.countPages() - 1
+  const sp = doc.loadPage(n)
+  const dev = new mupdf.Device({
+    fillText(text, ctm) {
+      text.walk({
+        showGlyph(f, trm, gid) {
+          f.constructor._finalizer?.unregister(f)
+          // page space is y down: code = (600 - y) / 2
+          const code = Math.round((600 - apply(ctm, [trm[4], trm[5]])[1]) / 2)
+          if (gid > 0 && code >= 0 && code < 256) (map.get(gid) ?? map.set(gid, []).get(gid)).push(code)
+        },
+      })
+      release(text)
+    },
+  })
+  try {
+    sp.runPageContents(dev, mupdf.Matrix.identity)
+  } finally {
+    dev.close()
+    dev.destroy?.()
+    sp.destroy?.()
+    doc.deletePage(n)
+  }
+  return map
+}
+
+// Of the codes that draw a glyph, the one whose ToUnicode reads as `u`.
+function codeFor(info, map, gid, u) {
+  const list = map.get(gid)
+  if (!list) return null
+  const r = info.rev.get(u)
+  return list.includes(r) ? r : list[0]
+}
+
+// Glyphs drawn again by glyph id at their own origins (one TJ): fonts whose
+// codes are glyph ids (re-encoding shaped Arabic through ToUnicode would
+// pick the wrong letter forms), or with S, simple fonts through codeMap.
+// -> { ref, tj, origin } or null
+function gidDraw(mupdf, P, chars, dir, S = null) {
+  let info = fontDicts(mupdf, P, chars[0].font).find((i) => i.byGid)
+  let codeOf = (gid) => gid
+  if (!info && S) {
+    info = fontDicts(mupdf, P, chars[0].font).find((i) => i.ok && i.sub !== '/Type0' && i.sub !== '/Type3' && i.widths.size)
+    if (info) {
+      const m = codeMap(mupdf, S, info)
+      codeOf = (gid, u) => codeFor(info, m, gid, u)
+    }
+  }
+  if (!info) return null
+  const seen = new Set()
+  const list = []
+  for (const c of chars) {
+    for (const g of P.F.gidsAt(c)) {
+      const k = `${g.gid}@${g.p[0].toFixed(2)},${g.p[1].toFixed(2)}`
+      if (seen.has(k)) continue
+      seen.add(k)
+      list.push({ ...g, u: c.c })
+    }
+  }
+  if (!list.length) return null
+  const up = [dir[1], -dir[0]]
+  const base = dot(list[0].p, up)
+  // one baseline only (a raised mark needs its own position)
+  if (list.some((g) => Math.abs(dot(g.p, up) - base) > 0.05)) return null
+  list.sort((a, b) => dot(a.p, dir) - dot(b.p, dir))
+  const codes = list.map((g) => codeOf(g.gid, g.u))
+  if (codes.some((c) => c == null)) return null
+  const sz = chars[0].size
+  const tj = list
+    .map((g, i) => {
+      const hx = `<${codes[i].toString(16).padStart(info.bytes * 2, '0')}>`
+      if (i === list.length - 1) return hx
+      const actual = dot(list[i + 1].p, dir) - dot(g.p, dir)
+      const adj = -((actual - (widthOf(info, codes[i]) * sz) / 1000) * 1000) / sz
+      return Math.abs(adj) < 0.5 ? hx : `${hx} ${adj.toFixed(1)}`
+    })
+    .join(' ')
+  return { ref: info.ref, tj, origin: list[0].p }
 }
 
 const overlaps = (a, r) => a[0] < r[2] - 0.01 && a[2] > r[0] + 0.01 && a[1] < r[3] - 0.01 && a[3] > r[1] + 0.01
@@ -1376,6 +1871,73 @@ function restoreInline(pobj, before) {
     x.r.writeStream(out)
   }
   return true
+}
+
+// Form XObjects (nested) the page draws that hold inline images, by name path
+// from the page resources: MuPDF's redaction filter may rewrite a form in
+// place or swap in a filtered copy, and the name path finds either.
+function snapForms(pobj) {
+  const out = []
+  const seen = new Set()
+  const walk = (res, path) => {
+    if (!res.isDictionary()) return
+    const xo = res.get('XObject')
+    if (!xo.isDictionary()) return
+    xo.forEach((x, name) => {
+      if (!x.isIndirect() || seen.has(x.asIndirect()) || x.get('Subtype').toString() !== '/Form') return
+      seen.add(x.asIndirect())
+      const p = [...path, name]
+      const bytes = takeBytes(x.readStream())
+      if (inlineImages(bytes).length) out.push({ path: p, ref: x, bytes })
+      walk(x.get('Resources'), p)
+    })
+  }
+  walk(pageRes(pobj), [])
+  return out
+}
+const pageRes = (pobj) => pobj.getInheritable('Resources')
+function formAt(pobj, path) {
+  let res = pageRes(pobj)
+  let x = null
+  for (const name of path) {
+    if (!res.isDictionary()) return null
+    const xo = res.get('XObject')
+    if (!xo.isDictionary()) return null
+    x = xo.get(name)
+    if (!x.isStream()) return null
+    res = x.get('Resources')
+  }
+  return x
+}
+// Puts the inline images of those forms back byte for byte. False when a
+// form lost or gained one (the caller undoes the edit).
+function restoreFormInline(pobj, snap) {
+  for (const s of snap) {
+    const x = formAt(pobj, s.path)
+    if (!x) return false
+    const orig = inlineImages(s.bytes).map(([a, b]) => s.bytes.slice(a, b))
+    const now = takeBytes(x.readStream())
+    const segs = inlineImages(now)
+    if (segs.length !== orig.length) return false
+    const parts = []
+    let at = 0
+    segs.forEach(([a, b], k) => {
+      parts.push(now.subarray(at, a), orig[k])
+      at = b
+    })
+    parts.push(now.subarray(at))
+    const out = new Uint8Array(parts.reduce((n, p) => n + p.length, 0))
+    let o = 0
+    for (const p of parts) {
+      out.set(p, o)
+      o += p.length
+    }
+    x.writeStream(out)
+  }
+  return true
+}
+function undoForms(snap) {
+  for (const s of snap) s.ref.writeStream(s.bytes)
 }
 
 // ---------- one page ----------
@@ -1537,19 +2099,36 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
     const lastVis = chars.indexOf(vis[vis.length - 1])
     const whole = group.length === 1 && group[0].a <= firstVis && group[0].b >= lastVis
     let lineMoves = []
-    let noPush = rtl ? 'rtl' : null
+    // a right-to-left line pushes the rest of it to the left (mirror of LTR);
+    // mixed edits on one line (RTL and LTR words) still stay put
+    const allRtl = rtl && group.every((t) => t.rtl)
+    const sign = allRtl ? -1 : 1
+    let noPush = rtl && !allRtl ? 'rtl' : null
     // a whole line that is centred or right-aligned keeps that alignment
     const anchor = whole && !rtl ? (centred ? 'centre' : rightAligned ? 'right' : null) : null
     if (anchor) noPush = 'aligned'
-    // shorter text pulls the rest of a left-aligned line back
-    const pull = !centred && !rightAligned
+    // shorter text pulls the rest of a left-aligned (RTL: right-aligned) line
+    // back, unless the row goes on in another piece close by (a gap would open)
+    const sz0 = group[0].size
+    const upv = [dir[1], -dir[0]]
+    const bandOf = (cs) => cs.map((c) => along(c.quad, upv))
+    const lb = bandOf(vis)
+    const lband = [Math.min(...lb.map((x) => x[0])), Math.max(...lb.map((x) => x[1]))]
+    const sibling = P.lines.some((l) => l !== line && l.chars.some((c) => {
+      if (!c.c.trim()) return false
+      const [a, z] = along(c.quad, upv)
+      if (Math.min(z, lband[1]) - Math.max(a, lband[0]) < 0.3 * (lband[1] - lband[0])) return false
+      const [lo, hi] = along(c.quad, dir)
+      return allRtl ? hi <= lineStart + 0.5 && hi > lineStart - 2 * sz0 : lo >= lineEnd - 0.5 && lo < lineEnd + 2 * sz0
+    }))
+    const pull = !centred && (allRtl || !rightAligned) && !sibling
     let s = 0
     if (!noPush) {
       for (let k = 0; k < group.length; k++) {
         const t = group[k]
         t.shift = s
-        s = s + t.adv - (t.oldEnd - t.oldStart)
-        if (!pull) s = Math.max(0, s)
+        s = s + sign * (t.adv - (t.oldEnd - t.oldStart))
+        if (!pull) s = sign > 0 ? Math.max(0, s) : Math.min(0, s)
         const to = k + 1 < group.length ? group[k + 1].a - 1 : chars.length - 1
         if (Math.abs(s) <= 0.3) continue
         let g = null
@@ -1582,13 +2161,20 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
           else if (coveredChar(F, c)) noPush ??= 'covered'
           else if (gl?.clip && !(shifted[0] >= gl.clip[0] && shifted[1] >= gl.clip[1] && shifted[2] <= gl.clip[2] && shifted[3] <= gl.clip[3])) noPush ??= 'clip'
         }
-        g.draw = noPush ? null : sameFont(mupdf, P, g.chars, textOf(g.chars), dir, { exact: true })
+        // RTL letters only by glyph id; spaces and digits in a simple font re-encode
+        g.draw = noPush ? null : allRtl ? gidDraw(mupdf, P, g.chars, dir) ?? (RTL.test(textOf(g.chars)) ? null : visualExact(mupdf, P, g.chars, dir)) : sameFont(mupdf, P, g.chars, textOf(g.chars), dir, { exact: true }) ?? sameFont(mupdf, P, g.chars, textOf(g.chars), dir)
         if (!noPush && !g.draw) noPush = 'encoding'
       }
       // the stretch the line grows into must not be painted over either
-      const from = Math.min(...group.map((t) => t.oldEnd))
+      let from = Math.min(...group.map((t) => t.oldEnd))
       const tailEnd = lineMoves.length ? Math.max(...lineMoves[lineMoves.length - 1].chars.map((c) => along(c.quad, dir)[1])) + lineMoves[lineMoves.length - 1].shift : 0
-      const to = Math.max(tailEnd, ...group.map((t) => t.oldStart + t.shift + t.adv))
+      let to = Math.max(tailEnd, ...group.map((t) => t.oldStart + t.shift + t.adv))
+      if (allRtl) {
+        // growing to the left: from the new left end to the old one
+        const tail = lineMoves.length ? lineMoves[lineMoves.length - 1] : null
+        to = Math.min(...group.map((t) => t.oldMin))
+        from = Math.min(tail ? Math.min(...tail.chars.map((c) => along(c.quad, dir)[0])) + tail.shift : Infinity, ...group.map((t) => t.oldEnd + t.shift - t.adv))
+      }
       if (!noPush && to > from + 0.3) {
         const t0 = group[0]
         const o = t0.ch0.origin
@@ -1610,6 +2196,22 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
         return along(c.quad, dir)[0] >= lineEnd - 0.5 && Math.min(z, band[1]) - Math.max(a, band[0]) > 0.3 * (band[1] - band[0])
       })
     const rowNext = rowChars.length ? Math.min(...rowChars.map((c) => along(c.quad, dir)[0])) : Infinity
+    // and before it (the column to the left of a right-to-left line)
+    const prevChars = P.lines
+      .filter((l) => l !== line)
+      .flatMap((l) => l.chars)
+      .filter((c) => {
+        if (!c.c.trim()) return false
+        const [a, z] = along(c.quad, up)
+        return along(c.quad, dir)[1] <= lineStart + 0.5 && Math.min(z, band[1]) - Math.max(a, band[0]) > 0.3 * (band[1] - band[0])
+      })
+    const rowPrev = prevChars.length ? Math.max(...prevChars.map((c) => along(c.quad, dir)[1])) : -Infinity
+    const startOf = () => {
+      const tail = lineMoves.length ? lineMoves[lineMoves.length - 1] : null
+      let e = tail ? Math.min(...tail.chars.map((c) => along(c.quad, dir)[0])) + tail.shift : lineStart
+      for (const t of group) e = Math.min(e, t.oldEnd + t.shift - t.adv)
+      return e
+    }
     const endOf = () => {
       const tail = lineMoves.length ? lineMoves[lineMoves.length - 1] : null
       let e = tail ? Math.max(...tail.chars.map((c) => along(c.quad, dir)[1])) + tail.shift : lineEnd
@@ -1617,7 +2219,8 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
       return e
     }
     // pushing (or growing) into the next column would overprint it
-    if (!noPush && endOf() > rowNext - 0.3) noPush = 'collision'
+    if (!noPush && !allRtl && endOf() > rowNext - 0.3) noPush = 'collision'
+    if (!noPush && allRtl && startOf() < rowPrev + 0.3) noPush = 'collision'
     if (noPush) {
       lineMoves = []
       for (const t of group) {
@@ -1633,7 +2236,8 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
           t.adv = room
         }
       }
-      // too narrow to read: refuse rather than squeeze
+      // too narrow to read: refuse rather than squeeze (paragraph edits stop
+      // at 85%; a line edit keeps the phase 1 floor, see the engine status)
       for (const t of group.filter((x) => x.scale < 0.6)) {
         t.rep.refused = 'no-room'
         t.rep.noPush = noPush
@@ -1660,12 +2264,15 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
     }
     for (const t of group) {
       if (anchor === 'centre') t.start = (t.oldMin + t.oldEnd) / 2 - t.adv / 2
+      else if (t.rtl && !noPush) t.start = t.oldEnd + t.shift - t.adv
       else if (anchor === 'right' || t.rtl) t.start = t.oldEnd - t.adv
       else t.start = t.oldStart + t.shift
     }
     const newEnd = Math.max(endOf(), ...group.map((t) => t.start + t.adv))
     const newStart = Math.min(lineStart, ...group.map((t) => t.start))
-    const past = newEnd > blockEnd + 0.5 || (newEnd > pageEnd && newEnd > lineEnd + 0.3) || newStart < pageStart + PAGE_MARGIN - 0.01
+    // a right-to-left line grows past its paragraph's left edge (same slack)
+    const blockStart = multi && allRtl ? Math.min(...corners) - 0.1 * (Math.max(...corners) - Math.min(...corners)) : -Infinity
+    const past = newEnd > blockEnd + 0.5 || (newEnd > pageEnd && newEnd > lineEnd + 0.3) || newStart < pageStart + PAGE_MARGIN - 0.01 || (newStart < blockStart - 0.5 && newStart < lineStart - 0.3)
     for (const t of group) {
       const grew = t.adv > t.oldEnd - t.oldStart + 0.3
       const others = chars.filter((c, i) => c.c.trim() && (i < t.a || i > t.b))
@@ -1673,11 +2280,37 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
         const [lo, hi] = along(c.quad, dir)
         return hi > t.start + 0.3 && lo < t.start + t.adv - 0.3 && !(lo >= t.oldMin - 0.3 && hi <= t.oldEnd + 0.3)
       })
-      t.rep.overflow = (grew && (past || (t.rtl && hits))) || (noPush === 'collision' && t.scale < 1)
+      t.rep.overflow = (grew && (past || (t.rtl && noPush && hits))) || (noPush === 'collision' && t.scale < 1)
       t.rep.noPush = noPush
       t.rep.align = anchor
       t.rep.shift = r2(t.shift)
       t.rep.pushed = r2(lineMoves.filter((g) => line.chars.indexOf(g.chars[0]) > t.b).reduce((m, g) => (Math.abs(g.shift) > Math.abs(m) ? g.shift : m), 0))
+    }
+  }
+  if (!targets.length) return 0
+
+  // an underline or strike (thin paint drawn after the line, across it or just
+  // under it) under the edited word or the words it moves would no longer
+  // match them: refused 'decorated'; edits that move none of them stay allowed
+  for (const t of targets.slice()) {
+    const vis = t.line.chars.filter((c) => c.c.trim())
+    const band = unionBox(vis.map((c) => qbox(c.quad)))
+    const sz = t.size
+    // from strike height down to just under the baseline
+    const oy = t.ch0.origin[1]
+    const zone = Math.abs(t.dir[0]) >= Math.abs(t.dir[1]) ? [band[0], oy - 0.5 * sz, band[2], oy + 0.35 * sz] : band
+    const lineSeq = Math.min(...vis.map((c) => F.glyph(c)?.seq ?? Infinity))
+    const thin = (b) => Math.min(b[2] - b[0], b[3] - b[1]) <= 0.25 * sz
+    const decor = F.paints.filter((p) => p.seq > lineSeq && thin(p.box) && overlaps(p.box, zone))
+    if (!decor.length) continue
+    const touched = [...t.chars.filter((c) => c.c.trim()), ...moved.filter((m) => t.line.chars.includes(m.chars[0])).flatMap((m) => m.chars)]
+    if (decor.some((p) => touched.some((c) => {
+      const q = qbox(c.quad)
+      return p.box[0] < q[2] - 0.3 && p.box[2] > q[0] + 0.3
+    }))) {
+      t.rep.refused = 'decorated'
+      targets.splice(targets.indexOf(t), 1)
+      for (const m of moved.filter((x) => t.line.chars.includes(x.chars[0]))) moved.splice(moved.indexOf(m), 1)
     }
   }
   if (!targets.length) return 0
@@ -1707,50 +2340,21 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
   if (!targets.length) return 0
   const live = sets.filter((x) => (x.t ? targets.includes(x.t) : moved.includes(x.m)))
 
-  // snapshot, so a removal that took more than it should can be undone
-  const snapContents = P.obj.get('Contents')
-  const snapStreams = asList(snapContents).filter((r) => r.isStream()).map((r) => [r, takeBytes(r.readStream())])
-  const snapRes = P.obj.get('Resources')
-  const resCopy = snapRes.isDictionary() ? doc.newDictionary() : null
-  if (resCopy) snapRes.forEach((v, k) => resCopy.put(k, v.isDictionary() && !v.isIndirect() ? (() => {
-    const d = doc.newDictionary()
-    v.forEach((vv, kk) => d.put(kk, vv))
-    return d
-  })() : v))
-
-  cutOwn(doc, P.obj, targets.flatMap((t) => t.mine))
-  for (const x of live) for (const r of x.rects) page.createAnnotation('Redact').setRect(r)
-  page.applyRedactions(false, mupdf.PDFPage.REDACT_IMAGE_NONE, mupdf.PDFPage.REDACT_LINE_ART_NONE, mupdf.PDFPage.REDACT_TEXT_REMOVE)
-  const inlineOk = restoreInline(P.obj, snapStreams.map(([, bytes]) => bytes))
-
-  // every other glyph on the page must still be there, the edited ones gone
-  const near = (list, c) => list.some((a) => a.c === c.c && Math.abs(a.origin[0] - c.origin[0]) < 0.1 && Math.abs(a.origin[1] - c.origin[1]) < 0.1)
-  const after = readLines(page).flatMap((l) => l.chars.filter((c) => c.c.trim()))
-  const lost = others.filter((c) => !near(after, c))
-  const left = [...gone].filter((c) => !c.c.trim() ? false : near(after, c))
-  if (lost.length || left.length || !inlineOk) {
-    for (const [r, bytes] of snapStreams) r.writeStream(bytes)
-    P.obj.put('Contents', snapContents)
-    if (resCopy) P.obj.put('Resources', resCopy)
-    else P.obj.delete('Resources')
-    for (const t of targets) t.rep.refused = inlineOk ? 'tight-lines' : 'inline-image'
+  const bad = removeGlyphs(mupdf, doc, P, live.flatMap((x) => x.rects), gone, others, targets.flatMap((t) => t.mine), targets.flatMap((t) => [t.old, textOf(t.chars)]))
+  if (bad) {
+    for (const t of targets) t.rep.refused = bad
     return 0
   }
-  // ActualText / Alt of the removed words must not stay behind
-  cleanPageMarked(P.obj, targets.flatMap((t) => [t.old, textOf(t.chars)]))
-  const Ti = inv(page.getTransform())
 
   // draw the new text after the page content, each in a tagged span
   const p2 = doc.loadPage(P.idx)
   const pobj = p2.getObject()
   const res = ownResources(doc, pobj)
   let content = ''
-  const tm = (o, dir) => {
-    const du = norm(applyV(Ti, dir))
-    const uu = norm(applyV(Ti, [dir[1], -dir[0]]))
-    const ou = apply(Ti, o)
-    return [du[0], du[1], uu[0], uu[1], ou[0], ou[1]]
-  }
+  // drawn in reading order: line, then along it (right to left for RTL)
+  const pieces = []
+  const along0 = (li, u, rtl) => [li, rtl ? -u : u]
+  const tm = tmFor(P.page)
   const point = (t, d) => {
     const o = t.ch0.origin
     const k = d - dot(o, t.dir)
@@ -1760,7 +2364,7 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
     const o = point(t, t.start)
     t.rep.font = t.draw ? (t.draw.kind === 'same' ? 'original' : 'fallback') : null
     // bundled Noto fonts are regular only: say so when the original was bold
-    t.rep.fallbackName = t.draw?.kind === 'form' ? t.draw.name + (isBold(t.ch0.font) && !/bold/i.test(t.draw.name) ? ' (no bold version)' : '') : null
+    t.rep.fallbackName = t.draw?.kind === 'form' ? t.draw.name + (needsFakeBold(t.ch0.font, t.draw) ? ' (synthetic bold)' : '') : null
     t.rep.fit = t.scale !== 1 ? f4(t.scale) : null
     const nb = orientedBox(o, t.dir, t.adv, t.size)
     t.rep.box = toView(nb, P.bounds)
@@ -1769,7 +2373,9 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
       const bx = unionBox(m.chars.map((c) => qbox(c.quad)))
       return unionBox([bx, [bx[0] + t.dir[0] * m.shift, bx[1] + t.dir[1] * m.shift, bx[2] + t.dir[0] * m.shift, bx[3] + t.dir[1] * m.shift]])
     })
-    t.rep.changedBox = toView(unionBox([unionBox(t.chars.map((c) => qbox(c.quad))), nb, ...mb]), P.bounds)
+    const cb = unionBox([unionBox(t.chars.map((c) => qbox(c.quad))), nb, ...mb])
+    // marks and anti-aliasing of moved right-to-left text reach a little out
+    t.rep.changedBox = toView(t.rtl ? [cb[0] - 0.5, cb[1] - 0.5, cb[2] + 0.5, cb[3] + 0.5] : cb, P.bounds)
     if (!t.draw) continue
     const m = tm(o, t.dir)
     let gs = ''
@@ -1788,41 +2394,791 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
       const fd = subDict(doc, res, 'Font')
       const name = freeName(fd, 'SPDFEdit')
       fd.put(name, t.draw.ref)
-      content += `/Span <</ActualText <${utf16Hex(t.text)}> ${tag}>> BDC\nq ${gs}BT /${name} ${f4(t.size)} Tf ${f4(t.draw.tc)} Tc ${f4(t.scale * 100)} Tz ${colorOp(t.ch0.color)} ${m.map(f4).join(' ')} Tm <${hexOf(t.draw.info, t.draw.codes)}> Tj ET Q\nEMC\n`
+      pieces.push([along0(t.li, t.start, t.rtl), `/Span <<${tag}>> BDC\nq ${gs}BT /${name} ${f4(t.size)} Tf ${f4(t.draw.tc)} Tc ${f4(t.scale * 100)} Tz ${colorOp(t.ch0.color)} ${m.map(f4).join(' ')} Tm <${hexOf(t.draw.info, t.draw.codes)}> Tj ET Q\nEMC\n`])
     } else {
       const xd = subDict(doc, res, 'XObject')
       const name = freeName(xd, 'SPDFEditFx')
       xd.put(name, t.draw.form)
       const cm = [m[0] * t.scale, m[1] * t.scale, m[2], m[3], m[4], m[5]]
-      // the form carries its own ActualText span
-      content += `/Span <<${tag}>> BDC\nq ${gs}${colorOp(t.ch0.color)} ${cm.map(f4).join(' ')} cm /${name} Do Q\nEMC\n`
+      // the form carries its own ActualText span when it needs one
+      const bold = needsFakeBold(t.ch0.font, t.draw) ? fakeBold(t.ch0.color, t.size) : ''
+      pieces.push([along0(t.li, t.start, t.rtl), `/Span <<${tag}>> BDC\nq ${gs}${colorOp(t.ch0.color)} ${bold}${cm.map(f4).join(' ')} cm /${name} Do Q\nEMC\n`])
     }
   }
   for (const g of moved) {
     const c0 = g.chars[0]
     const dir = g.dir
-    const o = [c0.origin[0] + dir[0] * g.shift, c0.origin[1] + dir[1] * g.shift]
+    const o0 = g.draw.origin ?? c0.origin
+    const o = [o0[0] + dir[0] * g.shift, o0[1] + dir[1] * g.shift]
     const fd = subDict(doc, res, 'Font')
     const name = freeName(fd, 'SPDFEdit')
     fd.put(name, g.draw.ref)
-    content += `BT /${name} ${f4(g.size)} Tf 0 Tc ${colorOp(c0.color)} ${tm(o, dir).map(f4).join(' ')} Tm [${g.draw.tj}] TJ ET\n`
+    // exact TJ, or (a ligature that splits) the same font at its own widths
+    const show = g.draw.tj ? `0 Tc ${colorOp(c0.color)} ${tm(o, dir).map(f4).join(' ')} Tm [${g.draw.tj}] TJ` : `${f4(g.draw.tc)} Tc ${colorOp(c0.color)} ${tm(o, dir).map(f4).join(' ')} Tm <${hexOf(g.draw.info, g.draw.codes)}> Tj`
+    // tagged so a later read knows the line is ours (ownLinesHome)
+    const bx = unionBox(g.chars.map((c) => qbox(c.quad)))
+    const mb = [bx[0] + dir[0] * g.shift, bx[1] + dir[1] * g.shift, bx[2] + dir[0] * g.shift, bx[3] + dir[1] * g.shift]
+    pieces.push([along0(P.lines.indexOf(P.lines.find((l) => l.chars.includes(c0))), dot(o, dir), RTL.test(textOf(g.chars))), `/Span <</SPDFRun [${mb.map(f4).join(' ')}]>> BDC\nBT /${name} ${f4(g.size)} Tf ${show} ET\nEMC\n`])
   }
-  if (content) {
-    const old = pobj.get('Contents')
-    const arr = doc.newArray()
-    arr.push(doc.addStream('q\n', {}))
-    if (old.isArray()) for (let i = 0; i < old.length; i++) arr.push(old.get(i))
-    else if (!old.isNull()) arr.push(old)
-    arr.push(doc.addStream('\nQ\n', {}))
-    arr.push(doc.addStream(`q\n${content}Q\n`, {}))
-    pobj.put('Contents', arr)
-  }
+  content = pieces.sort((x, y) => x[0][0] - y[0][0] || x[0][1] - y[0][1]).map((x) => x[1]).join('')
+  // where copy and search read the new text: in place, or at the page end
+  // a line that now runs past its column is drawn after the page content
+  // as before: read in place it can join the next column's text
+  const order = targets.some((t) => t.rep.overflow) ? (appendContent(doc, pobj, content), 'appended') : placeContent(mupdf, doc, P, pobj, content, gone)
+  for (const t of targets) t.rep.order = order
   p2.destroy?.()
   return targets.length
 }
 
+// ---------- one paragraph ----------
+// Squeeze steps tried when the text does not fit as it is.
+const SQUEEZE = [1, 0.97, 0.94, 0.91, 0.88, 0.85]
+
+// Style of an old word: its biggest same-look group of glyphs.
+function styleOf(w) {
+  const groups = new Map()
+  for (const c of w.chars) {
+    const k = `${c.font}|${c.size.toFixed(2)}|${c.color.join()}`
+    ;(groups.get(k) ?? groups.set(k, []).get(k)).push(c)
+  }
+  let chars = [...groups.values()].sort((a, b) => b.length - a.length)[0]
+  // a word hyphenated across lines: its spacing is measured on its first
+  // line only (glyphs up to the jump to the next line), hyphen left out
+  const one = [chars[0]]
+  for (let i = 1; i < chars.length && Math.hypot(chars[i].origin[0] - chars[i - 1].origin[0], chars[i].origin[1] - chars[i - 1].origin[1]) < 2 * chars[0].size; i++) one.push(chars[i])
+  const plain = one.filter((c) => !/^[-\u2010]$/.test(c.c))
+  if (plain.length) chars = plain
+  return { chars, ch: chars[0], font: chars[0].font, size: chars[0].size, color: chars[0].color }
+}
+// consecutive glyphs with one look
+function tokensOf(chars) {
+  const out = []
+  for (const c of chars) {
+    const t = out[out.length - 1]
+    if (t && t[0].font === c.font && Math.abs(t[0].size - c.size) < 0.01 && t[0].color.join() === c.color.join()) t.push(c)
+    else out.push([c])
+  }
+  return out
+}
+
+// Re-wraps one paragraph with new text. Same safety as line edits: every
+// step that can fail runs before the removal, which is checked and undone
+// on any loss. -> 1 applied, 0 refused (rep.refused set)
+async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch) {
+  const g = paragraphsOf(P).find((x) => `p${P.idx + 1}-g${x.k}` === e.paragraphId)
+  const refuse = (why, extra = {}) => {
+    rep.refused = why
+    Object.assign(rep, extra)
+    return 0
+  }
+  if (!g) return refuse('not-found')
+  if (!g.editable) return refuse(g.why)
+  const fold = (x) => String(x).replace(/\s+/g, ' ').trim()
+  if (e.old != null && fold(e.old) !== fold(g.text)) return refuse('stale')
+  addUsage(usage, P.idx, P.lines)
+  const F = P.F
+  const fr = g.frame
+  const dir = fr.dir
+  const chars = g.lineIdx.flatMap((li) => P.lines[li].chars.filter((c) => c.c.trim()))
+  const mineSet = new Set(chars)
+  const states = chars.map((c) => F.glyph(c)).filter(Boolean)
+  if (states.some((s) => s.mode !== 'fill')) return refuse('render-mode')
+  const alpha = states[0]?.alpha ?? 1
+  const clip = states[0]?.clip ?? null
+  const firstSeq = Math.min(...states.map((s) => s.seq), Infinity)
+
+  const inBox = (c, b) => {
+    const q = qbox(c.quad)
+    const x = (q[0] + q[2]) / 2
+    const y = (q[1] + q[3]) / 2
+    return x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]
+  }
+  const pageChars = P.lines.flatMap((l) => l.chars.filter((c) => c.c.trim()))
+
+  // the new words and how each is drawn
+  const text = String(e.text ?? '').normalize('NFC').replace(/\r\n?/g, '\n').replace(/\t/g, ' ')
+  const news = splitWords(text)
+  const diff = diffWords(g.words.map((w) => w.text), news.map((w) => w.text))
+  const removed = g.words.filter((_, i) => !diff.some((d) => d.from === i)).map((w) => w.text)
+  let fallbackDoc = null
+  const measure = async (txt, standard, size) => {
+    const [{ PDFDocument }, fonts] = await Promise.all([import('pdf-lib'), import('./fonts.js')])
+    fallbackDoc ??= await PDFDocument.create()
+    return fonts.runsWidth(await fonts.layoutText(fallbackDoc, txt, { standard }), size)
+  }
+  const inkSeen = new Map()
+  // Glyphs drawn again as they were: re-encoded in their font, else by
+  // glyph id (shaped Arabic, a TeX math sign). Offsets from the left end on
+  // the page. -> { kind: 'exact', toks, w, size } or null
+  const exactOf = (cs, rowV) => {
+    // a ligature ("fi" read as two chars) is drawn as its letters in the same
+    // font: drawn by glyph id it reads back split ("diffi cult")
+    const plain = (tc) => {
+      const d = sameFont(mupdf, P, tc, textOf(tc), dir)
+      if (!d) return null
+      const key = `${tc[0].font}|${textOf(tc)}`
+      if (!inkSeen.has(key)) inkSeen.set(key, inkOk(mupdf, scratch(), d, tc[0].size))
+      return inkSeen.get(key) ? d : null
+    }
+    // every glyph of an unchanged word must leave ink (a code that maps to an
+    // empty glyph printed hyphens as blanks)
+    const inked = (tc, d) => {
+      if (!d) return null
+      const key = `exact|${tc[0].font}|${textOf(tc)}`
+      if (!inkSeen.has(key)) inkSeen.set(key, inkOk(mupdf, scratch(), d, tc[0].size))
+      return inkSeen.get(key) ? d : null
+    }
+    const toks = tokensOf(cs).map((tc) => ({ chars: tc, draw: (COMPLEX.test(textOf(tc)) ? null : (inked(tc, sameFont(mupdf, P, tc, textOf(tc), dir, { exact: true })) ?? plain(tc))) ?? gidDraw(mupdf, P, tc, dir, scratch()) }))
+    if (!toks.every((t) => t.draw)) return null
+    const ext = cs.map((c) => along(c.quad, dir))
+    const u0 = Math.min(...ext.map((x) => x[0]))
+    return {
+      kind: 'exact',
+      // the glyphs' own text, one char per glyph, so a reader maps them one to one
+      actual: textOf(cs),
+      w: Math.max(...ext.map((x) => x[1])) - u0,
+      size: cs[0].size,
+      toks: toks.map((t) => {
+        const o = t.draw.origin ?? t.chars[0].origin
+        return { ...t, du: dot(o, dir) - u0, dv: dot(o, fr.down) - rowV }
+      }),
+    }
+  }
+  let items = []
+  try {
+    for (const [j, nw] of news.entries()) {
+      const d = diff[j]
+      const old = d.from != null ? g.words[d.from] : null
+      const st = styleOf(g.words[d.style ?? 0])
+      const it = { text: nw.text, brk: nw.brk, glue: nw.glue, size: st.size, color: st.color, style: st, rise: 0 }
+      it.old = old
+      if (old && !old.joined) {
+        // unchanged: every glyph as it was, kerning and rises kept
+        const ex = exactOf(old.chars, g.rows[old.row].v)
+        if (ex) {
+          Object.assign(it, ex)
+          items.push(it)
+          continue
+        }
+      }
+      const complex = COMPLEX.test(nw.text) || COMPLEX.test(textOf(st.chars))
+      const need = [...new Set([...nw.text].filter((c) => c.trim()))]
+      let draw = null
+      if (!complex && proveUse(doc, usage, st.font, need)) draw = sameFont(mupdf, P, st.chars, nw.text, dir)
+      if (draw) {
+        const key = `${st.font}|${nw.text}`
+        if (!inkSeen.has(key)) inkSeen.set(key, inkOk(mupdf, scratch(), draw, st.size))
+        if (!inkSeen.get(key)) draw = null
+      }
+      if (draw) {
+        it.kind = 'same'
+        it.draw = draw
+        it.w = draw.adv
+      } else {
+        it.kind = 'form'
+        it.standard = standardFor(fontDicts(mupdf, P, st.font)[0]?.base || st.font)
+        it.w = await measure(nw.text, it.standard, st.size)
+      }
+      items.push(it)
+    }
+  } catch (err) {
+    return refuse(err.code === 'UNSUPPORTED_CHAR' ? 'unsupported-char' : 'draw-failed', err.char ? { char: err.char } : {})
+  }
+  // ---- reflow window: lines above the first change are not touched, and
+  // the layout stops at the first line where the source carries on as it was
+  const n0 = g.rows.length
+  const rowOfLi = new Map()
+  g.rows.forEach((r, k) => r.lines.forEach((li) => rowOfLi.set(li, k)))
+  const lineOfChar = new Map()
+  g.lineIdx.forEach((li) => P.lines[li].chars.forEach((c) => lineOfChar.set(c, li)))
+  // source pieces: each word on each line it sits on, ids 'word:piece'
+  const pieces = g.words.map((w, wi) => {
+    const byRow = new Map()
+    for (const c of w.chars) {
+      const k = rowOfLi.get(lineOfChar.get(c))
+      ;(byRow.get(k) ?? byRow.set(k, []).get(k)).push(c)
+    }
+    return [...byRow].sort((x, y) => x[0] - y[0]).map(([k, cs], pi) => ({ id: `${wi}:${pi}`, row: k, chars: cs }))
+  })
+  const flat = pieces.flat()
+  const tail = Array.from({ length: n0 + 1 }, (_, r) => flat.filter((pc) => pc.row >= r).map((pc) => pc.id))
+  const firstId = g.rows.map((_, r) => flat.find((pc) => pc.row === r)?.id ?? null)
+  // first changed word: old and new words (and hard breaks) agree before it
+  let p0 = 0
+  while (p0 < g.words.length && p0 < news.length && g.words[p0].text === news[p0].text && !!g.words[p0].brk === !!news[p0].brk) p0++
+  if (p0 === g.words.length && p0 === news.length) {
+    rep.lines = n0
+    return 0
+  }
+  const r0 = p0 < g.words.length ? pieces[p0][0].row : pieces[g.words.length - 1].at(-1).row
+  const pieceItem = (pc, base, extra) => {
+    const ex = exactOf(pc.chars, g.rows[pc.row].v)
+    if (!ex) return null
+    items.push({ ...base, ...ex, text: textOf(pc.chars), old: null, ...extra })
+    return items.length - 1
+  }
+  const units = []
+  for (let wi = 0; wi < p0; wi++) {
+    // a word above the window ending on its first line: that half stays a piece
+    const ps = pieces[wi]
+    if (ps.at(-1).row < r0 || ps.length === ps.filter((pc) => pc.row >= r0).length) continue
+    for (const pc of ps.filter((x) => x.row >= r0)) {
+      const i = pieceItem(pc, items[wi], { brk: items[wi].brk, glue: false })
+      if (i == null) return refuse('draw-failed')
+      units.push({ i, ids: [pc.id] })
+    }
+  }
+  for (let j = 0; j < news.length; j++) {
+    const from = diff[j].from
+    if (j < p0 && pieces[j][0].row < r0) continue
+    const it = items[j]
+    if (from == null) {
+      units.push({ i: j, ids: [null] })
+      continue
+    }
+    const ps = pieces[from]
+    if (ps.length === 2 && it.old?.joined) {
+      // its two halves as they were, or (when the break is known) the joined word
+      const p1 = pieceItem(ps[0], it, { brk: false })
+      const p2 = pieceItem(ps[1], it, { brk: it.brk, glue: false })
+      if (p1 != null && p2 != null) units.push({ whole: it.old.hyph === 'keep' ? null : j, p1, p2, ids: [ps[0].id, ps[1].id] })
+      else units.push({ i: j, ids: [null] })
+    } else units.push({ i: j, ids: ps.map((pc) => pc.id) })
+  }
+  // reading direction per word; numbers and signs go with their neighbours
+  const strong = items.map((it) => (RTL.test(it.text) ? true : /\p{L}/u.test(it.text) ? false : null))
+  items.forEach((it, i) => {
+    const p = strong.slice(0, i).reverse().find((x) => x != null)
+    const n = strong.slice(i + 1).find((x) => x != null)
+    it.rtl = strong[i] ?? (p != null && p === n ? p : fr.rtl)
+  })
+
+  // where things may not go: other text (the paragraph's lines outside the
+  // window included), paint over or near, widgets, the page margin, the clip
+  const rowChars = g.rows.map((r) => r.lines.flatMap((li) => P.lines[li].chars.filter((c) => c.c.trim())))
+  const paraBox = unionBox(chars.map((c) => qbox(c.quad)))
+  const grow = (b, d) => [b[0] - d, b[1] - d, b[2] + d, b[3] + d]
+  const srcRows = g.rows.map((r, k) => grow(unionBox(rowChars[k].map((c) => qbox(c.quad))), 0.3 * r.size))
+  // underline / strike: paint drawn after the text over its lines
+  const decor = F.paints.filter((p) => p.seq > firstSeq && srcRows.some((q) => overlaps(p.box, q)))
+  const pageOthers = pageChars.filter((c) => !mineSet.has(c))
+  const annots = annotRects(P)
+  const paintIn = F.paints.filter((p) => !decor.includes(p) && (p.seq > firstSeq || !overlaps(p.box, grow(paraBox, 1)))).map((p) => p.box)
+  const paintNew = F.paints.filter((p) => p.seq > firstSeq).map((p) => p.box)
+  const blankSeen = new Map()
+  const blank = (box) => {
+    const k = box.map((v) => v.toFixed(1)).join()
+    if (!blankSeen.has(k)) blankSeen.set(k, stripBlank(mupdf, P.page, box))
+    return blankSeen.get(k)
+  }
+  const b = P.bounds
+  const inside = (r) => r[0] >= b[0] + PAGE_MARGIN - 0.01 && r[1] >= b[1] + PAGE_MARGIN - 0.01 && r[2] <= b[2] - PAGE_MARGIN + 0.01 && r[3] <= b[3] - PAGE_MARGIN + 0.01
+  const pointAt = (x, v, w = 0) => {
+    const u = fr.rtl ? -(x + w) : x
+    return [dir[0] * u + fr.down[0] * v, dir[1] * u + fr.down[1] * v]
+  }
+  // shaped scripts (Arabic, Devanagari) reach higher and lower than Latin
+  const tallRow = (row) => row.items.some((p) => COMPLEX.test(items[p.i].text))
+  const rowBox = (row, size, below = 0) => {
+    const [hi, lo] = tallRow(row) ? [1.05, 0.5] : [0.85, 0.25]
+    const p0b = pointAt(row.x0, row.v - hi * size)
+    const p1b = pointAt(row.x0 + row.width, row.v + (lo + below) * size)
+    return [Math.min(p0b[0], p1b[0]), Math.min(p0b[1], p1b[1]), Math.max(p0b[0], p1b[0]), Math.max(p0b[1], p1b[1])]
+  }
+  const horiz = Math.abs(dir[0]) >= Math.abs(dir[1])
+  const rowOk = (row, last) => {
+    const size = Math.max(...row.items.map((p) => items[p.i].size), g.size)
+    // a new line below the old ones keeps a line gap clear under it
+    const fresh = row.k >= n0
+    const box = rowBox(row, size, fresh ? 0.15 : 0)
+    if (!inside(box)) return false
+    if (clip && !(box[0] >= clip[0] - 0.5 && box[1] >= clip[1] - 0.5 && box[2] <= clip[2] + 0.5 && box[3] <= clip[3] + 0.5)) return false
+    const kept = rowChars.flatMap((cs, k) => (k < r0 || k > last ? cs : [])).map((c) => core(c))
+    const glyphs = [...pageOthers.map((c) => core(c)), ...kept, ...annots]
+    if (!fresh) return !glyphs.some((x) => overlaps(x, box)) && !paintIn.some((x) => overlaps(x, box))
+    if (!horiz || glyphs.some((x) => overlaps(x, box)) || paintNew.some((x) => overlaps(x, box))) return false
+    // the part below the old paragraph was blank paper before
+    const below = dir[0] > 0 ? [box[0], Math.max(box[1], paraBox[3] + 0.5), box[2], box[3]] : [box[0], box[1], box[2], Math.min(box[3], paraBox[1] - 0.5)]
+    return below[3] - below[1] < 0.5 || blank(below)
+  }
+  let layout = null
+  let last = n0 - 1
+  let scale = 1
+  if (units.length) {
+    // squeeze only the window's lines, never the lines left as they are
+    for (const s of SQUEEZE) {
+      const w = layoutWindow(g, items, units, { r0, tail, firstId, s })
+      if (fit && w.rows.length > w.last - r0 + 1) continue
+      if (w.rows.every((row) => rowOk(row, w.last))) {
+        layout = w.rows
+        last = w.last
+        scale = s
+        break
+      }
+    }
+    if (!layout) {
+      // not longer, yet nothing fits: something on the lines is in the way
+      const w = layoutWindow(g, items, units, { r0, tail, firstId, s: 1 })
+      return w.rows.length <= w.last - r0 + 1 ? refuse('covered', { lines: n0 }) : refuse('no-room', { overflow: true, lines: n0 })
+    }
+  }
+  // an underline or strike on a line that moves would no longer match its words
+  // per window line: from strike height down to just under the baseline
+  const winBoxes = g.rows.slice(r0, last + 1).map((r, j) => {
+    const q = unionBox(rowChars[r0 + j].map((c) => qbox(c.quad)))
+    const oy = rowChars[r0 + j][0].origin[1]
+    return horiz ? [q[0], oy - 0.5 * r.size, q[2], oy + 0.35 * r.size] : q
+  })
+  if (decor.some((p) => winBoxes.some((q) => overlaps(p.box, q)))) return refuse('decorated')
+  // what the window removes: its source lines (and our earlier draws there)
+  const winChars = rowChars.slice(r0, last + 1).flat()
+  const winSet = new Set(winChars)
+  const others = pageChars.filter((c) => !winSet.has(c))
+  const spans = ownSpans(P.obj).filter((s) => winChars.some((c) => inBox(c, s.box)))
+  const ownChars = new Set(pageChars.filter((c) => spans.some((s) => inBox(c, s.box))))
+  if ([...ownChars].some((c) => !winSet.has(c))) return refuse('conflict')
+
+  // fallback words: one pdf-lib file per paragraph, one form per word (each
+  // word gets its own ActualText span)
+  const forms = new Map()
+  if (layout) {
+    const pages = layout.flatMap((row) => row.items.filter((p) => items[p.i].kind === 'form').map((p) => ({ p, pieces: [{ text: items[p.i].text, x: 0, standard: items[p.i].standard, size: items[p.i].size }] })))
+    if (pages.length) {
+      try {
+        const made = await fallbackForms(mupdf, doc, pages)
+        made.forEach((f, i) => forms.set(pages[i].p, { ...f, bold: isBold(items[pages[i].p.i].style.font) }))
+      } catch (err) {
+        return refuse(err.code === 'UNSUPPORTED_CHAR' ? 'unsupported-char' : 'draw-failed', err.char ? { char: err.char } : {})
+      }
+      for (const [p, f] of forms) if (!inkOk(mupdf, scratch(), f, items[p.i].size)) return refuse('no-glyph')
+    }
+  }
+
+  // removal rects per stext line; thin where a thick band would touch other text
+  const rects = []
+  for (const li of g.rows.slice(r0, last + 1).flatMap((r) => r.lines)) {
+    const cs = P.lines[li].chars.filter((c) => c.c.trim() && !ownChars.has(c))
+    if (!cs.length) continue
+    let rs = null
+    for (const thin of [false, true]) {
+      rs = glyphRects(cs, P.lines[li].dir, thin)
+      if (!rs.some((r) => others.some((c) => overlaps(qbox(c.quad), r)))) break
+      rs = null
+    }
+    if (!rs) return refuse('tight-lines')
+    rects.push(...rs)
+  }
+  const bad = removeGlyphs(mupdf, doc, P, rects, new Set([...winChars, ...ownChars]), others, spans, removed)
+  if (bad) return refuse(bad)
+
+  // draw: one tagged span per line; ActualText only on shaped-script fallbacks
+  const p2 = doc.loadPage(P.idx)
+  const pobj = p2.getObject()
+  const res = ownResources(doc, pobj)
+  const tm = tmFor(P.page)
+  const fontNames = new Map()
+  const fontName = (ref) => {
+    const k = ref.isIndirect() ? ref.asIndirect() : ref
+    if (!fontNames.has(k)) {
+      const fd = subDict(doc, res, 'Font')
+      const name = freeName(fd, 'SPDFEdit')
+      fd.put(name, ref)
+      fontNames.set(k, name)
+    }
+    return fontNames.get(k)
+  }
+  let gs = ''
+  if (alpha < 0.999) {
+    const gd = subDict(doc, res, 'ExtGState')
+    const name = freeName(gd, 'SPDFEditGs')
+    const st = doc.newDictionary()
+    st.put('Type', doc.newName('ExtGState'))
+    st.put('ca', f4(alpha))
+    st.put('CA', f4(alpha))
+    gd.put(name, doc.addObject(st))
+    gs = `/${name} gs `
+  }
+  const Tz = scale !== 1 ? `${f4(scale * 100)} Tz ` : ''
+  let content = ''
+  const boxes = []
+  for (const row of layout ?? []) {
+    let body = ''
+    for (const p of row.items) {
+      const it = items[p.i]
+      let d = ''
+      if (it.kind === 'exact') {
+        for (const t of it.toks) {
+          const c0 = t.chars[0]
+          const left = fr.rtl ? -(p.x + p.w) : p.x
+          const o = [dir[0] * (left + t.du * scale) + fr.down[0] * (row.v + t.dv), dir[1] * (left + t.du * scale) + fr.down[1] * (row.v + t.dv)]
+          const show = t.draw.tj ? `0 Tc ${Tz}${colorOp(c0.color)} ${tm(o, dir).map(f4).join(' ')} Tm [${t.draw.tj}] TJ` : `${f4(t.draw.tc)} Tc ${Tz}${colorOp(c0.color)} ${tm(o, dir).map(f4).join(' ')} Tm <${hexOf(t.draw.info, t.draw.codes)}> Tj`
+          d += `BT /${fontName(t.draw.ref)} ${f4(c0.size)} Tf ${show} ET\n`
+        }
+      } else if (it.kind === 'same') {
+        const o = pointAt(p.x, row.v, p.w)
+        d = `BT /${fontName(it.draw.ref)} ${f4(it.size)} Tf ${f4(it.draw.tc)} Tc ${Tz}${colorOp(it.color)} ${tm(o, dir).map(f4).join(' ')} Tm <${hexOf(it.draw.info, it.draw.codes)}> Tj ET\n`
+      } else {
+        const f = forms.get(p)
+        const xd = subDict(doc, res, 'XObject')
+        const name = freeName(xd, 'SPDFEditFx')
+        xd.put(name, f.form)
+        const m = tm(pointAt(p.x, row.v, p.w), dir)
+        const cm = [m[0] * scale, m[1] * scale, m[2], m[3], m[4], m[5]]
+        const bold = needsFakeBold(it.style.font, f) ? fakeBold(it.color, it.size) : ''
+        d = `q ${colorOp(it.color)} ${bold}${cm.map(f4).join(' ')} cm /${name} Do Q\n`
+      }
+      // right-to-left glyphs already read back in order (see fallbackForm);
+      // same-font and Latin fallback glyphs read back by themselves
+      body += it.kind !== 'form' || !COMPLEX.test(it.text) || RTL.test(it.text) ? d : `/Span <</ActualText <${utf16Hex(it.actual ?? it.text)}>>> BDC\n${d}EMC\n`
+    }
+    const size = Math.max(...row.items.map((p) => items[p.i].size))
+    const rb = rowBox(row, size)
+    // the reported box takes anti-aliasing and side bearings in
+    boxes.push([rb[0] - 0.5, rb[1] - 0.5, rb[2] + 0.5, rb[3] + 0.5])
+    content += `/Span <</SPDFBox [${rb.map(f4).join(' ')}] /SPDFPara [${paraBox.map(f4).join(' ')}]>> BDC\nq ${gs}${body}Q\nEMC\n`
+  }
+  rep.order = placeContent(mupdf, doc, P, pobj, content, new Set([...chars, ...ownChars]))
+  p2.destroy?.()
+
+  const used = (layout ?? []).flatMap((row) => row.items.map((p) => items[p.i]))
+  const kinds = new Set(used.map((it) => (it.kind === 'form' ? 'fallback' : 'original')))
+  rep.font = !used.length ? null : kinds.size > 1 ? 'mixed' : [...kinds][0]
+  const fl = [...forms.values()]
+  const names = [...new Set(fl.flatMap((f) => f.name.split(' + ')))]
+  rep.fallbackName = names.length ? names.join(' + ') + (fl.some((f) => f.bold && !/bold/i.test(f.name)) ? ' (synthetic bold)' : '') : null
+  // lines of the whole paragraph after the edit; the window replaced lines r0..last
+  rep.lines = n0 - (last - r0 + 1) + (layout?.length ?? 0)
+  rep.window = [r0, last]
+  // underline / strike lines drawn over the old lines stay where they were
+  rep.decorations = decor.length > 0
+  rep.fit = scale !== 1 ? f4(scale) : null
+  rep.overflow = (layout?.length ?? 0) > last - r0 + 1 || scale !== 1
+  rep.box = boxes.length ? toView(unionBox(boxes), P.bounds) : null
+  rep.changedBox = toView(unionBox([grow(unionBox(winChars.map((c) => qbox(c.quad))), 0.5), ...boxes]), P.bounds)
+  return 1
+}
+
+// A page region (page space) renders as one flat colour: nothing drawn
+// there (a cell fill or the paper itself is fine).
+function stripBlank(mupdf, page, box) {
+  const k = 2
+  const r = [Math.floor(box[0] * k), Math.floor(box[1] * k), Math.ceil(box[2] * k), Math.ceil(box[3] * k)]
+  if (r[2] <= r[0] || r[3] <= r[1]) return true
+  const pix = new mupdf.Pixmap(mupdf.ColorSpace.DeviceRGB, r, false)
+  let px
+  try {
+    pix.clear(255)
+    const dev = new mupdf.DrawDevice(mupdf.Matrix.scale(k, k), pix)
+    try {
+      page.run(dev, mupdf.Matrix.identity)
+    } finally {
+      dev.close()
+      dev.destroy?.()
+    }
+    px = new Uint8Array(pix.getPixels()) // copy at once: a view on WASM memory
+  } finally {
+    pix.destroy?.()
+  }
+  const c = [px[0], px[1], px[2]]
+  for (let i = 0; i < px.length; i += 3) if (Math.abs(px[i] - c[0]) > 24 || Math.abs(px[i + 1] - c[1]) > 24 || Math.abs(px[i + 2] - c[2]) > 24) return false
+  return true
+}
+
+// Widget and annotation rects (page space): new lines stay clear of them.
+function annotRects(P) {
+  const out = []
+  try {
+    for (const w of P.page.getWidgets()) out.push(w.getBounds())
+  } catch {
+    /* none */
+  }
+  try {
+    for (const a of P.page.getAnnotations()) if (a.getType() !== 'Redact') out.push(a.getBounds())
+  } catch {
+    /* none */
+  }
+  return out.map((r) => [...r])
+}
+
+// Text matrix (PDF user space) for a point and direction in page space.
+function tmFor(page) {
+  const Ti = inv(page.getTransform())
+  return (o, dir) => {
+    const du = norm(applyV(Ti, dir))
+    const uu = norm(applyV(Ti, [dir[1], -dir[0]]))
+    const ou = apply(Ti, o)
+    return [du[0], du[1], uu[0], uu[1], ou[0], ou[1]]
+  }
+}
+
+// Reading order: copy and search read content in drawing order, so text
+// appended at the end reads last. Put the new draw where the old text was
+// read: at a point of the (redacted) content after the text read before the
+// edit and before the text read after it. Points: between operators at any
+// q depth whose open levels set no clip, ExtGState, d0/d1 or unknown cm
+// (the CTM there is undone), outside BX/EX and marked content; or inside a
+// text object right before a line move (the line matrix is put back). Other
+// state from open levels (dash, line width, colours) can reach the insert:
+// the draw sets its own fill colour and text state, and the page must
+// render the same (2x, MuPDF) as with the draw appended, else it is appended.
+// gone: the removed glyphs (P.lines chars). -> 'inline' | 'appended'
+function placeContent(mupdf, doc, P, pobj, content, gone) {
+  if (!content) return null
+  const original = pobj.get('Contents')
+  const append = () => {
+    pobj.put('Contents', original)
+    appendContent(doc, pobj, content)
+    return 'appended'
+  }
+  try {
+    // reading-order neighbours in the source: last kept glyphs before the
+    // first removed one, first kept glyphs after the last removed one
+    const all = P.lines.flatMap((l) => l.chars.filter((c) => c.c.trim()))
+    const idx = all.map((c, i) => (gone.has(c) ? i : -1)).filter((i) => i >= 0)
+    if (!idx.length) return append()
+    const kept = (c) => !gone.has(c)
+    const before = all.slice(0, idx[0]).filter(kept).slice(-3)
+    const after = all.slice(idx[idx.length - 1] + 1).filter(kept).slice(0, 3)
+    const key = (o) => `${Math.round(o[0] * 10)},${Math.round(o[1] * 10)}`
+    const old = asList(pobj.get('Contents')).filter((r) => r.isStream())
+    const parts = old.map((r) => takeBytes(r.readStream()))
+    const b = new Uint8Array(parts.reduce((n, p) => n + p.length + 1, 0))
+    let o = 0
+    for (const p of parts) {
+      b.set(p, o)
+      b[o + p.length] = 10
+      o += p.length + 1
+    }
+    // cut points and the CTM there. A q level that set a clip or an
+    // ExtGState is not reasoned about: no cuts while it is open.
+    const cuts = [{ at: 0, ctm: [1, 0, 0, 1, 0, 0] }]
+    const stack = [{ ctm: [1, 0, 0, 1, 0, 0], dirty: false }]
+    let bt = false
+    let bx = 0
+    let mc = 0
+    const mul = (m, n) => [m[0] * n[0] + m[1] * n[2], m[0] * n[1] + m[1] * n[3], m[2] * n[0] + m[3] * n[2], m[2] * n[1] + m[3] * n[3], m[4] * n[0] + m[5] * n[2] + n[4], m[4] * n[1] + m[5] * n[3] + n[5]]
+    let inImage = false
+    // inside a text object (pdfTeX draws a page in one BT): a cut right
+    // before a line move (Td TD Tm T*), where the line matrix is known
+    // without glyph widths; the insert closes the BT and sets it back
+    let tlm = null
+    let tl = 0
+    let tlKnown = true
+    const nums = (op) => (op.operands.every((x) => x.type === 'num') ? op.operands.map((x) => x.value) : null)
+    for (const op of contentOps(b)) {
+      const k = op.op
+      const cur = stack[stack.length - 1]
+      if (k === 'BI') inImage = true
+      else if (k === 'EI') inImage = false
+      if (inImage) continue
+      if (bt && !cur.dirty && !bx && !mc && tlm && (k === 'Td' || k === 'TD' || k === 'Tm' || (k === 'T*' && tlKnown))) cuts.push({ at: op.start, ctm: cur.ctm.slice(), tlm: tlm.slice() })
+      if (k === 'TL') {
+        const v = nums(op)
+        if (v) tl = v[0]
+        else tlKnown = false
+      } else if (bt && (k === 'Td' || k === 'TD')) {
+        const v = nums(op)
+        tlm = v && tlm ? mul([1, 0, 0, 1, v[0], v[1]], tlm) : null
+        if (k === 'TD' && v) tl = -v[1]
+      } else if (bt && k === 'Tm') {
+        const v = nums(op)
+        tlm = v && v.length === 6 ? v : null
+      } else if (bt && k === 'T*') tlm = tlm && tlKnown ? mul([1, 0, 0, 1, 0, -tl], tlm) : null
+      else if (bt && (k === "'" || k === '"')) tlm = null
+      if (k === 'q') stack.push({ ctm: cur.ctm.slice(), dirty: cur.dirty })
+      else if (k === 'Q') {
+        if (stack.length > 1) stack.pop()
+        // TL set inside a level that closed: not known any more
+        tlKnown = false
+      } else if (k === 'BT') {
+        bt = true
+        tlm = [1, 0, 0, 1, 0, 0]
+      } else if (k === 'ET') bt = false
+      else if (k === 'BX') bx++
+      else if (k === 'EX') bx = Math.max(0, bx - 1)
+      else if (k === 'BDC' || k === 'BMC') mc++
+      else if (k === 'EMC') mc = Math.max(0, mc - 1)
+      else if (!bt && k === 'cm') {
+        const v = nums(op)
+        if (v && v.length === 6) cur.ctm = mul(v, cur.ctm)
+        else cur.dirty = true
+      } else if (k === 'W' || k === 'W*' || k === 'gs' || k === 'd0' || k === 'd1') cur.dirty = true
+      const now = stack[stack.length - 1]
+      if (!bt && !bx && !mc && !now.dirty) cuts.push({ at: op.end, ctm: now.ctm.slice() })
+    }
+    if (cuts.length < 2) return append()
+    // which glyphs a prefix of the content draws
+    const probe = doc.addStream('', {})
+    const drawn = (at) => {
+      // a prefix that stops inside a text object gets its ET
+      const tail = cuts.find((c) => c.at === at)?.tlm ? new TextEncoder().encode('\nET\n') : new Uint8Array(0)
+      const pre = new Uint8Array(at + tail.length)
+      pre.set(b.subarray(0, at), 0)
+      pre.set(tail, at)
+      probe.writeStream(pre)
+      pobj.put('Contents', probe)
+      const pg = doc.loadPage(P.idx)
+      const seen = new Set()
+      const st = pg.toStructuredText('preserve-whitespace')
+      try {
+        st.walk({
+          onChar(c, origin, font) {
+            font.constructor._finalizer?.unregister(font)
+            if (c.trim()) seen.add(key(origin))
+          },
+        })
+      } finally {
+        st.destroy?.()
+        pg.destroy?.()
+      }
+      return seen
+    }
+    const has = (set, cs) => cs.every((c) => set.has(key(c.origin)))
+    const none = (set, cs) => cs.every((c) => !set.has(key(c.origin)))
+    // smallest cut whose prefix draws all of `before`
+    let lo = 0
+    let hi = cuts.length - 1
+    if (before.length) {
+      if (!has(drawn(cuts[hi].at), before)) hi = -1
+      while (hi >= 0 && lo < hi) {
+        const mid = (lo + hi) >> 1
+        if (has(drawn(cuts[mid].at), before)) hi = mid
+        else lo = mid + 1
+      }
+    } else hi = 0
+    const pick = hi >= 0 ? cuts[hi] : null
+    if (!pick || (after.length && !none(drawn(pick.at), after))) return append()
+    // the draw at that point: CTM undone, text state set back to defaults
+    const undo = inv(pick.ctm)
+    const draw = `\nq ${undo.map(f4).join(' ')} cm 0 Tc 0 Tw 100 Tz 0 TL 0 Ts 0 Tr\n${content}Q\n`
+    const block = pick.tlm ? `\nET${draw}BT ${pick.tlm.map(f4).join(' ')} Tm\n` : draw
+    const enc = new TextEncoder()
+    const ins = enc.encode(block)
+    const inline = new Uint8Array(b.length + ins.length)
+    inline.set(b.subarray(0, pick.at), 0)
+    inline.set(ins, pick.at)
+    inline.set(b.subarray(pick.at), pick.at + ins.length)
+    // same pixels as the appended draw, else append
+    const render = () => {
+      const pg = doc.loadPage(P.idx)
+      try {
+        const pix = pg.toPixmap(mupdf.Matrix.scale(2, 2), mupdf.ColorSpace.DeviceRGB, false, true)
+        const px = new Uint8Array(pix.getPixels())
+        pix.destroy?.()
+        return px
+      } finally {
+        pg.destroy?.()
+      }
+    }
+    probe.writeStream(inline)
+    pobj.put('Contents', probe)
+    const a = render()
+    append()
+    const z = render()
+    let same = a.length === z.length
+    for (let i = 0; same && i < a.length; i++) if (Math.abs(a[i] - z[i]) > 8) same = false
+    if (!same) return 'appended'
+    pobj.put('Contents', probe)
+    return 'inline'
+  } catch {
+    return append()
+  }
+}
+
+// New content goes after the page's own, which is wrapped in q ... Q.
+function appendContent(doc, pobj, content) {
+  if (!content) return
+  const old = pobj.get('Contents')
+  const arr = doc.newArray()
+  arr.push(doc.addStream('q\n', {}))
+  if (old.isArray()) for (let i = 0; i < old.length; i++) arr.push(old.get(i))
+  else if (!old.isNull()) arr.push(old)
+  arr.push(doc.addStream('\nQ\n', {}))
+  arr.push(doc.addStream(`q\n${content}Q\n`, {}))
+  pobj.put('Contents', arr)
+}
+
+// The removal both edit kinds share: our own earlier draws cut out whole,
+// text-only redaction of `rects`, inline images put back, then every glyph
+// in `others` must still be there and every one in `gone` gone, else the
+// page is put back as it was. olds: removed text, cut from ActualText/Alt.
+// -> null, or the refusal reason ('tight-lines', 'inline-image').
+function removeGlyphs(mupdf, doc, P, rects, gone, others, spans, olds) {
+  const page = P.page
+  const snapContents = P.obj.get('Contents')
+  const snapStreams = asList(snapContents).filter((r) => r.isStream()).map((r) => [r, takeBytes(r.readStream())])
+  const snapRes = P.obj.get('Resources')
+  const resCopy = snapRes.isDictionary() ? doc.newDictionary() : null
+  if (resCopy) snapRes.forEach((v, k) => resCopy.put(k, v.isDictionary() && !v.isIndirect() ? (() => {
+    const d = doc.newDictionary()
+    v.forEach((vv, kk) => d.put(kk, vv))
+    return d
+  })() : v))
+  const formSnap = snapForms(P.obj)
+
+  cutOwn(doc, P.obj, spans)
+  const props = () => {
+    const r = P.obj.getInheritable('Resources')
+    return r.isDictionary() ? r.get('Properties') : null
+  }
+  const marksBefore = markedShows(joinStreams(P.obj), props())
+  for (const r of rects) page.createAnnotation('Redact').setRect(r)
+  page.applyRedactions(false, mupdf.PDFPage.REDACT_IMAGE_NONE, mupdf.PDFPage.REDACT_LINE_ART_NONE, mupdf.PDFPage.REDACT_TEXT_REMOVE)
+  const inlineOk = restoreInline(P.obj, snapStreams.map(([, bytes]) => bytes)) && restoreFormInline(P.obj, formSnap)
+
+  // every other glyph on the page must still be there, the edited ones gone
+  const near = (list, c) => list.some((a) => a.c === c.c && Math.abs(a.origin[0] - c.origin[0]) < 0.1 && Math.abs(a.origin[1] - c.origin[1]) < 0.1)
+  const after = readLines(page).flatMap((l) => l.chars.filter((c) => c.c.trim()))
+  const lost = others.filter((c) => !near(after, c))
+  const left = [...gone].filter((c) => (!c.c.trim() ? false : near(after, c)))
+  if (lost.length || left.length || !inlineOk) {
+    for (const [r, bytes] of snapStreams) r.writeStream(bytes)
+    P.obj.put('Contents', snapContents)
+    if (resCopy) P.obj.put('Resources', resCopy)
+    else P.obj.delete('Resources')
+    undoForms(formSnap)
+    return inlineOk ? 'tight-lines' : 'inline-image'
+  }
+  // ActualText / Alt of the removed words must not stay behind
+  // ActualText / Alt / E only where marked content lost glyphs in this edit
+  const marksAfter = markedShows(joinStreams(P.obj), props())
+  const same = marksAfter.length === marksBefore.length
+  const lostIdx = new Set(same ? marksBefore.flatMap((e, i) => (marksAfter[i].shown < e.shown ? [i] : [])) : [])
+  cleanPageMarked(P.obj, (i) => lostIdx.has(i))
+  const mcids = new Set([...lostIdx].map((i) => marksBefore[i].mcid).filter((x) => x != null))
+  cleanStruct(doc, P.obj, mcids, same ? null : olds)
+  return null
+}
+
+// A dynamic XFA form: the form exists only as XFA (NeedsRendering, or no
+// AcroForm fields besides signatures); the page content is just its "Please
+// wait" page, and an edit would drop the form (same test as docOps dynamicXfa).
+function dynamicXfa(doc) {
+  const root = doc.getTrailer().get('Root')
+  const af = root.get('AcroForm')
+  if (!af.isDictionary() || af.get('XFA').isNull()) return false
+  const nr = root.get('NeedsRendering')
+  if (nr.isBoolean?.() && nr.asBoolean()) return true
+  let fields = 0
+  const walk = (arr, depth) => {
+    if (!arr.isArray() || depth > 32) return
+    for (let i = 0; i < arr.length; i++) {
+      const fd = arr.get(i)
+      if (!fd.isDictionary()) continue
+      const kids = fd.get('Kids')
+      const named = kids.isArray() && Array.from({ length: kids.length }, (_, k) => kids.get(k)).some((x) => x.isDictionary() && !x.get('T').isNull())
+      if (named) walk(kids, depth + 1)
+      else if (inheritable(fd, 'FT')?.toString() !== '/Sig') fields++
+    }
+  }
+  walk(af.get('Fields'), 0)
+  return fields === 0
+}
+
 // ---------- entry points ----------
-export async function pageTextModel(bytes, pageNum) {
+// opts.paragraphs: also group paragraphs (costs a read of nearby pages for
+// line-end hyphens); off by default.
+export async function pageTextModel(bytes, pageNum, { paragraphs = false } = {}) {
   const mupdf = await getMupdf()
   const doc = openPdf(mupdf, bytes)
   try {
@@ -1831,14 +3187,17 @@ export async function pageTextModel(bytes, pageNum) {
     const P = readPage(mupdf, doc, idx)
     try {
       addUsage(usageFor(bytes), idx, P.lines)
+      if (dynamicXfa(doc)) for (const r of P.runs) r.why = 'xfa-dynamic'
       const b = P.bounds
       return {
         page: { width: r2(b[2] - b[0]), height: r2(b[3] - b[1]), ...pageBoxes(P), scanned: P.scanned },
         signed: signedFields(doc).size > 0,
         runs: [...P.runs.map((r) => publicRun(P, r)), ...fieldRuns(P)],
+        paragraphs: paragraphs ? paragraphsOf(P).map((g) => publicParagraph(P, g)) : [],
       }
     } finally {
       P.page.destroy?.()
+      P.S?.doc.destroy?.()
     }
   } finally {
     doc.destroy?.()
@@ -1851,6 +3210,7 @@ export async function isScanned(bytes, pageNum) {
   try {
     const P = readPage(mupdf, doc, pageNum - 1)
     P.page.destroy?.()
+    P.S?.doc.destroy?.()
     return P.scanned
   } finally {
     doc.destroy?.()
@@ -1861,10 +3221,12 @@ export async function isScanned(bytes, pageNum) {
 // drops the old content streams (with the old text) and every earlier
 // version. The op never resolves the object walk, so MuPDF's compact-save
 // bug does not apply; the two-pass save is the fallback if objstms trips
-// over a gap in the xref.
+// over a gap in the xref. Compact (renumbered): plain `garbage` keeps a free
+// xref slot for every object an edit made and dropped (placement probes,
+// checks, about 30 per edit), so the file grew with each repeated edit.
 function finalSave(mupdf, doc) {
   try {
-    return takeBytes(doc.saveToBuffer('garbage,compress,objstms'))
+    return takeBytes(doc.saveToBuffer('garbage=compact,compress,objstms'))
   } catch {
     const d2 = openPdf(mupdf, takeBytes(doc.saveToBuffer('garbage,compress')))
     try {
@@ -1881,7 +3243,11 @@ function finalSave(mupdf, doc) {
 export async function editText(bytes, edits, { fit = false, final = false } = {}) {
   const t0 = Date.now()
   const mupdf = await getMupdf()
-  const report = edits.map((e) => ({ runId: e.runId, wordIndex: e.wordIndex ?? null, font: null, fallbackName: null, overflow: false, noPush: null, refused: null, fit: null, shift: 0, pushed: 0, box: null, changedBox: null }))
+  const report = edits.map((e) =>
+    e.paragraphId != null
+      ? { paragraphId: e.paragraphId, font: null, fallbackName: null, lines: 0, overflow: false, refused: null, fit: null, box: null, changedBox: null }
+      : { runId: e.runId, wordIndex: e.wordIndex ?? null, font: null, fallbackName: null, overflow: false, noPush: null, refused: null, fit: null, shift: 0, pushed: 0, box: null, changedBox: null },
+  )
   const doc = openPdf(mupdf, bytes)
   let S = null
   const scratch = () => {
@@ -1892,6 +3258,11 @@ export async function editText(bytes, edits, { fit = false, final = false } = {}
     return S
   }
   try {
+    if (dynamicXfa(doc)) {
+      for (const r of report) r.refused = 'xfa-dynamic'
+      const total = Date.now() - t0
+      return { bytes: copy(bytes), report, signatureRemoved: false, xfaRemoved: false, ms: { edit: total, save: 0, total } }
+    }
     const usage = usageFor(bytes)
     const byPage = new Map()
     edits.forEach((e, k) => {
@@ -1906,16 +3277,31 @@ export async function editText(bytes, edits, { fit = false, final = false } = {}
       }
       const P = readPage(mupdf, doc, pageNum - 1)
       try {
-        applied += await editPage(mupdf, doc, P, list, { fit }, usage, scratch)
+        // one paragraph edit per page per call; line edits on that page wait
+        // for the next call (the paragraph changes their ids)
+        const paras = list.filter((x) => x.e.paragraphId != null)
+        if (paras.length) {
+          for (const x of list) if (x !== paras[0]) x.rep.refused = 'conflict'
+          applied += await editParagraph(mupdf, doc, P, paras[0], { fit }, usage, scratch)
+        } else applied += await editPage(mupdf, doc, P, list, { fit }, usage, scratch)
       } finally {
         P.page.destroy?.()
+      P.S?.doc.destroy?.()
       }
     }
     if (!applied) {
       const total = Date.now() - t0
-      return { bytes: copy(bytes), report, signatureRemoved: false, ms: { edit: total, save: 0, total } }
+      return { bytes: copy(bytes), report, signatureRemoved: false, xfaRemoved: false, ms: { edit: total, save: 0, total } }
     }
     const signatureRemoved = dropSignatures(doc)
+    // an XFA copy of the form keeps the old text (captions, labels): drop it
+    // (the AcroForm fields stay; finalize then garbage-collects the packets)
+    const af = doc.getTrailer().get('Root').get('AcroForm')
+    const xfaRemoved = af.isDictionary() && !af.get('XFA').isNull()
+    if (xfaRemoved) {
+      af.delete('XFA')
+      doc.getTrailer().get('Root').delete('NeedsRendering')
+    }
     const tSave = Date.now()
     let out = null
     if (final) out = finalSave(mupdf, doc)
@@ -1929,7 +3315,7 @@ export async function editText(bytes, edits, { fit = false, final = false } = {}
     // the fonts of the edited file draw the same characters as before
     usageCache.set(fingerprint(out), usage)
     const end = Date.now()
-    return { bytes: out, report, signatureRemoved, ms: { edit: tSave - t0, save: end - tSave, total: end - t0 } }
+    return { bytes: out, report, signatureRemoved, xfaRemoved, ms: { edit: tSave - t0, save: end - tSave, total: end - t0 } }
   } finally {
     S?.doc.destroy?.()
     doc.destroy?.()

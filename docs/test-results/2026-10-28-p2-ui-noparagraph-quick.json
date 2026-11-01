@@ -1,0 +1,6113 @@
+{
+  "name": "2026-10-28-p2-ui-noparagraph-quick",
+  "startedAt": "2026-10-28T23:09:46.355Z",
+  "finishedAt": "2026-10-28T23:12:13.591Z",
+  "durationMin": 2.5,
+  "command": "npm run test:corpus -- --quick --light --shards 2 --name 2026-10-28-p2-ui-noparagraph-quick",
+  "env": {
+    "node": "v24.20.0",
+    "platform": "win32 10.0.26200",
+    "cpus": 20,
+    "memGB": 32
+  },
+  "totals": {
+    "pass": 33,
+    "fail": 165,
+    "skip": 0
+  },
+  "summary": [
+    {
+      "tool": "word2pdf",
+      "pass": 4,
+      "fail": 1,
+      "skip": 0,
+      "ms": 44904
+    },
+    {
+      "tool": "excel2pdf",
+      "pass": 1,
+      "fail": 1,
+      "skip": 0,
+      "ms": 1992
+    },
+    {
+      "tool": "ppt2pdf",
+      "pass": 1,
+      "fail": 1,
+      "skip": 0,
+      "ms": 1635
+    },
+    {
+      "tool": "html2pdf",
+      "pass": 1,
+      "fail": 2,
+      "skip": 0,
+      "ms": 2158
+    },
+    {
+      "tool": "merge",
+      "pass": 4,
+      "fail": 1,
+      "skip": 0,
+      "ms": 11797
+    },
+    {
+      "tool": "split",
+      "pass": 1,
+      "fail": 2,
+      "skip": 0,
+      "ms": 1027
+    },
+    {
+      "tool": "extract",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 77
+    },
+    {
+      "tool": "remove",
+      "pass": 1,
+      "fail": 0,
+      "skip": 0,
+      "ms": 842
+    },
+    {
+      "tool": "rotate",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 63
+    },
+    {
+      "tool": "organize",
+      "pass": 1,
+      "fail": 0,
+      "skip": 0,
+      "ms": 1443
+    },
+    {
+      "tool": "compress",
+      "pass": 2,
+      "fail": 2,
+      "skip": 0,
+      "ms": 6321
+    },
+    {
+      "tool": "repair",
+      "pass": 0,
+      "fail": 3,
+      "skip": 0,
+      "ms": 163
+    },
+    {
+      "tool": "watermark",
+      "pass": 2,
+      "fail": 1,
+      "skip": 0,
+      "ms": 1330
+    },
+    {
+      "tool": "pagenumbers",
+      "pass": 2,
+      "fail": 4,
+      "skip": 0,
+      "ms": 1779
+    },
+    {
+      "tool": "sign",
+      "pass": 3,
+      "fail": 1,
+      "skip": 0,
+      "ms": 2059
+    },
+    {
+      "tool": "crop",
+      "pass": 1,
+      "fail": 2,
+      "skip": 0,
+      "ms": 576
+    },
+    {
+      "tool": "edit",
+      "pass": 2,
+      "fail": 1,
+      "skip": 0,
+      "ms": 1534
+    },
+    {
+      "tool": "protect",
+      "pass": 2,
+      "fail": 1,
+      "skip": 0,
+      "ms": 1742
+    },
+    {
+      "tool": "unlock",
+      "pass": 2,
+      "fail": 2,
+      "skip": 0,
+      "ms": 2680
+    },
+    {
+      "tool": "ocr",
+      "pass": 3,
+      "fail": 3,
+      "skip": 0,
+      "ms": 94476
+    },
+    {
+      "tool": "pdf2word",
+      "pass": 0,
+      "fail": 6,
+      "skip": 0,
+      "ms": 200
+    },
+    {
+      "tool": "pdf2excel",
+      "pass": 0,
+      "fail": 2,
+      "skip": 0,
+      "ms": 60
+    },
+    {
+      "tool": "pdf2ppt",
+      "pass": 0,
+      "fail": 2,
+      "skip": 0,
+      "ms": 58
+    },
+    {
+      "tool": "pdf2md",
+      "pass": 0,
+      "fail": 2,
+      "skip": 0,
+      "ms": 61
+    },
+    {
+      "tool": "img2pdf",
+      "pass": 0,
+      "fail": 4,
+      "skip": 0,
+      "ms": 136
+    },
+    {
+      "tool": "pdf2img",
+      "pass": 0,
+      "fail": 2,
+      "skip": 0,
+      "ms": 61
+    },
+    {
+      "tool": "redact",
+      "pass": 0,
+      "fail": 30,
+      "skip": 0,
+      "ms": 1275
+    },
+    {
+      "tool": "forms",
+      "pass": 0,
+      "fail": 6,
+      "skip": 0,
+      "ms": 294
+    },
+    {
+      "tool": "compare",
+      "pass": 0,
+      "fail": 4,
+      "skip": 0,
+      "ms": 205
+    },
+    {
+      "tool": "health",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 66
+    },
+    {
+      "tool": "automate",
+      "pass": 0,
+      "fail": 5,
+      "skip": 0,
+      "ms": 275
+    },
+    {
+      "tool": "edittext",
+      "pass": 0,
+      "fail": 6,
+      "skip": 0,
+      "ms": 2622
+    },
+    {
+      "tool": "autorotate",
+      "pass": 0,
+      "fail": 3,
+      "skip": 0,
+      "ms": 103
+    },
+    {
+      "tool": "nup",
+      "pass": 0,
+      "fail": 3,
+      "skip": 0,
+      "ms": 65
+    },
+    {
+      "tool": "booklet",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 35
+    },
+    {
+      "tool": "scale",
+      "pass": 0,
+      "fail": 3,
+      "skip": 0,
+      "ms": 80
+    },
+    {
+      "tool": "singlepage",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 39
+    },
+    {
+      "tool": "overlay",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 21
+    },
+    {
+      "tool": "stamp",
+      "pass": 0,
+      "fail": 2,
+      "skip": 0,
+      "ms": 63
+    },
+    {
+      "tool": "removeblank",
+      "pass": 0,
+      "fail": 2,
+      "skip": 0,
+      "ms": 39
+    },
+    {
+      "tool": "linearize",
+      "pass": 0,
+      "fail": 2,
+      "skip": 0,
+      "ms": 78
+    },
+    {
+      "tool": "adjustcolors",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 42
+    },
+    {
+      "tool": "replacecolors",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 20
+    },
+    {
+      "tool": "bookmarks",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 20
+    },
+    {
+      "tool": "metadata",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 41
+    },
+    {
+      "tool": "attachments",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 19
+    },
+    {
+      "tool": "removeannots",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 31
+    },
+    {
+      "tool": "removeimages",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 37
+    },
+    {
+      "tool": "extractimages",
+      "pass": 0,
+      "fail": 2,
+      "skip": 0,
+      "ms": 61
+    },
+    {
+      "tool": "flatten",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 32
+    },
+    {
+      "tool": "unlockforms",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 22
+    },
+    {
+      "tool": "sanitize",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 40
+    },
+    {
+      "tool": "permissions",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 21
+    },
+    {
+      "tool": "info",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 20
+    },
+    {
+      "tool": "autorename",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 43
+    },
+    {
+      "tool": "showjs",
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "ms": 34
+    },
+    {
+      "tool": "intake",
+      "pass": 0,
+      "fail": 31,
+      "skip": 0,
+      "ms": 18261
+    }
+  ],
+  "audit": [
+    {
+      "n": 1,
+      "title": "Intake rejects owner-only (restriction) encrypted files",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "merge-owner-only: passed"
+      ],
+      "passedChecks": 1,
+      "reason": null
+    },
+    {
+      "n": 2,
+      "title": "Redact boxes use unrotated MediaBox, land wrong on rotated/CropBox pages",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 3,
+      "title": "Redact search misses phrases split across text items",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 4,
+      "title": "Every render reopens + copies the whole file (large-file cost)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no per-render copy counter; large scans now render (JPX fixed in U1), see time and heap on pdf2img-bible-62MB, pdf2img-crooked-104MB, split-911-large"
+    },
+    {
+      "n": 5,
+      "title": "Redact re-parses the source per untouched page",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal cost; covered indirectly by redact timing"
+    },
+    {
+      "n": 6,
+      "title": "Compress: lossless only / Maximum rasterizes text",
+      "status": "SOFT WARN",
+      "evidence": [
+        "compress-lincoln-scan: shrinks a scanned/image-heavy file by 10%+ (saved 1%)"
+      ],
+      "passedChecks": 1,
+      "reason": null
+    },
+    {
+      "n": 7,
+      "title": "pdf-lib intake rejects damaged files viewers open",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 8,
+      "title": "Stamps/edits ignore rotation, CropBox and MediaBox origin",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "watermark-tracemonkey: mark inside the visible page",
+        "watermark-rotation-quirk: mark inside the visible page",
+        "pagenumbers-rotation-quirk: number visible on every page",
+        "pagenumbers-rotation-quirk: number at bottom centre, upright",
+        "sign-tracemonkey: signature where the user clicked (50%, 85%), upright",
+        "sign-rotation-quirk: signature where the user clicked (50%, 85%), upright",
+        "edit-tracemonkey: text added and visible",
+        "edit-tracemonkey: text near top-left where placed, upright",
+        "edit-rotation-quirk: text added and visible",
+        "edit-rotation-quirk: text near top-left where placed, upright"
+      ],
+      "passedChecks": 10,
+      "reason": null
+    },
+    {
+      "n": 9,
+      "title": "Only WinAnsi fonts: non-Latin text throws",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 10,
+      "title": "OCR English only, assets from CDN (not offline)",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "ocr-fax-printed: no network fetches outside the page origin",
+        "g2-ocr-geometry: no network fetches outside the page origin"
+      ],
+      "passedChecks": 2,
+      "reason": null
+    },
+    {
+      "n": 11,
+      "title": "OCR re-OCRs born-digital pages, no deskew, fixed DPI",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "g2-ocr-geometry: upright: words placed on the scan",
+        "g2-ocr-geometry: turned: words placed on the scan",
+        "g2-ocr-geometry: rot90crop: words placed on the scan",
+        "g2-ocr-geometry: skew: words placed on the scan"
+      ],
+      "passedChecks": 4,
+      "reason": null
+    },
+    {
+      "n": 12,
+      "title": "Merge/split drop outlines, AcroForm, links",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "merge-outlines: bookmarks kept"
+      ],
+      "passedChecks": 1,
+      "reason": null
+    },
+    {
+      "n": 13,
+      "title": "Crop rejects rotated, ignores box origin",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "crop-rotation-quirk: crop lands inside the visible page"
+      ],
+      "passedChecks": 1,
+      "reason": null
+    },
+    {
+      "n": 14,
+      "title": "Edit is overlay-only",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "feature gap (no text editing API to call)"
+    },
+    {
+      "n": 15,
+      "title": "PDF to Word interleaves columns, no borderless tables, RTL",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 16,
+      "title": "PDF to Excel number parsing loses leading zeros / formats",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 17,
+      "title": "PDF to PPT slides are flat images, fixed slide size",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 18,
+      "title": "Office to PDF quick mode is screenshots (no text)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 19,
+      "title": "HiFi engine from unpinned CDN, font substitution",
+      "status": "SOFT WARN",
+      "evidence": [
+        "office-engine-load: no fetches outside the page origin (cdn.zetaoffice.net)"
+      ],
+      "passedChecks": 1,
+      "reason": null
+    },
+    {
+      "n": 20,
+      "title": "pdf.js without cMapUrl / standard fonts / wasm",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 21,
+      "title": "Forms: XFA not handled, slow widget map",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 22,
+      "title": "Protect: comma in password splits MuPDF options",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "protect-comma-password: comma password refused with a clear message",
+        "g2-protect-permissions-only: printing and copying blocked",
+        "g2-protect-permissions-only: other permissions kept"
+      ],
+      "passedChecks": 3,
+      "reason": null
+    },
+    {
+      "n": 23,
+      "title": "Image to PDF: EXIF, HEIC, pixel-as-point page size",
+      "status": "CONFIRMED",
+      "evidence": [
+        "img2pdf-heic-libheif-example.heic: image decoded (browserContext.newPage: Target crashed )",
+        "img2pdf-heic-libheif-example.heic: image decoded: browserContext.newPage: Target crashed ",
+        "img2pdf-photo-castle-3456x2628.jpg: image decoded (browserContext.newPage: Target crashed )",
+        "img2pdf-tiff-multipage.tiff: image decoded (browserContext.newPage: Target crashed )",
+        "img2pdf-tiff-multipage.tiff: image decoded: browserContext.newPage: Target crashed ",
+        "img2pdf-webp-hopper.webp: image decoded (browserContext.newPage: Target crashed )"
+      ],
+      "passedChecks": 0,
+      "reason": null
+    },
+    {
+      "n": 24,
+      "title": "Sign is visual only, one placement",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "g3-sign-multi-rot90: signature and initials on page 1",
+        "g3-sign-multi-rot90: initials on every page, where placed",
+        "g3-sign-multi-rot90: date on the last page, upright"
+      ],
+      "passedChecks": 3,
+      "reason": null
+    },
+    {
+      "n": 25,
+      "title": "Redact rasterizes whole pages (size balloons)",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 26,
+      "title": "Repair rebuild drops outlines/AcroForm/metadata",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    },
+    {
+      "n": 27,
+      "title": "Compare by page index only; inserted page breaks the rest",
+      "status": "CONFIRMED",
+      "evidence": [
+        "compare-inserted-page: compare runs (browserContext.newPage: Target crashed )",
+        "compare-inserted-page: compare runs: browserContext.newPage: Target crashed "
+      ],
+      "passedChecks": 0,
+      "reason": null
+    },
+    {
+      "n": 28,
+      "title": "HTML to PDF is a screenshot, head styles dropped",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "i-html2pdf-hifi-styled-report: no remote fetches (stylesheet, @import, images)",
+        "i-html2pdf-hifi-styled-report: selectable text (90%+ of the source words)",
+        "i-html2pdf-hifi-styled-report: table cells kept",
+        "i-html2pdf-hifi-styled-report: head <style> applied (red h1, blue table header)"
+      ],
+      "passedChecks": 4,
+      "reason": null
+    },
+    {
+      "n": 29,
+      "title": "Split/batch outputs and ZIP all in memory",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory profile of very large splits not measured in U0"
+    },
+    {
+      "n": 30,
+      "title": "assertValidOutput re-parses outputs with pdf-lib",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "internal double parse; see timings"
+    },
+    {
+      "n": 31,
+      "title": "Unlock: one password per batch, MuPDF docs not destroyed",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "per-file password is UI only; destroy() leak not measured"
+    },
+    {
+      "n": 32,
+      "title": "Watermark centring is a 45 degree approximation",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "centring at non-45 angles not measured"
+    },
+    {
+      "n": 33,
+      "title": "Page numbers: no skip/template/Bates",
+      "status": "NOT REPRODUCED",
+      "evidence": [
+        "g3-pagenumbers-template-skip: skipped pages carry no number",
+        "g3-pagenumbers-template-skip: page 3 reads \"Seite 1 von 12\"",
+        "g3-pagenumbers-template-skip: page 14 reads \"Seite 12 von 12\""
+      ],
+      "passedChecks": 3,
+      "reason": null
+    },
+    {
+      "n": 34,
+      "title": "Organize renders all thumbnails at once",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI thumbnail batching not driven in U0"
+    },
+    {
+      "n": 35,
+      "title": "Upload grid: no rotate/sort/add",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 36,
+      "title": "No result screen / chaining",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 37,
+      "title": "Files lost on tool switch / Escape",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI navigation behaviour not driven in U0"
+    },
+    {
+      "n": 38,
+      "title": "No cancel, no progress bar",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 39,
+      "title": "Single-file tools have no batch",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "UI feature gap"
+    },
+    {
+      "n": 40,
+      "title": "Thumbnail cache never evicted",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "memory over a long session not measured"
+    },
+    {
+      "n": 41,
+      "title": "Single pdf.js queue delays user ops",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "queue contention not measured"
+    },
+    {
+      "n": 42,
+      "title": "Self-test uses only synthetic fixtures",
+      "status": "NOT TESTED",
+      "evidence": [],
+      "passedChecks": 0,
+      "reason": "no corpus case"
+    }
+  ],
+  "results": [
+    {
+      "id": "office-engine-load",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [],
+      "result": "PASS",
+      "detail": "engine loaded; warn: no fetches outside the page origin (cdn.zetaoffice.net)",
+      "error": null,
+      "ms": 17831,
+      "opMs": 13845,
+      "heapMB": 29,
+      "audit": null,
+      "checks": [
+        {
+          "name": "no fetches outside the page origin",
+          "ok": false,
+          "detail": "cdn.zetaoffice.net",
+          "soft": true,
+          "audit": 19
+        }
+      ]
+    },
+    {
+      "id": "excel2pdf-hifi-poi-SampleSS.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-SampleSS.xlsx"
+      ],
+      "result": "PASS",
+      "detail": "2 pages, 17 KB, text coverage 1.00",
+      "error": null,
+      "ms": 1968,
+      "opMs": 1811,
+      "heapMB": 27,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "ppt2pdf-hifi-poi-SampleShow.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-SampleShow.pptx"
+      ],
+      "result": "PASS",
+      "detail": "2 pages, 30 KB, text coverage 1.00",
+      "error": null,
+      "ms": 1598,
+      "opMs": 1517,
+      "heapMB": 28,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "word2pdf-hifi-poi-sample.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-sample.docx"
+      ],
+      "result": "PASS",
+      "detail": "1 pages, 12 KB, text coverage 1.00",
+      "error": null,
+      "ms": 1077,
+      "opMs": 971,
+      "heapMB": 30,
+      "audit": null,
+      "checks": [
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text carried over (60%+)",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "i-engine-pinned-warm-boot",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [],
+      "result": "PASS",
+      "detail": "cold boot 16218 ms (download 4544 ms, cache false), warm boot 8952 ms",
+      "error": null,
+      "ms": 25210,
+      "opMs": 25175,
+      "heapMB": 42,
+      "audit": null,
+      "checks": [
+        {
+          "name": "pinned build reported",
+          "ok": true,
+          "detail": "ZetaOffice 24.2 (efaf0670b4d0, 2025-05-13)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "cold boot downloaded",
+          "ok": true,
+          "detail": "fromCache false",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "warm boot served from Cache Storage",
+          "ok": true,
+          "detail": "fromCache true",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "only the 4 pinned engine files leave the page (GET)",
+          "ok": true,
+          "detail": "4 requests",
+          "soft": false,
+          "audit": 19
+        },
+        {
+          "name": "cold boot progress in steps up to 100%",
+          "ok": true,
+          "detail": "102 events, last 100",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "warm boot progress reaches 100%",
+          "ok": true,
+          "detail": "4 events, last 100",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "one engine frame",
+          "ok": true,
+          "detail": "frames 1, one boot true",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "extra fonts loaded into the engine",
+          "ok": true,
+          "detail": "NotoSansSC-Regular.ttf, NotoSansJP-Regular.ttf, NotoSansKR-Regular.ttf, 31-swisspdf-aliases.conf",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "i-hifi-convert-no-network",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-sample.docx"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 765,
+      "opMs": 726,
+      "heapMB": 42,
+      "audit": null,
+      "checks": [
+        {
+          "name": "converting sends nothing off the page",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "out.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "i-html2pdf-hifi-styled-report",
+      "tool": "html2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [],
+      "result": "PASS",
+      "detail": "1 page(s), 43 KB, 763 ms, coverage 0.98",
+      "error": null,
+      "ms": 2047,
+      "opMs": 2015,
+      "heapMB": 42,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ran in the engine",
+          "ok": true,
+          "detail": "[\"hifi\",null]",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no remote fetches (stylesheet, @import, images)",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 28
+        },
+        {
+          "name": "html.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "html.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 1 vs MuPDF 1",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "selectable text (90%+ of the source words)",
+          "ok": true,
+          "detail": "coverage 0.98",
+          "soft": false,
+          "audit": 28
+        },
+        {
+          "name": "table cells kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 28
+        },
+        {
+          "name": "script not run",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "head <style> applied (red h1, blue table header)",
+          "ok": true,
+          "detail": "red 4900, blue 11021",
+          "soft": false,
+          "audit": 28
+        },
+        {
+          "name": "A4 pages",
+          "ok": true,
+          "detail": "1 pages, 595.303937007874 wide",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "merge-reports",
+      "tool": "merge",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf",
+        "reports/arxiv-1810.04805-bert.pdf",
+        "reports/arxiv-1512.03385-resnet.pdf"
+      ],
+      "result": "PASS",
+      "detail": "42 pages, 2.2 MB",
+      "error": null,
+      "ms": 5665,
+      "opMs": 979,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "merged.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page count",
+          "ok": true,
+          "detail": "got 42, want 42",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 42 vs MuPDF 42",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and page size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page text in order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "merge-rotated",
+      "tool": "merge",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf",
+        "quirks/pdfjs-hello_world_rotated.pdf",
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "23 pages, 648 KB",
+      "error": null,
+      "ms": 537,
+      "opMs": 193,
+      "heapMB": 20,
+      "audit": null,
+      "checks": [
+        {
+          "name": "merged.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page count",
+          "ok": true,
+          "detail": "got 23, want 23",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 23 vs MuPDF 23",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and page size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page text in order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "merge-outlines",
+      "tool": "merge",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-nested_outline.pdf",
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "PASS",
+      "detail": "193 pages, 1.9 MB",
+      "error": null,
+      "ms": 3041,
+      "opMs": 2573,
+      "heapMB": 45,
+      "audit": null,
+      "checks": [
+        {
+          "name": "merged.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page count",
+          "ok": true,
+          "detail": "got 193, want 193",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 193 vs MuPDF 193",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and page size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page text in order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "bookmarks kept",
+          "ok": true,
+          "detail": "38 of 36 outline items",
+          "soft": false,
+          "audit": 12
+        }
+      ]
+    },
+    {
+      "id": "merge-owner-only",
+      "tool": "merge",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/owner-only-tracemonkey.pdf",
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "37 pages, 1.5 MB",
+      "error": null,
+      "ms": 2530,
+      "opMs": 1136,
+      "heapMB": 16,
+      "audit": 1,
+      "checks": [
+        {
+          "name": "merged.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page count",
+          "ok": true,
+          "detail": "got 37, want 37",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "merged.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 37 vs MuPDF 37",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and page size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "page text in order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "split-tracemonkey",
+      "tool": "split",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 78,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "split-rot90-cropbox",
+      "tool": "split",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "16 pages -> 8 + 8",
+      "error": null,
+      "ms": 896,
+      "opMs": 252,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "part1.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page count",
+          "ok": true,
+          "detail": "got 8, want 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part1.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 8 vs MuPDF 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page count",
+          "ok": true,
+          "detail": "got 8, want 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part2.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 8 vs MuPDF 8",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rotation and visible size kept",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "part 2 starts at the cut page",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "extract-budget-1-3-5",
+      "tool": "extract",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 77,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "remove-tracemonkey-p1",
+      "tool": "remove",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "13 pages out",
+      "error": null,
+      "ms": 842,
+      "opMs": 219,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "removed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "removed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "removed.pdf: page count",
+          "ok": true,
+          "detail": "got 13, want 13",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "removed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "removed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 13 vs MuPDF 13",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "right pages in the right order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "rotate-rotation-quirk",
+      "tool": "rotate",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 63,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "organize-reverse-tracemonkey",
+      "tool": "organize",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 pages out",
+      "error": null,
+      "ms": 1443,
+      "opMs": 414,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "reversed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "reversed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "reversed.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "reversed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "reversed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "right pages in the right order",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "compress-lincoln-scan",
+      "tool": "compress",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "PASS",
+      "detail": "529 KB -> 526 KB (99%); warn: shrinks a scanned/image-heavy file by 10%+ (saved 1%)",
+      "error": null,
+      "ms": 1317,
+      "opMs": 382,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "compressed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "compressed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "compressed.pdf: page count",
+          "ok": true,
+          "detail": "got 36, want 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "compressed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "compressed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 36 vs MuPDF 36",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "never larger than input",
+          "ok": true,
+          "detail": "529 KB -> 526 KB",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text kept",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "shrinks a scanned/image-heavy file by 10%+",
+          "ok": false,
+          "detail": "saved 1%",
+          "soft": true,
+          "audit": 6
+        }
+      ]
+    },
+    {
+      "id": "compress-llama2",
+      "tool": "compress",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-2307.09288-llama2.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 71,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "compress-raster-tracemonkey",
+      "tool": "compress",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "992 KB -> 992 KB (100%), kept original",
+      "error": null,
+      "ms": 4912,
+      "opMs": 4648,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "compressed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "compressed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "compressed.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "compressed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "compressed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "never larger than input",
+          "ok": true,
+          "detail": "992 KB -> 992 KB",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text kept",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": true,
+          "audit": 6
+        }
+      ]
+    },
+    {
+      "id": "repair-xref-missing",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-xref_command_missing.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "fails gracefully: browserContext.newPage: Target crashed  (but pdf.js/MuPDF open the input)",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 54,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "fails gracefully",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed  (but pdf.js/MuPDF open the input)",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "repair-fuzzed-742",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-poppler-742-0-fuzzed.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "fails gracefully: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 52,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "fails gracefully",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-repair-keeps-fields",
+      "tool": "repair",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 57,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "watermark-tracemonkey",
+      "tool": "watermark",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "14 marks",
+      "error": null,
+      "ms": 1153,
+      "opMs": 254,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "watermarked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "mark on every page",
+          "ok": true,
+          "detail": "14 of 14 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "mark inside the visible page",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "watermark-rotation-quirk",
+      "tool": "watermark",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf"
+      ],
+      "result": "PASS",
+      "detail": "2 marks",
+      "error": null,
+      "ms": 116,
+      "opMs": 11,
+      "heapMB": 14,
+      "audit": null,
+      "checks": [
+        {
+          "name": "watermarked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "watermarked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "mark on every page",
+          "ok": true,
+          "detail": "2 of 2 pages",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "mark inside the visible page",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "watermark-rot90-cropbox",
+      "tool": "watermark",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 61,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "pagenumbers-tracemonkey",
+      "tool": "pagenumbers",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 71,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "pagenumbers-rotation-quirk",
+      "tool": "pagenumbers",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 812,
+      "opMs": 48,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "numbered.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "number visible on every page",
+          "ok": true,
+          "detail": "2 of 2 (pdf.js and MuPDF only see text inside the visible box)",
+          "soft": false,
+          "audit": 8
+        },
+        {
+          "name": "number at bottom centre, upright",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "pagenumbers-rot90-cropbox",
+      "tool": "pagenumbers",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 70,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-pagenumbers-template-skip",
+      "tool": "pagenumbers",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 710,
+      "opMs": 332,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "numbered.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "numbered.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "skipped pages carry no number",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 33
+        },
+        {
+          "name": "page 3 reads \"Seite 1 von 12\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 33
+        },
+        {
+          "name": "page 14 reads \"Seite 12 von 12\"",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 33
+        }
+      ]
+    },
+    {
+      "id": "g3-pagenumbers-facing",
+      "tool": "pagenumbers",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 61,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-pagenumbers-bates-rot90",
+      "tool": "pagenumbers",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 55,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "sign-tracemonkey",
+      "tool": "sign",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "centre (0.50, 0.85)",
+      "error": null,
+      "ms": 1565,
+      "opMs": 342,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "signed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signature image drawn",
+          "ok": true,
+          "detail": "1 images vs 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signature where the user clicked (50%, 85%), upright",
+          "ok": true,
+          "detail": "centre (0.50, 0.85)",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "sign-rotation-quirk",
+      "tool": "sign",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf"
+      ],
+      "result": "PASS",
+      "detail": "centre (0.50, 0.85)",
+      "error": null,
+      "ms": 115,
+      "opMs": 28,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "signed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signature image drawn",
+          "ok": true,
+          "detail": "1 images vs 0",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signature where the user clicked (50%, 85%), upright",
+          "ok": true,
+          "detail": "centre (0.50, 0.85)",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "sign-rot90-cropbox",
+      "tool": "sign",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 50,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-sign-multi-rot90",
+      "tool": "sign",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 329,
+      "opMs": 180,
+      "heapMB": 12,
+      "audit": null,
+      "checks": [
+        {
+          "name": "signed.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: page count",
+          "ok": true,
+          "detail": "got 16, want 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signed.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 16 vs MuPDF 16",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "signature and initials on page 1",
+          "ok": true,
+          "detail": "2 vs 0",
+          "soft": false,
+          "audit": 24
+        },
+        {
+          "name": "initials on every page, where placed",
+          "ok": true,
+          "detail": "(0.90, 0.95)",
+          "soft": false,
+          "audit": 24
+        },
+        {
+          "name": "date on the last page, upright",
+          "ok": true,
+          "detail": "(0.30, 0.90)",
+          "soft": false,
+          "audit": 24
+        }
+      ]
+    },
+    {
+      "id": "crop-tracemonkey",
+      "tool": "crop",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 74,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "crop-rotation-quirk",
+      "tool": "crop",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf"
+      ],
+      "result": "PASS",
+      "detail": "CropBox 61,317,367,713",
+      "error": null,
+      "ms": 443,
+      "opMs": 19,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "cropped.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "cropped.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "cropped.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "cropped.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "cropped.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "crop lands inside the visible page",
+          "ok": true,
+          "detail": "CropBox 61,317,367,713 vs visible 0,0,612,792",
+          "soft": false,
+          "audit": 13
+        }
+      ]
+    },
+    {
+      "id": "crop-rot90-cropbox",
+      "tool": "crop",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 59,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "edit-tracemonkey",
+      "tool": "edit",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 1383,
+      "opMs": 363,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "edited.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text added and visible",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 8
+        },
+        {
+          "name": "text near top-left where placed, upright",
+          "ok": true,
+          "detail": "at (0.08, 0.08)",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "edit-rotation-quirk",
+      "tool": "edit",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-rotation.pdf"
+      ],
+      "result": "PASS",
+      "detail": "",
+      "error": null,
+      "ms": 106,
+      "opMs": 20,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "edited.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "edited.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text added and visible",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 8
+        },
+        {
+          "name": "text near top-left where placed, upright",
+          "ok": true,
+          "detail": "at (0.08, 0.08)",
+          "soft": false,
+          "audit": 8
+        }
+      ]
+    },
+    {
+      "id": "edit-rot90-cropbox",
+      "tool": "edit",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 45,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "protect-tracemonkey",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 48,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "protect-comma-password",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-TAMReview.pdf"
+      ],
+      "result": "PASS",
+      "detail": "refused: Passwords cannot contain a comma.",
+      "error": "Passwords cannot contain a comma.",
+      "ms": 831,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "comma password refused with a clear message",
+          "ok": true,
+          "detail": "Passwords cannot contain a comma.",
+          "soft": false,
+          "audit": 22
+        }
+      ]
+    },
+    {
+      "id": "g2-protect-permissions-only",
+      "tool": "protect",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "Standard V5 R6 256-bit AES, {\"print\":false,\"copy\":false,\"edit\":true,\"annotate\":true,\"form\":true,\"assemble\":true,\"print-hq\":false}",
+      "error": null,
+      "ms": 863,
+      "opMs": 545,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "opens without a password",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "printing and copying blocked",
+          "ok": true,
+          "detail": "{\"print\":false,\"copy\":false,\"edit\":true,\"annotate\":true,\"form\":true,\"assemble\":true,\"print-hq\":false}",
+          "soft": false,
+          "audit": 22
+        },
+        {
+          "name": "other permissions kept",
+          "ok": true,
+          "detail": "{\"print\":false,\"copy\":false,\"edit\":true,\"annotate\":true,\"form\":true,\"assemble\":true,\"print-hq\":false}",
+          "soft": false,
+          "audit": 22
+        },
+        {
+          "name": "owner password lifts them",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "AES-256",
+          "ok": true,
+          "detail": "Standard V5 R6 256-bit AES",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "protected.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "unlock-issue3371",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-issue3371.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 38,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "unlock-user-pw-TAMReview",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/user-pw-TAMReview.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 45,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "unlock-owner-only-tracemonkey",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/owner-only-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "removed: printing, high-quality printing, copying text",
+      "error": null,
+      "ms": 1507,
+      "opMs": 558,
+      "heapMB": 9,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page count",
+          "ok": true,
+          "detail": "got 14, want 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 14 vs MuPDF 14",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "text intact",
+          "ok": true,
+          "detail": "coverage 1.00",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "g2-unlock-owner-only-fast",
+      "tool": "unlock",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/a-owner-only-us-budget.pdf"
+      ],
+      "result": "PASS",
+      "detail": "321 ms, removed: printing, copying text, editing",
+      "error": null,
+      "ms": 1090,
+      "opMs": 777,
+      "heapMB": 11,
+      "audit": null,
+      "checks": [
+        {
+          "name": "output not encrypted",
+          "ok": true,
+          "detail": "None",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page count",
+          "ok": true,
+          "detail": "got 184, want 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "unlocked.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 184 vs MuPDF 184",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "outlines kept",
+          "ok": true,
+          "detail": "27 outlines",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "owner-only unlock is quick",
+          "ok": true,
+          "detail": "321 ms",
+          "soft": true,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "ocr-fax-printed",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "414 words, sample \"10/25/2008 15:38 FAX 202 225 1992 Congresswoman Sc\"",
+      "error": null,
+      "ms": 18792,
+      "opMs": 17840,
+      "heapMB": 10,
+      "audit": null,
+      "checks": [
+        {
+          "name": "ocr.pdf: opens in pdf.js",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: opens in MuPDF",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page count",
+          "ok": true,
+          "detail": "got 2, want 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: page boxes sane",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "ocr.pdf: engines agree on pages",
+          "ok": true,
+          "detail": "pdf.js 2 vs MuPDF 2",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "searchable text added (20+ words)",
+          "ok": true,
+          "detail": "+259 words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": true,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-geometry",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "PASS",
+      "detail": "upright 46/47 median 1.7pt; turned 45/46 median 1.6pt; rot90crop 46/47 median 1.5pt; skew 41/43 median 1.8pt",
+      "error": null,
+      "ms": 64176,
+      "opMs": 63704,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "upright: words recognised",
+          "ok": true,
+          "detail": "47 of 49 probe words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "upright: words placed on the scan",
+          "ok": true,
+          "detail": "46 of 47 within 8 pt, median 1.7 pt",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "turned: words recognised",
+          "ok": true,
+          "detail": "46 of 49 probe words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "turned: words placed on the scan",
+          "ok": true,
+          "detail": "45 of 46 within 8 pt, median 1.6 pt",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "rot90crop: words recognised",
+          "ok": true,
+          "detail": "47 of 49 probe words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "rot90crop: words placed on the scan",
+          "ok": true,
+          "detail": "46 of 47 within 8 pt, median 1.5 pt",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "skew: words recognised",
+          "ok": true,
+          "detail": "43 of 49 probe words",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "skew: words placed on the scan",
+          "ok": true,
+          "detail": "41 of 43 within 8 pt, median 1.8 pt",
+          "soft": false,
+          "audit": 11
+        },
+        {
+          "name": "sideways scan turned by OSD",
+          "ok": true,
+          "detail": "{\"totalWords\":722,\"rotatedPages\":[1]}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "no network fetches outside the page origin",
+          "ok": true,
+          "detail": "",
+          "soft": false,
+          "audit": 10
+        }
+      ]
+    },
+    {
+      "id": "g2-ocr-scan-chinese",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-chinese-simplified.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 39,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g2-ocr-fax-force",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 44,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g2-ocr-skip-text-pages",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-darwin-p10-11.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 45,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g2-ocr-cancel",
+      "tool": "ocr",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "PASS",
+      "detail": "stopped at 3009 ms during \"Page 1 of 2, recognizing\", next run 348 words",
+      "error": null,
+      "ms": 11380,
+      "opMs": 11277,
+      "heapMB": 13,
+      "audit": null,
+      "checks": [
+        {
+          "name": "cancel stops the run",
+          "ok": true,
+          "detail": "{\"cancelled\":true,\"stopMs\":3009,\"stage\":\"Page 1 of 2, recognizing\",\"againWords\":348}",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "stops within 2 s of cancel",
+          "ok": true,
+          "detail": "3009 ms after start (cancel at 3000)",
+          "soft": false,
+          "audit": null
+        },
+        {
+          "name": "a later run still works",
+          "ok": true,
+          "detail": "348 words",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "pdf2word-tracemonkey-2col",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 34,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "pdf2word-aws-invoice",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 29,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "h-word-tracemonkey-columns",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 40,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "h-word-aws-tables",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 35,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "h-word-arabic-cid-logical",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/pdfjs-ArabicCIDTrueType.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 34,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "h-word-jpeg-scan-ndl",
+      "tool": "pdf2word",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-ndl-konoye-p1.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 28,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "pdf2excel-aws-invoice",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 38,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "h-excel-aws-typed",
+      "tool": "pdf2excel",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 22,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "pdf2ppt-tracemonkey",
+      "tool": "pdf2ppt",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 38,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "h-ppt-tracemonkey-editable",
+      "tool": "pdf2ppt",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 20,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "pdf2md-tracemonkey",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 21,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "h-md-tracemonkey-columns",
+      "tool": "pdf2md",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 40,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "excel2pdf-quick-poi-SampleSS.xlsx",
+      "tool": "excel2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-SampleSS.xlsx"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 24,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "ppt2pdf-quick-poi-SampleShow.pptx",
+      "tool": "ppt2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-SampleShow.pptx"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 37,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "word2pdf-quick-poi-sample.docx",
+      "tool": "word2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [
+        "office/poi-sample.docx"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 21,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "img2pdf-heic-libheif-example.heic",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/heic-libheif-example.heic"
+      ],
+      "result": "FAIL",
+      "detail": "image decoded: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 37,
+      "opMs": null,
+      "heapMB": null,
+      "audit": 23,
+      "checks": [
+        {
+          "name": "image decoded",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-photo-castle-3456x2628.jpg",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/photo-castle-3456x2628.jpg"
+      ],
+      "result": "FAIL",
+      "detail": "image decoded: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 37,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "image decoded",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-tiff-multipage.tiff",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/tiff-multipage.tiff"
+      ],
+      "result": "FAIL",
+      "detail": "image decoded: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 41,
+      "opMs": null,
+      "heapMB": null,
+      "audit": 23,
+      "checks": [
+        {
+          "name": "image decoded",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "img2pdf-webp-hopper.webp",
+      "tool": "img2pdf",
+      "layer": "ops",
+      "category": "images",
+      "files": [
+        "images/webp-hopper.webp"
+      ],
+      "result": "FAIL",
+      "detail": "image decoded: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 21,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "image decoded",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": 23
+        }
+      ]
+    },
+    {
+      "id": "pdf2img-tracemonkey",
+      "tool": "pdf2img",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 40,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "pdf2img-rot90-cropbox",
+      "tool": "pdf2img",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 21,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "redact-tracemonkey",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 41,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "redact-rot90-cropbox",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 40,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-remove-tracemonkey",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 24,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-remove-rot90-cropbox",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 40,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-remove-origin-shift",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/origin-shift-aws-invoice.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 85,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-hidden-secretname-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-secretname.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 24,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-hidden-secretname-image",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-secretname.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 33,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-xfa-imm1344e",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/xfa-imm1344e-filled.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 33,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-xfa-template-irs-fw9-search-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 21,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-box-word-keeps-outside-secretname",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-secretname.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 26,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-earlier-version-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-revision.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 28,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-objr-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-objr.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 36,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-replies-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-replies.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 49,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-inherited-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-inherited.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 30,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-sharedPhoto-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-sharedPhoto.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 39,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-bdc-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-bdc.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 65,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-lineArt-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-lineArt.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 59,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-pattern-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-pattern.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 58,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-hiddenLayer-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-hiddenLayer.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 60,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-carriers-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-carriers.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 38,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-ocmd-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-ocmd.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 38,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-shading-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-shading.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 36,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-mesh-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-mesh.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 53,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-type3Shared-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-type3Shared.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 37,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-leak-nameDests-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/synthetic/redact-leak-nameDests.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 37,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-shared-resources-free-fiber-remove",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/free-fiber.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 34,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-phrase-split-ipph353",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/uk-IPPH353.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 59,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-patterns-quality-hosting",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/quality-hosting.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 55,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-whole-page-tracemonkey",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 42,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-redact-form-value-fw9",
+      "tool": "redact",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 55,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "forms-list-irs-fw9",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 41,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "forms-list-xfa-issue14315",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/xfa-issue14315.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 60,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "forms-fill-f1040",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-f1040.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 42,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "forms-fill-flatten-fw4",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw4.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 60,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-forms-inspect-xfa-issue14315",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/xfa-issue14315.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 57,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g3-forms-fill-xfa-irs-fw9",
+      "tool": "forms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 34,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "compare-same-file",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/compare-tracemonkey-base.pdf",
+        "derived/compare-tracemonkey-base.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "compare runs: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 31,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "compare runs",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "compare-inserted-page",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/compare-tracemonkey-base.pdf",
+        "derived/compare-tracemonkey-inserted.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "compare runs: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 62,
+      "opMs": null,
+      "heapMB": null,
+      "audit": 27,
+      "checks": [
+        {
+          "name": "compare runs",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": 27
+        }
+      ]
+    },
+    {
+      "id": "g2-compare-inserted-overlay",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/compare-tracemonkey-base.pdf",
+        "derived/compare-tracemonkey-inserted.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 78,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g2-compare-removed-page",
+      "tool": "compare",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 34,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "html2pdf-tracemonkey-text",
+      "tool": "html2pdf",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 71,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "i-html2pdf-quick-styled-report",
+      "tool": "html2pdf",
+      "layer": "ops",
+      "category": "office",
+      "files": [],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 40,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "health-selftest",
+      "tool": "health",
+      "layer": "ops",
+      "category": "none",
+      "files": [],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 66,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "s3-share-pdfjs-tracemonkey",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 66,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "s3-mail-pdfjs-tracemonkey",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 42,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "s3-draft-pdfjs-tracemonkey",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 70,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "s3-batch-draft-3",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf",
+        "invoices/aws-invoice.pdf",
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 44,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "s3-batch-share-one-fails",
+      "tool": "automate",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf",
+        "forms/xfa-imm1344e-filled.pdf",
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 53,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "edittext-invoice-aws-invoice",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 327,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "edittext-report-pdfjs-tracemonkey",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 910,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "edittext-rotated-irs-fw9",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 599,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "edittext-intl-udhr-arabic",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-arabic.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 426,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "edittext-intl-udhr-chinese-simplified",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "intl",
+      "files": [
+        "intl/udhr-chinese-simplified.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 296,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "edittext-intl-edittext-hindi",
+      "tool": "edittext",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/edittext-hindi.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 64,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g2-autorotate-fax-90",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 33,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g2-autorotate-lincoln-90",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 34,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "g2-autorotate-konoye-90",
+      "tool": "autorotate",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/sub-ndl-konoye-p1.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 36,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-nup4-tracemonkey",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 22,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-nup9-a4-rot90-cropbox",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 21,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-nup2-raw-attention",
+      "tool": "nup",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 22,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-booklet-tracemonkey",
+      "tool": "booklet",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 35,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-scale-a4-fit-tracemonkey",
+      "tool": "scale",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 20,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-scale-letter-landscape-rot270",
+      "tool": "scale",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/c-rot270-cropbox.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 22,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-scale-half-raw-attention",
+      "tool": "scale",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-1706.03762-attention.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 38,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-single-tracemonkey",
+      "tool": "singlepage",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 39,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-overlay-interleaved-tracemonkey-aws",
+      "tool": "overlay",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf",
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 21,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-stamp-topright-tokens-tracemonkey",
+      "tool": "stamp",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 19,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-stamp-bottomleft-rot90-cropbox",
+      "tool": "stamp",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/rot90-cropbox-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 44,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-blank-fax-inserted",
+      "tool": "removeblank",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 19,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-blank-lincoln-real",
+      "tool": "removeblank",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 20,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-lin-tracemonkey",
+      "tool": "linearize",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 20,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-lin-us-budget-objstm",
+      "tool": "linearize",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 58,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-adjust-contrast-fax",
+      "tool": "adjustcolors",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 42,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5a-replace-invert-fax",
+      "tool": "replacecolors",
+      "layer": "ops",
+      "category": "scanned",
+      "files": [
+        "scanned/fax-jean-schmidt-doe.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 20,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-bookmarks-outlines-se",
+      "tool": "bookmarks",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-outlines_se.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 20,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-metadata-tracemonkey",
+      "tool": "metadata",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 41,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-attachments-tracemonkey",
+      "tool": "attachments",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 19,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-removeannots-tracemonkey",
+      "tool": "removeannots",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-tracemonkey_with_annotations.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 31,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-removeimages-tracemonkey",
+      "tool": "removeimages",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 37,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-extractimages-aws",
+      "tool": "extractimages",
+      "layer": "ops",
+      "category": "invoices",
+      "files": [
+        "invoices/aws-invoice.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 20,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-extractimages-cmyk-png",
+      "tool": "extractimages",
+      "layer": "ops",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-cmykjpeg.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 41,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-flatten-fw9",
+      "tool": "flatten",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 32,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-unlockforms-fw9",
+      "tool": "unlockforms",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 22,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-sanitize-fw9",
+      "tool": "sanitize",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 40,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-permissions-owner-only-aws",
+      "tool": "permissions",
+      "layer": "ops",
+      "category": "derived",
+      "files": [
+        "derived/owner-only-aws-invoice.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 21,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-info-tracemonkey",
+      "tool": "info",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 20,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-autorename-tracemonkey",
+      "tool": "autorename",
+      "layer": "ops",
+      "category": "reports",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 43,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "u5b-showjs-fw9",
+      "tool": "showjs",
+      "layer": "ops",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 34,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "intake-forms/annotation-button-widget.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "forms",
+      "files": [
+        "forms/annotation-button-widget.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 47,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-forms/irs-fw9.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "forms",
+      "files": [
+        "forms/irs-fw9.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 185,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-forms/xfa-issue14315.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "forms",
+      "files": [
+        "forms/xfa-issue14315.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 201,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-scanned/lincoln-ellsworth-letter-1861.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "scanned",
+      "files": [
+        "scanned/lincoln-ellsworth-letter-1861.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 203,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-reports/arxiv-2005.14165-gpt3.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "reports",
+      "files": [
+        "reports/arxiv-2005.14165-gpt3.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 1698,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-reports/us-budget-2024.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "reports",
+      "files": [
+        "reports/us-budget-2024.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 1711,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-intl/pdfjs-ArabicCIDTrueType.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "intl",
+      "files": [
+        "intl/pdfjs-ArabicCIDTrueType.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 1774,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-intl/udhr-arabic.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "intl",
+      "files": [
+        "intl/udhr-arabic.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 2118,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-quirks/pdf20-image-bpc.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "quirks",
+      "files": [
+        "quirks/pdf20-image-bpc.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 81,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-quirks/pdf20-utf8-test.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "quirks",
+      "files": [
+        "quirks/pdf20-utf8-test.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 99,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-quirks/pdfjs-annotation-highlight-without-appearance.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-annotation-highlight-without-appearance.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 118,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-quirks/pdfjs-bug1020226.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-bug1020226.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 128,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-quirks/pdfjs-encrypted-attachment.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-encrypted-attachment.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 313,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-quirks/pdfjs-issue21579.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-issue21579.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 320,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-quirks/pdfjs-issue3371.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-issue3371.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 331,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-quirks/pdfjs-jpx_smaskindata.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-jpx_smaskindata.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 338,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-quirks/pdfjs-poppler-395-0-fuzzed.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-poppler-395-0-fuzzed.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 26,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-quirks/pdfjs-poppler-742-0-fuzzed.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-poppler-742-0-fuzzed.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 29,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-quirks/pdfjs-tracemonkey_with_annotations.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-tracemonkey_with_annotations.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 337,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-quirks/pdfjs-xref_command_missing.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "quirks",
+      "files": [
+        "quirks/pdfjs-xref_command_missing.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 339,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-invoices/flipkart-invoice.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "invoices",
+      "files": [
+        "invoices/flipkart-invoice.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 364,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-derived/a-owner-only-attention.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "derived",
+      "files": [
+        "derived/a-owner-only-attention.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 799,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-derived/a-owner-only-us-budget.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "derived",
+      "files": [
+        "derived/a-owner-only-us-budget.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 1668,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-derived/compare-tracemonkey-base.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "derived",
+      "files": [
+        "derived/compare-tracemonkey-base.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 2203,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-derived/edittext-form-inline.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "derived",
+      "files": [
+        "derived/edittext-form-inline.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 32,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-derived/edittext-struct.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "derived",
+      "files": [
+        "derived/edittext-struct.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 43,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-derived/owner-only-aws-invoice.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "derived",
+      "files": [
+        "derived/owner-only-aws-invoice.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 224,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-derived/owner-only-irs-fw9.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "derived",
+      "files": [
+        "derived/owner-only-irs-fw9.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 497,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-derived/owner-only-tracemonkey.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "derived",
+      "files": [
+        "derived/owner-only-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 500,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-derived/sub-lincoln-p3-4.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "derived",
+      "files": [
+        "derived/sub-lincoln-p3-4.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 509,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "intake-derived/user-pw-TAMReview.pdf",
+      "tool": "intake",
+      "layer": "ui",
+      "category": "derived",
+      "files": [
+        "derived/user-pw-TAMReview.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "UI shows a result: browserContext.newPage: Target crashed ",
+      "error": null,
+      "ms": 1026,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": [
+        {
+          "name": "UI shows a result",
+          "ok": false,
+          "detail": "browserContext.newPage: Target crashed ",
+          "soft": false,
+          "audit": null
+        }
+      ]
+    },
+    {
+      "id": "flow-merge",
+      "tool": "merge",
+      "layer": "flow",
+      "category": "flow",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf",
+        "reports/arxiv-1810.04805-bert.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 24,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "flow-compress",
+      "tool": "compress",
+      "layer": "flow",
+      "category": "flow",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 21,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    },
+    {
+      "id": "flow-split",
+      "tool": "split",
+      "layer": "flow",
+      "category": "flow",
+      "files": [
+        "reports/pdfjs-tracemonkey.pdf"
+      ],
+      "result": "FAIL",
+      "detail": "error: browserContext.newPage: Target crashed ",
+      "error": "browserContext.newPage: Target crashed ",
+      "ms": 53,
+      "opMs": null,
+      "heapMB": null,
+      "audit": null,
+      "checks": []
+    }
+  ]
+}

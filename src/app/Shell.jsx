@@ -277,6 +277,21 @@ function LegacyTool({ tool }) {
   )
 }
 
+// Floating notices: under the top bar, centred, above the page (tokens from styles.css)
+const TOASTS = {
+  position: 'fixed',
+  top: 'calc(var(--bar-h) + var(--s-2))',
+  left: '50%',
+  transform: 'translateX(-50%)',
+  zIndex: 'var(--z-toast)',
+  display: 'grid',
+  gap: 'var(--s-2)',
+  width: 'max-content',
+  maxWidth: 'calc(100vw - 2 * var(--s-4))',
+  pointerEvents: 'none',
+}
+const TOAST = { margin: 0, boxShadow: 'var(--shadow-2)', pointerEvents: 'auto' }
+
 export default function Shell() {
   const [activeToolId, setActiveToolId] = useState(() => idFromHash())
   const [missing, setMissing] = useState(missingFromHash) // route that names no tool
@@ -299,6 +314,7 @@ export default function Shell() {
   const [result, setResult] = useState(null) // { toolId, outputs, change }
   const [dialog, setDialog] = useState(null)
   const [notice, setNotice] = useState(null)
+  const [pendingRun, setPendingRun] = useState(false) // a Run click waiting for the tool (see run)
   // notices are one-off: they go away on their own
   useEffect(() => {
     if (!notice) return undefined
@@ -346,7 +362,11 @@ export default function Shell() {
       // results of earlier runs (made from another file) leave the selection;
       // files the user added stay, so adding one more file to Compare works
       const userAdded = (id) => !files.find((f) => f.id === id)?.parentIds?.length
-      const next = new Set([...(onlyNew ? [...prev].filter(userAdded) : prev), ...fresh].filter((id) => ids.has(id)))
+      // a one-file-in-view tool (Edit PDF, selectNewOnly): the added file
+      // replaces the selection, so one Apply never also changes the file the
+      // user was on before (and its unsaved edits stay with that file)
+      const kept = onlyNew ? (tool?.selectNewOnly ? [] : [...prev].filter(userAdded)) : [...prev]
+      const next = new Set([...kept, ...fresh].filter((id) => ids.has(id)))
       return next.size === prev.size && [...next].every((id) => prev.has(id)) ? prev : next
     })
   }, [files])
@@ -584,6 +604,18 @@ export default function Shell() {
   const steps = stepsOf(tool).filter((st) => !(st.id === 'files' && tool?.accepts?.min === 0 && !tool?.accepts?.types))
   const filesShown = filesOpen ?? selected.length <= 3
 
+  // A Run click while the tool is still busy with the user's last change (a
+  // text edit being applied, or an open editor the click itself commits) is
+  // held, then runs once the tool is ready; if the change did not go in
+  // (refused), the click is dropped and the tool says why.
+  // a held click belongs to the tool, files and selection it was made on
+  useEffect(() => setPendingRun(false), [activeToolId, selection, files])
+  useEffect(() => {
+    if (!pendingRun || summary?.busy) return
+    setPendingRun(false)
+    if (summary?.ready) run()
+  }) // eslint-disable-line react-hooks/exhaustive-deps
+
   const run = async () => {
     if (!summary?.ready || running || startingRef.current) return
     startingRef.current = true
@@ -785,18 +817,24 @@ export default function Shell() {
         </div>
       )}
       {ws.storageNote && files.length > 0 && <p className="notice notice-warn">{ws.storageNote}</p>}
-      {notice && (
-        <p className="notice notice-warn" role="status">
-          {notice}{' '}
-          <button type="button" className="link" onClick={() => setNotice(null)} aria-label="Dismiss">
-            Dismiss
-          </button>
-        </p>
-      )}
-      {status && (
-        <p className="notice notice-ok" role="status" data-testid="status-flash">
-          {status}
-        </p>
+      {/* one-off notices float over the page: coming and going (8 s, or
+          Dismiss) they must not move the page under the pointer */}
+      {(notice || status) && (
+        <div style={TOASTS}>
+          {notice && (
+            <p className="notice notice-warn" role="status" style={TOAST} data-testid="shell-notice">
+              {notice}{' '}
+              <button type="button" className="link" onClick={() => setNotice(null)} aria-label="Dismiss">
+                Dismiss
+              </button>
+            </p>
+          )}
+          {status && (
+            <p className="notice notice-ok" role="status" style={TOAST} data-testid="status-flash">
+              {status}
+            </p>
+          )}
+        </div>
       )}
       {!tool && files.length > 0 && <HomeHint files={files} onOpen={openTool} />}
       {files.length === 0 ? (
@@ -1115,8 +1153,15 @@ export default function Shell() {
                     </svg>
                     Options
                   </button>
-                  <button type="button" className="btn btn-primary btn-block btn-large" onClick={run} disabled={!summary.ready || running} data-testid="run-btn">
-                    {scopedRunLabel(summary.runLabel, summary.ready, selected.length)}
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-block btn-large"
+                    onClick={() => (summary.busy ? setPendingRun(true) : run())}
+                    disabled={(!summary.ready && !summary.busy) || running || pendingRun}
+                    aria-busy={pendingRun || undefined}
+                    data-testid="run-btn"
+                  >
+                    {pendingRun ? 'Applying your last change…' : scopedRunLabel(summary.runLabel, summary.ready, selected.length)}
                   </button>
                 </div>
                 <p className="run-local">Runs on this device. Nothing is uploaded.</p>

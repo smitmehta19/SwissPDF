@@ -3,7 +3,7 @@ import { Field, Segmented } from '../../app/controls.jsx'
 import Icon from '../../components/Icon.jsx'
 import { baseName } from '../../components/usePdfFiles.js'
 import { PageStage, currentOf, dragRect, plural, ptStyle } from './g3-canvas.jsx'
-import { TextPanel, fallbackFontsIn, markSaved, signatureRemovedIn, textBytesOf, textEditCount, useTextEdit } from './edittext.jsx'
+import { TextPanel, fallbackFontsIn, markSaved, signatureRemovedIn, textBytesOf, textEditCount, useTextEdit, xfaRemovedIn } from './edittext.jsx'
 
 const TOOLS = [
   ['text', 'Text', 'edit', 'Click where the text should start.'],
@@ -24,6 +24,11 @@ const MODES = [
 // 'auto' follows the page (Edit text when it has text to edit) until the
 // user picks a mode.
 const modeOf = (o) => (o.mode === 'auto' ? (o.autoMode ?? 'text') : o.mode)
+
+const textHint = (te) =>
+  te.narrow
+    ? `Tap a word to change it.${te.hasParagraphs ? ' Then Paragraph for the whole paragraph.' : ''}`
+    : `Click a word to change it. Double-click for the whole line${te.hasParagraphs ? ', triple-click for the paragraph' : ''}.`
 
 let seq = 1
 
@@ -95,7 +100,25 @@ function Canvas({ files, options: o, setOptions, target, onTarget }) {
           <button type="button" className="icon-btn" onClick={te.redo} disabled={!te.canRedo || te.busy} aria-label="Redo text edit" title="Redo (Ctrl+Y)" data-testid="et-redo">
             <Icon name="redo" size={16} />
           </button>
-          {te.busy && <span className="et-status">Applying…</span>}
+          {!te.narrow && te.hasParagraphs && (
+            // always there (enabled while a word or line editor is open), so
+            // nothing in the bar moves under the pointer; mouse down keeps the
+            // word editor focused until the click (its blur would apply)
+            <button
+              type="button"
+              className="btn btn-quiet btn-small"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={te.openParagraph}
+              disabled={!te.canParagraph}
+              title="Edit the whole paragraph of the open word or line (triple-click)"
+              data-testid="et-para-tool"
+            >
+              Paragraph
+            </button>
+          )}
+          <span className="et-status" aria-hidden={!te.busy} style={te.busy ? undefined : { visibility: 'hidden' }}>
+            Applying…
+          </span>
         </>
       )}
     </div>
@@ -115,7 +138,7 @@ function Canvas({ files, options: o, setOptions, target, onTarget }) {
         toolbar={toolbar}
         banner={editing ? te.banner : null}
         cursor={editing ? 'default' : 'crosshair'}
-        hint={editing ? (te.model && !te.banner ? 'Click a word to change it. Double-click for the whole line.' : null) : tool?.[3]}
+        hint={editing ? (te.model && !te.banner ? textHint(te) : null) : tool?.[3]}
         onDown={
           editing
             ? undefined
@@ -278,6 +301,17 @@ function Options({ options: o, setOptions, files }) {
 
 const editsOf = (o, f) => (o.elements[f.id]?.length ?? 0) + textEditCount(o, f.id)
 
+function summaryOf(files, o) {
+  if (files.length === 0) return { ready: false, line: 'Select at least 1 PDF.', runLabel: 'Apply edits' }
+  const touched = files.filter((f) => editsOf(o, f))
+  if (touched.length === 0) {
+    const line = modeOf(o) !== 'text' ? 'Pick a tool and click or drag on the page.' : o.pageKind === 'scanned' ? 'Scanned page: run OCR first to edit its text.' : 'Click a word on the page to change it.'
+    return { ready: false, line, runLabel: 'Apply edits' }
+  }
+  const count = touched.reduce((n, f) => n + editsOf(o, f), 0)
+  return { ready: true, line: `${plural(touched.length, 'edited PDF')} will be created with ${plural(count, 'edit')}.`, runLabel: `Apply ${plural(count, 'edit')}` }
+}
+
 export default {
   id: 'edit',
   name: 'Edit',
@@ -286,6 +320,8 @@ export default {
   category: 'Edit',
   icon: 'edit',
   accepts: { min: 1 },
+  // one file in view: a file added here becomes the only selection
+  selectNewOnly: true,
   defaults: { mode: 'auto', autoMode: null, tool: 'text', text: 'Your text here', size: 16, color: '#d92d20', thickness: 2, image: null, elements: {}, versions: {} },
   next: ['sign', 'compress', 'pagenumbers'],
   Canvas,
@@ -295,14 +331,15 @@ export default {
     return files.filter((f) => editsOf(o, f))
   },
   summary(files, o) {
-    if (files.length === 0) return { ready: false, line: 'Select at least 1 PDF.', runLabel: 'Apply edits' }
-    const touched = files.filter((f) => editsOf(o, f))
-    if (touched.length === 0) {
-      const line = modeOf(o) !== 'text' ? 'Pick a tool and click or drag on the page.' : o.pageKind === 'scanned' ? 'Scanned page: run OCR first to edit its text.' : 'Click a word on the page to change it.'
-      return { ready: false, line, runLabel: 'Apply edits' }
-    }
-    const count = touched.reduce((n, f) => n + editsOf(o, f), 0)
-    return { ready: true, line: `${plural(touched.length, 'edited PDF')} will be created with ${plural(count, 'edit')}.`, runLabel: `Apply ${plural(count, 'edit')}` }
+    const base = summaryOf(files, o)
+    if (files.length === 0) return base
+    // A text edit being applied, or typed in an open editor (a Run click
+    // commits it), must be in the saved file: busy, so the Shell holds a Run
+    // click until it is in. A refused edit back in its editor holds Run.
+    if (o.textBusy) return { ...base, ready: false, busy: true, line: 'Applying the text edit…' }
+    if (o.textHold) return { ...base, ready: false, line: 'The last text edit was not applied: change it, or press Esc.' }
+    if (o.textOpen) return { ...base, ready: false, busy: true }
+    return base
   },
   async run(files, o, ctx) {
     const outputs = []
@@ -330,6 +367,7 @@ export default {
       let line = note.join(', ')
       line = line ? `${line[0].toUpperCase()}${line.slice(1)}.` : ''
       if (signatureRemovedIn(o, f.id)) line = `${line} Digital signature removed.`.trim()
+      if (xfaRemovedIn(o, f.id)) line = `${line} XFA form copy removed.`.trim()
       outputs.push({ name: `${baseName(f.name)}-edited.pdf`, bytes, parentIds: [f.id], ...(line ? { note: line } : {}) })
     }
     for (const f of touched) markSaved(f.id)

@@ -580,24 +580,28 @@ function underBoxes(page, boxes) {
 // images (content, XMP, XFA, JavaScript) as plain text, joined literals, hex
 // and UTF-16, the text of every Form XObject and tiling pattern drawn on a
 // scratch page (CID fonts), page text with hidden layers shown, and the XFA
-// entry. With opts.pages (1-based): images those pages list but do not draw.
-// With opts.boxes ({ pageNum, x, y, w, h } view space): characters and image
-// pixels still under them.
+// entry, the trailer, XML packets (XFA, XMP) as text without their markup,
+// attached PDFs (scanned as files, one level deep) and, when a term is not
+// found otherwise (or opts.revisions is true), every earlier version of an
+// incrementally updated file. With opts.pages (1-based): images those pages
+// list but do not draw. With opts.boxes ({ pageNum, x, y, w, h } view
+// space): characters and image pixels still under them.
 // terms: strings that must not appear (case and whitespace ignored).
-// Returns { objects, orphans, orphanPages, xfa, xfaStreams, hits: [{ term, where }], undrawn: [], under: [] }.
-export function rawScan(bytes, terms = [], { pages = [], boxes = [] } = {}) {
+// Returns { objects, orphans, orphanPages, xfa, xfaStreams, revisions, revisionsSkipped, revisionXfa, hits: [{ term, where }], undrawn: [], under: [] }.
+export function rawScan(bytes, terms = [], { pages = [], boxes = [], revisions = 'auto', depth = 0 } = {}) {
+  bytes = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes)
   const want = terms.map((t) => String(t).toLowerCase().replace(/\s+/g, '')).filter(Boolean)
-  const res = { objects: 0, orphans: 0, orphanPages: 0, xfa: false, xfaStreams: 0, hits: [], undrawn: [], under: [] }
+  const res = { objects: 0, orphans: 0, orphanPages: 0, xfa: false, xfaStreams: 0, revisions: 0, revisionsSkipped: 0, revisionXfa: 0, hits: [], undrawn: [], under: [] }
   const seen = new Set()
+  const hit = (t, where) => {
+    if (seen.has(`${t}|${where}`)) return
+    seen.add(`${t}|${where}`)
+    res.hits.push({ term: t, where })
+  }
   const look = (text, where) => {
     if (!want.length || !text) return
     const flat = text.toLowerCase().replace(/\s+/g, '')
-    for (const t of want) {
-      if (flat.includes(t) && !seen.has(`${t}|${where}`)) {
-        seen.add(`${t}|${where}`)
-        res.hits.push({ term: t, where })
-      }
-    }
+    for (const t of want) if (flat.includes(t)) hit(t, where)
   }
   quietly(() => {
     const doc = mupdf.Document.openDocument(new Uint8Array(bytes), 'application/pdf').asPDF()
@@ -683,12 +687,13 @@ export function rawScan(bytes, terms = [], { pages = [], boxes = [] } = {}) {
           if (typeName === 'ObjStm' || typeName === 'XRef') continue
           if (nameIs(sub, 'Form')) drawable.push([i, 'form'])
           if (typeName === 'Pattern' && r.get('PatternType').isNumber() && r.get('PatternType').asNumber() === 1) drawable.push([i, 'pattern'])
-          let data
+          let buf
           try {
-            data = Buffer.from(ref.readStream().asUint8Array()).toString('latin1')
+            buf = Buffer.from(ref.readStream().asUint8Array())
           } catch {
             continue
           }
+          const data = buf.toString('latin1')
           if (/xfa\.org\/schema|<xdp:xdp|xfa:datasets/i.test(data) && typeName !== 'Metadata') res.xfaStreams++
           look(data, `${where} stream`)
           look(data.replace(/\0/g, ''), `${where} stream (UTF-16)`)
@@ -697,9 +702,21 @@ export function rawScan(bytes, terms = [], { pages = [], boxes = [] } = {}) {
             look(literals(data), `${where} stream text`)
             look(hexStrings(data), `${where} stream hex`)
           }
-          if (typeName === 'Metadata') look(Buffer.from(data, 'latin1').toString('utf8'), `${where} stream`)
+          // XML (XFA packets, XMP): UTF-8 text with the tags and entities
+          // taken out, so a word split by rich-text markup still reads
+          if (typeName === 'Metadata' || /^\s*(?:﻿|\xEF\xBB\xBF)?</.test(data.slice(0, 64))) look(xmlText(buf.toString('utf8')), `${where} stream (XML text)`)
+          // an attached PDF compresses its own streams: scan it as a file
+          if (depth === 0 && want.length && /^%PDF-/.test(data.slice(0, 1024).trimStart())) {
+            try {
+              for (const h of rawScan(buf, terms, { revisions: false, depth: 1 }).hits) hit(h.term, `${where} attached PDF: ${h.where}`)
+            } catch {
+              /* not a readable PDF */
+            }
+          }
         }
       }
+      // strings kept directly in the trailer (an inline /Info dict)
+      strings(doc.getTrailer(), 'trailer')
       // what a viewer extracts from every page, hidden layers included
       for (let l = 0; l < doc.countLayers(); l++) doc.setLayerVisible(l, true)
       for (let p = 0; p < reachable; p++) {
@@ -750,7 +767,54 @@ export function rawScan(bytes, terms = [], { pages = [], boxes = [] } = {}) {
       doc.destroy?.()
     }
   })
+  // earlier versions (incremental updates): MuPDF reads only the newest copy
+  // of each object, so open the file as it ended at each earlier %%EOF.
+  // Their hits count only for terms not found in the live file.
+  const found = new Set(res.hits.map((h) => h.term))
+  if (depth === 0 && (revisions === true || (revisions === 'auto' && want.some((t) => !found.has(t))))) {
+    const all = earlierEnds(bytes)
+    const ends = all.slice(0, MAX_REVISIONS)
+    res.revisions = all.length
+    // past the cap, or not readable as a file: counted, never silently passed
+    res.revisionsSkipped = all.length - ends.length
+    for (const [k, end] of ends.entries()) {
+      let old
+      try {
+        old = rawScan(bytes.subarray(0, end), terms, { revisions: false, depth: 1 })
+      } catch {
+        res.revisionsSkipped++
+        continue
+      }
+      for (const h of old.hits) if (!found.has(h.term)) hit(h.term, `earlier version ${k + 1}: ${h.where}`)
+      if (!res.xfa && !res.xfaStreams && (old.xfa || old.xfaStreams)) res.revisionXfa++
+    }
+  }
   return res
+}
+
+// Byte offsets just past each %%EOF except the last (newest first): where
+// each earlier version of the file ended. Only the newest MAX_REVISIONS are
+// opened.
+const MAX_REVISIONS = 8
+function earlierEnds(bytes) {
+  const raw = Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength).toString('latin1')
+  const ends = []
+  for (let at = raw.indexOf('%%EOF'); at >= 0; at = raw.indexOf('%%EOF', at + 5)) ends.push(at + 5)
+  ends.pop()
+  return ends.reverse()
+}
+
+// Text of an XML packet: tags dropped, entities decoded.
+function xmlText(xml) {
+  const cp = (n) => (n <= 0x10ffff ? String.fromCodePoint(n) : ' ')
+  return decodeXml(
+    xml
+      .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+      .replace(/<[^>]*>/g, '')
+      .replace(/&#x([0-9a-f]+);/gi, (_, h) => cp(parseInt(h, 16)))
+      .replace(/&#(\d+);/g, (_, d) => cp(+d))
+      .replace(/&nbsp;/g, ' '),
+  )
 }
 
 // Shared check for every redaction output: no page object outside the page
@@ -759,11 +823,13 @@ export function rawScan(bytes, terms = [], { pages = [], boxes = [] } = {}) {
 // the boxes. opts: { pages, boxes } as for rawScan.
 // Returns { scan, bad: [problem] }, bad is empty when the file is clean.
 export function redactionLeaks(bytes, terms = [], opts = {}) {
-  const scan = rawScan(bytes, terms, opts)
+  const scan = rawScan(bytes, terms, { revisions: true, ...opts })
   const bad = []
   if (scan.orphanPages) bad.push(`${scan.orphanPages} page object(s) outside the page tree`)
   if (scan.orphans) bad.push(`${scan.orphans} unreferenced object(s)`)
   if (scan.xfa || scan.xfaStreams) bad.push(`XFA left (${scan.xfaStreams} stream(s))`)
+  if (scan.revisionXfa) bad.push(`XFA left in ${scan.revisionXfa} earlier version(s) of the file`)
+  if (scan.revisionsSkipped) bad.push(`${scan.revisionsSkipped} of ${scan.revisions} earlier version(s) not scanned`)
   for (const h of scan.hits.slice(0, 4)) bad.push(`"${h.term}" in ${h.where}`)
   if (scan.hits.length > 4) bad.push(`${scan.hits.length - 4} more hit(s)`)
   bad.push(...scan.undrawn.slice(0, 3), ...scan.under.slice(0, 3))

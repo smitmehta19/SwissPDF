@@ -2641,6 +2641,278 @@ add({
   },
 })
 
+// Hybrid forms (AcroForm + XFA): the XFA template keeps its own copy of every
+// caption, and these words also sit in the XFA xmpmeta packet, the XMP and
+// the document properties. Searched: the word must be nowhere in the file.
+// Boxed (a box drawn over each place the word shows, no search): boxes clean
+// the page, so the word may stay only in the properties and XMP.
+function xfaTemplateHas(rel, term) {
+  const doc = mupdf.Document.openDocument(readRel(rel), 'application/pdf').asPDF()
+  try {
+    const x = doc.getTrailer().get('Root').get('AcroForm').get('XFA')
+    if (!x.isArray()) return false
+    for (let i = 0; i + 1 < x.length; i += 2) {
+      if (x.get(i).asString() === 'template') return new TextDecoder().decode(x.get(i + 1).readStream().asUint8Array()).toLowerCase().includes(term.toLowerCase())
+    }
+    return false
+  } finally {
+    doc.destroy?.()
+  }
+}
+for (const [rel, term, quick] of [
+  ['forms/irs-fw9.pdf', 'Taxpayer', true],
+  ['forms/irs-fw4.pdf', 'Withholding', false],
+  ['forms/irs-f1040.pdf', 'Individual', false],
+]) {
+  const name = rel.split('/').pop().replace(/\.pdf$/, '')
+  for (const mode of ['search-remove', 'search-image', 'boxes']) {
+    add({
+      id: `g3-redact-xfa-template-${name}-${mode}`,
+      tool: 'redact',
+      op: 'g3RedactRemove',
+      files: [rel],
+      quick: quick && mode === 'search-remove',
+      timeout: 5 * MIN,
+      async prepare() {
+        if (mode !== 'boxes') return { term, method: mode.slice(7) }
+        // a box drawn over every place the word shows, no search
+        const { findMatches } = await import('../../src/lib/redactOps.js')
+        const boxes = (await findMatches(readRel(rel), { terms: [term] })).filter((b) => !b.annot).map(({ pageNum, x, y, w, h }) => ({ pageNum, x, y, w, h }))
+        return boxes.length ? { query: {}, boxes, method: 'remove' } : { skip: `"${term}" not on any page` }
+      },
+      async validate(ctx) {
+        ctx.check(`"${term}" is in the source XFA template`, xfaTemplateHas(rel, term))
+        if (mode !== 'boxes') ctx.check(`finds "${term}"`, (ctx.meta?.boxes ?? 0) > 0, `${ctx.meta?.boxes} matches`)
+        const p = await checkPdf(ctx, 'redacted.pdf', { pages: (await inputFacts(rel)).pdfjs.pages })
+        if (!p?.pdfjs.ok) return
+        const c = ctx.meta?.cleaned ?? {}
+        ctx.check('XFA reported as removed', c.xfa === true && (mode === 'boxes' || c.xfaMatch === true), JSON.stringify({ xfa: c.xfa, xfaMatch: c.xfaMatch }))
+        if (mode !== 'boxes') {
+          ctx.check('properties and XMP cleaned', c.properties > 0 && c.xmp === true, JSON.stringify({ properties: c.properties, xmp: c.xmp }))
+          leakCheck(ctx, 'redacted.pdf', [term])
+        } else {
+          // boxes clean the page, not words: the form title in the document
+          // properties and XMP stays (only a search cleans those)
+          leakCheck(ctx, 'redacted.pdf')
+          const out = ctx.out('redacted.pdf')
+          const d = mupdf.Document.openDocument(out, 'application/pdf').asPDF()
+          const info = d.getTrailer().get('Info')
+          const infoNum = info.isIndirect() ? info.asIndirect() : -1
+          d.destroy?.()
+          const props = new RegExp(`^obj ${infoNum}$|/Metadata stream`)
+          const hits = rawScan(out, [term], { revisions: true }).hits.filter((h) => !props.test(h.where))
+          ctx.check(`"${term}" nowhere but the document properties and XMP`, hits.length === 0, hits.slice(0, 4).map((h) => h.where).join('; '))
+        }
+        ctx.metric(`${ctx.meta?.boxes ?? 0} matches, pages ${(ctx.meta?.pagesHit ?? []).join(',')}, raster ${(ctx.meta?.rasterPages ?? []).join(',') || 'none'}`)
+      },
+    })
+  }
+}
+
+// An incrementally updated file: the first version had the name and an XFA
+// form, the update replaced the line and dropped the XFA. MuPDF reads only
+// the update, so the scan must open the earlier version too (validator
+// self-check), and the redacted file (a full rewrite) must keep neither.
+const REVISION_REL = 'derived/synthetic/redact-revision.pdf'
+function makeRevisionPdf() {
+  const doc = new mupdf.PDFDocument()
+  let v1
+  try {
+    const r = doc.newDictionary()
+    const f = doc.newDictionary()
+    f.put('F1', doc.addSimpleFont(new mupdf.Font('Helvetica')))
+    r.put('Font', f)
+    doc.insertPage(-1, doc.addPage([0, 0, 612, 792], 0, r, `BT /F1 14 Tf 72 700 Td (Signed by ${SECRET}) Tj ET\nBT /F1 14 Tf 72 650 Td (VISIBLEWORD stays on the page) Tj ET`))
+    const af = doc.newDictionary()
+    af.put('Fields', doc.newArray())
+    af.put('XFA', doc.addStream(`<template xmlns="http://www.xfa.org/schema/xfa-template/3.3/"><draw><value><text>Signed by ${SECRET}</text></value></draw></template>`, doc.newDictionary()))
+    doc.getTrailer().get('Root').put('AcroForm', doc.addObject(af))
+    v1 = doc.saveToBuffer('compress').asUint8Array().slice()
+  } finally {
+    doc.destroy?.()
+  }
+  const upd = mupdf.Document.openDocument(v1, 'application/pdf').asPDF()
+  try {
+    upd.findPage(0).get('Contents').writeStream('BT /F1 14 Tf 72 700 Td (Signed by someone) Tj ET\nBT /F1 14 Tf 72 650 Td (VISIBLEWORD stays on the page) Tj ET')
+    const af = upd.getTrailer().get('Root').get('AcroForm')
+    const xfa = af.get('XFA').asIndirect()
+    af.delete('XFA')
+    // freed in the update, so only the first version still has it
+    upd.deleteObject(xfa)
+    return upd.saveToBuffer('incremental').asUint8Array().slice()
+  } finally {
+    upd.destroy?.()
+  }
+}
+if (!existsSync(abs(REVISION_REL)) && existsSync(join(CORPUS, 'derived'))) {
+  mkdirSync(join(CORPUS, 'derived', 'synthetic'), { recursive: true })
+  const tmp = `${abs(REVISION_REL)}.${process.pid}.tmp`
+  writeFileSync(tmp, makeRevisionPdf())
+  renameSync(tmp, abs(REVISION_REL))
+}
+// Boxes clean the page only (search cleans everywhere): a box over the name
+// leaves the properties, XMP, bookmark, comments and attachment as they were.
+// "Agreement with SECRETNAME" sits at x 72, view y 78 to 96.
+add({
+  id: 'g3-redact-box-word-keeps-outside-secretname',
+  tool: 'redact',
+  op: 'g3RedactRemove',
+  files: [SECRET_REL],
+  params: { query: {}, boxes: [{ pageNum: 1, x: 170, y: 76, w: 100, h: 22 }], method: 'remove' },
+  quick: true,
+  async validate(ctx) {
+    const p = await checkPdf(ctx, 'redacted.pdf', { pages: 2 })
+    if (!p?.pdfjs.ok) return
+    const c = ctx.meta?.cleaned ?? {}
+    ctx.check('nothing cleaned outside the page', !c.properties && !c.xmp && !c.bookmarks && !c.attachments && !c.comments && !c.other, JSON.stringify(c))
+    ctx.check('name gone from page 1', !(p.pdfjs.texts[0] ?? '').includes(SECRET), (p.pdfjs.texts[0] ?? '').slice(0, 60))
+    const d = mupdf.Document.openDocument(ctx.out('redacted.pdf'), 'application/pdf').asPDF()
+    try {
+      ctx.check('bookmark and attachment kept', (d.loadOutline() ?? []).some((o) => o.title === `Section ${SECRET}`) && Object.keys(d.getEmbeddedFiles()).length === 1)
+    } finally {
+      d.destroy?.()
+    }
+    leakCheck(ctx, 'redacted.pdf')
+  },
+})
+
+// A whole page or a big box cleans nothing outside the page: the bookmark
+// and title share "Form" with page 1 and must stay.
+const COMMON_REL = 'derived/synthetic/redact-common-word.pdf'
+if (!existsSync(abs(COMMON_REL)) && existsSync(join(CORPUS, 'derived'))) {
+  mkdirSync(join(CORPUS, 'derived', 'synthetic'), { recursive: true })
+  const tmp = `${abs(COMMON_REL)}.${process.pid}.tmp`
+  writeFileSync(
+    tmp,
+    synth(({ doc, page, dict, T }) => {
+      page(`${T(700, 'Order Form with the delivery details')}\n${T(650, 'Signed for the customer')}`)
+      const p2 = page(T(700, 'Second page notes'))
+      const outlines = doc.addObject(dict({ Type: '/Outlines' }))
+      const dest = doc.newArray()
+      dest.push(p2)
+      dest.push(doc.newName('Fit'))
+      const item = doc.addObject(dict({ Title: 'Form instructions', Parent: outlines, Dest: dest }))
+      outlines.put('First', item)
+      outlines.put('Last', item)
+      outlines.put('Count', 1)
+      doc.getTrailer().get('Root').put('Outlines', outlines)
+      doc.getTrailer().put('Info', doc.addObject(dict({ Title: 'Order Form with notes' })))
+    }),
+  )
+  renameSync(tmp, abs(COMMON_REL))
+}
+for (const [tag, params] of [
+  ['whole-page', { query: {}, wholePages: [1], method: 'remove' }],
+  ['big-box', { query: {}, boxes: [{ pageNum: 1, x: 20, y: 20, w: 572, h: 500 }], method: 'remove' }],
+]) {
+  add({
+    id: `g3-redact-${tag}-keeps-common-words`,
+    tool: 'redact',
+    op: 'g3RedactRemove',
+    files: [COMMON_REL],
+    params,
+    async validate(ctx) {
+      const p = await checkPdf(ctx, 'redacted.pdf', { pages: 2 })
+      if (!p?.pdfjs.ok) return
+      const c = ctx.meta?.cleaned ?? {}
+      ctx.check('no strings cleaned outside the page', !c.properties && !c.bookmarks && !c.other && !c.xmp, JSON.stringify(c))
+      const d = mupdf.Document.openDocument(ctx.out('redacted.pdf'), 'application/pdf')
+      try {
+        const titles = (d.loadOutline() ?? []).map((o) => o.title)
+        ctx.check('bookmark "Form instructions" kept', titles.includes('Form instructions'), titles.join(', '))
+        ctx.check('title "Order Form with notes" kept', d.getMetaData('info:Title') === 'Order Form with notes', d.getMetaData('info:Title'))
+      } finally {
+        d.destroy?.()
+      }
+      ctx.check('page 1 text removed', !(p.pdfjs.texts[0] ?? '').includes('delivery'), (p.pdfjs.texts[0] ?? '').slice(0, 60))
+      leakCheck(ctx, 'redacted.pdf', ['delivery'])
+    },
+  })
+}
+
+// One-page file with the given extra: an attached PDF (its streams are
+// compressed), an XFA packet whose rich text splits the name, an Info dict
+// kept inline in the trailer.
+function scanProbe(build) {
+  const page = (doc, text) => {
+    const r = doc.newDictionary()
+    const f = doc.newDictionary()
+    f.put('F1', doc.addSimpleFont(new mupdf.Font('Helvetica')))
+    r.put('Font', f)
+    doc.insertPage(-1, doc.addPage([0, 0, 612, 792], 0, r, `BT /F1 14 Tf 72 700 Td (${text}) Tj ET`))
+  }
+  const doc = new mupdf.PDFDocument()
+  try {
+    page(doc, 'Outer page')
+    build(doc, page)
+    return doc.saveToBuffer('compress').asUint8Array().slice()
+  } finally {
+    doc.destroy?.()
+  }
+}
+const SCAN_PROBES = [
+  [
+    'an attached PDF',
+    'attached PDF:',
+    (doc, page) => {
+      const inner = new mupdf.PDFDocument()
+      page(inner, `Attached ${SECRET}`)
+      const bytes = inner.saveToBuffer('compress').asUint8Array().slice()
+      inner.destroy?.()
+      doc.insertEmbeddedFile('a.pdf', doc.addEmbeddedFile('a.pdf', 'application/pdf', bytes, new Date(0), new Date(0)))
+    },
+  ],
+  [
+    'XFA rich text split by markup',
+    '(XML text)',
+    (doc) => {
+      const af = doc.newDictionary()
+      af.put('Fields', doc.newArray())
+      af.put('XFA', doc.addStream(`<template xmlns="http://www.xfa.org/schema/xfa-template/3.3/"><draw><value><exData><body><p>${SECRET.slice(0, 6)}<span style="font-weight:bold">${SECRET.slice(6)}</span></p></body></exData></value></draw></template>`, doc.newDictionary()))
+      doc.getTrailer().get('Root').put('AcroForm', af)
+    },
+  ],
+  [
+    'an Info dict inside the trailer',
+    'trailer',
+    (doc) => {
+      const info = doc.newDictionary()
+      info.put('Title', doc.newString(`Doc ${SECRET}`))
+      doc.getTrailer().put('Info', info)
+    },
+  ],
+]
+add({
+  id: 'g3-redact-earlier-version-remove',
+  tool: 'redact',
+  op: 'g3RedactRemove',
+  files: [REVISION_REL],
+  params: { term: 'VISIBLEWORD', method: 'remove' },
+  quick: true,
+  async validate(ctx) {
+    const src = rawScan(readRel(REVISION_REL), [SECRET], { revisions: true })
+    ctx.check('scan finds the name and the XFA in the earlier version of the input', src.hits.length > 0 && src.hits.every((h) => h.where.startsWith('earlier version')) && src.revisionXfa === 1, `${src.hits.length} hit(s), revisionXfa ${src.revisionXfa}`)
+    // past 8 earlier versions the rest are reported, not skipped silently
+    let many = scanProbe(() => {})
+    for (let k = 0; k < 10; k++) {
+      const d = mupdf.Document.openDocument(many, 'application/pdf').asPDF()
+      d.getTrailer().get('Root').put('Lang', d.newString(`v${k}`))
+      many = d.saveToBuffer('incremental').asUint8Array().slice()
+      d.destroy?.()
+    }
+    const capped = redactionLeaks(many, [SECRET]).bad
+    ctx.check('versions past 8 reported as not scanned', capped.some((b) => b.startsWith('2 of 10 earlier version(s) not scanned')), capped.join('; '))
+    // the other places the scan reads (validator self-checks, built in memory)
+    for (const [label, want, build] of SCAN_PROBES) {
+      const hits = rawScan(scanProbe(build), [SECRET]).hits.map((h) => h.where)
+      ctx.check(`scan finds the name in ${label}`, hits.some((w) => w.includes(want)), hits.slice(0, 3).join('; ') || 'no hits')
+    }
+    const p = await checkPdf(ctx, 'redacted.pdf', { pages: 1 })
+    if (!p?.pdfjs.ok) return
+    leakCheck(ctx, 'redacted.pdf', [SECRET, 'VISIBLEWORD'])
+  },
+})
+
 // Leak classes from the redact-fix review (P0 #1 to #8), one synthetic file
 // each, built here with MuPDF. Search rows look for SECRETNAME; rows with
 // `boxes` black out a drawn area (view points on a 612 x 792 page).

@@ -1,48 +1,29 @@
-# SwissPDF handoff (paused 2026-10-18)
+# SwissPDF handoff (paused 2026-10-29, resume Monday)
 
-Paused on purpose (credits). Nothing committed, nothing deployed: live site is still the old `32e0044` build. All new work is UNCOMMITTED in the main tree plus 3 agent worktrees.
+Paused on purpose (credits) in the middle of the edit-text phase 2 ship prep. Live site = commit 39c54fc (phase 1 edit text, polish batch, Stirling parity). Everything below is UNCOMMITTED in the main tree (branch `wip-parity`). The tree builds (`npm run build` OK at pause).
 
 ## Read first
-- `CLAUDE.md` (Current phase), `docs/plans/2026-10-17-parity.md` (unit map), `docs/plans/parity-checklist.md` (definition of done)
-- Latest green scorecard: `docs/test-results/integ-1.md` (573/577 real-file rows, 0 regressions)
-- Open reviews: `docs/reviews/2026-10-18-integ1-review.md` (25 findings, 2 P0), `docs/reviews/2026-10-18-design-critique.md` (4 must-fix, static only)
-- Gotchas: `docs/team/dev-notes.md`; decisions: `docs/decision-log.md`, `docs/decisions-pending.md`
+- Plan: `docs/plans/2026-10-28-edit-text-phase2.md`; decisions: `docs/decisions-pending.md` (top entries 2026-10-28/29)
+- Reviews: `docs/reviews/2026-10-28-edit-text-p2-review-3.md` (latest), blind tests `docs/reviews/2026-10-28-blind-edit-text-p2*.md`
+- Engine status + parked paragraph list: `docs/team/status-engine.md`; UI status: `docs/team/status-ui.md`; gotchas: `docs/team/dev-notes.md`
 
-## State of the main tree
-| Part | State |
-|---|---|
-| U0 corpus runner + 131 real files | done (`npm run test:corpus`, `--shards 4`, README in scripts/corpus-test) |
-| U1 engine core + review fixes | done, merged, tested |
-| U2a shell (workbench, file store, jobs, result screen) | done, merged |
-| U4 conversions (PDF to Office, Office/HTML to PDF engine) | done, merged |
-| G1 organize, G3 edit canvas, G4 convert (24 tools on new shell + U3 fixes) | done, merged (integ-1) |
-| **Fix batch for integ-1 review + design critique** | **STOPPED MID-WAY, UNTESTED** (see below) |
+## Decision in force
+Paragraph re-wrap is NOT shipping (review 3 P0 "Trace-Monkey" + P1s). It stays in the code behind a flag, parked with its findings. Ship: word/line edits, RTL line push, leak fixes (structure tree, XFA drop on static hybrid forms, compact final save), dynamic-XFA refusal, UI fixes.
 
-### Partial fix-batch edits (untested, build passes)
-The fix agent was stopped while working. It had edited these files in main since integ-1:
-`src/app/{FileGrid,fileStore,ResultScreen,Shell,ToolPanel}.jsx/js`, `src/lib/{htmlOps,imageOps,libreOffice}.js`, `src/tools/v2/{convertShared.js,html2pdf,img2pdf,office2pdf}.jsx`, `scripts/corpus-test/validate.mjs` (was adding the raw byte scan for redaction).
-NOT yet fixed: the 2 P0s in `src/lib/redactOps.js` (orphan original pages survive in image-mode output; XFA values survive redaction). **Redact must not ship until fixed.**
-Snapshot of the whole code tree at pause: `.claude/snapshots/2026-10-18-pause/` (gitignored).
-Before continuing: run `npm run build` + `npm run test:corpus -- --quick --shards 4 --name resume-check` and compare with `docs/test-results/integ-1.json`; if the partial edits break anything, re-do them from the review file.
+## State of the 3 stopped tasks
+| Task | State at pause | Left to do |
+|---|---|---|
+| Engine ship prep | DONE: dynamic XFA refusal (`xfa-dynamic`), `pageTextModel(..., { paragraphs = false })`, p3-g6 row, parked list. Tier 1 `^edittext-` 93/93 | none |
+| Redact revert of box word cleanup | PARTIAL: `boxedWordTests` removed, box-only note added in `redact.jsx`. Not tested. Unknown: box rows in `cases.mjs` updated? validate.mjs "skipped revisions" (review P2-8) done? | Check rows, run `npm run test:touched -- --tool redact` |
+| UI ship prep | PARTIAL: `PARAGRAPH_EDIT` flag started in `edittext.jsx` (4 refs). Not tested | Finish: flag off hides triple-click/Paragraph button/Shift+Enter and passes `{ paragraphs: PARAGRAPH_EDIT }`; edittext-ui skips para sections + checks no Paragraph button; 'decorated' copy (review P2-1); XFA in result note (P2-2); clear `pendingRun` on tool/selection/file change (P2-6); trim fallback font names (N7); WHY 'xfa-dynamic' = docOps `DYNAMIC_XFA_MSG`. Run `edittext-ui.mjs`, `fix1-shell.mjs` |
 
-## Agent worktrees with unfinished work (uncommitted, kept)
-Under `.claude/worktrees/` (gitignored). Each synced from main, then built its own files. All stopped mid-work, none fully verified.
-| Worktree | Unit | Owned files to merge later | Where it stopped |
-|---|---|---|---|
-| `agent-a10aa934553b9b1be` | G2 optimize + security (repair, ocr, protect, unlock, compare, health) | `src/tools/v2/{repair,ocr,protect,unlock,compare,health}.jsx`, `g2.css`, `group-security.js`, `src/lib/{cryptoOps,ocrOps,compareOps,mupdfOps,selfTest}.js`, `public/tessdata/` | adding raw-scan redact check to selfTest |
-| `agent-a29ce0a796c2d9627` | U5-A page layout (n-up, booklet, overlay, scale, single page, stamp, remove blank, linearize) | `src/lib/layoutOps.js`, `src/tools/v2/{nup,booklet,overlay,scale,singlepage,stamp,removeblank,linearize?}.jsx`, `layoutShared.jsx`, `group-layout.js` | writing the linearizer |
-| `agent-ab080842fd06fd185` | U5-B structure + cleanup (bookmarks, metadata, attachments, remove annots/images, sanitize, flatten, permissions, info, auto rename) | `src/lib/docOps.js`, `src/tools/v2/{bookmarks,metadata,attachments,removeannots,removeimages,sanitize,flatten,permissions,info,autorename}.jsx`, `structure-shared.jsx`, `structure.css`, `group-structure.js` | adding generic case loaders to the runner |
-Copy ONLY owned files into main; their copies of other files are stale. Shared files (registry.js, Shell.jsx, cases.mjs, page-harness.js) need a hand merge.
+Third blind test was stopped part-way (no report). Optional on resume.
 
-## Next steps, in order
-1. Resume check (build + quick corpus) on main.
-2. Finish the fix batch: redact P0s first (MuPDF `garbage=compact` save, strip XFA), raw-byte redaction tests, then the rest of the integ-1 review P1/P2 and design must-fixes. Full corpus run.
-3. Finish G2 in its worktree (or restart it from main), merge. Then U5-A and U5-B: finish, merge.
-4. U5-C (extra converts, colour, camera scan, PDF/A) and U5-D (edit existing text, certificate sign, Automate): scope in `docs/plans/2026-10-18-U5-new-tools.md`.
-5. Re-review (code) + live design critique (real browser, Playwright; the first critique could not run a browser).
-6. U6: full parity checklist on corpus, then ask Smit to commit + push (deploys to GitHub Pages).
+## Exact next steps (Monday)
+1. Finish the UI task and the redact check above (one developer, about 1 hour).
+2. `npm run test:clean`, build, `npm run test:full`, all 12 UI scripts (about 75 min, local).
+3. Commit (no AI mentions), push `wip-parity:main`, wait for Pages, run `node scripts/corpus-test/health.mjs --url https://smitmehta19.github.io/SwissPDF/` with `CORPUS_LOCK=off`.
+4. Update CLAUDE.md Current phase; decision-log entry for "paragraph re-wrap parked".
 
-## Ways of working that worked
-- Parallel developer agents in git worktrees, each owning a disjoint file set; orchestrator merges shared files by hand; sync helper script copied main's uncommitted state into each worktree (recreate it: copy `git status` files from main + junction `test-corpus`; mklink fails in git bash, use PowerShell `New-Item -ItemType Junction`).
-- Every unit: corpus delta must show 0 PASS->FAIL; separate reviewer agent after each merge.
-- Cost: roughly 0.25 to 0.45M tokens per developer agent run.
+## Last green numbers (before the pause, same code minus the stopped tasks)
+Full corpus 932/0 (`docs/test-results/2026-10-28-p2-final-full.md`), all 12 UI scripts pass, edittext-ui 90/90, redact tier 1 79/79, quick 198/198.

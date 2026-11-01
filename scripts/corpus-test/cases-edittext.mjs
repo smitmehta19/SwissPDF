@@ -14,7 +14,10 @@ import { join } from 'node:path'
 import { rawScan, redactionLeaks } from './validate.mjs'
 import { ROOT } from './server.mjs'
 import { USER_PW } from './derive.mjs'
-import { pageTextModel } from '../../src/lib/editTextOps.js'
+import { pageTextModel as readModel } from '../../src/lib/editTextOps.js'
+
+// the paragraph rows need the paragraph model (opt-in since the ship prep)
+const pageTextModel = (bytes, pageNum) => readModel(bytes, pageNum, { paragraphs: true })
 
 const CORPUS_DIR = join(ROOT, 'test-corpus')
 const HINDI = 'derived/edittext-hindi.pdf'
@@ -128,6 +131,131 @@ function buildSplit(rel, parts) {
     doc.destroy?.()
   }
 }
+// A page that draws a form XObject holding an inline image with an
+// abbreviated Indexed colour space (the kind MuPDF's redaction filter breaks).
+const FORM_INLINE = 'derived/edittext-form-inline.pdf'
+function buildFormInline() {
+  const dest = join(CORPUS_DIR, FORM_INLINE)
+  if (existsSync(dest)) return
+  const doc = new mupdf.PDFDocument()
+  try {
+    const res = doc.newDictionary()
+    const fd = doc.newDictionary()
+    fd.put('F1', doc.addSimpleFont(new mupdf.Font('Helvetica'), 'Latin'))
+    res.put('Font', fd)
+    const fdict = doc.newDictionary()
+    fdict.put('Type', doc.newName('XObject'))
+    fdict.put('Subtype', doc.newName('Form'))
+    const bb = doc.newArray()
+    for (const v of [0, 0, 300, 40]) bb.push(v)
+    fdict.put('BBox', bb)
+    // the edited text sits in the same form, so the redaction filters it
+    fdict.put('Resources', res)
+    const form = doc.addStream('BT /F1 12 Tf 0 20 Td (Form image test line here) Tj ET q 200 0 0 10 0 0 cm BI /W 4 /H 1 /BPC 8 /CS [/I /RGB 3 <FF000000FF000000FFFFFFFF>] /F /AHx ID 00010203> EI Q', fdict)
+    const xo = doc.newDictionary()
+    xo.put('Fm1', form)
+    const pres = doc.newDictionary()
+    pres.put('Font', fd)
+    pres.put('XObject', xo)
+    doc.insertPage(-1, doc.addPage([0, 0, 612, 792], 0, pres, 'q 1 0 0 1 72 650 cm /Fm1 Do Q BT /F1 12 Tf 72 600 Td (Text below the form) Tj ET'))
+    writeFileSync(dest, new Uint8Array(doc.saveToBuffer('compress').asUint8Array()))
+  } finally {
+    doc.destroy?.()
+  }
+}
+// Review fixtures (2026-10-28): a tagged paragraph whose StructElem carries
+// the text in /ActualText and /Alt, and a paragraph inside a frame, a table
+// grid and with an underline drawn after it.
+const STRUCT = 'derived/edittext-struct.pdf'
+const P_LINES = ['The quick brown fox jumps over the lazy dog and keeps', 'running across the field until the sun goes down at', 'last, tired but happy with the long day it had today.']
+const pText = (lines, x, y0, lead) => lines.map((l, i) => `BT /F1 10 Tf ${x} ${y0 - i * lead} Td (${l}) Tj ET`).join('\n')
+const DECOR = {
+  frame: `0 0 0 RG 1 w 66 610 300 52 re S\n${pText(P_LINES, 72, 650, 12)}`,
+  grid: `0 0 0 RG 0.5 w 66 662 m 366 662 l 66 612 m 366 612 l 66 520 m 366 520 l 66 662 m 66 520 l 366 662 m 366 520 l S\n${pText(P_LINES, 72, 650, 12)}\nBT /F1 10 Tf 72 530 Td (Next row cell text) Tj ET`,
+  underline: `${pText(P_LINES, 72, 650, 12)}\n0 0 1 RG 0.5 w 72 636 m 200 636 l S`,
+}
+function buildStruct() {
+  const dest = join(CORPUS_DIR, STRUCT)
+  if (existsSync(dest)) return
+  const doc = new mupdf.PDFDocument()
+  try {
+    const res = doc.newDictionary()
+    const fd = doc.newDictionary()
+    fd.put('F1', doc.addSimpleFont(new mupdf.Font('Helvetica'), 'Latin'))
+    res.put('Font', fd)
+    const lines = ['Patient Johnsonwell was seen today for a routine', 'check and all results came back fine and normal', 'so no further visits are needed this year at all.']
+    doc.insertPage(-1, doc.addPage([0, 0, 612, 792], 0, res, `/P <</MCID 0>> BDC\n${pText(lines, 72, 650, 12)}\nEMC\nBT /F1 10 Tf 72 400 Td (Another paragraph stays here) Tj ET`))
+    const pobj = doc.findPage(0)
+    const root = doc.getTrailer().get('Root')
+    const str = doc.addObject(doc.newDictionary())
+    str.put('Type', doc.newName('StructTreeRoot'))
+    const el = doc.newDictionary()
+    el.put('Type', doc.newName('StructElem'))
+    el.put('S', doc.newName('P'))
+    el.put('P', str)
+    el.put('Pg', pobj)
+    el.put('K', 0)
+    el.put('ActualText', doc.newString('Patient Johnsonwell was seen today'))
+    el.put('Alt', doc.newString('Note about Johnsonwell'))
+    const k = doc.newArray()
+    k.push(doc.addObject(el))
+    str.put('K', k)
+    root.put('StructTreeRoot', str)
+    const mi = doc.newDictionary()
+    mi.put('Marked', true)
+    root.put('MarkInfo', mi)
+    pobj.put('StructParents', 0)
+    writeFileSync(dest, new Uint8Array(doc.saveToBuffer('').asUint8Array()))
+  } finally {
+    doc.destroy?.()
+  }
+}
+// review-2 N2: a tagged page whose figure Alt shares words with the edited
+// paragraph, plus a page-2 element without /Pg (an MCR points to page 2)
+const STRUCT2 = 'derived/edittext-struct2.pdf'
+function buildStruct2() {
+  const dest = join(CORPUS_DIR, STRUCT2)
+  if (existsSync(dest)) return
+  const doc = new mupdf.PDFDocument()
+  try {
+    const res = doc.newDictionary()
+    const fd = doc.newDictionary()
+    fd.put('F1', doc.addSimpleFont(new mupdf.Font('Helvetica'), 'Latin'))
+    res.put('Font', fd)
+    const para = ['Results came back with normal values for the', 'patient and nothing more was needed after the', 'visit, so the file was closed for this year.']
+    doc.insertPage(-1, doc.addPage([0, 0, 612, 792], 0, res, `/P <</MCID 0>> BDC\n${pText(para, 72, 650, 12)}\nEMC\n/Figure <</MCID 1>> BDC 0 0 1 rg 72 400 200 100 re f EMC\n/P <</MCID 2>> BDC BT /F1 10 Tf 72 300 Td (Other paragraph that stays as it was.) Tj ET EMC`))
+    doc.insertPage(-1, doc.addPage([0, 0, 612, 792], 0, res, '/P <</MCID 0>> BDC BT /F1 10 Tf 72 700 Td (Page two text without the patient name.) Tj ET EMC'))
+    const p1 = doc.findPage(0)
+    const p2 = doc.findPage(1)
+    const root = doc.getTrailer().get('Root')
+    const str = doc.addObject(doc.newDictionary())
+    str.put('Type', doc.newName('StructTreeRoot'))
+    const mk = (s, pg, k, extra) => {
+      const e = doc.newDictionary()
+      e.put('Type', doc.newName('StructElem'))
+      e.put('S', doc.newName(s))
+      e.put('P', str)
+      if (pg) e.put('Pg', pg)
+      e.put('K', k)
+      for (const [kk, v] of Object.entries(extra)) e.put(kk, doc.newString(v))
+      return doc.addObject(e)
+    }
+    const mcr = doc.newDictionary()
+    mcr.put('Type', doc.newName('MCR'))
+    mcr.put('Pg', p2)
+    mcr.put('MCID', 0)
+    const k = doc.newArray()
+    k.push(mk('P', p1, 0, { ActualText: 'Results came back with normal values' }))
+    k.push(mk('Figure', p1, 1, { Alt: 'Chart without values, drawn in blue' }))
+    k.push(mk('P', p1, 2, { T: 'Closing notes', ActualText: 'Other paragraph that stays as it was.' }))
+    k.push(mk('P', null, mcr, { ActualText: 'Page two text without the patient name.' }))
+    str.put('K', k)
+    root.put('StructTreeRoot', str)
+    writeFileSync(dest, new Uint8Array(doc.saveToBuffer('').asUint8Array()))
+  } finally {
+    doc.destroy?.()
+  }
+}
 const tightPage = (lead) =>
   ['line one alpha bravo charlie', 'line two delta echo foxtrot', 'Kilo middle Lima word here', 'line four golf hotel india', 'line five juliet mike oscar']
     .map((l, i) => `BT /F1 10 Tf 72 ${700 - i * lead} Td (${l}) Tj ET`)
@@ -139,6 +267,10 @@ try {
   buildPages(ACTUALTEXT, ['/Span <</ActualText (PATIENTNAME)>> BDC BT /F1 12 Tf 72 700 Td (Johnny) Tj ET EMC BT /F1 12 Tf 72 680 Td (Tail line) Tj ET'])
   buildPages(WHITEBOX, ['BT /F1 12 Tf 72 700 Td (A plain line on top) Tj ET 1 0 0 rg BT /F1 12 Tf 72 620 Td (Visible SECRET123 hidden) Tj ET 1 1 1 rg 150 616 80 16 re f'])
   buildPages(TIGHT, [tightPage(7.5), tightPage(9)])
+  buildFormInline()
+  buildStruct()
+  buildStruct2()
+  for (const [k, c] of Object.entries(DECOR)) buildPages(`derived/edittext-decor-${k}.pdf`, [c])
   // inline images with an abbreviated Indexed colour space and ASCIIHex data
   buildPages(INLINE, ['BT /F1 12 Tf 72 700 Td (Inline image test line here) Tj ET q 200 0 0 10 72 670 cm BI /W 4 /H 1 /BPC 8 /CS [/I /RGB 3 <FF000000FF000000FFFFFFFF>] /F /AHx ID 00010203> EI Q q 200 0 0 10 72 640 cm BI /W 2 /H 1 /BPC 8 /CS /G /F /AHx ID 40C0> EI Q BT /F1 12 Tf 72 620 Td (Second line below images) Tj ET'])
   // /Contents split in two streams: the first sets a translate (A) or a scale
@@ -950,6 +1082,9 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
     })
   }
 
+  // ----- paragraphs (phase 2) -----
+  paragraphRows({ add, checkPdf, inputFacts, readRel, MIN })
+
   // ----- signed file: allowed, the signature field is dropped -----
   {
     let target = null
@@ -983,6 +1118,870 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
         }
         ctx.check('signature field and widget gone', sigs === 0, `${sigs} left`)
         ctx.metric(`"${target.old}" edited in ${e.ms}ms, signature removed`)
+      },
+    })
+  }
+}
+
+// ---------- paragraphs (phase 2) ----------
+// Glyphs of a page from MuPDF (raw, no ActualText): { c, x, y } origins.
+function glyphsOf(bytes, idx) {
+  const d = mupdf.Document.openDocument(new Uint8Array(bytes), 'application/pdf')
+  const out = []
+  try {
+    const st = d.loadPage(idx).toStructuredText('preserve-whitespace,ignore-actualtext')
+    st.walk({
+      onChar(c, origin, font, size, quad) {
+        font.constructor._finalizer?.unregister(font)
+        if (c.trim()) out.push({ c, x: origin[0], y: origin[1], q: [...quad], font: font.getName() })
+      },
+    })
+    st.destroy?.()
+  } finally {
+    d.destroy?.()
+  }
+  return out
+}
+// Glyphs outside `box` (view space; page origin may be offset) that moved or vanished.
+function movedOutside(before, after, box, bounds) {
+  const key = (g) => `${g.c}@${Math.round(g.x * 5)},${Math.round(g.y * 5)}`
+  const have = new Set()
+  for (const g of after) for (const dx of [-1, 0, 1]) for (const dy of [-1, 0, 1]) have.add(`${g.c}@${Math.round(g.x * 5) + dx},${Math.round(g.y * 5) + dy}`)
+  const b = [box[0] + bounds[0] - 1, box[1] + bounds[1] - 1, box[2] + bounds[0] + 1, box[3] + bounds[1] + 1]
+  return before.filter((g) => {
+    const cx = (g.q[0] + g.q[2] + g.q[4] + g.q[6]) / 4
+    const cy = (g.q[1] + g.q[3] + g.q[5] + g.q[7]) / 4
+    if (cx >= b[0] && cx <= b[2] && cy >= b[1] && cy <= b[3]) return false
+    return !have.has(key(g))
+  })
+}
+function pageBounds(bytes, idx) {
+  const d = mupdf.Document.openDocument(new Uint8Array(bytes), 'application/pdf')
+  try {
+    return [...d.loadPage(idx).getBounds()]
+  } finally {
+    d.destroy?.()
+  }
+}
+
+// First paragraph on pages 1..pages that is editable and passes pred(g, m).
+export async function pickPara(bytes, pred, { pages = 3 } = {}) {
+  const d = mupdf.Document.openDocument(new Uint8Array(bytes), 'application/pdf')
+  const n = d.countPages()
+  d.destroy?.()
+  for (let p = 1; p <= Math.min(n, pages); p++) {
+    const m = await pageTextModel(bytes, p)
+    for (const g of m.paragraphs) if (g.editable && (await pred(g, m))) return { pageNum: p, paragraphId: g.id, old: g.text, g, m }
+  }
+  return null
+}
+
+// Text below the paragraph within `k` line gaps in its x range (view space).
+const roomBelow = (g, m, k) => {
+  const lead = (g.bbox[3] - g.bbox[1]) / Math.max(1, g.lines)
+  const zone = [g.bbox[0], g.bbox[3] + 0.5, g.bbox[2], g.bbox[3] + k * lead]
+  const hit = m.runs.some((r) => !g.runIds.includes(r.id) && r.bbox[0] < zone[2] && r.bbox[2] > zone[0] && r.bbox[1] < zone[3] && r.bbox[3] > zone[1])
+  return !hit && zone[3] < m.page.height - 30
+}
+const wordsOf = (s) => s.split(/\s+/).filter(Boolean)
+
+function paragraphRows({ add, checkPdf, inputFacts, readRel, MIN }) {
+  // pick(bytes) -> target; edits(target, all doc text) -> [{ name, text, fit, want }]
+  // want: { refused, grows, squeezed } expectations; check(ctx, target, rec) extra checks
+  const row = (id, rel, pick, edits, extra) => {
+    let target = null
+    let eds = null
+    add({
+      id: `edittext-para-${id}`,
+      tool: 'edittext',
+      op: 'edittext:para',
+      files: [rel],
+      timeout: 3 * MIN,
+      async prepare() {
+        const bytes = readRel(rel)
+        target = await pick(bytes)
+        if (!target) return { skip: 'no suitable paragraph' }
+        target.input = bytes
+        eds = edits(target, docText(bytes).join('\n'))
+        return { pageNum: target.pageNum, paragraphId: target.paragraphId, old: target.old, edits: eds.map(({ want, ...e }) => e) }
+      },
+      async validate(ctx) {
+        const meta = ctx.meta
+        ctx.check('browser model agrees with Node', meta.para?.text === target.old && meta.para.editable, `${meta.para?.why ?? ''} ${meta.para?.text?.slice(0, 40)}`)
+        const input = readRel(rel)
+        const idx = target.pageNum - 1
+        const facts = []
+        for (const [k, ed] of eds.entries()) {
+          const rec = meta.edits[k]
+          const rep = rec?.report
+          const want = ed.want ?? {}
+          if (want.refused) {
+            ctx.check(`${ed.name}: refused ${want.refused}`, rep?.refused === want.refused, `refused ${rep?.refused}`)
+            ctx.check(`${ed.name}: file unchanged`, rec?.unchanged === true)
+            facts.push(`${ed.name} refused ${rep?.refused} ${rec?.ms}ms`)
+            continue
+          }
+          ctx.check(`${ed.name}: not refused`, rep && !rep.refused, rep?.refused ?? 'no report')
+          if (!rep || rep.refused) continue
+          const p = await checkPdf(ctx, `${ed.name}.pdf`, { pages: (await inputFacts(rel)).pdfjs.pages, label: ed.name })
+          if (!p?.pdfjs.ok || !p.mupdf.ok) continue
+          const out = ctx.out(`${ed.name}.pdf`)
+          // removed words that were unique in the file are gone (text layer, raw
+          // glyphs, page bytes); a word hyphenated across lines in the source
+          // or still inside a new word is not counted
+          const all = squash(docText(input).join(''))
+          const rawPara = squash(target.m.runs.filter((r) => target.g.runIds.includes(r.id)).map((r) => r.text).join(''))
+          const left = new Map()
+          for (const w of wordsOf(ed.text)) left.set(w, (left.get(w) ?? 0) + 1)
+          const gone = wordsOf(target.old).filter((w) => {
+            if (left.get(w) > 0) {
+              left.set(w, left.get(w) - 1)
+              return false
+            }
+            return w.length >= 4 && count(all, squash(w)) === 1 && count(rawPara, squash(w)) === 1 && !squash(ed.text).includes(squash(w))
+          })
+          const def = docText(out)
+          const raw = docText(out, 'preserve-whitespace,ignore-actualtext')
+          const still = gone.filter((w) => count(squash(def.join('')), squash(w)) + count(squash(raw.join('')), squash(w)) > 0)
+          ctx.check(`${ed.name}: removed words gone (MuPDF, with and without ActualText)`, still.length === 0, `${gone.length} checked, left: ${still.join(', ')}`)
+          const strs = pageStrings(out, idx)
+          const inBytes = gone.filter((w) => strs.includes(w))
+          ctx.check(`${ed.name}: removed words gone from the page bytes`, inBytes.length === 0, inBytes.join(', '))
+          // new text extractable in order
+          const rtl = /[\p{Script=Arabic}\p{Script=Hebrew}]/u.test(ed.text)
+          const noMarks = (x) => squash(x).replace(/\p{M}/gu, '')
+          // real output, hyphens as printed (no hyphen folding: it hid moved breaks)
+          const dehyph = (x) => squash(x)
+          const okMu = dehyph(def[idx]).includes(dehyph(ed.text)) || (rtl && noMarks(def[idx]).includes(noMarks(ed.text)))
+          if (want.deleted) {
+            ctx.check(`${ed.name}: deleted (no font, no lines, no box)`, rep.font === null && rep.lines === 0 && rep.box === null, JSON.stringify({ font: rep.font, lines: rep.lines }))
+            const words = wordsOf(target.old).filter((w) => /^\p{L}{4,}$/u.test(w) && count(squash(docText(input)[idx]), w) === 1 && count(rawPara, w) === 1)
+            const leftover = words.filter((w) => squash(def[idx]).includes(w) || squash(raw[idx]).includes(w) || strs.includes(w))
+            ctx.check(`${ed.name}: paragraph text gone (text layer, raw glyphs, page bytes)`, words.length > 0 && leftover.length === 0, `${words.length} checked, left: ${leftover.join(', ')}`)
+          } else {
+            // MuPDF's page order can put a line next to another paragraph's
+            // text on the same row; word order is checked on the model below
+            const hadMu = new Map()
+            for (const w of wordsOf(target.old)) hadMu.set(w, (hadMu.get(w) ?? 0) + 1)
+            const addedMu = wordsOf(ed.text).filter((w) => (hadMu.get(w) > 0 ? (hadMu.set(w, hadMu.get(w) - 1), false) : true))
+            const missMu = addedMu.filter((w) => !dehyph(def[idx]).includes(dehyph(w)) && !(rtl && noMarks(def[idx]).includes(noMarks(w))))
+            ctx.check(`${ed.name}: added words in MuPDF text`, missMu.length === 0, missMu.join(' '))
+            ctx.check(`${ed.name}: new text in MuPDF text, in order`, okMu, `"${ed.text.slice(0, 50)}" not found`, { soft: true })
+          }
+          const pj = p.pdfjs.texts?.[idx] ?? ''
+          // pdf.js: every added word must read back; the whole text in order is
+          // soft (pdf.js splits raised marks like author stars into their own items)
+          if (!want.deleted) {
+            const had = new Map()
+            for (const w of wordsOf(target.old)) had.set(w, (had.get(w) ?? 0) + 1)
+            const added = wordsOf(ed.text).filter((w) => (had.get(w) > 0 ? (had.set(w, had.get(w) - 1), false) : true))
+            const miss = added.filter((w) => !dehyph(pj).includes(dehyph(w)))
+            ctx.check(`${ed.name}: added words in pdf.js text`, miss.length === 0, miss.join(' '), { soft: COMPLEX.test(ed.text) })
+            ctx.check(`${ed.name}: new text in pdf.js text, in order`, dehyph(pj).includes(dehyph(ed.text)), 'not found', { soft: true })
+          }
+          // nothing outside the paragraph changed or moved; ink in the new box
+          const beforeImg = render(input, idx)
+          const after = render(out, idx)
+          const diff = pixelsOutside(beforeImg, after, [rep.changedBox])
+          ctx.check(`${ed.name}: no pixel changed outside the paragraph box`, diff.outside === 0, `${diff.outside} px (max delta ${diff.max})`)
+          const moved = movedOutside(glyphsOf(input, idx), glyphsOf(out, idx), rep.changedBox, pageBounds(input, idx))
+          ctx.check(`${ed.name}: other glyphs unmoved`, moved.length === 0, `${moved.length} moved: ${moved.slice(0, 5).map((g) => g.c).join('')}`)
+          if (want.deleted) {
+            ctx.check(`${ed.name}: no ink left in the old box`, inkIn(after, rep.changedBox).ink === 0, `${inkIn(after, rep.changedBox).ink} px`)
+            facts.push(`${ed.name} deleted ${rec.ms}+${rec.finalizeMs}ms`)
+            continue
+          }
+          ctx.check(`${ed.name}: ink in the new box`, inkIn(after, rep.box).ink > 0)
+          // the UI can open the result as a paragraph again
+          // (right-to-left lines with wide spacing come back as one paragraph per line)
+          const again = rec.after?.find((x) => squash(x.text).includes(squash(ed.text).slice(0, 40)))
+          ctx.check(`${ed.name}: re-read as an editable paragraph`, !!again && again.editable, again ? `${again.id} ${again.lines} lines` : 'not found', { soft: rtl })
+          // words read back as words, spaces kept ("diffi cult" fails here; squash() hid it)
+          const fold = (x) => String(x).replace(/\s+/g, ' ').trim()
+          const allAfter = fold((rec.after ?? []).map((x) => x.text).join(' '))
+          const pool = new Map()
+          for (const w of allAfter.split(' ')) pool.set(w, (pool.get(w) ?? 0) + 1)
+          const broken = wordsOf(ed.text).filter((w) => (pool.get(w) > 0 ? (pool.set(w, pool.get(w) - 1), false) : true))
+          ctx.check(`${ed.name}: every word reads back whole (model, spaces kept)`, broken.length === 0, broken.slice(0, 6).join(' | '), { soft: rtl })
+          // the paragraph reads back as one, exactly the new text (words outside
+          // the edit unchanged, hyphen breaks as they were)
+          const whole = (rec.after ?? []).some((x) => fold(x.text) === fold(ed.text))
+          ctx.check(`${ed.name}: re-read paragraph is exactly the new text (model)`, whole || allAfter.includes(fold(ed.text)), `"${fold(ed.text).slice(0, 60)}"`, { soft: rtl })
+          // no source line-end hyphen moved mid-line: "com-" + "pile" never reads "com-pile" on one line
+          const srcRuns = target.m.runs.filter((r) => target.g.runIds.includes(r.id))
+          const pairs = srcRuns.slice(0, -1).flatMap((r, k) => {
+            const w = r.text.trim().split(/\s+/).pop()
+            const nx = srcRuns[k + 1].text.trim().split(/\s+/)[0]
+            return /[-‐]$/.test(w) && nx ? [`${w}${nx}`] : []
+          })
+          const outLines = docText(out)[idx].split('\n')
+          // (a real compound, kept with its hyphen in the paragraph text, may)
+          const midHyph = pairs.filter((pp) => !target.old.includes(pp) && outLines.some((l) => l.includes(pp)))
+          ctx.check(`${ed.name}: no line-end hyphen moved mid-line`, midHyph.length === 0, midHyph.join(', '))
+          if (want.grows) ctx.check(`${ed.name}: used free space below (more lines, not squeezed)`, rep.lines > target.g.lines && !rep.fit, `${target.g.lines} -> ${rep.lines} lines, fit ${rep.fit}`)
+          if (want.fewer) ctx.check(`${ed.name}: fewer lines`, rep.lines < target.g.lines, `${target.g.lines} -> ${rep.lines}`)
+          ctx.check(`${ed.name}: edit under 5 s`, rec.ms < 5000, `${rec.ms} ms`)
+          ctx.check(`${ed.name}: edit under 2.5 s`, rec.ms < 2500, `${rec.ms} ms`, { soft: true })
+          if (extra) await extra(ctx, target, ed, rec, out)
+          facts.push(`${ed.name} ${rep.lines}L ${rep.font}${rep.fit ? ` fit ${rep.fit}` : ''} ${rec.ms}+${rec.finalizeMs}ms`)
+        }
+        ctx.metric(`${target.paragraphId} (${target.g.align}, ${target.g.lines} lines): ${facts.join('; ')}`)
+      },
+    })
+  }
+
+  const longPara = (minLines) => (g) => g.dir === 'ltr' && g.lines >= minLines && wordsOf(g.text).length >= 20
+  // shorter: first half of the words
+  const shorter = (t) => {
+    const w = wordsOf(t.old)
+    return [{ name: 'shorter', text: w.slice(0, Math.ceil(w.length * 0.5)).join(' ') + '.', want: { fewer: true } }]
+  }
+  for (const rel of ['reports/pdfjs-tracemonkey.pdf', 'reports/arxiv-1706.03762-attention.pdf', 'reports/arxiv-1810.04805-bert.pdf']) row(`shorter-${short(rel)}`, rel, (b) => pickPara(b, longPara(4)), shorter)
+
+  // longer into free space below (no squeeze)
+  const EXTRA = 'This added sentence makes the paragraph longer than it was before.'
+  const longer = (t) => [{ name: 'longer', text: `${t.old} ${EXTRA}`, want: { grows: true } }]
+  const freeBelow = (g, m) => g.dir === 'ltr' && g.lines >= 2 && wordsOf(g.text).length >= 10 && roomBelow(g, m, 4)
+  for (const rel of ['reports/pdfjs-tracemonkey.pdf', 'reports/arxiv-1512.03385-resnet.pdf', 'invoices/aws-invoice.pdf']) row(`longer-${short(rel)}`, rel, (b) => pickPara(b, freeBelow), longer)
+
+  // justified: a word in the middle gets longer; the result is still justified
+  const justified = (g) => g.align === 'justify' && g.lines >= 4 && g.dir === 'ltr'
+  const midWord = (t, all) => {
+    const w = wordsOf(t.old)
+    const k = w.findIndex((x, i) => i > w.length / 3 && /^\p{L}{5,}$/u.test(x) && count(squash(all), x) === 1)
+    const k2 = k >= 0 ? k : Math.floor(w.length / 2)
+    const nw = w.slice()
+    nw[k2] = `${w[k2]}ness`
+    return [{ name: 'justified', text: nw.join(' ') }]
+  }
+  const stillJustified = async (ctx, t, ed, rec) => {
+    const again = rec.after?.find((x) => squash(x.text).includes(squash(ed.text).slice(0, 40)))
+    ctx.check(`${ed.name}: still justified`, again?.align === 'justify', `align ${again?.align}`)
+  }
+  for (const rel of ['reports/pdfjs-tracemonkey.pdf', 'reports/arxiv-1810.04805-bert.pdf', 'reports/arxiv-1512.03385-resnet.pdf']) row(`justified-${short(rel)}`, rel, (b) => pickPara(b, justified), midWord, stillJustified)
+
+  // a bold word next to edited regular words stays bold
+  const boldPara = (g, m) => {
+    if (g.dir !== 'ltr') return false
+    const runs = m.runs.filter((r) => g.runIds.includes(r.id))
+    return runs.some((r) => r.bold) && runs.some((r) => !r.bold && r.words.length >= 3)
+  }
+  const boldEdit = (t, all) => {
+    const runs = t.m.runs.filter((r) => t.g.runIds.includes(r.id))
+    t.bold = runs.find((r) => r.bold).words.map((w) => w.text)
+    const reg = runs.filter((r) => !r.bold).flatMap((r) => r.words.map((w) => w.text)).find((x) => /^\p{L}{4,}$/u.test(x) && count(squash(all), x) === 1)
+    const w = wordsOf(t.old)
+    const k = w.indexOf(reg)
+    const nw = w.slice()
+    if (k >= 0) nw[k] = 'Changed'
+    else nw.push('Changed')
+    return [{ name: 'bold', text: nw.join(' ') }]
+  }
+  // bold glyphs of the word on the page, before and after
+  const boldCount = (bytes, idx, word) => {
+    const gs = glyphsOf(bytes, idx)
+    let n = 0
+    for (let i = 0; i + word.length <= gs.length; i++) {
+      if (gs.slice(i, i + word.length).map((g) => g.c).join('') === word && /bold|medi|black|heavy|semibold|demi|-bd\b|bd$/i.test(gs[i].font.replace(/^[A-Z]{6}\+/, ''))) n++
+    }
+    return n
+  }
+  const boldKept = async (ctx, t, ed, rec, out) => {
+    // a word whose own glyphs are bold (a run is "bold" by its first glyph only)
+    const word = t.bold.find((x) => /^\p{L}{3,}$/u.test(x) && boldCount(t.input, t.pageNum - 1, x) > 0) ?? t.bold.find((x) => boldCount(t.input, t.pageNum - 1, x) > 0) ?? t.bold[0]
+    const n0 = boldCount(t.input, t.pageNum - 1, word)
+    const n1 = boldCount(out, t.pageNum - 1, word)
+    ctx.check(`${ed.name}: bold word "${word}" still bold`, n0 > 0 && n1 === n0, `${n0} -> ${n1} bold`)
+  }
+  for (const rel of ['reports/pdfjs-tracemonkey.pdf', 'forms/irs-fw9.pdf', 'reports/arxiv-1706.03762-attention.pdf']) row(`bold-${short(rel)}`, rel, (b) => pickPara(b, boldPara), boldEdit, boldKept)
+
+  // no room: much longer text with other text right below, page unchanged
+  const blocked = (g, m) => g.dir === 'ltr' && g.lines >= 3 && !roomBelow(g, m, 1.5)
+  const noRoom = (t) => [{ name: 'noroom', text: `${t.old} ${Array(8).fill(EXTRA).join(' ')}`, want: { refused: 'no-room' } }]
+  for (const rel of ['reports/pdfjs-tracemonkey.pdf', 'reports/arxiv-1810.04805-bert.pdf', 'reports/arxiv-1512.03385-resnet.pdf']) row(`noroom-${short(rel)}`, rel, (b) => pickPara(b, blocked), noRoom)
+
+  // two letters swapped inside a word: same lines, same font, no overflow
+  const swap = (t, all) => {
+    const w = wordsOf(t.old)
+    // (two different letters, else the swap changes nothing)
+    const k = w.findIndex((x, i) => i > 3 && i < w.length - 3 && /^\p{Ll}{6,}$/u.test(x) && x[1] !== x[2] && count(squash(all), x) === 1)
+    const nw = w.slice()
+    const x = w[k]
+    nw[k] = x[0] + x[2] + x[1] + x.slice(3)
+    return [{ name: 'swap', text: nw.join(' ') }]
+  }
+  const sameLook = async (ctx, t, ed, rec) => {
+    const r = rec.report
+    ctx.check(`${ed.name}: original font, same lines, no overflow, no squeeze`, r.font === 'original' && r.lines === t.g.lines && !r.overflow && !r.fit, JSON.stringify({ font: r.font, fallbackName: r.fallbackName, lines: `${t.g.lines}->${r.lines}`, overflow: r.overflow, fit: r.fit }))
+  }
+  const swapPara = (g, m) => longPara(4)(g) && wordsOf(g.text).some((x, i, a) => i > 3 && i < a.length - 3 && /^\p{Ll}{6,}$/u.test(x))
+  for (const rel of ['reports/pdfjs-tracemonkey.pdf', 'reports/arxiv-1706.03762-attention.pdf', 'reports/arxiv-1810.04805-bert.pdf']) row(`swap-${short(rel)}`, rel, (b) => pickPara(b, swapPara), swap, sameLook)
+
+  // an unchanged word with a TeX math sign (CMSY "∗", no letter mapping back
+  // to a code) does not block editing the author list
+  row('authors-pdfjs-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (b) => pickPara(b, (g) => g.text.includes('Brendan')), (t) => [{ name: 'authors', text: t.old.replace('Brendan', 'Brandon') }], async (ctx, t, ed, rec, out) => {
+    ctx.check('authors: original font', rec.report.font === 'original', `${rec.report.font} ${rec.report.fallbackName ?? ''}`)
+    const stars = (b) => glyphsOf(b, 0).filter((g) => g.c === '∗').length
+    ctx.check('authors: every star kept', stars(out) === stars(t.input) && stars(out) > 0, `${stars(t.input)} -> ${stars(out)}`)
+  })
+
+  // P0-1 (review): removed words leave no trace anywhere in the final file,
+  // structure tree included (StructElem /ActualText, /Alt), replace and delete
+  const nowhere = (word) => async (ctx, t, ed, rec, out) => {
+    const hits = rawScan(out, [word]).hits
+    ctx.check(`${ed.name}: "${word}" nowhere in the final file (streams, strings, structure tree)`, hits.length === 0, hits.slice(0, 3).map((h) => h.where).join('; '))
+  }
+  row('struct-synthetic', STRUCT, (b) => pickPara(b, (g) => g.text.includes('Johnsonwell')), (t) => [{ name: 'replace', text: t.old.replace('Johnsonwell', 'Smithers') }, { name: 'delete', text: '', want: { deleted: true } }], nowhere('Johnsonwell'))
+  {
+    // a tagged real file: a word unique in the file, not in a bookmark title
+    let word = null
+    const pickTagged = async (b) => {
+      const d = mupdf.Document.openDocument(new Uint8Array(b), 'application/pdf')
+      const titles = JSON.stringify(d.loadOutline() ?? [])
+      d.destroy?.()
+      // unique in the whole file (all pages), so "nowhere" is provable
+      const all = squash(docText(b, 'preserve-whitespace', Infinity).join(''))
+      // its streams in the file are this page's content only (not metadata or another page)
+      const pageStreams = (p) => {
+        const dd = mupdf.Document.openDocument(new Uint8Array(b), 'application/pdf').asPDF()
+        try {
+          const c = dd.findPage(p - 1).get('Contents')
+          return new Set((c.isArray() ? Array.from({ length: c.length }, (_, i) => c.get(i)) : [c]).map((x) => x.asIndirect()))
+        } finally {
+          dd.destroy?.()
+        }
+      }
+      return pickPara(b, (g) => {
+        if (g.dir !== 'ltr' || wordsOf(g.text).length < 8) return false
+        const own = pageStreams(+g.id.slice(1, g.id.indexOf('-')))
+        word = wordsOf(g.text).find((w) => /^\p{L}{7,}$/u.test(w) && count(all, w) === 1 && !titles.includes(w) && rawScan(b, [w]).hits.every((h) => !/stream/.test(h.where) || own.has(+(/obj (\d+)/.exec(h.where)?.[1] ?? -1))))
+        return !!word
+      })
+    }
+    row('struct-us-budget', 'reports/us-budget-2024.pdf', pickTagged, (t) => [{ name: 'replace', text: t.old.replace(word, 'Qwertyuiop') }, { name: 'delete', text: '', want: { deleted: true } }], async (...a) => nowhere(word)(...a))
+  }
+
+  // P1-2 / P1-3 (review): new lines never cross a frame or a table rule drawn
+  // before the text; an underline drawn after it does not block an edit
+  const decorRel = (k) => `derived/edittext-decor-${k}.pdf`
+  const quickPara = (b) => pickPara(b, (g) => g.text.startsWith('The quick'))
+  const LONG = (t) => `${t.old} This added sentence makes the paragraph longer than it was before, by a lot of extra words here.`
+  for (const k of ['frame', 'grid']) row(`decor-${k}`, decorRel(k), quickPara, (t) => [{ name: 'grow', text: LONG(t), want: { refused: 'no-room' } }])
+  row('decor-underline', decorRel('underline'), quickPara, (t) => [{ name: 'shorter', text: t.old.replace('brown', 'red') }], async (ctx, t, ed, rec) => {
+    ctx.check(`${ed.name}: applied, underline reported as kept in place`, !rec.report.refused && rec.report.decorations === true, `refused ${rec.report.refused} decorations ${rec.report.decorations}`)
+  })
+
+  // P1-4 (review): a word edit, then a paragraph edit of the same paragraph:
+  // the redrawn line stays in its paragraph (no hole, no false break) and
+  // the paragraph edit replaces it inside the column
+  for (const rel of ['reports/pdfjs-tracemonkey.pdf', 'reports/arxiv-1810.04805-bert.pdf']) {
+    let t = null
+    add({
+      id: `edittext-para-word-then-para-${short(rel)}`,
+      tool: 'edittext',
+      op: 'edittext:wordpara',
+      files: [rel],
+      timeout: 3 * MIN,
+      async prepare() {
+        const b = readRel(rel)
+        const all = squash(docText(b).join(''))
+        const p = await pickPara(b, (g) => g.dir === 'ltr' && g.lines >= 4)
+        if (!p) return { skip: 'no paragraph' }
+        const run = p.m.runs.find((r) => r.id === p.g.runIds[1])
+        const w = run?.words.find((x, i) => i >= 1 && i < run.words.length - 2 && /^\p{Ll}{5,}$/u.test(x.text) && !all.includes(x.text.toUpperCase()))
+        if (!w) return { skip: 'no word' }
+        t = { ...p, runId: run.id, wordIndex: w.i, word: w.text, text: w.text.toUpperCase() }
+        return { pageNum: p.pageNum, runId: run.id, wordIndex: w.i, old: w.text, text: t.text }
+      },
+      async validate(ctx) {
+        const m = ctx.meta
+        const fold = (x) => String(x).replace(/\s+/g, ' ').trim()
+        ctx.check('word edit applied', !m.word.refused, m.word.refused)
+        const want = fold(t.old.replace(t.word, t.text))
+        ctx.check('after the word edit the paragraph is whole (no hole, no false break)', m.para && fold(m.para.text) === want && !m.para.text.includes('\n') === !t.old.includes('\n'), m.para ? m.para.text.slice(0, 120) : 'not found')
+        const r = m.edit?.report
+        ctx.check('paragraph edit applied', r && !r.refused, r?.refused ?? 'no edit')
+        if (!r || r.refused) return
+        ctx.check('nothing past the column', r.box[2] <= t.g.bbox[2] + 1, `${r.box[2]} vs ${t.g.bbox[2]}`)
+        ctx.check('every word reads back whole, in order', fold((m.after ?? []).join(' ')).includes(fold(m.edit.text)), m.edit.text.slice(0, 60))
+        const diff = pixelsOutside(render(ctx.out('word.pdf'), t.pageNum - 1), render(ctx.out('para.pdf'), t.pageNum - 1), [r.changedBox])
+        ctx.check('no pixel changed outside the paragraph box', diff.outside === 0, `${diff.outside} px`)
+        ctx.metric(`"${t.word}" -> "${t.text}", then ${t.paragraphId} ${r.lines}L ${r.font} ${m.edit.ms}ms`)
+      },
+    })
+  }
+
+  // Blind test P0-3: the same paragraph edited twice (tracemonkey p2, "Nested
+  // loops ..."): drop the last 3 sentences, then one sentence in the middle.
+  // Untouched words stay whole ("difficult", "first", "find", "naïve"), no
+  // stretched lines, still editable after.
+  {
+    const rel = 'reports/pdfjs-tracemonkey.pdf'
+    const CUT = 'When the inner loop exits, the VM would detect that a different branch was taken.'
+    let orig = null
+    add({
+      id: 'edittext-para-twice-pdfjs-tracemonkey',
+      tool: 'edittext',
+      op: 'edittext:parachain',
+      files: [rel],
+      timeout: 3 * MIN,
+      async prepare() {
+        const m = await pageTextModel(readRel(rel), 2)
+        orig = m.paragraphs.find((x) => x.text.startsWith('Nested loops'))
+        if (!orig) return { skip: 'paragraph not found' }
+        return { pageNum: 2, prefix: 'Nested loops', steps: [{ dropLast: 3 }, { remove: CUT }] }
+      },
+      async validate(ctx) {
+        const m = ctx.meta
+        const fold = (x) => String(x).replace(/\s+/g, ' ').trim()
+        ctx.check('both edits applied', m.steps.length === 2 && m.steps.every((s) => s.report && !s.report.refused), JSON.stringify(m.steps.map((s) => s.report?.refused ?? (s.lost ? 'lost' : 'ok'))))
+        const want = fold(orig.text.split(/(?<=\.)\s+/).slice(0, -3).join(' ').replace(`${CUT} `, ''))
+        ctx.check('second edit opened with the first result, words whole', m.steps[1] && fold(m.steps[1].before.text) === fold(orig.text.split(/(?<=\.)\s+/).slice(0, -3).join(' ')), m.steps[1]?.before.text.slice(0, 120))
+        ctx.check('final text exactly the expected words', m.final && fold(m.final.text) === want, m.final?.text.slice(0, 160))
+        ctx.check('still an editable justified paragraph inside its column', m.final?.editable && m.final.align === 'justify' && m.final.bbox[2] <= orig.bbox[2] + 1 && m.final.bbox[0] >= orig.bbox[0] - 1, JSON.stringify(m.final && { why: m.final.why, align: m.final.align, bbox: m.final.bbox }))
+        const words = ['difficult', 'first', 'naïve']
+        const txt = docText(ctx.out('chain.pdf'))[1]
+        const bad = words.filter((w) => !txt.includes(w) && !(w === 'naïve' && txt.includes('na¨ıve')))
+        ctx.check('untouched words whole in the MuPDF text', bad.length === 0, bad.join(', '))
+        // review 2 N8: the blind failure stretched two lines across the column
+        noStretch(ctx, readRel(rel), ctx.out('chain.pdf'), 1, orig.bbox, m.final?.bbox ?? orig.bbox)
+        ctx.metric(`${m.steps.map((s) => `${s.report?.lines}L ${s.ms}ms`).join(', ')}; final ${m.final?.lines} lines`)
+      },
+    })
+  }
+
+  // Blind test P1-1: edited words read in place and in order (poppler when
+  // installed, else MuPDF only): title words "Dynamic" and "Trace-based"
+  {
+    const rel = 'reports/pdfjs-tracemonkey.pdf'
+    let batch = null
+    add({
+      id: 'edittext-order-title-pdfjs-tracemonkey',
+      tool: 'edittext',
+      op: 'edittext:batch',
+      files: [rel],
+      timeout: 2 * MIN,
+      async prepare() {
+        const t = await findWord(readRel(rel), 'Dynamic')
+        if (!t) return { skip: 'no word' }
+        batch = [{ runId: t.runId, wordIndex: t.wordIndex, old: 'Dynamic', text: 'Fast' }, { runId: t.runId, wordIndex: 0, old: 'Trace-based', text: 'Trace-driven' }]
+        return { pageNum: 1, batch }
+      },
+      async validate(ctx) {
+        const want = 'Trace-driven Just-in-Time Type Specialization for Fast'
+        ctx.check('both applied', ctx.meta.report.every((r) => !r.refused), ctx.meta.report.map((r) => r.refused).join(','))
+        const out = ctx.out('batch.pdf')
+        // the new draw sits where the old text was in the content: MuPDF and
+        // pdf.js (content order) read it in place too
+        ctx.check('drawn in place in the content (order inline)', ctx.meta.report.every((r) => r.order === 'inline'), ctx.meta.report.map((r) => r.order).join(','))
+        ctx.check('MuPDF reads the edited title in order', docText(out)[0].replace(/\s+/g, ' ').includes(`${want} Languages`), docText(out)[0].slice(0, 80))
+        const p = await checkPdf(ctx, 'batch.pdf', { pages: (await inputFacts(rel)).pdfjs.pages })
+        const pj = (p?.pdfjs.texts?.[0] ?? '').replace(/\s+/g, ' ')
+        ctx.check('pdf.js reads the edited title in order', pj.includes(`${want} Languages`), pj.slice(0, 80))
+        let pop = null
+        try {
+          const { execFileSync } = await import('node:child_process')
+          const { tmpdir } = await import('node:os')
+          const tmp = join(tmpdir(), `swisspdf-order-${process.pid}.pdf`)
+          writeFileSync(tmp, out)
+          pop = execFileSync('pdftotext', ['-f', '1', '-l', '1', tmp, '-'], { encoding: 'utf8', timeout: 20000 })
+        } catch {
+          pop = null
+        }
+        if (pop != null) ctx.check('poppler (pdftotext) reads the edited title in order, in place', pop.replace(/\s+/g, ' ').includes(`${want} Languages`), pop.slice(0, 120))
+        else ctx.metric('pdftotext not installed: poppler order not checked')
+      },
+    })
+  }
+
+  // reading order of a paragraph edit (blind P1-1): attention p2 intro, a
+  // pdfTeX page drawn in one text object; the new paragraph reads between
+  // the heading and the next paragraph in MuPDF, pdf.js and poppler
+  const pop = async (bytes, page) => {
+    try {
+      const { execFileSync } = await import('node:child_process')
+      const { tmpdir } = await import('node:os')
+      const tmp = join(tmpdir(), `swisspdf-order-${process.pid}.pdf`)
+      writeFileSync(tmp, bytes)
+      return execFileSync('pdftotext', ['-f', String(page), '-l', String(page), tmp, '-'], { encoding: 'utf8', timeout: 20000 })
+    } catch {
+      return null
+    }
+  }
+  const between = (txt, a, mid, b) => {
+    const t = String(txt).replace(/\s+/g, ' ')
+    const i = t.indexOf(a)
+    const j = t.indexOf(mid, i + 1)
+    const k = t.indexOf(b, j + 1)
+    return i >= 0 && j > i && k > j
+  }
+  row('order-attention-intro', 'reports/arxiv-1706.03762-attention.pdf', (b) => pickPara(b, (g) => g.text.startsWith('Recurrent neural networks, long'), { pages: 2 }), (t) => [{ name: 'intro', text: `${t.old} They remain popular.` }], async (ctx, t, ed, rec, out) => {
+    ctx.check(`${ed.name}: drawn in place in the content (order inline)`, rec.report.order === 'inline', rec.report.order)
+    const mu = docText(out)[t.pageNum - 1]
+    ctx.check(`${ed.name}: MuPDF reads it between the heading and the next paragraph`, between(mu, 'Introduction', 'They remain popular.', 'Recurrent models typically'))
+    const p = await checkPdf(ctx, `${ed.name}.pdf`, { pages: (await inputFacts('reports/arxiv-1706.03762-attention.pdf')).pdfjs.pages, label: `${ed.name} order` })
+    ctx.check(`${ed.name}: pdf.js reads it between the heading and the next paragraph`, between(p?.pdfjs.texts?.[t.pageNum - 1] ?? '', 'Introduction', 'They remain popular.', 'Recurrent models typically'))
+    const pp = await pop(out, t.pageNum)
+    if (pp != null) ctx.check(`${ed.name}: poppler reads it in place`, between(pp, 'Introduction', 'They remain popular.', 'Recurrent models typically'))
+  })
+  // W-9 label in tagged content inside a text object: no safe cut there, so
+  // the draw is appended; poppler (layout order) still reads it in place
+  {
+    const rel = 'forms/irs-fw9.pdf'
+    add({
+      id: 'edittext-order-w9-company',
+      tool: 'edittext',
+      op: 'edittext:batch',
+      files: [rel],
+      timeout: 2 * MIN,
+      async prepare() {
+        const t = await findWord(readRel(rel), 'Business')
+        return t ? { pageNum: 1, batch: [{ runId: t.runId, wordIndex: t.wordIndex, old: 'Business', text: 'Company' }] } : { skip: 'no word' }
+      },
+      async validate(ctx) {
+        const r = ctx.meta.report[0]
+        ctx.check('applied', !r.refused, r.refused)
+        ctx.check('order reported', r.order === 'inline' || r.order === 'appended', r.order)
+        const out = ctx.out('batch.pdf')
+        const pp = await pop(out, 1)
+        if (pp != null) ctx.check('poppler reads the label in place', pp.replace(/\s+/g, ' ').includes('2 Company name/disregarded entity name'), pp.slice(0, 100))
+        ctx.metric(`order ${r.order}`)
+      },
+    })
+  }
+
+  // ----- final round (review 2 + blind round 2) -----
+  // word gaps of a paragraph's lines (all but the last): widest per line
+  const lineGaps = (bytes, idx, bbox) => {
+    const bd = pageBounds(bytes, idx)
+    const box = [bbox[0] + bd[0] - 1, bbox[1] + bd[1] - 1, bbox[2] + bd[0] + 1, bbox[3] + bd[1] + 1]
+    const gs = glyphsOf(bytes, idx).filter((gl) => gl.x >= box[0] && gl.x <= box[2] && gl.y >= box[1] && gl.y <= box[3])
+    const rowsY = new Map()
+    for (const gl of gs) (rowsY.get(Math.round(gl.y)) ?? rowsY.set(Math.round(gl.y), []).get(Math.round(gl.y))).push(gl)
+    const lines = [...rowsY.entries()].sort((a, b) => a[0] - b[0]).map(([, l]) => l.sort((a, b) => a.x - b.x))
+    const all = []
+    const widest = lines.slice(0, -1).map((l) => {
+      const size = Math.abs(l[0].q[7] - l[0].q[1]) || 9
+      const g = l.slice(1).map((gl, i) => Math.min(gl.q[0], gl.q[6]) - Math.max(l[i].q[2], l[i].q[4])).filter((x) => x > 0.15 * size)
+      all.push(...g)
+      return g.length ? Math.max(...g) : 0
+    })
+    const med = all.length ? all.sort((a, b) => a - b)[all.length >> 1] : 0
+    return { widest, med, max: widest.length ? Math.max(...widest) : 0 }
+  }
+  const noStretch = (ctx, input, out, idx, before, after) => {
+    const a = lineGaps(input, idx, before)
+    const b = lineGaps(out, idx, after)
+    const limit = Math.max(2 * a.med, 1.05 * a.max)
+    ctx.check('no stretched lines (word gaps within 2x the source median or its widest gap)', b.max <= limit, `widest ${b.max.toFixed(2)} vs limit ${limit.toFixed(2)}`)
+  }
+  const chain = (id, rel, pageNum, prefix, steps, check) => {
+    let orig = null
+    let origM = null
+    add({
+      id: `edittext-para-${id}`,
+      tool: 'edittext',
+      op: 'edittext:parachain',
+      files: [rel],
+      timeout: 3 * MIN,
+      async prepare() {
+        const m = await pageTextModel(readRel(rel), pageNum)
+        orig = m.paragraphs.find((x) => x.text.startsWith(prefix))
+        origM = m
+        if (!orig) return { skip: 'paragraph not found' }
+        return { pageNum, prefix, steps }
+      },
+      async validate(ctx) {
+        const m = ctx.meta
+        ctx.check('every step applied', m.steps.length === steps.length && m.steps.every((x) => x.report && !x.report.refused), JSON.stringify(m.steps.map((x) => x.report?.refused ?? (x.lost ? 'lost' : 'ok'))))
+        await check(ctx, orig, m, ctx.out('chain.pdf'), origM)
+        ctx.metric(m.steps.map((x) => `${x.kind ?? 'para'} ${x.report?.lines ?? ''}L win ${JSON.stringify(x.report?.window ?? null)} ${x.ms}ms`).join('; '))
+      },
+    })
+  }
+  // source line-end hyphen pairs ("com-" + "pile") printed on one line
+  const midHyphens = (orig, origM, outText) => {
+    const runs = origM.runs.filter((r) => orig.runIds.includes(r.id))
+    const pairs = runs.slice(0, -1).flatMap((r, k) => {
+      const w = r.text.trim().split(/\s+/).pop()
+      const nx = runs[k + 1].text.trim().split(/\s+/)[0]
+      return /[-]$/.test(w) && nx && !orig.text.includes(`${w}${nx}`) ? [`${w}${nx}`] : []
+    })
+    return pairs.filter((pp) => outText.split(/\n/).some((l) => l.includes(pp)))
+  }
+  const fold = (x) => String(x).replace(/\s+/g, ' ').trim()
+  // blind 2 P0-1 B: the abstract edited twice (a sentence added, then the last two dropped)
+  chain('abstract-twice-pdfjs-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', 1, 'Dynamic languages such as JavaScript are more', [{ append: 'This sentence is new.' }, { dropLast: 2 }], async (ctx, orig, m, out, origM) => {
+    const s1 = `${orig.text} This sentence is new.`.split(/(?<=\.)\s+/)
+    const want = fold(s1.slice(0, -2).join(' '))
+    ctx.check('final text exactly the expected words', fold(m.final?.text) === want, m.final?.text.slice(0, 120))
+    const bad = midHyphens(orig, origM, docText(out)[0])
+    ctx.check('no source line-end hyphen printed mid-line', bad.length === 0, bad.slice(0, 3).join(' | '))
+    noStretch(ctx, readRel('reports/pdfjs-tracemonkey.pdf'), out, 0, orig.bbox, m.final?.bbox ?? orig.bbox)
+  })
+  // blind 2 P0-1 A + P1-1: right column, a line edit, then a sentence deleted by paragraph edit
+  const CUT2 = 'Without exact type information, the compiler must emit slower generalized machine code that can deal with all potential type combinations.'
+  chain('line-then-para-pdfjs-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', 1, 'Compilers for statically', [{ line: ['may vary at runtime', 'may change at runtime. This means the compiler can no longer'] }, { remove: CUT2 }], async (ctx, orig, m, out, origM) => {
+    const before = m.steps[1]?.before
+    ctx.check('the line edit did not become a hard break in the paragraph', before && !before.text.includes('\n'), before?.text.slice(0, 120))
+    ctx.check('final paragraph justified, inside its column', m.final?.align === 'justify' && m.final.bbox[2] <= orig.bbox[2] + 1 && m.final.bbox[0] >= orig.bbox[0] - 1, JSON.stringify(m.final && { align: m.final.align, bbox: m.final.bbox }))
+    ctx.check('sentence gone, edited line kept', m.final && !m.final.text.includes('Without exact type') && m.final.text.includes('may change at runtime'), m.final?.text.slice(0, 160))
+    const bad = midHyphens(orig, origM, docText(out)[0])
+    ctx.check('no source line-end hyphen printed mid-line', bad.length === 0, bad.slice(0, 3).join(' | '))
+    noStretch(ctx, readRel('reports/pdfjs-tracemonkey.pdf'), out, 0, orig.bbox, m.final?.bbox ?? orig.bbox)
+  })
+  // blind 2 P0-1 A alone: lines above the deleted sentence are not touched
+  row('right-col-delete-pdfjs-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (b) => pickPara(b, (g) => g.text.startsWith('Compilers for statically')), (t) => [{ name: 'del', text: t.old.replace(`${CUT2} `, '') }], async (ctx, t, ed, rec) => {
+    ctx.check(`${ed.name}: lines above the change left as they are (window starts below line 1)`, rec.report.window?.[0] > 0, JSON.stringify(rec.report.window))
+  })
+  // blind 2 P1-3: coolblue address, a word edit, then the street line replaced
+  chain('coolblue-address', 'invoices/coolblue.pdf', 1, 'Pino ', [{ word: ['Bluebird', 'Blackbird-Smithson'] }, { replace: ['Sessamestreet 32', 'Keizersgracht 1001 bis'] }], async (ctx, orig, m) => {
+    const r = m.steps[1]?.report
+    ctx.check('untouched lines are not squeezed (squeeze stays in the window)', r && (!r.fit || r.window?.[0] > 0), JSON.stringify(r && { fit: r.fit, window: r.window }))
+    ctx.check('the name line is not re-wrapped', r && r.window?.[0] >= 1, JSON.stringify(r?.window))
+  })
+  // underline (review 1 P1-3 / blind 2 P1-2): words under it do not move
+  {
+    const rel = decorRel('underline')
+    let t = null
+    add({
+      id: 'edittext-decor-underline-word',
+      tool: 'edittext',
+      op: 'edittext:edit',
+      files: [rel],
+      timeout: 2 * MIN,
+      async prepare() {
+        const m = await pageTextModel(readRel(rel), 1)
+        const run = m.runs.find((x) => x.text.startsWith('running'))
+        const w = run?.words.find((x) => x.text === 'the')
+        if (!w) return { skip: 'no word' }
+        t = { pageNum: 1, runId: run.id, wordIndex: w.i, old: 'the' }
+        return { ...t, edits: [{ name: 'under', text: 'sprinting' }] }
+      },
+      async validate(ctx) {
+        const e = ctx.meta.edits[0]
+        ctx.check('word under the underline refused as decorated, file unchanged', e.report.refused === 'decorated' && e.unchanged, `${e.report.refused} unchanged ${e.unchanged}`)
+      },
+    })
+  }
+  row('decor-underline-append', decorRel('underline'), quickPara, (t) => [{ name: 'append', text: `${t.old} Then it slept well.` }], async (ctx, t, ed, rec) => {
+    ctx.check(`${ed.name}: only the last line re-laid (underlined line untouched)`, JSON.stringify(rec.report.window) === '[2,2]', JSON.stringify(rec.report.window))
+  })
+  row('decor-underline-change', decorRel('underline'), quickPara, (t) => [{ name: 'change', text: t.old.replace('field', 'meadow'), want: { refused: 'decorated' } }])
+  // blind 2 P0-2: an XFA form keeps the old caption; it is dropped on edit
+  {
+    const rel = 'forms/irs-fw9.pdf'
+    add({
+      id: 'edittext-xfa-fw9-partnership',
+      tool: 'edittext',
+      op: 'edittext:batch',
+      files: [rel],
+      timeout: 2 * MIN,
+      async prepare() {
+        const m = await pageTextModel(readRel(rel), 1)
+        const run = m.runs.find((x) => x.text.trim() === 'Partnership')
+        return run ? { pageNum: 1, batch: [{ runId: run.id, wordIndex: 0, old: 'Partnership', text: 'Partners' }] } : { skip: 'no caption' }
+      },
+      async validate(ctx) {
+        const r = ctx.meta.report[0]
+        ctx.check('applied', !r.refused, r.refused)
+        ctx.check('xfaRemoved reported', ctx.meta.xfaRemoved === true)
+        const out = ctx.out('batch.pdf')
+        const scan = rawScan(out, ['Partnership'])
+        ctx.check('no XFA left in the file', !scan.xfa && scan.xfaStreams === 0, `xfa ${scan.xfa} streams ${scan.xfaStreams}`)
+        const b0 = count(pageStrings(readRel(rel), 0), 'Partnership')
+        const b1 = count(pageStrings(out, 0), 'Partnership')
+        ctx.check('the edited caption is gone from the page (one copy fewer, the other uses stay)', b1 === b0 - 1, `${b0} -> ${b1}`)
+        const inXfa = scan.hits.filter((h) => /xfa/i.test(h.where))
+        ctx.check('old caption in no XFA stream', inXfa.length === 0, inXfa.map((h) => h.where).join('; '))
+      },
+    })
+  }
+  // review 2 N2: deleting a paragraph keeps a figure Alt sharing its words and a page-2 ActualText
+  row('struct-keep-others', STRUCT2, (b) => pickPara(b, (g) => g.text.startsWith('Results came back')), () => [{ name: 'delete', text: '', want: { deleted: true } }], async (ctx, t, ed, rec, out) => {
+    const d = mupdf.Document.openDocument(new Uint8Array(out), 'application/pdf').asPDF()
+    try {
+      const K = d.getTrailer().get('Root').get('StructTreeRoot').get('K')
+      const get = (i, k) => (K.get(i).get(k).isString() ? K.get(i).get(k).asString() : null)
+      ctx.check('edited paragraph: its ActualText gone', get(0, 'ActualText') === null, get(0, 'ActualText'))
+      ctx.check('figure Alt on the same page kept', get(1, 'Alt') === 'Chart without values, drawn in blue', get(1, 'Alt'))
+      ctx.check('other paragraph ActualText and title kept', get(2, 'ActualText') === 'Other paragraph that stays as it was.' && get(2, 'T') === 'Closing notes')
+      ctx.check('page-2 element (no /Pg) ActualText kept', get(3, 'ActualText') === 'Page two text without the patient name.', get(3, 'ActualText'))
+    } finally {
+      d.destroy?.()
+    }
+  })
+
+  // review 3 P1-4: dynamic XFA forms (the page is only "Please wait"): the
+  // model refuses every line and editText refuses, bytes unchanged
+  for (const rel of ['forms/xfa-issue14315.pdf', 'forms/xfa-imm1344e-filled.pdf']) {
+    add({
+      id: `edittext-xfa-dynamic-${short(rel)}`,
+      tool: 'edittext',
+      op: 'edittext:refuse',
+      files: [rel],
+      timeout: 2 * MIN,
+      async prepare() {
+        const m = await readModel(readRel(rel), 1)
+        const run = m.runs.find((r) => r.words.length)
+        return run ? { pageNum: 1, runId: run.id, wordIndex: null } : { skip: 'no text' }
+      },
+      async validate(ctx) {
+        const meta = ctx.meta
+        ctx.check('model marks the text xfa-dynamic', meta.why === 'xfa-dynamic', `why ${meta.why}`)
+        ctx.check('edit refused as xfa-dynamic', meta.report?.refused === 'xfa-dynamic', `refused ${meta.report?.refused}`)
+        ctx.check('file unchanged', meta.unchanged)
+      },
+    })
+  }
+
+  // review 3 P1-1, word path only: a one-word edit in tracemonkey p3-g6 (a
+  // paragraph that ends a column next to another): the edited line and every
+  // other line re-read as editable runs
+  {
+    const rel = 'reports/pdfjs-tracemonkey.pdf'
+    let t = null
+    add({
+      id: 'edittext-word-p3g6-pdfjs-tracemonkey',
+      tool: 'edittext',
+      op: 'edittext:edit',
+      files: [rel],
+      timeout: 2 * MIN,
+      async prepare() {
+        const m = await pageTextModel(readRel(rel), 3)
+        const g = m.paragraphs.find((x) => x.id === 'p3-g6')
+        const run = g && m.runs.find((r) => r.id === g.runIds[0] && r.editable)
+        const w = run?.words.find((x) => /^\p{Ll}{4,}$/u.test(x.text))
+        if (!w) return { skip: 'p3-g6 word not found' }
+        t = { pageNum: 3, runId: run.id, wordIndex: w.i, old: w.text, editableBefore: m.runs.filter((r) => r.editable).length }
+        return { ...t, edits: [{ name: 'word', text: `${w.text}xy` }] }
+      },
+      async validate(ctx) {
+        const e = ctx.meta.edits[0]
+        ctx.check('applied', !e.report.refused, e.report.refused)
+        if (e.report.refused) return
+        const m = await readModel(ctx.out('word.pdf'), 3)
+        const run = m.runs.find((r) => r.words.some((w) => w.text === `${t.old}xy` || w.text.startsWith(`${t.old}xy`)))
+        ctx.check('the edited line re-reads as an editable run', run?.editable === true, run ? `${run.id} why ${run.why}` : 'not found')
+        const n = m.runs.filter((r) => r.editable).length
+        ctx.check('no run became uneditable', n >= t.editableBefore, `${t.editableBefore} -> ${n}`)
+        ctx.metric(`"${t.old}" -> "${t.old}xy": ${e.report.font}, order ${e.report.order}, ${e.ms}ms`)
+      },
+    })
+  }
+
+  // empty text deletes the paragraph: every glyph gone, nothing drawn
+  const del = () => [{ name: 'delete', text: '', want: { deleted: true } }]
+  for (const rel of ['reports/pdfjs-tracemonkey.pdf', 'invoices/aws-invoice.pdf', 'reports/arxiv-1810.04805-bert.pdf']) row(`delete-${short(rel)}`, rel, (b) => pickPara(b, longPara(3)), del)
+
+  // right to left (only two corpus files have Arabic text with a letter
+  // mapping: udhr-arabic, where most lines carry U+FFFD, and ArabicCIDTrueType)
+  const AR = 'الجديدة' // "the new"
+  const rtlPara = (minWords) => (g) => g.dir === 'rtl' && wordsOf(g.text).length >= minWords
+  row('rtl-longer-arabic-cid', 'intl/pdfjs-ArabicCIDTrueType.pdf', (b) => pickPara(b, (g, m) => rtlPara(3)(g) && roomBelow(g, m, 2)), (t) => [{ name: 'rtl', text: `${t.old} ${AR}`, want: { grows: true } }], async (ctx, t, ed, rec) => {
+    const old = t.g.bbox
+    ctx.check('rtl: right edge kept', Math.abs(rec.report.box[2] - old[2]) < 2, `${old[2]} -> ${rec.report.box[2]}`)
+  })
+  row('rtl-shorter-udhr-arabic', 'intl/udhr-arabic.pdf', (b) => pickPara(b, rtlPara(3)), (t) => [{ name: 'rtl', text: wordsOf(t.old).slice(0, -1).join(' ') }])
+  row('rtl-noroom-udhr-arabic', 'intl/udhr-arabic.pdf', (b) => pickPara(b, (g, m) => rtlPara(3)(g) && !roomBelow(g, m, 1.5)), (t) => [{ name: 'rtl', text: `${t.old} ${t.old} ${t.old} ${t.old}`, want: { refused: 'no-room' } }])
+  // a bold Arabic word replaced: Noto Arabic has no bold here, so synthetic bold
+  row('rtl-bold-arabic-cid', 'intl/pdfjs-ArabicCIDTrueType.pdf', (b) => pickPara(b, (g, m) => g.dir === 'rtl' && roomBelow(g, m, 2) && m.runs.some((r) => g.runIds.includes(r.id) && r.bold)), (t) => {
+    const w = wordsOf(t.old)
+    return [{ name: 'bold', text: [...w.slice(0, -1), AR].join(' ') }]
+  }, async (ctx, t, ed, rec) => {
+    ctx.check('bold: synthetic bold used for the new word', /synthetic bold/.test(rec.report.fallbackName ?? ''), rec.report.fallbackName)
+  })
+
+  // RTL line push (line edit): a longer Arabic word pushes the rest of its line left
+  const rtlWord = async (bytes) => {
+    const np = mupdf.Document.openDocument(new Uint8Array(bytes), 'application/pdf').countPages()
+    for (let p = 1; p <= Math.min(2, np); p++) {
+      const m = await pageTextModel(bytes, p)
+      const all = squash(docText(bytes).join(''))
+      for (const r of m.runs) {
+        if (!r.editable || r.script !== 'arabic' || r.words.length < 3) continue
+        // alone on its row (no other piece of the same line beside it)
+        const side = m.runs.some((x) => x !== r && x.bbox && Math.min(x.bbox[3], r.bbox[3]) - Math.max(x.bbox[1], r.bbox[1]) > 0.5 * (r.bbox[3] - r.bbox[1]))
+        if (side) continue
+        const w = r.words.find((x, i) => i <= r.words.length - 3 && /^[\p{Script=Arabic}\p{M}]{3,}$/u.test(x.text) && count(all, squash(x.text)) === 1)
+        if (w) return { pageNum: p, runId: r.id, wordIndex: w.i, old: w.text, line: r.text, after: r.words.slice(w.i + 1).map((x) => x.text) }
+      }
+    }
+    return null
+  }
+  // (ArabicCIDTrueType repeats one phrase, so it has no word unique in the file)
+  for (const rel of ['intl/udhr-arabic.pdf']) {
+    let target = null
+    add({
+      id: `edittext-rtl-push-${short(rel)}`,
+      tool: 'edittext',
+      op: 'edittext:edit',
+      files: [rel],
+      timeout: 3 * MIN,
+      async prepare() {
+        target = await rtlWord(readRel(rel))
+        if (!target) return { skip: 'no Arabic word with text after it on a line of its own' }
+        return { ...target, edits: [{ name: 'push', text: target.old + target.old.slice(0, 3) }, { name: 'pull', text: target.old.slice(0, 2) }] }
+      },
+      async validate(ctx) {
+        const input = readRel(rel)
+        const idx = target.pageNum - 1
+        for (const e of ctx.meta.edits) {
+          const r = e.report
+          ctx.check(`${e.name}: applied`, !r.refused, r.refused)
+          if (r.refused) continue
+          ctx.check(`${e.name}: rest of the line moved ${e.name === 'push' ? 'left' : 'right'}`, !r.noPush && (e.name === 'push' ? r.pushed < -0.3 : r.pushed > 0.3), `pushed ${r.pushed} noPush ${r.noPush}`)
+          const out = ctx.out(`${e.name}.pdf`)
+          const diff = pixelsOutside(render(input, idx), render(out, idx), [r.changedBox])
+          ctx.check(`${e.name}: no pixel changed outside the edited box`, diff.outside === 0, `${diff.outside} px`)
+          const txt = docText(out)[idx].replace(/\p{M}/gu, '')
+          const rest = target.after.map((x) => x.replace(/\p{M}/gu, ''))
+          ctx.check(`${e.name}: moved words still read the same`, rest.every((w) => txt.includes(w)), rest.filter((w) => !txt.includes(w)).join(' '))
+          ctx.check(`${e.name}: new word in MuPDF text`, squash(txt).includes(squash(e.text.replace(/\p{M}/gu, ''))))
+          const moved = movedOutside(glyphsOf(input, idx), glyphsOf(out, idx), r.changedBox, pageBounds(input, idx))
+          ctx.check(`${e.name}: other glyphs unmoved`, moved.length === 0, `${moved.length} moved`)
+        }
+        ctx.metric(`"${target.old}": ${ctx.meta.edits.map((e) => `${e.name} pushed ${e.report.pushed} ${e.ms}ms`).join('; ')}`)
+      },
+    })
+  }
+
+  // P2 #6: inline image inside a form XObject survives an edit byte for byte
+  const formInline = (bytes) => {
+    const d = mupdf.Document.openDocument(new Uint8Array(bytes), 'application/pdf').asPDF()
+    const out = []
+    try {
+      const xo = d.findPage(0).getInheritable('Resources').get('XObject')
+      if (xo.isDictionary()) xo.forEach((x) => {
+        const data = Buffer.from(x.readStream().asUint8Array()).toString('latin1')
+        out.push(...[...data.matchAll(/(?:^|[\s>\]])(BI[\s/][\s\S]*?\sID\s[\s\S]*?\sEI)(?=\s|$)/g)].map((m) => m[1]))
+      })
+    } finally {
+      d.destroy?.()
+    }
+    return out
+  }
+  {
+    const rel = FORM_INLINE
+    let target = null
+    add({
+      id: 'edittext-p2-form-inline',
+      tool: 'edittext',
+      op: 'edittext:edit',
+      files: [rel],
+      timeout: 2 * MIN,
+      async prepare() {
+        target = await findWord(readRel(rel), 'image')
+        return target ? { ...target, edits: [{ name: 'ed', text: 'picture' }] } : { skip: 'no word' }
+      },
+      async validate(ctx) {
+        const e = ctx.meta.edits[0]
+        ctx.check('applied', !e.report.refused, e.report.refused)
+        const before = formInline(readRel(rel))
+        const after = formInline(ctx.out('ed.pdf'))
+        ctx.check('inline image in the form unchanged, byte for byte', before.length === 1 && after.length === 1 && before[0] === after[0], `${before.length} -> ${after.length}`)
+        const diff = pixelsOutside(render(readRel(rel), 0), render(ctx.out('ed.pdf'), 0), [e.report.changedBox])
+        ctx.check('no pixel changed outside the edited box (image intact)', diff.outside === 0, `${diff.outside} px`)
       },
     })
   }

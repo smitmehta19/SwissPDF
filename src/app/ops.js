@@ -103,9 +103,9 @@ export const OPS = {
     return diffPages(pagesA, pagesB, opts)
   },
   // Edit existing text (editTextOps.js): page text model and the edit itself
-  async editTextModel(bytes, pageNum) {
+  async editTextModel(bytes, pageNum, opts) {
     const { pageTextModel } = await import('../lib/editTextOps.js')
-    return pageTextModel(bytes, pageNum)
+    return pageTextModel(bytes, pageNum, opts)
   },
   async editText(bytes, edits, opts) {
     const { editText } = await import('../lib/editTextOps.js')
