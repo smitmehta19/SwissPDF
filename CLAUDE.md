@@ -34,8 +34,8 @@ Privacy-first PDF toolkit that runs fully in the browser: files never leave the 
 Understand → Plan → Build → Review → Report (see global CLAUDE.md). One unit per sprint from the unit map; new ideas go to the plan's Parking lot.
 
 ## Current phase / Next step
-- **Phase:** 2026-11-01 deployed ce0368a: edit text phase 2 (RTL line reflow, leak fixes, UI fixes); paragraph re-wrap parked behind `PARAGRAPH_EDIT` flag. `HANDOFF.md` is stale.
-- **Done:** ship gate full corpus 958/958, 12 UI scripts 0 fails, live Health 49/49
-- **Open:** parked paragraph re-wrap (`docs/team/status-engine.md` "Parked"), P2 lists in the edit-text plans, polish carry-overs
-- **Next step:** none required; pick a parked item when wanted
+- **Phase:** 2026-11-01 deployed 008df3e: edit text spill (long line edits continue on new lines, emptied lines close up; unsafe cases keep the old edit). Plan `docs/plans/2026-11-01-edit-text-spill.md`. `HANDOFF.md` is stale.
+- **Done:** full corpus 978/978, 12 of 13 UI scripts green, live Health 49/49; 2 review rounds + blind test, no P0/P1 open on spill
+- **Open:** `chain-g2.mjs` stops at the compare step (`compare-swap` click timeout, not edit text); spill parking lot (multi-line select = next unit candidate, blind P1s on existing overflow/centred behaviour, baseline 0.1 pt offset)
+- **Next step:** look at the chain-g2 compare timeout, then pick a parked item
 - **Updated:** 2026-11-01
