@@ -1,5 +1,19 @@
 # Decision log
 
+## 2026-11-01 - Edit text: long lines spill onto new lines, emptied lines close up
+- Decision: a single line edit that would pass its paragraph's edge, be squeezed, or be refused for room is laid out again on that row only, onto new lines below it; later rows of the paragraph move down whole (same glyphs, spacing, justification). An emptied line moves the rows below up. When the spill is not possible (no blank space below, link/highlight/underline on a moved row, RTL, centred, a word wider than the column) the edit runs exactly as before; a 'no-room' refusal then reads "No room below this paragraph...". A "Keep on one line" button redoes the edit the old way.
+- Problem that prompted it: Smit: long edits should go onto the next line and the section should grow; a deleted line should not leave a gap.
+- Why this was chosen: no existing word is broken again, which is what made paragraph re-wrap fail 3 review rounds; reuses the paragraph engine's exact redraw, blank check and drawing.
+- Alternatives rejected: full re-wrap (parked); refusing whenever a spill cannot be done (would refuse edits that apply today).
+- What changed in the approach, and how: `spillPlan` + `editPage` decide hook + `editParagraph` spill mode (`spillLayout` in editParagraph.js); paragraphs for a spill keep hyphen breaks (no hyphen lookup); links now count as annotations for the blank check.
+- Impact and reversibility: reversible (`editText` option `spill: false`, the UI's Keep on one line).
+- Status: built; review round 1 found word mix-ups (whole-paragraph diff), a ligature misprint, a ragged justified line, lost opacity: all fixed in fix round 1 (word map from the edited line only, no re-encode on moved rows, one drawing state per paragraph). Review round 2: copied text merged words after a wide glyph (free-fiber "Euros −B"); fix round 2 draws the spill on a scratch page first and falls back unless the words read back the same.
+- Assumptions: moved rows are drawn from their own bytes or by glyph id only. (First build drew ligature words as letters; review found that printed "undefiined" in one font, so that path is off for spills.)
+- Open questions / low confidence: moved rows are drawn after the page content when the inline insert fails (copy order).
+- Cost impact: none.
+- What failed: first layout re-packed the edited line looser than the source (justified gaps), pushing a word down; fixed by using the line's own tightest gap.
+- Versions pinned: n/a
+
 ## 2026-11-01 - Paragraph re-wrap parked; edit-text phase 2 ships without it
 - Decision: hide paragraph editing (flag `PARAGRAPH_EDIT = false` in `edittext.jsx`, model read with `{ paragraphs: false }`); ship word/line edits, RTL line push, leak fixes and UI fixes.
 - Problem that prompted it: paragraph re-wrap failed 3 review and blind-test rounds; each fix moved the damage to untouched words (hyphens, ligatures, justify, column merge). Review 3 still had a P0 ("Trace-Monkey" printed mid-line).

@@ -156,6 +156,7 @@ const WHY = {
   'no-glyph': 'No font here can draw that text',
   covered: 'Something is drawn over this text, so it is left as it is',
   'no-room': 'No room for this text here, even squeezed: try shorter text',
+  'no-room-below': 'No room below this paragraph. Try shorter text, or use PDF to Word for bigger rewrites',
   'tight-lines': 'The lines here are too close to change this safely',
   'inline-image': 'This page has an embedded image this edit would damage, so it is left as it is',
   unreadable: "This text can't be read as letters, so it can't be edited",
@@ -735,7 +736,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
     if (pendingOpen.current) setRefusedTick((n) => n + 1)
   }
 
-  async function apply(edits, { fit = false, replace = false, from = null } = {}) {
+  async function apply(edits, { fit = false, replace = false, from = null, oneLine = false } = {}) {
     const s = stackNow()
     const top = s.at > 0 ? s.stack[s.at - 1] : null
     // busy before any wait: a Run click right after this must be held
@@ -746,7 +747,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
     setLive('Applying')
     const t0 = performance.now()
     try {
-      const send = (list) => callOp('editText', [parent, list.map(({ anchor, ...e }) => e), { fit }])
+      const send = (list) => callOp('editText', [parent, list.map(({ anchor, ...e }) => e), { fit, spill: !oneLine }])
       let res = await send(edits)
       // stale run ids: read the page again and retry once with the same word
       if (res.report.some((r) => r.refused === 'stale' || r.refused === 'not-found')) {
@@ -918,6 +919,8 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
   ].filter((n) => !hidden.has(n.key) && noteworthy(n))
 
   const fitTop = () => top && apply(top.edits, { fit: true, replace: true })
+  // a spilled edit again, on its own line as before
+  const oneLineTop = () => top && apply(top.edits, { replace: true, oneLine: true })
 
   const layer = ({ size, scale }) => {
     lineEls.current = []
@@ -1052,6 +1055,11 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
                   }}
                 >
                   Open Forms
+                </button>
+              )}
+              {n.spill?.lines > 0 && !n.refused && n.entry && !n.paragraphId && (
+                <button type="button" className="et-note-btn" data-testid="et-one-line" onClick={oneLineTop} disabled={busy}>
+                  Keep on one line
                 </button>
               )}
               {n.overflow && !n.refused && n.entry && !n.entry.fit && !n.paragraphId && (
@@ -1195,7 +1203,7 @@ const squeezed = (n) => n.fit != null && n.fit < 0.995
 // a stand-in font was used ('mixed': for some words of a paragraph)
 const usedFallback = (n) => (n.font === 'fallback' || n.font === 'mixed') && !!n.fallbackName
 // a note is worth showing: a refusal, a stand-in font, overflow or squeezing
-const noteworthy = (n) => n.refused || n.xfa || usedFallback(n) || n.overflow || squeezed(n)
+const noteworthy = (n) => n.refused || n.xfa || usedFallback(n) || n.overflow || squeezed(n) || !!n.spill?.lines
 
 // the XFA note (hybrid form, copy removed) goes once, after the apply that removed it
 function noteText(n, byUser = false) {
@@ -1219,10 +1227,16 @@ function noteBody(n, byUser = false) {
   }
   // squeezed because it would run into the next column: say why, then what
   const beforeColumn = n.noPush === 'collision' && squeezed(n)
+  // a long line went on below it; an emptied line closed up
+  const k = n.spill?.lines ?? 0
+  if (k > 0) parts.push(`Continued on ${k} new line${k > 1 ? 's' : ''}${n.spill.moved ? '; the lines below moved down' : ''}`)
+  if (k < 0) parts.push('The lines below moved up')
   if (n.overflow) parts.push('Runs past the margin or into the next text')
   if (squeezed(n)) parts.push(byUser ? 'Squeezed to the old width' : beforeColumn ? 'Squeezed to fit before the next column' : n.noPush && n.noPush !== 'rtl' && n.noPush !== 'aligned' ? 'Squeezed to fit: the rest of the line could not move' : 'Squeezed to fit before the next column')
   if (n.align === 'centre' && !n.refused && n.fit == null && n.font) parts.push('Kept centred')
   if (n.font === 'fallback' && n.fallbackName) parts.push(`Closest match: ${n.fallbackName}`)
+  // a spill keeps the moved words; only new ones may take a stand-in
+  if (n.font === 'mixed' && n.fallbackName) parts.push(`New words in the closest match: ${n.fallbackName}`)
   return parts.join('. ')
 }
 

@@ -41,8 +41,14 @@
 //   them; they have editable false, origin and baseline null, fontSize 0,
 //   fontName '', dir [1, 0] and no words.
 //
-// editText(bytes, edits, { fit = false, final = false })
+// editText(bytes, edits, { fit = false, final = false, spill = true })
 //   -> { bytes, report, signatureRemoved, xfaRemoved, ms: { edit, save, total } (numbers) }
+//   spill: a single line edit on a page that does not fit its line goes on
+//   onto new lines below it, the rest of its paragraph moving down whole; an
+//   emptied line closes up (rows below move up). Report adds
+//   spill: { lines (rows gained, -1 closed), moved (rows moved) }. When that
+//   cannot be done the edit runs as before; a 'no-room' refusal then reads
+//   'no-room-below'.
 //   xfaRemoved: the file had an XFA copy of its form (/AcroForm /XFA, which
 //   keeps the old text); it was dropped
 //   final false (interactive): a fast appending save; the old text is still
@@ -90,7 +96,7 @@
 // that named a removed word are cut. Known limit: new text is drawn after
 // the page content, so it reads last in copy/paste and is not in the
 // structure tree.
-import { findParagraphs, diffWords, splitWords, layoutWindow } from './editParagraph.js'
+import { findParagraphs, diffWords, splitWords, layoutWindow, spillLayout, joinAccents } from './editParagraph.js'
 
 let mupdfPromise = null
 const getMupdf = () => (mupdfPromise ??= import('mupdf'))
@@ -1146,6 +1152,58 @@ function inkOk(mupdf, S, draw, size) {
   }
 }
 
+// Rows drawn by drawRows on a scratch page read back as the words they
+// hold, in order. rows: [[item]] (item.actual or .text, .glue). The scratch
+// page takes the page's own boxes and rotation (MuPDF places spaces by
+// position: another box read a space the real page did not). Any error: false.
+function spillReadsBack(mupdf, S, P, drawRows, rows) {
+  const doc = S.doc
+  let n = -1
+  try {
+    const res = doc.newDictionary()
+    const fd = doc.newDictionary()
+    const xd = doc.newDictionary()
+    const named = (dict, prefix) => {
+      const seen = new Map()
+      return (obj) => {
+        const k = obj.isIndirect() ? obj.asIndirect() : obj
+        if (!seen.has(k)) {
+          const name = `${prefix}${seen.size}`
+          dict.put(name, doc.graftObject(obj))
+          seen.set(k, name)
+        }
+        return seen.get(k)
+      }
+    }
+    const font = named(fd, 'F')
+    const form = named(xd, 'X')
+    const { content } = drawRows(font, (f) => form(f.form))
+    res.put('Font', fd)
+    res.put('XObject', xd)
+    const pg = doc.addPage([0, 0, 612, 792], 0, res, content)
+    for (const k of ['MediaBox', 'CropBox', 'Rotate']) {
+      const v = P.obj.getInheritable(k)
+      if (!v.isNull()) pg.put(k, doc.graftObject(v))
+    }
+    doc.insertPage(-1, pg)
+    n = doc.countPages() - 1
+    const sp = doc.loadPage(n)
+    const st = sp.toStructuredText('preserve-whitespace')
+    const got = st.asText()
+    st.destroy?.()
+    sp.destroy?.()
+    const want = rows.map((its) => its.map((it, k) => (k > 0 && it.glue ? '' : ' ') + (it.actual ?? it.text)).join('')).join(' ')
+    const words = (s) => s.normalize('NFKC').split(/\s+/).filter(Boolean)
+    const a = words(got)
+    const b = words(want)
+    return a.length === b.length && a.every((w, i) => w === b[i])
+  } catch {
+    return false
+  } finally {
+    if (n >= 0) doc.deletePage(n)
+  }
+}
+
 function freeName(dict, prefix) {
   for (let i = 1; ; i++) if (dict.get(`${prefix}${i}`).isNull()) return `${prefix}${i}`
 }
@@ -1941,7 +1999,9 @@ function undoForms(snap) {
 }
 
 // ---------- one page ----------
-async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
+// decide(t): for a single line edit, called once its fit on the line is known
+// (before anything changes); true -> returns { spill: true } untouched
+async function editPage(mupdf, doc, P, list, { fit }, usage, scratch, decide = null) {
   addUsage(usage, P.idx, P.lines)
   const own = ownSpans(P.obj)
   const F = P.F
@@ -1990,6 +2050,8 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
     let text = String(e.text ?? '')
       .replace(/[\r\n\t]+/g, ' ')
       .normalize('NFC')
+    // a whole line starts where it started (no stray leading space)
+    if (e.wordIndex == null) text = text.trim()
     // a word we drew earlier: take our whole earlier draw out instead of
     // redacting inside it, and redraw what it held around the new text
     const mine = own.filter((s) => line.chars.slice(a, b + 1).some((c) => c.c.trim() && inBox(c, s.box)))
@@ -2056,6 +2118,7 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
   }
   if (!targets.length) return 0
 
+  const single = decide && list.length === 1 && targets.length === 1 ? targets[0] : null
   // per line: push the rest of the line right, or squeeze the new text into
   // the old width when pushing is not safe
   const moved = []
@@ -2269,6 +2332,7 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
       else t.start = t.oldStart + t.shift
     }
     const newEnd = Math.max(endOf(), ...group.map((t) => t.start + t.adv))
+    for (const t of group) t.newEnd = newEnd
     const newStart = Math.min(lineStart, ...group.map((t) => t.start))
     // a right-to-left line grows past its paragraph's left edge (same slack)
     const blockStart = multi && allRtl ? Math.min(...corners) - 0.1 * (Math.max(...corners) - Math.min(...corners)) : -Infinity
@@ -2287,6 +2351,7 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
       t.rep.pushed = r2(lineMoves.filter((g) => line.chars.indexOf(g.chars[0]) > t.b).reduce((m, g) => (Math.abs(g.shift) > Math.abs(m) ? g.shift : m), 0))
     }
   }
+  if (single && decide(single)) return { spill: true }
   if (!targets.length) return 0
 
   // an underline or strike (thin paint drawn after the line, across it or just
@@ -2430,6 +2495,77 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch) {
   return targets.length
 }
 
+// ---------- spill ----------
+// A single line edit that does not fit its line (past the paragraph's edge,
+// squeezed, or refused for room), or that empties a line with lines below:
+// -> { g, r0, words } for editParagraph's spill mode, or null (edit as before).
+// Paragraphs here keep hyphen breaks as they are (no hyphen lookup).
+function spillPlan(P, t) {
+  if (t.rep.refused && t.rep.refused !== 'no-room') return null
+  if (t.rtl || RTL.test(t.text) || Math.abs(t.dir[1]) > 0.01 || t.dir[0] < 0) return null
+  const vis = t.line.chars.filter((c) => c.c.trim())
+  const whole = t.chars.includes(vis[0]) && t.chars.includes(vis[vis.length - 1])
+  const emptied = whole && !t.text.trim()
+  P.parasKeep ??= findParagraphs(ownLinesHome(P), P.runs, { bad: (c) => BAD_CHAR.test(c.c), covered: (c) => coveredChar(P.F, c), stuck: (c) => !canRedraw(P, c), bold: (c) => isBold(c.font), hyphen: () => 'keep', pageBox: P.bounds })
+  const g = P.parasKeep.find((x) => x.lineIdx.includes(t.li))
+  if (!g || !g.editable || g.frame.rtl || (g.align !== 'start' && g.align !== 'justify')) return null
+  if (!(g.leading > 0.9 * g.size && g.leading < 2.2 * g.size)) return null
+  const n = g.rows.length
+  const r0 = g.rows.findIndex((r) => r.lines.includes(t.li))
+  if (r0 < 0) return null
+  if (emptied) {
+    if (r0 === n - 1) return null
+  } else {
+    const slack = g.align === 'justify' ? 0.5 : 0.1 * (g.R - g.L)
+    const past = n >= 2 && t.newEnd > g.R + slack
+    if (!(t.rep.refused === 'no-room' || t.rep.overflow || t.scale < 1 || past)) return null
+  }
+  // the line's words in the paragraph; a hyphenated word that starts above
+  // or goes on below keeps its piece on this line as it is
+  const W = g.words.filter((w) => w.parts.some((pt) => pt.li === t.li))
+  if (!W.length) return null
+  const i0 = g.words.indexOf(W[0])
+  const i1 = g.words.indexOf(W[W.length - 1])
+  if (i1 - i0 + 1 !== W.length) return null
+  const head = W[0].joined && W[0].rows[0] < r0 ? W[0] : null
+  const tail = W[W.length - 1].joined && W[W.length - 1].rows[W[W.length - 1].rows.length - 1] > r0 ? W[W.length - 1] : null
+  const chars = t.line.chars
+  const piece = (w) => textOf(chars.filter((c) => w.chars.includes(c)))
+  let S = (textOf(chars.slice(0, t.a)) + t.text + textOf(chars.slice(t.b + 1))).replace(/\s+/g, ' ').trim()
+  if (head) {
+    const h = piece(head)
+    if (!S.startsWith(h) || (S.length > h.length && S[h.length] !== ' ')) return null
+    S = S.slice(h.length)
+  }
+  if (tail) {
+    const z = piece(tail)
+    if (!S.endsWith(z) || (S.length > z.length && S[S.length - z.length - 1] !== ' ')) return null
+    S = S.slice(0, S.length - z.length)
+  }
+  const mid = splitWords(joinAccents(S.trim()))
+  if (mid.length && !tail) mid[mid.length - 1].brk = !!W[W.length - 1].brk
+  const keep = (w) => ({ text: w.text, brk: !!w.brk, glue: !!w.glue })
+  const words = [...g.words.slice(0, i0).map(keep), ...(head ? [keep(head)] : []), ...mid, ...(tail ? [keep(tail)] : []), ...g.words.slice(i1 + 1).map(keep)]
+  // word map: every word off the line is itself; only the line's own words
+  // are diffed (a whole-paragraph diff tied a new word to a later row's copy)
+  const same = (k) => ({ from: k, style: k })
+  const oldMid = []
+  for (let k = i0 + (head ? 1 : 0); k <= i1 - (tail ? 1 : 0); k++) oldMid.push(k)
+  const dm = diffWords(oldMid.map((k) => g.words[k].text), mid.map((w) => w.text))
+  const diff = [
+    ...g.words.slice(0, i0).map((_, k) => same(k)),
+    ...(head ? [same(i0)] : []),
+    ...dm.map((d) => ({ from: d.from != null ? oldMid[d.from] : null, style: d.style != null ? oldMid[d.style] : (oldMid[0] ?? i0) })),
+    ...(tail ? [same(i1)] : []),
+    ...g.words.slice(i1 + 1).map((_, k) => same(i1 + 1 + k)),
+  ]
+  // line spacing from the baselines themselves (row v is rounded)
+  const base = g.rows.map((r) => P.lines[r.lines[0]].chars.find((c) => c.c.trim())).map((c) => (c ? dot(c.origin, g.frame.down) : null))
+  const gaps = base.slice(1).map((v, k) => (v != null && base[k] != null ? v - base[k] : 0)).filter((d) => d > 0.5 * g.size && d < 2.5 * g.size).sort((a, b) => a - b)
+  const lead = gaps.length ? gaps[gaps.length >> 1] : g.leading
+  return { g, r0, words, diff, lead }
+}
+
 // ---------- one paragraph ----------
 // Squeeze steps tried when the text does not fit as it is.
 const SQUEEZE = [1, 0.97, 0.94, 0.91, 0.88, 0.85]
@@ -2464,8 +2600,10 @@ function tokensOf(chars) {
 // Re-wraps one paragraph with new text. Same safety as line edits: every
 // step that can fail runs before the removal, which is checked and undone
 // on any loss. -> 1 applied, 0 refused (rep.refused set)
-async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch) {
-  const g = paragraphsOf(P).find((x) => `p${P.idx + 1}-g${x.k}` === e.paragraphId)
+// spill: { g, r0 } a line edit that spills over (or empties) row r0 of g;
+// only that row is laid out again, later rows move whole (spillLayout)
+async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch, spill = null) {
+  const g = spill?.g ?? paragraphsOf(P).find((x) => `p${P.idx + 1}-g${x.k}` === e.paragraphId)
   const refuse = (why, extra = {}) => {
     rep.refused = why
     Object.assign(rep, extra)
@@ -2485,6 +2623,9 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch)
   if (states.some((s) => s.mode !== 'fill')) return refuse('render-mode')
   const alpha = states[0]?.alpha ?? 1
   const clip = states[0]?.clip ?? null
+  // a spill redraws every moved row in the first glyph's state
+  const sameClip = (a, b) => (!a && !b) || (!!a && !!b && a.every((v, i) => Math.abs(v - b[i]) < 0.01))
+  if (spill && states.some((st) => Math.abs((st.alpha ?? 1) - alpha) > 0.001 || !sameClip(st.clip, clip))) return refuse('spill-blocked')
   const firstSeq = Math.min(...states.map((s) => s.seq), Infinity)
 
   const inBox = (c, b) => {
@@ -2497,8 +2638,8 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch)
 
   // the new words and how each is drawn
   const text = String(e.text ?? '').normalize('NFC').replace(/\r\n?/g, '\n').replace(/\t/g, ' ')
-  const news = splitWords(text)
-  const diff = diffWords(g.words.map((w) => w.text), news.map((w) => w.text))
+  const news = e.words ?? splitWords(text)
+  const diff = e.diff ?? diffWords(g.words.map((w) => w.text), news.map((w) => w.text))
   const removed = g.words.filter((_, i) => !diff.some((d) => d.from === i)).map((w) => w.text)
   let fallbackDoc = null
   const measure = async (txt, standard, size) => {
@@ -2528,7 +2669,9 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch)
       if (!inkSeen.has(key)) inkSeen.set(key, inkOk(mupdf, scratch(), d, tc[0].size))
       return inkSeen.get(key) ? d : null
     }
-    const toks = tokensOf(cs).map((tc) => ({ chars: tc, draw: (COMPLEX.test(textOf(tc)) ? null : (inked(tc, sameFont(mupdf, P, tc, textOf(tc), dir, { exact: true })) ?? plain(tc))) ?? gidDraw(mupdf, P, tc, dir, scratch()) }))
+    // a spill moves words as they are: their own bytes or glyph ids only (a
+    // ligature re-encoded as letters printed "undefiined")
+    const toks = tokensOf(cs).map((tc) => ({ chars: tc, draw: (COMPLEX.test(textOf(tc)) ? null : (inked(tc, sameFont(mupdf, P, tc, textOf(tc), dir, { exact: true })) ?? (spill ? null : plain(tc)))) ?? gidDraw(mupdf, P, tc, dir, scratch()) }))
     if (!toks.every((t) => t.draw)) return null
     const ext = cs.map((c) => along(c.quad, dir))
     const u0 = Math.min(...ext.map((x) => x[0]))
@@ -2536,6 +2679,7 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch)
       kind: 'exact',
       // the glyphs' own text, one char per glyph, so a reader maps them one to one
       actual: textOf(cs),
+      x0: u0,
       w: Math.max(...ext.map((x) => x[1])) - u0,
       size: cs[0].size,
       toks: toks.map((t) => {
@@ -2610,7 +2754,7 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch)
     rep.lines = n0
     return 0
   }
-  const r0 = p0 < g.words.length ? pieces[p0][0].row : pieces[g.words.length - 1].at(-1).row
+  const r0 = spill ? spill.r0 : p0 < g.words.length ? pieces[p0][0].row : pieces[g.words.length - 1].at(-1).row
   const pieceItem = (pc, base, extra) => {
     const ex = exactOf(pc.chars, g.rows[pc.row].v)
     if (!ex) return null
@@ -2641,7 +2785,8 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch)
       // its two halves as they were, or (when the break is known) the joined word
       const p1 = pieceItem(ps[0], it, { brk: false })
       const p2 = pieceItem(ps[1], it, { brk: it.brk, glue: false })
-      if (p1 != null && p2 != null) units.push({ whole: it.old.hyph === 'keep' ? null : j, p1, p2, ids: [ps[0].id, ps[1].id] })
+      if (p1 != null && p2 != null) units.push({ whole: spill || it.old.hyph === 'keep' ? null : j, p1, p2, ids: [ps[0].id, ps[1].id] })
+      else if (spill) return refuse('draw-failed')
       else units.push({ i: j, ids: [null] })
     } else units.push({ i: j, ids: ps.map((pc) => pc.id) })
   }
@@ -2662,7 +2807,7 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch)
   // underline / strike: paint drawn after the text over its lines
   const decor = F.paints.filter((p) => p.seq > firstSeq && srcRows.some((q) => overlaps(p.box, q)))
   const pageOthers = pageChars.filter((c) => !mineSet.has(c))
-  const annots = annotRects(P)
+  const annots = annotRects(P, !!spill)
   const paintIn = F.paints.filter((p) => !decor.includes(p) && (p.seq > firstSeq || !overlaps(p.box, grow(paraBox, 1)))).map((p) => p.box)
   const paintNew = F.paints.filter((p) => p.seq > firstSeq).map((p) => p.box)
   const blankSeen = new Map()
@@ -2690,7 +2835,8 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch)
     const size = Math.max(...row.items.map((p) => items[p.i].size), g.size)
     // a new line below the old ones keeps a line gap clear under it
     const fresh = row.k >= n0
-    const box = rowBox(row, size, fresh ? 0.15 : 0)
+    // a spill keeps half a line clear above what comes next
+    const box = rowBox(row, size, fresh ? (spill ? 0.6 : 0.15) : 0)
     if (!inside(box)) return false
     if (clip && !(box[0] >= clip[0] - 0.5 && box[1] >= clip[1] - 0.5 && box[2] <= clip[2] + 0.5 && box[3] <= clip[3] + 0.5)) return false
     const kept = rowChars.flatMap((cs, k) => (k < r0 || k > last ? cs : [])).map((c) => core(c))
@@ -2704,7 +2850,36 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch)
   let layout = null
   let last = n0 - 1
   let scale = 1
-  if (units.length) {
+  let spilled = null
+  if (spill && units.length) {
+    const pieceRow = new Map(flat.map((pc) => [pc.id, pc.row]))
+    const w = spillLayout(g, items, units, { r0, row: (id) => pieceRow.get(id), lead: spill.lead })
+    if (!w) return refuse('spill-blocked')
+    // moved rows keep every glyph as it was
+    if (w.rows.some((row) => row.kept != null && row.items.some((p) => items[p.i].kind !== 'exact'))) return refuse('spill-blocked')
+    if (!w.rows.every((row) => rowOk(row, w.last))) return refuse('no-room')
+    // a link or comment on a moved row would stay behind, and what is drawn
+    // under a row (a highlight, a cell fill) must be the same where it goes
+    const under = (bx) => F.paints.filter((p) => p.seq < firstSeq && overlaps(p.box, bx))
+    const src0 = under(unionBox(rowChars[r0].map((c) => qbox(c.quad))))
+    for (const row of w.rows) {
+      if (w.delta === 0) break
+      let from = src0
+      let to = rowBox(row, Math.max(...row.items.map((p) => items[p.i].size)))
+      if (row.kept != null) {
+        const src = unionBox(rowChars[row.kept].map((c) => qbox(c.quad)))
+        if (annots.some((a) => overlaps(a, src))) return refuse('spill-blocked')
+        const d = row.v - g.rows[row.kept].v
+        from = under(src)
+        to = [src[0] + fr.down[0] * d, src[1] + fr.down[1] * d, src[2] + fr.down[0] * d, src[3] + fr.down[1] * d]
+      }
+      const at = under(to)
+      if (at.length !== from.length || at.some((p) => !from.includes(p))) return refuse('spill-blocked')
+    }
+    layout = w.rows
+    last = w.last
+    spilled = w
+  } else if (units.length) {
     // squeeze only the window's lines, never the lines left as they are
     for (const s of SQUEEZE) {
       const w = layoutWindow(g, items, units, { r0, tail, firstId, s })
@@ -2754,6 +2929,53 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch)
     }
   }
 
+  // the rows as content: fontName(ref) / formName(form) give resource names
+  const tm = tmFor(P.page)
+  const Tz = scale !== 1 ? `${f4(scale * 100)} Tz ` : ''
+  const drawRows = (fontName, formName, gs = '') => {
+    let content = ''
+    const boxes = []
+    for (const row of layout ?? []) {
+      let body = ''
+      for (const p of row.items) {
+        const it = items[p.i]
+        let d = ''
+        if (it.kind === 'exact') {
+          for (const t of it.toks) {
+            const c0 = t.chars[0]
+            const left = fr.rtl ? -(p.x + p.w) : p.x
+            const o = [dir[0] * (left + t.du * scale) + fr.down[0] * (row.v + t.dv), dir[1] * (left + t.du * scale) + fr.down[1] * (row.v + t.dv)]
+            const show = t.draw.tj ? `0 Tc ${Tz}${colorOp(c0.color)} ${tm(o, dir).map(f4).join(' ')} Tm [${t.draw.tj}] TJ` : `${f4(t.draw.tc)} Tc ${Tz}${colorOp(c0.color)} ${tm(o, dir).map(f4).join(' ')} Tm <${hexOf(t.draw.info, t.draw.codes)}> Tj`
+            d += `BT /${fontName(t.draw.ref)} ${f4(c0.size)} Tf ${show} ET\n`
+          }
+        } else if (it.kind === 'same') {
+          const o = pointAt(p.x, row.v, p.w)
+          d = `BT /${fontName(it.draw.ref)} ${f4(it.size)} Tf ${f4(it.draw.tc)} Tc ${Tz}${colorOp(it.color)} ${tm(o, dir).map(f4).join(' ')} Tm <${hexOf(it.draw.info, it.draw.codes)}> Tj ET\n`
+        } else {
+          const f = forms.get(p)
+          const name = formName(f)
+          const m = tm(pointAt(p.x, row.v, p.w), dir)
+          const cm = [m[0] * scale, m[1] * scale, m[2], m[3], m[4], m[5]]
+          const bold = needsFakeBold(it.style.font, f) ? fakeBold(it.color, it.size) : ''
+          d = `q ${colorOp(it.color)} ${bold}${cm.map(f4).join(' ')} cm /${name} Do Q\n`
+        }
+        // right-to-left glyphs already read back in order (see fallbackForm);
+        // same-font and Latin fallback glyphs read back by themselves
+        body += it.kind !== 'form' || !COMPLEX.test(it.text) || RTL.test(it.text) ? d : `/Span <</ActualText <${utf16Hex(it.actual ?? it.text)}>>> BDC\n${d}EMC\n`
+      }
+      const size = Math.max(...row.items.map((p) => items[p.i].size))
+      const rb = rowBox(row, size)
+      // the reported box takes anti-aliasing and side bearings in
+      boxes.push([rb[0] - 0.5, rb[1] - 0.5, rb[2] + 0.5, rb[3] + 0.5])
+      content += `/Span <</SPDFBox [${rb.map(f4).join(' ')}] /SPDFPara [${paraBox.map(f4).join(' ')}]>> BDC\nq ${gs}${body}Q\nEMC\n`
+    }
+    return { content, boxes }
+  }
+  // a spill draws words one by one: on a scratch page they must read back as
+  // the same words in the same order (a gap after a wide glyph read as no
+  // space: "Euros -B 421")
+  if (spilled && !spillReadsBack(mupdf, scratch(), P, drawRows, layout.map((row) => row.items.map((p) => items[p.i])))) return refuse('spill-blocked')
+
   // removal rects per stext line; thin where a thick band would touch other text
   const rects = []
   for (const li of g.rows.slice(r0, last + 1).flatMap((r) => r.lines)) {
@@ -2775,7 +2997,6 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch)
   const p2 = doc.loadPage(P.idx)
   const pobj = p2.getObject()
   const res = ownResources(doc, pobj)
-  const tm = tmFor(P.page)
   const fontNames = new Map()
   const fontName = (ref) => {
     const k = ref.isIndirect() ? ref.asIndirect() : ref
@@ -2798,45 +3019,12 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch)
     gd.put(name, doc.addObject(st))
     gs = `/${name} gs `
   }
-  const Tz = scale !== 1 ? `${f4(scale * 100)} Tz ` : ''
-  let content = ''
-  const boxes = []
-  for (const row of layout ?? []) {
-    let body = ''
-    for (const p of row.items) {
-      const it = items[p.i]
-      let d = ''
-      if (it.kind === 'exact') {
-        for (const t of it.toks) {
-          const c0 = t.chars[0]
-          const left = fr.rtl ? -(p.x + p.w) : p.x
-          const o = [dir[0] * (left + t.du * scale) + fr.down[0] * (row.v + t.dv), dir[1] * (left + t.du * scale) + fr.down[1] * (row.v + t.dv)]
-          const show = t.draw.tj ? `0 Tc ${Tz}${colorOp(c0.color)} ${tm(o, dir).map(f4).join(' ')} Tm [${t.draw.tj}] TJ` : `${f4(t.draw.tc)} Tc ${Tz}${colorOp(c0.color)} ${tm(o, dir).map(f4).join(' ')} Tm <${hexOf(t.draw.info, t.draw.codes)}> Tj`
-          d += `BT /${fontName(t.draw.ref)} ${f4(c0.size)} Tf ${show} ET\n`
-        }
-      } else if (it.kind === 'same') {
-        const o = pointAt(p.x, row.v, p.w)
-        d = `BT /${fontName(it.draw.ref)} ${f4(it.size)} Tf ${f4(it.draw.tc)} Tc ${Tz}${colorOp(it.color)} ${tm(o, dir).map(f4).join(' ')} Tm <${hexOf(it.draw.info, it.draw.codes)}> Tj ET\n`
-      } else {
-        const f = forms.get(p)
-        const xd = subDict(doc, res, 'XObject')
-        const name = freeName(xd, 'SPDFEditFx')
-        xd.put(name, f.form)
-        const m = tm(pointAt(p.x, row.v, p.w), dir)
-        const cm = [m[0] * scale, m[1] * scale, m[2], m[3], m[4], m[5]]
-        const bold = needsFakeBold(it.style.font, f) ? fakeBold(it.color, it.size) : ''
-        d = `q ${colorOp(it.color)} ${bold}${cm.map(f4).join(' ')} cm /${name} Do Q\n`
-      }
-      // right-to-left glyphs already read back in order (see fallbackForm);
-      // same-font and Latin fallback glyphs read back by themselves
-      body += it.kind !== 'form' || !COMPLEX.test(it.text) || RTL.test(it.text) ? d : `/Span <</ActualText <${utf16Hex(it.actual ?? it.text)}>>> BDC\n${d}EMC\n`
-    }
-    const size = Math.max(...row.items.map((p) => items[p.i].size))
-    const rb = rowBox(row, size)
-    // the reported box takes anti-aliasing and side bearings in
-    boxes.push([rb[0] - 0.5, rb[1] - 0.5, rb[2] + 0.5, rb[3] + 0.5])
-    content += `/Span <</SPDFBox [${rb.map(f4).join(' ')}] /SPDFPara [${paraBox.map(f4).join(' ')}]>> BDC\nq ${gs}${body}Q\nEMC\n`
-  }
+  const { content, boxes } = drawRows(fontName, (f) => {
+    const xd = subDict(doc, res, 'XObject')
+    const name = freeName(xd, 'SPDFEditFx')
+    xd.put(name, f.form)
+    return name
+  }, gs)
   rep.order = placeContent(mupdf, doc, P, pobj, content, new Set([...chars, ...ownChars]))
   p2.destroy?.()
 
@@ -2855,6 +3043,10 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch)
   rep.overflow = (layout?.length ?? 0) > last - r0 + 1 || scale !== 1
   rep.box = boxes.length ? toView(unionBox(boxes), P.bounds) : null
   rep.changedBox = toView(unionBox([grow(unionBox(winChars.map((c) => qbox(c.quad))), 0.5), ...boxes]), P.bounds)
+  if (spilled) {
+    rep.overflow = false
+    rep.spill = { lines: spilled.delta, moved: layout.filter((x) => x.kept != null).length }
+  }
   return 1
 }
 
@@ -2885,7 +3077,7 @@ function stripBlank(mupdf, page, box) {
 }
 
 // Widget and annotation rects (page space): new lines stay clear of them.
-function annotRects(P) {
+function annotRects(P, links = false) {
   const out = []
   try {
     for (const w of P.page.getWidgets()) out.push(w.getBounds())
@@ -2894,6 +3086,12 @@ function annotRects(P) {
   }
   try {
     for (const a of P.page.getAnnotations()) if (a.getType() !== 'Redact') out.push(a.getBounds())
+  } catch {
+    /* none */
+  }
+  // links are not annotations to MuPDF; a link left over moved text points wrong
+  try {
+    if (links) for (const l of P.page.getLinks()) out.push(l.getBounds())
   } catch {
     /* none */
   }
@@ -3240,7 +3438,7 @@ function finalSave(mupdf, doc) {
 // Interactive edits: { final: false } (the default) saves fast, appending the
 // change to the file; the old text is still inside until finalizeEdits runs.
 // Use final: true, or finalizeEdits once before the file leaves the tool.
-export async function editText(bytes, edits, { fit = false, final = false } = {}) {
+export async function editText(bytes, edits, { fit = false, final = false, spill = true } = {}) {
   const t0 = Date.now()
   const mupdf = await getMupdf()
   const report = edits.map((e) =>
@@ -3283,7 +3481,29 @@ export async function editText(bytes, edits, { fit = false, final = false } = {}
         if (paras.length) {
           for (const x of list) if (x !== paras[0]) x.rep.refused = 'conflict'
           applied += await editParagraph(mupdf, doc, P, paras[0], { fit }, usage, scratch)
-        } else applied += await editPage(mupdf, doc, P, list, { fit }, usage, scratch)
+        } else {
+          // one line edit that does not fit its line: it spills onto new
+          // lines (or an emptied line closes up); else as before
+          const one = list.length === 1 && !fit && spill ? list[0] : null
+          const init = one ? { ...one.rep } : null
+          let plan = null
+          const r = await editPage(mupdf, doc, P, list, { fit }, usage, scratch, one ? (t) => (plan = spillPlan(P, t)) != null : null)
+          if (!r?.spill) applied += r
+          else {
+            const prep = {}
+            if (await editParagraph(mupdf, doc, P, { e: { words: plan.words, diff: plan.diff }, rep: prep }, { fit }, usage, scratch, plan)) {
+              for (const k of Object.keys(one.rep)) delete one.rep[k]
+              Object.assign(one.rep, init, { font: prep.font, fallbackName: prep.fallbackName, box: prep.box, changedBox: prep.changedBox, order: prep.order, spill: prep.spill })
+              applied += 1
+            } else {
+              for (const k of Object.keys(one.rep)) delete one.rep[k]
+              Object.assign(one.rep, init)
+              applied += await editPage(mupdf, doc, P, list, { fit }, usage, scratch)
+              // the spill found no blank space below: say so
+              if (one.rep.refused === 'no-room' && prep.refused === 'no-room') one.rep.refused = 'no-room-below'
+            }
+          }
+        }
       } finally {
         P.page.destroy?.()
       P.S?.doc.destroy?.()

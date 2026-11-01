@@ -29,7 +29,7 @@ async function modelFacts(src, s) {
 }
 
 export const OPS = {
-  // params: { pageNum, runId, wordIndex, old, edits: [{ name, text, fit }] }.
+  // params: { pageNum, runId, wordIndex, old, edits: [{ name, text, fit, spill }] }.
   // One output per edit, each made from the original file.
   async edit(s, [src]) {
     const meta = { ...(await modelFacts(src, s)), edits: [] }
@@ -37,7 +37,8 @@ export const OPS = {
     for (const ed of s.params.edits) {
       const edit = { pageNum: s.params.pageNum, runId: s.params.runId, wordIndex: s.params.wordIndex, text: ed.text, old: s.params.old }
       // the UI flow: fast interactive edit, then one finalize before output
-      const [res, ms] = await call('editText', src, [edit], { fit: !!ed.fit })
+      // spill: false keeps a long line on its line (the old behaviour)
+      const [res, ms] = await call('editText', src, [edit], { fit: !!ed.fit, ...(ed.spill === false ? { spill: false } : {}) })
       const [fin, finalizeMs] = await call('editTextFinalize', res.bytes)
       outputs.push(await save(s.id, `${ed.name}.pdf`, fin.bytes))
       meta.edits.push({ name: ed.name, text: ed.text, ms, finalizeMs, engineMs: res.ms ?? null, report: res.report[0], signatureRemoved: res.signatureRemoved, unchanged: res.bytes.length === src.length && res.bytes.every((b, i) => b === src[i]) })

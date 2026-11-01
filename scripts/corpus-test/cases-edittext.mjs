@@ -14,7 +14,7 @@ import { join } from 'node:path'
 import { rawScan, redactionLeaks } from './validate.mjs'
 import { ROOT } from './server.mjs'
 import { USER_PW } from './derive.mjs'
-import { pageTextModel as readModel } from '../../src/lib/editTextOps.js'
+import { pageTextModel as readModel, editText as nodeEdit } from '../../src/lib/editTextOps.js'
 
 // the paragraph rows need the paragraph model (opt-in since the ship prep)
 const pageTextModel = (bytes, pageNum) => readModel(bytes, pageNum, { paragraphs: true })
@@ -256,6 +256,45 @@ function buildStruct2() {
     doc.destroy?.()
   }
 }
+// spill guards: the same paragraph with a link on its last line (page 1), a
+// highlight drawn under its last line (page 2), and plain (page 3, control)
+const SPILL = 'derived/edittext-spill-guards.pdf'
+function buildSpill() {
+  const dest = join(CORPUS_DIR, SPILL)
+  if (existsSync(dest)) return
+  buildPages(SPILL, [pText(P_LINES, 72, 650, 12), `1 1 0 rg 70 622 260 13 re f\n0 g\n${pText(P_LINES, 72, 650, 12)}`, pText(P_LINES, 72, 650, 12)])
+  const doc = mupdf.Document.openDocument(new Uint8Array(readFileSync(dest)), 'application/pdf').asPDF()
+  try {
+    doc.loadPage(0).createLink([72, 156, 330, 170], 'https://example.org/')
+    writeFileSync(dest, new Uint8Array(doc.saveToBuffer('compress').asUint8Array()))
+  } finally {
+    doc.destroy?.()
+  }
+}
+// the same paragraph with its last line drawn at half opacity
+const SPILL_ALPHA = 'derived/edittext-spill-alpha.pdf'
+function buildSpillAlpha() {
+  const dest = join(CORPUS_DIR, SPILL_ALPHA)
+  if (existsSync(dest)) return
+  const doc = new mupdf.PDFDocument()
+  try {
+    const res = doc.newDictionary()
+    const fd = doc.newDictionary()
+    fd.put('F1', doc.addSimpleFont(new mupdf.Font('Helvetica'), 'Latin'))
+    res.put('Font', fd)
+    const gs = doc.newDictionary()
+    const a = doc.newDictionary()
+    a.put('ca', 0.5)
+    a.put('CA', 0.5)
+    gs.put('GS1', a)
+    res.put('ExtGState', gs)
+    const c = `${pText(P_LINES.slice(0, 2), 72, 650, 12)}\nq /GS1 gs ${pText(P_LINES.slice(2), 72, 626, 12)} Q`
+    doc.insertPage(-1, doc.addPage([0, 0, 612, 792], 0, res, c))
+    writeFileSync(dest, new Uint8Array(doc.saveToBuffer('compress').asUint8Array()))
+  } finally {
+    doc.destroy?.()
+  }
+}
 const tightPage = (lead) =>
   ['line one alpha bravo charlie', 'line two delta echo foxtrot', 'Kilo middle Lima word here', 'line four golf hotel india', 'line five juliet mike oscar']
     .map((l, i) => `BT /F1 10 Tf 72 ${700 - i * lead} Td (${l}) Tj ET`)
@@ -270,6 +309,8 @@ try {
   buildFormInline()
   buildStruct()
   buildStruct2()
+  buildSpill()
+  buildSpillAlpha()
   for (const [k, c] of Object.entries(DECOR)) buildPages(`derived/edittext-decor-${k}.pdf`, [c])
   // inline images with an abbreviated Indexed colour space and ASCIIHex data
   buildPages(INLINE, ['BT /F1 12 Tf 72 700 Td (Inline image test line here) Tj ET q 200 0 0 10 72 670 cm BI /W 4 /H 1 /BPC 8 /CS [/I /RGB 3 <FF000000FF000000FFFFFFFF>] /F /AHx ID 00010203> EI Q q 200 0 0 10 72 640 cm BI /W 2 /H 1 /BPC 8 /CS /G /F /AHx ID 40C0> EI Q BT /F1 12 Tf 72 620 Td (Second line below images) Tj ET'])
@@ -727,7 +768,7 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
       async prepare() {
         target = await pick(readRel(rel))
         if (!target) return { skip: 'no target' }
-        return { ...target, edits: [{ name: 'grow', text: target.text }] }
+        return { ...target, edits: [{ name: 'grow', text: target.text, spill: false }] }
       },
       async validate(ctx) {
         const e = ctx.meta.edits[0]
@@ -1001,7 +1042,7 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
     const diff = pixelsOutside(render(readRel(rel), t.pageNum - 1), render(ctx.out('ed.pdf'), t.pageNum - 1), [r.changedBox])
     ctx.check('no pixel changed outside the edited box', diff.outside === 0, `${diff.outside} px`)
   }
-  fixRow('collision-flipkart-billing', 'invoices/flipkart-invoice.pdf', (b) => wholeLine(b, (s) => s.includes('near Fun republic')), [{ name: 'ed', text: 'near Fun republic mall and nehru place extra words' }], noOverprint('invoices/flipkart-invoice.pdf'))
+  fixRow('collision-flipkart-billing', 'invoices/flipkart-invoice.pdf', (b) => wholeLine(b, (s) => s.includes('near Fun republic')), [{ name: 'ed', text: 'near Fun republic mall and nehru place extra words', spill: false }], noOverprint('invoices/flipkart-invoice.pdf'))
   fixRow('collision-attention-email', 'reports/arxiv-1706.03762-attention.pdf', (b) => findWord(b, 'noam@google.com'), [{ name: 'ed', text: 'noam@example.org' }], noOverprint('reports/arxiv-1706.03762-attention.pdf'))
 
   // P1: a whole-line edit with the line text the model shows as `old` applies
@@ -1048,6 +1089,158 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
     const c0 = (old[0] + old[2]) / 2
     const c1 = (r.box[0] + r.box[2]) / 2
     ctx.check('new line centred on the old centre', Math.abs(c1 - c0) < 1.5, `${c0.toFixed(1)} vs ${c1.toFixed(1)}`)
+  })
+
+  // ----- spill / close (2026-11-01) -----
+  // A line edit that does not fit goes on below it, the rest of its
+  // paragraph moving down whole; an emptied line closes up. Checks: nothing
+  // outside the changed box moved, every glyph below moved by one offset
+  // (same x, font), text reads in order, a second edit works.
+  const lineRow = async (b, pred, pageNum = 1) => {
+    const m = await pageTextModel(b, pageNum)
+    const r = m.runs.find((x) => x.editable && pred(x.text))
+    if (!r) return null
+    const g = m.paragraphs.find((p) => p.runIds.includes(r.id))
+    const k = g ? g.runIds.indexOf(r.id) : -1
+    const next = k >= 0 && k + 1 < g.runIds.length ? m.runs.find((x) => x.id === g.runIds[k + 1]).text : null
+    const prev = k > 0 ? m.runs.find((x) => x.id === g.runIds[k - 1]).text : null
+    return { pageNum, runId: r.id, wordIndex: null, old: r.text, line: r.text, bbox: r.bbox, next, prev }
+  }
+  const spillCheck = (rel, want) => async (ctx, t, meta) => {
+    const e = meta.edits[0]
+    const r = e.report
+    const idx = t.pageNum - 1
+    const input = readRel(rel)
+    const out = ctx.out(`${e.name}.pdf`)
+    // every character on the page: before, minus the old line, plus the new text
+    // (text that runs off the page does not read back: count skipped)
+    const charsCheck = (counted = true) => {
+      const count = (txt, m = new Map(), k = 1) => {
+        for (const ch of squash(txt).normalize('NFKC')) m.set(ch, (m.get(ch) ?? 0) + k)
+        return m
+      }
+      const wantChars = count(e.text, count(t.old, count(docText(input)[idx]), -1))
+      const gotChars = count(docText(out)[idx])
+      const off = [...new Set([...wantChars.keys(), ...gotChars.keys()])].filter((ch) => (gotChars.get(ch) ?? 0) !== (wantChars.get(ch) ?? 0))
+      if (counted) ctx.check('page characters = before - old line + new text', off.length === 0, off.slice(0, 8).map((ch) => `${ch}:${(gotChars.get(ch) ?? 0) - (wantChars.get(ch) ?? 0)}`).join(' '))
+      // words kept apart (a count cannot see "Euros -B")
+      const flat = String(docText(out)[idx]).replace(/\s+/g, ' ')
+      for (const ph of want.reads ?? []) ctx.check(`reads "${ph}"`, flat.includes(ph), flat.slice(Math.max(0, flat.indexOf(ph.split(' ')[0]) - 10), 80))
+    }
+    // either way is fine; when it spills, the checks below run
+    if (want.either && !r.spill) {
+      ctx.check('applied as before (no spill)', !r.refused, r.refused)
+      charsCheck(!r.overflow)
+      return
+    }
+    if (want.fallback) {
+      ctx.check(`no spill (${want.fallback})`, !r.spill, JSON.stringify(r.spill))
+      if (want.refused) ctx.check(`refused ${want.refused}`, r.refused === want.refused, r.refused)
+      else ctx.check('applied as before', !r.refused, r.refused)
+      return
+    }
+    ctx.check('applied', !r.refused, r.refused)
+    ctx.check(want.close ? 'closed up a line' : `spilled onto ${want.lines ?? '1+'} new line(s)`, want.close ? r.spill?.lines === -1 : r.spill?.lines >= (want.lines ?? 1), JSON.stringify(r.spill))
+    if (want.moved != null) ctx.check(`moved ${want.moved}+ rows`, r.spill?.moved >= want.moved, JSON.stringify(r.spill))
+    ctx.check('no overflow, no squeeze', !r.overflow && !r.fit, JSON.stringify({ overflow: r.overflow, fit: r.fit }))
+    charsCheck()
+    if (!r.changedBox) return
+    // nothing outside the changed box moved or vanished
+    const before = glyphsOf(input, idx)
+    const after = glyphsOf(out, idx)
+    const bounds = pageBounds(input, idx)
+    const lost = movedOutside(before, after, r.changedBox, bounds)
+    ctx.check('no glyph outside the changed box moved', lost.length === 0, lost.slice(0, 5).map((g) => g.c).join(''))
+    const diff = pixelsOutside(render(input, idx), render(out, idx), [r.changedBox])
+    ctx.check('no pixel changed outside the changed box', diff.outside === 0, `${diff.outside} px`)
+    // glyphs below the edited line inside the box: one offset for all, same x and font
+    const lineBottom = t.bbox[3] + bounds[1]
+    const cb = [r.changedBox[0] + bounds[0], r.changedBox[1] + bounds[1], r.changedBox[2] + bounds[0], r.changedBox[3] + bounds[1]]
+    let below = before.filter((g) => g.y > lineBottom + 0.5 && g.x >= cb[0] - 1 && g.x <= cb[2] + 1 && g.y <= cb[3] + 1)
+    // a word with a ligature ("fi" read as two chars at one x) is drawn as
+    // its letters (so it reads back whole): its glyphs may sit a little apart
+    const words = []
+    for (const g of below.slice().sort((p, q) => p.y - q.y || p.x - q.x)) {
+      const w = words[words.length - 1]
+      const last = w?.[w.length - 1]
+      if (last && Math.abs(last.y - g.y) < 0.1 && g.x - last.x < 8) w.push(g)
+      else words.push([g])
+    }
+    const lig = new Set(words.filter((w) => w.some((g, i) => i > 0 && Math.abs(g.x - w[i - 1].x) < 0.01)).flat())
+    below = below.filter((g) => !lig.has(g))
+    if (below.length) {
+      const dys = new Set()
+      for (const a of after) if (a.c === below[0].c && Math.abs(a.x - below[0].x) <= 0.15) dys.add(Math.round((a.y - below[0].y) * 10) / 10)
+      const fits = (d) => below.filter((g) => after.some((a) => a.c === g.c && a.font === g.font && Math.abs(a.x - g.x) < 0.15 && Math.abs(a.y - g.y - d) < 0.15)).length
+      const d = [...dys].filter((x) => (want.close ? x < -0.5 : x > 0.5)).sort((p, q) => fits(q) - fits(p))[0]
+      const n = d == null ? 0 : fits(d)
+      ctx.check(`${below.length} glyphs below moved whole (same x and font, one offset; ${lig.size} in ligature words left out)`, n === below.length, `${n}/${below.length} at dy ${d}`)
+    }
+    // reading order: the edited line (or the line above a closed one), then the next line
+    const txt = squash(docText(out)[idx])
+    const head = want.close ? t.prev : e.text
+    // drawn in place it reads in order; drawn after the page content (the
+    // known limit, as for any edit) the moved lines still read together
+    if (head && t.next && r.order === 'inline') ctx.check('text reads in order', txt.includes(squash(`${head}${t.next}`).slice(-60)), `${squash(head).slice(-20)} | ${squash(t.next).slice(0, 20)}`)
+    else if (t.next) ctx.check(`moved text reads whole (order ${r.order})`, txt.includes(squash(t.next)), squash(t.next).slice(0, 30))
+    // a second edit of the same paragraph (on a moved line)
+    if (!t.next) return
+    const m2 = await pageTextModel(out, t.pageNum)
+    const first = t.next.split(/\s+/).filter(Boolean)[0]
+    const run = m2.runs.find((x) => x.editable && x.text.startsWith(first) && x.words.length)
+    if (!run) return ctx.check('second edit: moved line found', false, first)
+    const w = run.words.find((x) => /^\p{L}{3,}$/u.test(x.text)) ?? run.words[0]
+    const res = await nodeEdit(out, [{ pageNum: t.pageNum, runId: run.id, wordIndex: w.i, text: 'Zed', old: w.text }])
+    ctx.check('second edit applies', !res.report[0].refused, res.report[0].refused)
+    ctx.check('second edit reads back', squash(docText(res.bytes)[idx]).includes('Zed'))
+  }
+  // grow(target) -> new line text
+  const spillRow = (id, rel, pred, grow, want, pageNum = 1) => {
+    let target = null
+    add({
+      id: `edittext-spill-${id}`,
+      tool: 'edittext',
+      op: 'edittext:edit',
+      files: [rel],
+      timeout: 3 * MIN,
+      quick: id === 'justified-tracemonkey' || id === 'guard-link',
+      async prepare() {
+        target = await lineRow(readRel(rel), pred, pageNum)
+        if (!target) return { skip: 'no target' }
+        return { ...target, edits: [{ name: 'ed', text: grow(target) }] }
+      },
+      async validate(ctx) {
+        await spillCheck(rel, want)(ctx, target, ctx.meta)
+        const r = ctx.meta.edits[0].report
+        ctx.metric(`"${target.old.slice(0, 30)}": ${r.refused ?? 'ok'} spill ${JSON.stringify(r.spill)} fit ${r.fit} ${ctx.meta.edits[0].ms}+${ctx.meta.edits[0].finalizeMs}ms`)
+      },
+    })
+  }
+  const plus = (s) => (t) => `${t.old}${s}`
+  spillRow('justified-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('ular since they are expressive'), plus(' and more words'), { moved: 3 })
+  spillRow('address-saeco', 'invoices/saeco.pdf', (s) => s === 'Strategic Corp', plus(' plus several extra words to spill'), { lines: 2, moved: 4 })
+  spillRow('heading-fdic', 'reports/fdic-quarterly-banking-profile-2023q4.pdf', (s) => s.startsWith('FULL-YEAR NET INCOME DECLINED'), plus(' AND MORE WORDS'), { moved: 2 })
+  spillRow('last-row-tam', 'reports/pdfjs-TAMReview.pdf', (s) => s.startsWith('Indiana University'), plus(' plus several extra words'), {})
+  spillRow('close-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('is available, traditional compilers'), () => '', { close: true, moved: 10 })
+  spillRow('close-saeco', 'invoices/saeco.pdf', (s) => s === 'T.a.v. bosd', () => '', { close: true, moved: 2 })
+  spillRow('guard-control', SPILL, (s) => s.startsWith('The quick brown'), plus(' plus several extra words'), { moved: 2 }, 3)
+  spillRow('guard-link', SPILL, (s) => s.startsWith('The quick brown'), plus(' plus several extra words'), { fallback: 'link on a moved line' }, 1)
+  spillRow('guard-highlight', SPILL, (s) => s.startsWith('The quick brown'), plus(' plus several extra words'), { fallback: 'highlight under a moved line' }, 2)
+  // review round 1: a new word equal to a later row's word, a closed line
+  // whose next line starts with its last word, a ligature word moved
+  spillRow('grow-next-word-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('ular since they are expressive'), () => 'ular since they are expressive, accessible to all, and make the deployment of code more plain', {})
+  spillRow('close-attention', 'reports/arxiv-1706.03762-attention.pdf', (s) => s.startsWith('reduced to a constant number of operations'), () => '', { close: true, either: true }, 2)
+  spillRow('close-ligature-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('iteration of a loop. Some variables'), () => '', { close: true, either: true }, 5)
+  spillRow('words-apart-free-fiber', 'invoices/free-fiber.pdf', (s) => s.startsWith('Free SAS au capital'), (t) => t.old.replace('capital', 'capital plus several more inserted words here to push it over'), { either: true, reads: ['Euros − B 421', 'Paris − Siège'] })
+  spillRow('guard-opacity', SPILL_ALPHA, (s) => s.startsWith('The quick brown'), plus(' plus several extra words'), { fallback: 'half-opacity line below' })
+  spillRow('fallback-no-room-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('is available, traditional compilers'), plus(' plus a lot of extra words'), { fallback: 'no blank space below' })
+  spillRow('refused-no-room-below', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('Categories and Subject Descriptors'), plus(' plus a lot of extra words to spill over the edge'), { fallback: 'no room', refused: 'no-room-below' })
+  spillRow('fallback-arabic', 'intl/udhr-arabic.pdf', (s) => /[\u0600-\u06ff]{3}/u.test(s) && s.length > 20 && !/[\ufffd\ue000-\uf8ff\u0000-\u001f]/u.test(s), plus(' \u0643\u0644\u0645\u0627\u062a \u0623\u062e\u0631\u0649 \u0643\u062b\u064a\u0631\u0629 \u062c\u062f\u0627'), { fallback: 'right to left' })
+  // a whole line starts where it started: a leading space is dropped
+  fixRow('trim-leading-space-saeco', 'invoices/saeco.pdf', (b) => lineRow(b, (s) => s === 'T.a.v. bosd'), [{ name: 'ed', text: '   bosd' }], async (ctx, t, meta) => {
+    const r = meta.edits[0].report
+    ctx.check('applied', !r.refused, r.refused)
+    ctx.check('starts at the line start', r.box && Math.abs(r.box[0] - t.bbox[0]) < 0.6, `${r.box?.[0]} vs ${t.bbox[0]}`)
   })
 
   // P1-3: ten edits of the same word, re-reading the model each time

@@ -11,6 +11,14 @@ Owner: engine dev. Files: `src/lib/editTextOps.js`, `src/lib/editParagraph.js` (
 - Results: tier 1 `docs/test-results/2026-10-28-p2-engine-t1c.md` (66 edittext rows) + `-t1d.md` (24 new rows, 0 fail); tier 2 `docs/test-results/2026-10-28-p2-engine-quick.md` 195/195
 - Fix round (review + blind test, 2026-10-28): see "Fix round" below. Tier 1 `2026-10-28-p2-fix-t1i.md` (79 edittext rows, 78 pass; the 1 fail was the test picking a word whose glyphs are not bold, fixed and green in `-t1k`). Tier 2 ops layer `2026-10-28-p2-fix-quick-ops.md` 161/161. Full `test:quick` was cut by its 900 s timeout: 20 `intake` UI rows waited 60 s each for the shell ("UI shows a result") while Shell.jsx / ResultScreen.jsx were being changed and the UI dev's `edittext-ui.mjs` + `serve-pages-sim` were running; not engine rows.
 
+## Spill and close-up (2026-11-01, plan `docs/plans/2026-11-01-edit-text-spill.md`)
+
+- A single line edit that does not fit continues on new lines below; later rows of the paragraph move whole. An emptied line moves the rows below up. Anything unsafe falls back to the old line edit (`editText` option `spill: false` and the UI's "Keep on one line" do the old edit on purpose).
+- Code: `spillPlan` (word map from the edited line only, precise leading), `editPage` decide hook, `editParagraph` spill mode, `spillLayout` (editParagraph.js), `spillReadsBack` (scratch page with the page's own boxes: words must read back the same, else fall back).
+- Guards: links/annotations or paint under moved rows, decoration, alpha/clip differing in the paragraph, moved words that need re-encoding, RTL/vertical, centred, leading out of range, a word wider than the column.
+- Reviews: `docs/reviews/2026-11-01-spill-review.md` (reject: word mix-up, ligature misprint), `-spill-review-2.md` (round 2: merged copied words; round 3: scratch box too big, fixed), blind `2026-11-01-blind-spill.md` (0 P0; P1s are existing behaviour, parked).
+- Gate: full corpus `docs/test-results/2026-11-01-spill-gate.md` 978/978.
+
 ## Ship prep (2026-10-28, after review 3)
 
 - Paragraph editing is hidden in the UI and parked (logged rule after review 3 P0-1). The engine op and its rows stay.

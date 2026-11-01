@@ -307,6 +307,55 @@ try {
     await ctx.close()
   }
 
+  // ---------- spill: a long line goes on below it; Keep on one line; an emptied line closes up ----------
+  if (want('spill')) {
+    const rel = 'invoices/saeco.pdf'
+    const bytes = readRel(rel)
+    const m = await modelOf(bytes, 1)
+    const run = m.runs.find((r) => r.text === 'Strategic Corp')
+    const gone = m.runs.find((r) => r.text === 'T.a.v. bosd')
+    {
+      const { ctx, page } = await open(rel)
+      await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+      await clickWord(page, m.page, run.words[0], 'dbl')
+      const newText = `${run.text} plus several extra words to spill`
+      const r = await typeApply(page, newText, rel, 'line spill')
+      check('spill: long line applied', r.ok, r.ms ? `${r.ms.total} ms` : '')
+      const note = await page.waitForSelector('[data-testid=et-note]', { timeout: 10_000 }).then((h) => h.textContent()).catch(() => '')
+      check('spill: note says it continued below, with Keep on one line', /Continued on \d new lines?; the lines below moved down/.test(note) && !!(await page.$('[data-testid=et-one-line]')), note)
+      await shot(page, 'spill-1440')
+      const v = await version(page)
+      const ms0 = await page.getAttribute('[data-testid=et-live]', 'data-apply-ms')
+      await page.click('[data-testid=et-one-line]')
+      for (let i = 0; i < 600; i++) {
+        const t = await page.evaluate(() => document.querySelector('[data-testid=et-live]')?.dataset.applyMs ?? null)
+        if (t && t !== ms0) break
+        await page.waitForTimeout(100)
+      }
+      await waitVersion(page, v)
+      await page.waitForTimeout(300)
+      const note2 = await page.$$eval('[data-testid=et-note]', (ns) => ns.map((n) => n.textContent).join(' | ')).catch(() => '')
+      check('spill: Keep on one line replaces the version, no spill note', (await version(page)) === v && !/Continued on/.test(note2), `version ${await version(page)}, notes "${note2}"`)
+      const { out } = await runAndDownload(page)
+      const text = squash((await textOf(out)).join(' '))
+      check('spill: output has the new text (pdf.js)', text.includes(squash(newText)))
+      await ctx.close()
+    }
+    {
+      const { ctx, page } = await open(rel)
+      await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+      await clickWord(page, m.page, gone.words[0], 'dbl')
+      const r = await typeApply(page, '', rel, 'line close')
+      const note = await page.waitForSelector('[data-testid=et-note]', { timeout: 10_000 }).then((h) => h.textContent()).catch(() => '')
+      check('close: emptied line applied, note says the lines below moved up', r.ok && /The lines below moved up/.test(note), note)
+      await shot(page, 'close-1440')
+      const { out } = await runAndDownload(page)
+      const text = squash((await textOf(out)).join(' '))
+      check('close: line gone, lines below kept', !text.includes('T.a.v.bosd') && text.includes('Fakestreet46'))
+      await ctx.close()
+    }
+  }
+
   // ---------- flipkart: Sold By line, longer billing line ----------
   if (want('flip')) {
     const rel = 'invoices/flipkart-invoice.pdf'
