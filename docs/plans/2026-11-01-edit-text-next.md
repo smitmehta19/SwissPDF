@@ -1,6 +1,6 @@
 # Edit text: next units after spill (for Smit's pick)
 
-Status: A built 2026-11-01 (refuses 'off-page' / 'crosses-drawing'); B built 2026-11-02 (wording, note placement, focus ring, busy sign); C, D next (Smit: finish all). Each is its own sprint.
+Status: A built 2026-11-01 (refuses 'off-page' / 'crosses-drawing'); B built 2026-11-02 (wording, note placement, focus ring, busy sign); C built 2026-11-02 (invisible spaces on spilled rows); D next (Smit: finish all). Each is its own sprint.
 
 | # | Unit | What the user gets | Size | Risk |
 |---|---|---|---|---|
@@ -28,3 +28,8 @@ Out of scope here: paragraph re-wrap (parked), RTL/vertical spill, moving links 
 - Picture boxes for note placement ignore clipping: a cropped picture is avoided by its full box.
 - On a dense phone page there is no free spot; the note sits above or under the line and covers text there.
 - A note that only fits out of view does not try the narrower card.
+
+## Parking lot (from unit C review, 2026-11-02)
+- One Helvetica object per spill call; a spill that falls back leaves an orphan object (garbage-collected on the normal save).
+- Corpus `reads` check flattens whitespace, so a doubled space would pass.
+- No corpus row spills on a rotated page.

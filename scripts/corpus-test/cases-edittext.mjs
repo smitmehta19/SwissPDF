@@ -1261,7 +1261,10 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
   spillRow('close-ligature-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('iteration of a loop. Some variables'), () => '', { close: true, either: true }, 5)
   // unit A: no spill room and the line would run off the page or through a
   // box border: refused, nothing changed
-  spillRow('words-apart-free-fiber', 'invoices/free-fiber.pdf', (s) => s.startsWith('Free SAS au capital'), (t) => t.old.replace('capital', 'capital plus several more inserted words here to push it over'), { fallback: 'runs off the page', refused: 'off-page' })
+  spillRow('off-page-free-fiber', 'invoices/free-fiber.pdf', (s) => s.startsWith('Les montants unitaires'), plus(' plus several more inserted words here to push it over'), { fallback: 'runs off the page', refused: 'off-page' })
+  // unit C: words on spilled rows have real spaces between them, so a gap
+  // after a wide glyph still reads apart (this spill fell back before)
+  spillRow('words-apart-free-fiber', 'invoices/free-fiber.pdf', (s) => s.startsWith('Free SAS au capital'), (t) => t.old.replace('capital', 'capital plus several more inserted words here to push it over'), { lines: 1, reads: ['Euros − B 421', 'Paris − Siège', '− N° de TVA'] })
   spillRow('refused-crosses-frame', 'derived/edittext-decor-frame.pdf', (s) => s.startsWith('running across'), plus(' plus more words here'), { fallback: 'box border', refused: 'crosses-drawing', fitAfter: true })
   // centred and right-aligned lines grow where they are drawn (both sides, or
   // to the left): these fit on the page and apply

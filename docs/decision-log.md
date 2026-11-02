@@ -1,5 +1,15 @@
 # Decision log
 
+## 2026-11-02 - Edit text: real spaces between moved words (unit C)
+- Decision: words on spilled rows get an invisible space between them (standard Helvetica, text mode 3, stretched to the gap), drawn outside the word's own span. Copy, search and the read-back check now see real spaces.
+- Problem that prompted it: after a wide glyph the gap read as no space ("Euros −B"), so the read-back check made such spills fall back (free-fiber's footer line was refused).
+- Why this was chosen: invisible, so a font without a space glyph cannot show a box; one code (0x20 in WinAnsi) works for every word font.
+- Alternatives rejected: the word font's own space code (subset fonts often lack it; Type0 fonts need a lookup per font).
+- Impact and reversibility: after a spill the file lists Helvetica as a font that is not embedded (as fallback fonts already do); a file that claims PDF/A keeps the claim. Revert = drop the `sp` draw in `drawRows`.
+- Evidence: fuzz over 10 files (196 line growths) before/after: read-back fallbacks 1 to 0, spills 30 to 31, 0 bad pages; delete mode 0 bad. free-fiber row now spills and reads "Euros − B 421"; new off-page row on another free-fiber line keeps unit A covered. Also adds `report.spillWhy` (why a spill fell back).
+- Review: approve (no state leak, no doubled spaces in MuPDF or pdf.js); 3 nits parked.
+- Status: edittext rows 114/114, edittext-ui green, test:quick 200/200, build ok.
+
 ## 2026-11-02 - Edit text: note and feedback polish (unit B)
 - Decision: one "No room..." wording for every room refusal and overflow note, each ending with what to do; the note card after an edit is placed where it covers no text line, picture or form field (grid search around the edit, narrower card if needed, under the edit as a last resort); the focused line gets a 1 px inset ring so it no longer hides the first spilled line; "Applying the edit" shows (note + soft tint) when an apply takes over 300 ms.
 - Problem that prompted it: 3 wordings for the same refusal; the note covered moved lines; no sign during 1 to 4 s applies (plan `docs/plans/2026-11-01-edit-text-next.md`, unit B).

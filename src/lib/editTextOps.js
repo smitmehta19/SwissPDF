@@ -2984,14 +2984,38 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch,
   // the rows as content: fontName(ref) / formName(form) give resource names
   const tm = tmFor(P.page)
   const Tz = scale !== 1 ? `${f4(scale * 100)} Tz ` : ''
+  // a spill draws each word by itself: an invisible space (Helvetica, mode 3,
+  // stretched to the gap) between words keeps them apart when the text is
+  // copied or searched, whatever the word's own font holds
+  let spaceFont = null
+  const spaceOf = () => {
+    if (!spaceFont) {
+      const f = doc.newDictionary()
+      f.put('Type', doc.newName('Font'))
+      f.put('Subtype', doc.newName('Type1'))
+      f.put('BaseFont', doc.newName('Helvetica'))
+      f.put('Encoding', doc.newName('WinAnsiEncoding'))
+      spaceFont = doc.addObject(f)
+    }
+    return spaceFont
+  }
   const drawRows = (fontName, formName, gs = '') => {
     let content = ''
     const boxes = []
     for (const row of layout ?? []) {
       let body = ''
-      for (const p of row.items) {
+      for (const [k, p] of row.items.entries()) {
         const it = items[p.i]
         let d = ''
+        let sp = ''
+        const prev = k > 0 ? row.items[k - 1] : null
+        const gapW = prev ? p.x - (prev.x + prev.w) : 0
+        if (spilled && !fr.rtl && prev && !it.glue && gapW > 0.05) {
+          // Helvetica's space is 278/1000 em
+          const size = items[prev.i].size
+          const o = pointAt(prev.x + prev.w, row.nv ?? row.v)
+          sp = `q BT /${fontName(spaceOf())} ${f4(size)} Tf 0 Tc 3 Tr ${f4((gapW / (0.278 * size)) * 100)} Tz ${tm(o, dir).map(f4).join(' ')} Tm <20> Tj ET Q\n`
+        }
         if (it.kind === 'exact') {
           for (const t of it.toks) {
             const c0 = t.chars[0]
@@ -3013,7 +3037,7 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch,
         }
         // right-to-left glyphs already read back in order (see fallbackForm);
         // same-font and Latin fallback glyphs read back by themselves
-        body += it.kind !== 'form' || !COMPLEX.test(it.text) || RTL.test(it.text) ? d : `/Span <</ActualText <${utf16Hex(it.actual ?? it.text)}>>> BDC\n${d}EMC\n`
+        body += sp + (it.kind !== 'form' || !COMPLEX.test(it.text) || RTL.test(it.text) ? d : `/Span <</ActualText <${utf16Hex(it.actual ?? it.text)}>>> BDC\n${d}EMC\n`)
       }
       const size = Math.max(...row.items.map((p) => items[p.i].size))
       const rb = rowBox(row, size)
@@ -3026,7 +3050,7 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch,
   // a spill draws words one by one: on a scratch page they must read back as
   // the same words in the same order (a gap after a wide glyph read as no
   // space: "Euros -B 421")
-  if (spilled && !spillReadsBack(mupdf, scratch(), P, drawRows, layout.map((row) => row.items.map((p) => items[p.i])))) return refuse('spill-blocked')
+  if (spilled && !spillReadsBack(mupdf, scratch(), P, drawRows, layout.map((row) => row.items.map((p) => items[p.i])))) return refuse('spill-blocked', { readBack: true })
 
   // removal rects per stext line; thin where a thick band would touch other text
   const rects = []
@@ -3562,6 +3586,8 @@ export async function editText(bytes, edits, { fit = false, final = false, spill
               for (const k of Object.keys(one.rep)) delete one.rep[k]
               Object.assign(one.rep, init)
               applied += await editPage(mupdf, doc, P, list, { fit }, usage, scratch)
+              // why the spill was not done (tests and the fuzz read it)
+              one.rep.spillWhy = prep.readBack ? 'read-back' : prep.refused
               // the spill found no blank space below: say so
               if (one.rep.refused === 'no-room' && prep.refused === 'no-room') one.rep.refused = 'no-room-below'
             }
