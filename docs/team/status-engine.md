@@ -18,6 +18,7 @@ Owner: engine dev. Files: `src/lib/editTextOps.js`, `src/lib/editParagraph.js` (
 - Guards: links/annotations or paint under moved rows, decoration, alpha/clip differing in the paragraph, moved words that need re-encoding, RTL/vertical, centred, leading out of range, a word wider than the column.
 - Reviews: `docs/reviews/2026-11-01-spill-review.md` (reject: word mix-up, ligature misprint), `-spill-review-2.md` (round 2: merged copied words; round 3: scratch box too big, fixed), blind `2026-11-01-blind-spill.md` (0 P0; P1s are existing behaviour, parked).
 - Gate: full corpus `docs/test-results/2026-11-01-spill-gate.md` 978/978.
+- Overflow guard (unit A, 2026-11-01): when no spill happens, a line that would grow off the visible page is refused 'off-page'; one that would grow into a paint it did not touch, or out of a box it sat in, is refused 'crosses-drawing'. Checked against paints drawn before the line only. Extent is measured where the words are drawn (RTL, centred, right-aligned). White fills (device gray/RGB/CMYK) are ignored. A refused rep carries `fitScale` (the squeeze `fit: true` would need); the UI offers Fit to width at 0.6 and up. Limits: plan parking lot.
 
 ## Ship prep (2026-10-28, after review 3)
 

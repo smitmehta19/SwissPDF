@@ -1,5 +1,15 @@
 # Decision log
 
+## 2026-11-01 - Edit text: refuse line edits that run off the page or through a drawing (unit A)
+- Decision: a line edit that cannot spill and would grow past the visible page, or into a box border, rule or fill it did not touch (or out of a box it sat in), is refused with "This would run off the page" or "This would run through a line or box border". Nothing on the page changes. A spill is still tried first; the refusal offers "Fit to width" (squeeze to the old width).
+- Problem that prompted it: such edits were applied and then clipped by the page edge or drawn across borders (plan `docs/plans/2026-11-01-edit-text-next.md`, unit A).
+- Why this was chosen: a clear refusal is better than a broken-looking page; the check uses the paint boxes the engine already collects.
+- Alternatives rejected: squeezing automatically (changes the look without asking).
+- What changed: `editPage` marks a group 'off-page' / 'crosses-drawing' after the push/squeeze math; right-to-left lines use where the words are drawn (endOf counts RTL growth to the right). Corpus row words-apart-free-fiber now expects the off-page refusal (its old fallback ran text off the page).
+- Impact and reversibility: refuses more often; revert = drop the `t.blocked` loop.
+- Review: round 1 rejected (centred and right-aligned lines measured as growing right; no way to squeeze after a refusal; white field boxes counted as drawings). Fixed: extent measured where words are drawn; "Fit to width" button on these refusals (offered when the squeeze stays at 60% or more); white fills in device colour spaces ignored. Round 2: approve with fixes (stale refusal across files, Ctrl+Z on the Fit button, screen reader text, spot colours): fixed. Rest parked in the plan.
+- Status: built; edittext rows 113/113, edittext-ui green, test:quick 200/200, build ok.
+
 ## 2026-11-01 - Edit text: long lines spill onto new lines, emptied lines close up
 - Decision: a single line edit that would pass its paragraph's edge, be squeezed, or be refused for room is laid out again on that row only, onto new lines below it; later rows of the paragraph move down whole (same glyphs, spacing, justification). An emptied line moves the rows below up. When the spill is not possible (no blank space below, link/highlight/underline on a moved row, RTL, centred, a word wider than the column) the edit runs exactly as before; a 'no-room' refusal then reads "No room below this paragraph...". A "Keep on one line" button redoes the edit the old way.
 - Problem that prompted it: Smit: long edits should go onto the next line and the section should grow; a deleted line should not leave a gap.

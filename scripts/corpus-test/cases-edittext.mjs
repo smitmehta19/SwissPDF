@@ -173,6 +173,8 @@ const DECOR = {
   frame: `0 0 0 RG 1 w 66 610 300 52 re S\n${pText(P_LINES, 72, 650, 12)}`,
   grid: `0 0 0 RG 0.5 w 66 662 m 366 662 l 66 612 m 366 612 l 66 520 m 366 520 l 66 662 m 66 520 l 366 662 m 366 520 l S\n${pText(P_LINES, 72, 650, 12)}\nBT /F1 10 Tf 72 530 Td (Next row cell text) Tj ET`,
   underline: `${pText(P_LINES, 72, 650, 12)}\n0 0 1 RG 0.5 w 72 636 m 200 636 l S`,
+  // report-style white field boxes under each line (unseen on the page)
+  whitefill: `1 1 1 rg 70 646 250 14 re f 70 634 250 14 re f 70 622 250 14 re f 0 g\n${pText(P_LINES, 72, 650, 12)}`,
 }
 function buildStruct() {
   const dest = join(CORPUS_DIR, STRUCT)
@@ -271,6 +273,18 @@ function buildSpill() {
     doc.destroy?.()
   }
 }
+// unit A: a centred title alone in its block, and a right-aligned address
+// block ending at x 540 (its last line the shortest)
+const ALIGNED = 'derived/edittext-aligned.pdf'
+function buildAligned() {
+  const font = new mupdf.Font('Helvetica')
+  const width = (t, size) => [...t].reduce((w, ch) => w + font.advanceGlyph(font.encodeCharacter(ch.charCodeAt(0)), 0), 0) * size
+  const title = 'A Centred Title For Testing'
+  const tx = 306 - width(title, 14) / 2
+  const addr = ['Accounts Department Building Two', '221 Long Street, Floor 4', 'London']
+  const lines = addr.map((l, i) => `BT /F1 10 Tf ${(540 - width(l, 10)).toFixed(3)} ${600 - i * 12} Td (${l}) Tj ET`)
+  buildPages(ALIGNED, [[`BT /F1 14 Tf ${tx.toFixed(3)} 720 Td (${title}) Tj ET`, ...lines].join('\n')])
+}
 // the same paragraph with its last line drawn at half opacity
 const SPILL_ALPHA = 'derived/edittext-spill-alpha.pdf'
 function buildSpillAlpha() {
@@ -311,6 +325,7 @@ try {
   buildStruct2()
   buildSpill()
   buildSpillAlpha()
+  buildAligned()
   for (const [k, c] of Object.entries(DECOR)) buildPages(`derived/edittext-decor-${k}.pdf`, [c])
   // inline images with an abbreviated Indexed colour space and ASCIIHex data
   buildPages(INLINE, ['BT /F1 12 Tf 72 700 Td (Inline image test line here) Tj ET q 200 0 0 10 72 670 cm BI /W 4 /H 1 /BPC 8 /CS [/I /RGB 3 <FF000000FF000000FFFFFFFF>] /F /AHx ID 00010203> EI Q q 200 0 0 10 72 640 cm BI /W 2 /H 1 /BPC 8 /CS /G /F /AHx ID 40C0> EI Q BT /F1 12 Tf 72 620 Td (Second line below images) Tj ET'])
@@ -1135,8 +1150,10 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
     }
     if (want.fallback) {
       ctx.check(`no spill (${want.fallback})`, !r.spill, JSON.stringify(r.spill))
-      if (want.refused) ctx.check(`refused ${want.refused}`, r.refused === want.refused, r.refused)
-      else ctx.check('applied as before', !r.refused, r.refused)
+      if (want.refused) {
+        ctx.check(`refused ${want.refused}`, r.refused === want.refused, r.refused)
+        ctx.check('file unchanged', e.unchanged === true, `unchanged ${e.unchanged}`)
+      } else ctx.check('applied as before', !r.refused, r.refused)
       return
     }
     ctx.check('applied', !r.refused, r.refused)
@@ -1214,10 +1231,14 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
       async prepare() {
         target = await lineRow(readRel(rel), pred, pageNum)
         if (!target) return { skip: 'no target' }
-        return { ...target, edits: [{ name: 'ed', text: grow(target) }] }
+        const text = grow(target)
+        // Fit to width after a refusal: the same text squeezed on its line
+        return { ...target, edits: [{ name: 'ed', text }, ...(want.fitAfter ? [{ name: 'fit', text, fit: true }] : [])] }
       },
       async validate(ctx) {
         await spillCheck(rel, want)(ctx, target, ctx.meta)
+        const f = ctx.meta.edits[1]?.report
+        if (want.fitAfter) ctx.check('Fit to width applies it squeezed', f && !f.refused && f.fit > 0 && f.fit < 1, JSON.stringify({ refused: f?.refused, fit: f?.fit }))
         const r = ctx.meta.edits[0].report
         ctx.metric(`"${target.old.slice(0, 30)}": ${r.refused ?? 'ok'} spill ${JSON.stringify(r.spill)} fit ${r.fit} ${ctx.meta.edits[0].ms}+${ctx.meta.edits[0].finalizeMs}ms`)
       },
@@ -1238,7 +1259,16 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
   spillRow('grow-next-word-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('ular since they are expressive'), () => 'ular since they are expressive, accessible to all, and make the deployment of code more plain', {})
   spillRow('close-attention', 'reports/arxiv-1706.03762-attention.pdf', (s) => s.startsWith('reduced to a constant number of operations'), () => '', { close: true, either: true }, 2)
   spillRow('close-ligature-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('iteration of a loop. Some variables'), () => '', { close: true, either: true }, 5)
-  spillRow('words-apart-free-fiber', 'invoices/free-fiber.pdf', (s) => s.startsWith('Free SAS au capital'), (t) => t.old.replace('capital', 'capital plus several more inserted words here to push it over'), { either: true, reads: ['Euros − B 421', 'Paris − Siège'] })
+  // unit A: no spill room and the line would run off the page or through a
+  // box border: refused, nothing changed
+  spillRow('words-apart-free-fiber', 'invoices/free-fiber.pdf', (s) => s.startsWith('Free SAS au capital'), (t) => t.old.replace('capital', 'capital plus several more inserted words here to push it over'), { fallback: 'runs off the page', refused: 'off-page' })
+  spillRow('refused-crosses-frame', 'derived/edittext-decor-frame.pdf', (s) => s.startsWith('running across'), plus(' plus more words here'), { fallback: 'box border', refused: 'crosses-drawing', fitAfter: true })
+  // centred and right-aligned lines grow where they are drawn (both sides, or
+  // to the left): these fit on the page and apply
+  spillRow('centred-title-grows', ALIGNED, (s) => s.startsWith('A Centred Title'), plus(' With Many More Words Added Here Too'), { fallback: 'centred' })
+  spillRow('right-aligned-grows', ALIGNED, (s) => s === 'London', plus(', United Kingdom EC1A 1BB and more'), { fallback: 'right-aligned' })
+  spillRow('grows-inside-frame', 'derived/edittext-decor-frame.pdf', (s) => s.startsWith('running across'), plus(' ok'), { either: true })
+  spillRow('grows-past-white-fill', 'derived/edittext-decor-whitefill.pdf', (s) => s.startsWith('running across'), plus(' and on'), { either: true })
   // review 2: a justified line that still fits after re-laying, and a word
   // replaced mid-line
   spillRow('same-line-justified-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('Dynamic languages such as JavaScript are more'), (t) => t.old.replace(' such as ', ' such ases '), { lines: 0, reads: ['such ases JavaScript'] })

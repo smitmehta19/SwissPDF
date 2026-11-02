@@ -252,6 +252,11 @@
   white-space: normal;
 }
 
+.et-input-fit {
+  display: block;
+  margin-top: 4px;
+}
+
 .et-note.is-refused {
   border-color: color-mix(in srgb, var(--warn) 60%, var(--line-strong));
   color: var(--warn);

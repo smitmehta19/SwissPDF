@@ -1055,6 +1055,32 @@ try {
     await ctx.close()
   }
 
+  // ---------- unit A: a line that would cross its box border is refused; Fit to width squeezes it ----------
+  if (want('fit-refused')) {
+    const rel = 'derived/edittext-decor-frame.pdf'
+    const m = await pageTextModel(new Uint8Array(readFileSync(join(CORPUS, rel))), 1)
+    const run = m.runs.find((r) => r.text.startsWith('running across'))
+    const { ctx, page } = await open(rel)
+    await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+    await page.locator(lineSel(run)).focus()
+    await page.keyboard.press('Enter')
+    await page.waitForSelector('[data-testid=et-input]', { timeout: 5000 })
+    await page.fill('[data-testid=et-input]', `${run.text} plus more words here`)
+    await page.press('[data-testid=et-input]', 'Enter')
+    const why = await page.waitForSelector('[data-testid=et-input-error]', { timeout: 30_000 }).then((h) => h.textContent()).catch(() => '')
+    const btn = await page.$('[data-testid=et-fit-refused]')
+    check('fit-refused: crossing the box border is refused with a Fit button, nothing applied', /box border/.test(why) && !!btn && (await version(page)) === 0, `"${why}" button ${!!btn} version ${await version(page)}`)
+    await shot(page, 'refusal-fit-1440')
+    // keyboard: Tab goes to the button, Enter squeezes the text in
+    await page.press('[data-testid=et-input]', 'Tab')
+    const focused = await page.evaluate(() => document.activeElement?.dataset.testid)
+    await page.keyboard.press('Enter')
+    const ok = await waitVersion(page, 1, 30_000)
+    const note = await page.$$eval('[data-testid=et-note]', (ns) => ns.map((n) => n.textContent).join(' | ')).catch(() => '')
+    check('fit-refused: Tab reaches Fit to width, Enter applies it squeezed', focused === 'et-fit-refused' && ok && /[Ss]queezed/.test(note), `focus ${focused} applied ${ok} note "${note}"`)
+    await ctx.close()
+  }
+
   // ---------- right to left: line and paragraph editors run right to left ----------
   if (want('rtl')) {
     const rel = 'intl/udhr-arabic.pdf'

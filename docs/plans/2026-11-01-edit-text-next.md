@@ -1,6 +1,6 @@
 # Edit text: next units after spill (for Smit's pick)
 
-Status: proposed, not started. Pick one; each is its own sprint.
+Status: A built 2026-11-01 (refuses 'off-page' / 'crosses-drawing'); B, C, D proposed. Each is its own sprint.
 
 | # | Unit | What the user gets | Size | Risk |
 |---|---|---|---|---|
@@ -14,3 +14,12 @@ Recommendation: A then B (small, visible, safe), then D as its own planned unit 
 Done when (each): corpus rows for the change pass, edittext-ui green, test:quick green, deploy, live Health green.
 
 Out of scope here: paragraph re-wrap (parked), RTL/vertical spill, moving links with text.
+
+## Parking lot (from unit A reviews, 2026-11-01)
+- Crossing check uses path bounding boxes: a curve or logo whose box holds the line refuses growth; a grid drawn as one path, or a shading, is not caught.
+- Paints drawn after the line are not checked for centred and RTL lines (plain lines are squeezed by the 'covered' rule); clip paths around the text are not checked.
+- Trailing character spacing (tc) makes a same-length edit measure slightly wider; can trip the check on letter-spaced lines next to a rule.
+- An image counts as a "line or box border" in the message.
+- Phone editor: Tab order from the Fit button cycles inside the sheet.
+- Alignment detection: irs-fw9 "Taxpayer Identification Number (TIN)" is treated as right-aligned and grows left (now refused, it would draw over the black "Part I" box).
+- Missing tests: RTL push off the left edge, mixed RTL/LTR line, a collision squeeze crossing a cell border, Fit by mouse, in the phone editor and on the note card.

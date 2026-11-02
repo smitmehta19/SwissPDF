@@ -49,6 +49,9 @@
 //   spill: { lines (rows gained, -1 closed), moved (rows moved) }. When that
 //   cannot be done the edit runs as before; a 'no-room' refusal then reads
 //   'no-room-below'.
+//   A line edit that would grow off the page or through a drawing under it
+//   (a box or cell border, a rule, a fill) and cannot spill is refused
+//   'off-page' / 'crosses-drawing' (fit: true squeezes it instead).
 //   xfaRemoved: the file had an XFA copy of its form (/AcroForm /XFA, which
 //   keeps the old text); it was dropped
 //   final false (interactive): a fast appending save; the old text is still
@@ -1651,9 +1654,17 @@ function paintFacts(mupdf, page, region = null) {
   const groups = []
   let masking = 0
   const ga = (alpha) => groups.reduce((x, g) => x * g, alpha ?? 1)
-  const paint = (box, alpha) => {
+  // white: a white fill (gray 1, RGB 1 1 1, CMYK 0 0 0 0), unseen on a white
+  // page (report-style invoices put one under each field)
+  const paint = (box, alpha, white = false) => {
     seq++
-    if (!masking && ga(alpha) >= 0.5) paints.push({ seq, box })
+    if (!masking && ga(alpha) >= 0.5) paints.push(white ? { seq, box, white } : { seq, box })
+  }
+  const isWhite = (cs, color) => {
+    // a spot colour at tint 1 is full ink: only device colour spaces count
+    if (!(cs?.isGray?.() || cs?.isRGB?.() || cs?.isCMYK?.())) return false
+    const c = Array.from(color ?? [])
+    return c.length === 4 ? c.every((v) => v <= 0.02) : (c.length === 1 || c.length === 3) && c.every((v) => v >= 0.98)
   }
   const dev = new mupdf.Device({
     fillText(text, ctm, cs, color, alpha) {
@@ -1681,7 +1692,7 @@ function paintFacts(mupdf, page, region = null) {
       release(text)
     },
     fillPath(path, evenOdd, ctm, cs, color, alpha) {
-      paint(path.getBounds(null, ctm), alpha)
+      paint(path.getBounds(null, ctm), alpha, isWhite(cs, color))
       release(path, cs)
     },
     strokePath(path, stroke, ctm, cs, color, alpha) {
@@ -2337,6 +2348,31 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch, decide = n
     // a right-to-left line grows past its paragraph's left edge (same slack)
     const blockStart = multi && allRtl ? Math.min(...corners) - 0.1 * (Math.max(...corners) - Math.min(...corners)) : -Infinity
     const past = newEnd > blockEnd + 0.5 || (newEnd > pageEnd && newEnd > lineEnd + 0.3) || newStart < pageStart + PAGE_MARGIN - 0.01 || (newStart < blockStart - 0.5 && newStart < lineStart - 0.3)
+    // A line that grows off the page, or through a drawing under it (a box
+    // or cell it sat in, a rule or fill it did not touch), would be clipped
+    // or look broken: refused after a spill was tried (blocked below)
+    // (measured where the words are drawn: endOf counts a right-to-left,
+    // centred or right-aligned word as growing to the right)
+    const spans = [...group.map((t) => [t.start, t.start + t.adv]), ...lineMoves.flatMap((g) => g.chars.filter((c) => c.c.trim()).map((c) => along(c.quad, dir).map((v) => v + g.shift)))]
+    const drawnEnd = Math.max(lineEnd, ...spans.map((x) => x[1]))
+    const drawnStart = Math.min(lineStart, ...spans.map((x) => x[0]))
+    const offPage = (drawnEnd > pageEnd && drawnEnd > lineEnd + 0.3) || (drawnStart < pageStart + PAGE_MARGIN - 0.01 && drawnStart < lineStart - 0.3)
+    let crosses = false
+    if (!offPage && (drawnEnd > lineEnd + 0.3 || drawnStart < lineStart - 0.3)) {
+      const o = vis[0].origin
+      const band = (a, z) => orientedBox([o[0] + dir[0] * (a - dot(o, dir)), o[1] + dir[1] * (a - dot(o, dir))], dir, z - a, vis[0].size * 0.6)
+      const oldBox = band(lineStart, lineEnd)
+      const newBox = band(Math.min(drawnStart, lineStart), Math.max(drawnEnd, lineEnd))
+      const grown = [drawnEnd > lineEnd + 0.3 && band(lineEnd + 0.3, drawnEnd), drawnStart < lineStart - 0.3 && band(drawnStart, lineStart - 0.3)].filter(Boolean)
+      const inside = (a, b) => b[0] >= a[0] - 0.5 && b[1] >= a[1] - 0.5 && b[2] <= a[2] + 0.5 && b[3] <= a[3] + 0.5
+      const seq0 = Math.min(...vis.map((c) => F.glyph(c)?.seq ?? Infinity))
+      crosses = F.paints.some((p) => p.seq < seq0 && !p.white && ((inside(p.box, oldBox) && !inside(p.box, newBox)) || (!overlaps(p.box, oldBox) && grown.some((x) => overlaps(p.box, x)))))
+    }
+    for (const t of group) {
+      t.blocked = offPage ? 'off-page' : crosses ? 'crosses-drawing' : null
+      t.lineMoves = lineMoves
+      t.group = group
+    }
     for (const t of group) {
       const grew = t.adv > t.oldEnd - t.oldStart + 0.3
       const others = chars.filter((c, i) => c.c.trim() && (i < t.a || i > t.b))
@@ -2352,6 +2388,14 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch, decide = n
     }
   }
   if (single && decide(single)) return { spill: true }
+  for (const t of targets.filter((x) => x.blocked && !x.rep.refused)) {
+    // fitScale: the squeeze Fit to width would need (the UI offers it at 0.6 and up)
+    const fitScale = r2(Math.min(...t.group.map((x) => Math.min(1, (x.oldEnd - x.oldStart) / (x.adv / (x.scale || 1) || 1)))))
+    Object.assign(t.rep, { refused: t.blocked, overflow: false, noPush: null, shift: 0, pushed: 0, fitScale })
+    targets.splice(targets.indexOf(t), 1)
+    // the rest of its line stays where it is
+    for (const g of t.lineMoves) if (moved.includes(g)) moved.splice(moved.indexOf(g), 1)
+  }
   if (!targets.length) return 0
 
   // an underline or strike (thin paint drawn after the line, across it or just
@@ -2518,7 +2562,7 @@ function spillPlan(P, t) {
   } else {
     const slack = g.align === 'justify' ? 0.5 : 0.1 * (g.R - g.L)
     const past = n >= 2 && t.newEnd > g.R + slack
-    if (!(t.rep.refused === 'no-room' || t.rep.overflow || t.scale < 1 || past)) return null
+    if (!(t.rep.refused === 'no-room' || t.rep.overflow || t.scale < 1 || past || t.blocked)) return null
   }
   // the line's words in the paragraph; a hyphenated word that starts above
   // or goes on below keeps its piece on this line as it is

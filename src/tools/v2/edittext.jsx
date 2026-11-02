@@ -142,6 +142,10 @@ function useWidgets(file, page, bytes, enabled) {
 }
 
 // ---------- plain words ----------
+// refusals that Fit to width (squeeze to the old width) can get past
+const FIT_OK = new Set(['off-page', 'crosses-drawing'])
+// (not when the squeeze would be too narrow to read, as for other line edits)
+const fitHelps = (n) => FIT_OK.has(n.refused) && (n.fitScale ?? 1) >= 0.6
 const WHY = {
   scanned: 'Scanned page: run OCR first',
   hidden: 'Hidden text',
@@ -157,6 +161,8 @@ const WHY = {
   covered: 'Something is drawn over this text, so it is left as it is',
   'no-room': 'No room for this text here, even squeezed: try shorter text',
   'no-room-below': 'No room below this paragraph. Try shorter text, or use PDF to Word for bigger rewrites',
+  'off-page': 'This would run off the page. Try shorter text',
+  'crosses-drawing': 'This would run through a line or box border. Try shorter text',
   'tight-lines': 'The lines here are too close to change this safely',
   'inline-image': 'This page has an embedded image this edit would damage, so it is left as it is',
   unreadable: "This text can't be read as letters, so it can't be edited",
@@ -374,6 +380,7 @@ const keepFocus = (e) => e.preventDefault() // bar buttons must not blur the fie
 function InlineEditor({ ed, scale, size, busy, bar, onCommit, onCancel, onLine, onPara, onDirty }) {
   const ref = useRef(null)
   const barRef = useRef(null)
+  const fitRef = useRef(null)
   const done = useRef(false)
   // a refused try comes back with what was typed and why it was refused
   const [value, setValue] = useState(ed.draft ?? ed.text)
@@ -431,6 +438,9 @@ function InlineEditor({ ed, scale, size, busy, bar, onCommit, onCancel, onLine, 
     done.current = true
     onPara()
   }
+  // refused for running off the page or through a border: the same text can
+  // still go in squeezed to its old width
+  const canFit = !para && !!ed.fitOk && problem === ed.problem && value === ed.draft
   const label = para ? 'Edit paragraph' : ed.wordIndex == null ? 'Edit line' : 'Edit word'
   const Field = para ? 'textarea' : 'input'
   // on the page: the text's own look, over the text (right-to-left text is
@@ -487,11 +497,13 @@ function InlineEditor({ ed, scale, size, busy, bar, onCommit, onCancel, onLine, 
           finish('cancel')
         } else if (e.key === 'Tab') {
           e.preventDefault()
-          finish('commit', { tab: e.shiftKey ? -1 : 1 })
+          // the refusal's Fit button is the next stop (the same text again would be refused)
+          if (canFit && !e.shiftKey && fitRef.current) fitRef.current.focus()
+          else finish('commit', { tab: e.shiftKey ? -1 : 1 })
         }
       }}
       onBlur={(e) => {
-        if (barRef.current?.contains(e.relatedTarget)) return
+        if (barRef.current?.contains(e.relatedTarget) || (e.relatedTarget && e.relatedTarget === fitRef.current)) return
         finish('commit', { blur: true })
       }}
       onDoubleClick={(e) => {
@@ -510,13 +522,34 @@ function InlineEditor({ ed, scale, size, busy, bar, onCommit, onCancel, onLine, 
   const error = problem && (
     <span
       className="et-input-error"
-      id="et-input-error"
-      role="alert"
       data-testid="et-input-error"
       // a paragraph's reason goes above it (the text area grows downwards)
       style={bar ? undefined : para ? { left: `calc(var(--pt) * ${g.start})`, top: `calc(var(--pt) * ${-g.top} - 6px)`, transform: 'translateY(-100%)' } : { left: `calc(var(--pt) * ${g.start})`, top: `calc(var(--pt) * ${-g.lo * grow} + 6px)` }}
     >
-      {problem}
+      <span id="et-input-error" role="alert">
+        {problem}
+      </span>
+      {canFit && (
+        <button
+          type="button"
+          ref={fitRef}
+          className="et-note-btn et-input-fit"
+          data-testid="et-fit-refused"
+          onMouseDown={keepFocus}
+          onClick={() => finish('commit', { tab: 0, fit: true })}
+          onBlur={(e) => e.relatedTarget !== ref.current && finish('commit', { blur: true })}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              e.preventDefault()
+              e.stopPropagation()
+              finish('cancel')
+            }
+          }}
+          disabled={busy}
+        >
+          Fit to width
+        </button>
+      )}
     </span>
   )
   if (bar) {
@@ -604,7 +637,9 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
   const [edDirty, setEdDirty] = useState(false) // the open editor has typed changes
   const narrow = useNarrow()
   const [busy, setBusy] = useState(false)
-  const [refused, setRefused] = useState(null) // { bytes, page, notes } of an apply that changed nothing
+  const [refused, setRefused] = useState(null) // { bytes, page, notes, edits } of an apply that changed nothing (edits kept when Fit can help)
+  // a refusal belongs to the file it was made on
+  useEffect(() => setRefused(null), [id])
   const [hidden, setHidden] = useState(() => new Set()) // dismissed notes
   const [ask, setAsk] = useState(null) // signed file: the activation waiting for a yes
   const [timing, setTiming] = useState(null) // { engine, total } ms of the last apply
@@ -717,21 +752,22 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
   // the reason (also after a click away, e.g. on Run, which then waits).
   // When the click away opened other text, the draft waits until this text
   // is opened again.
-  const refusedWith = (notes, parent, from) => {
+  const refusedWith = (notes, parent, from, edits = null) => {
     const why = noteText(notes[0])
+    const fitOk = notes.length === 1 && fitHelps(notes[0])
     setLive(why)
     focusAnchor.current = null // the page is not read again
     if (from) {
-      drafts.current.set(draftKey(from.ed), { text: from.value, problem: why })
+      drafts.current.set(draftKey(from.ed), { text: from.value, problem: why, fitOk })
       if (!pendingOpen.current) {
         focusIdx.current = null
         // in the same render as busy going off: a held Run click is dropped
         setOptions((x) => ({ ...x, textHold: true }))
-        setEditing({ ...from.ed, draft: from.value, problem: why })
+        setEditing({ ...from.ed, draft: from.value, problem: why, fitOk })
         return
       }
     }
-    setRefused({ id: ++entrySeq, bytes: parent, page, notes })
+    setRefused({ id: ++entrySeq, bytes: parent, page, notes, edits: fitOk ? edits : null })
     // the page is not read again: a click held during the apply opens now
     if (pendingOpen.current) setRefusedTick((n) => n + 1)
   }
@@ -770,7 +806,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
       const wasThere = (r, e) => r.refused === 'unsupported-char' && !!r.char && String(e?.old ?? '').includes(r.char)
       const notes = res.report.map((r, i) => ({ ...r, anchor: edits[i]?.anchor ?? edits[0]?.anchor, ...(UNREAD_WHY.has(r.refused) && wordsOk(edits[i]) ? { wordsOk: true } : {}), ...(wasThere(r, edits[i]) ? { charWasThere: true } : {}) }))
       if (!notes.some((r) => !r.refused)) {
-        refusedWith(notes, parent, from)
+        refusedWith(notes, parent, from, edits)
         // the page is not read again: keyboard focus goes back now
         if (focusIdx.current != null) {
           lineEls.current[focusIdx.current]?.focus({ preventScroll: true })
@@ -815,7 +851,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
   // an editor for a target, with the text of an earlier refused try
   const withDraft = (ed) => {
     const d = drafts.current.get(draftKey(ed))
-    return d ? { ...ed, draft: d.text, problem: d.problem } : ed
+    return d ? { ...ed, draft: d.text, problem: d.problem, fitOk: d.fitOk } : ed
   }
 
   function open(run, word) {
@@ -869,7 +905,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
     if (value === ed.text) return drafts.current.delete(draftKey(ed))
     const from = { ed, value }
     if (ed.kind === 'para') apply([{ pageNum: page, paragraphId: ed.para.id, text: value, old: ed.text, anchor: ed.box }], { from })
-    else apply([{ pageNum: page, runId: ed.run.id, wordIndex: ed.wordIndex, text: value, old: ed.text, anchor: ed.box }], { from })
+    else apply([{ pageNum: page, runId: ed.run.id, wordIndex: ed.wordIndex, text: value, old: ed.text, anchor: ed.box }], { from, fit: !!extra?.fit })
   }
 
   // the bar editor: the edited text in view above it (only as far as needed)
@@ -898,7 +934,8 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
     const onKey = (e) => {
       if (!(e.ctrlKey || e.metaKey) || e.altKey) return
       const t = document.activeElement
-      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return
+      // (also inside an open editor: its Fit button would undo under the draft)
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable || t.closest?.('.et-anchor, .et-sheet'))) return
       if (document.querySelector('[role=dialog]')) return
       const k = e.key.toLowerCase()
       if (k === 'z' && !e.shiftKey) {
@@ -1062,6 +1099,11 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
               {n.spill?.lines > 0 && !n.refused && n.entry && !n.paragraphId && (
                 <button type="button" className="et-note-btn" data-testid="et-one-line" onClick={oneLineTop} disabled={busy}>
                   Keep on one line
+                </button>
+              )}
+              {fitHelps(n) && refused?.edits && (
+                <button type="button" className="et-note-btn" data-testid="et-fit-refused" onClick={() => apply(refused.edits, { fit: true })} disabled={busy}>
+                  Fit to width
                 </button>
               )}
               {n.overflow && !n.refused && n.entry && !n.entry.fit && !n.paragraphId && (
