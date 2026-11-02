@@ -46,6 +46,21 @@ export const OPS = {
     return { outputs, meta }
   },
 
+  // Several lines edited as one: params { pageNum, blockId, rows: [r0, r1],
+  // old, edits: [{ name, text }] }. One output per edit, each from the original.
+  async range(s, [src]) {
+    const meta = { edits: [] }
+    const outputs = []
+    for (const ed of s.params.edits) {
+      const edit = { pageNum: s.params.pageNum, blockId: s.params.blockId, rows: s.params.rows, text: ed.text, old: s.params.old }
+      const [res, ms] = await call('editText', src, [edit], {})
+      const [fin, finalizeMs] = await call('editTextFinalize', res.bytes)
+      outputs.push(await save(s.id, `${ed.name}.pdf`, fin.bytes))
+      meta.edits.push({ name: ed.name, text: ed.text, ms, finalizeMs, report: res.report[0], unchanged: res.bytes.length === src.length && res.bytes.every((b, i) => b === src[i]) })
+    }
+    return { outputs, meta }
+  },
+
   // Several edits in one call (params.batch: [{ runId, wordIndex, old, text }]).
   async batch(s, [src]) {
     const edits = s.params.batch.map((e) => ({ pageNum: s.params.pageNum, ...e }))

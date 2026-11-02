@@ -373,6 +373,96 @@ try {
     }
   }
 
+  // ---------- unit D: several lines edited as one ----------
+  if (want('multiline')) {
+    const rel = 'invoices/saeco.pdf'
+    const m = await modelOf(readRel(rel), 1)
+    const b = m.blocks.find((x) => x.rows.some((r) => r.text === 'Strategic Corp'))
+    const k0 = b.rows.findIndex((r) => r.text === 'Strategic Corp')
+    const runOf = (k) => m.runs.find((r) => r.id === b.rows[k].runIds[0])
+    const textOfRows = (r0, r1) => b.rows.slice(r0, r1 + 1).map((x, j) => x.text + (j < r1 - r0 ? x.sep : '')).join('')
+    const valueOf = (page) => page.inputValue('[data-testid=et-para]').catch(() => null)
+    // a line's text as the page reads it (spaces folded)
+    const label = (page, t) => page.$$eval('[data-testid=et-line]', (ls, t) => ls.some((l) => (l.getAttribute('aria-label') ?? '').replace(/\s+/g, ' ') === `Edit: ${t}`), t)
+    const waitFor = async (fn, ms = 30_000) => {
+      for (const t = Date.now(); Date.now() - t < ms; await new Promise((r) => setTimeout(r, 100))) if (await fn()) return true
+      return false
+    }
+    const grown = (t) => t.replace('Corp', 'Corp International Holdings Group plus more')
+    {
+      const { ctx, page } = await open(rel)
+      await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+      // mouse: open the first line, Shift+click the third
+      await clickWord(page, m.page, runOf(k0).words[0], 'dbl')
+      await page.waitForSelector('[data-testid=et-input]', { timeout: 15_000 })
+      const [cx, cy] = center(runOf(k0 + 2).bbox)
+      await stage(page).click({ position: await at(page, m.page, cx, cy), modifiers: ['Shift'] })
+      await page.waitForTimeout(200)
+      const val = await valueOf(page)
+      check('multiline: Shift+click opens the three lines as one text', val === textOfRows(k0, k0 + 2), JSON.stringify(val))
+      // Esc cancels: nothing changed
+      const v0 = await version(page)
+      await page.press('[data-testid=et-para]', 'Escape')
+      await page.waitForTimeout(200)
+      check('multiline: Esc closes it, nothing changed', !(await page.$('[data-testid=et-para]')) && (await version(page)) === v0)
+      // keyboard: focus the first line, Shift+Down twice, Enter
+      await page.focus(lineSel(runOf(k0)))
+      await page.keyboard.press('Shift+ArrowDown')
+      await page.keyboard.press('Shift+ArrowDown')
+      await page.waitForTimeout(150)
+      const live = (await page.textContent('[data-testid=et-live]')) ?? ''
+      check('multiline: Shift+Down marks the lines and says how many', !!(await page.$('[data-testid=et-sel]')) && /3 lines selected/.test(live), live)
+      await page.keyboard.press('Enter')
+      await page.waitForSelector('[data-testid=et-para]', { timeout: 15_000 }).catch(() => null)
+      const val2 = await valueOf(page)
+      check('multiline: Enter opens the selected lines', val2 === textOfRows(k0, k0 + 2), JSON.stringify(val2))
+      // a new line is Enter in the text; Ctrl+Enter applies
+      await page.fill('[data-testid=et-para]', grown(val2 ?? ''))
+      await page.press('[data-testid=et-para]', 'Control+Enter')
+      const ok = await waitVersion(page, v0 + 1)
+      const note = await page.waitForSelector('[data-testid=et-note]', { timeout: 10_000 }).then((h) => h.textContent()).catch(() => '')
+      check('multiline: applied, note says the lines below moved down', ok && /Now \d+ more lines?; the lines below moved down/.test(note), note)
+      const has = (w) => page.$$eval('[data-testid=et-line]', (ls, w) => ls.some((l) => (l.getAttribute('aria-label') ?? '').includes(w)), w)
+      check('multiline: the lines read again after the edit', await waitFor(async () => (await label(page, 'Fakestreet 46')) && (await has('Holdings'))))
+      await shot(page, 'multiline-1440')
+      // undo: back to the original lines
+      await page.click('[data-testid=et-undo]')
+      check('multiline: undo restores the lines', await waitFor(async () => (await label(page, 'Strategic Corp')) && (await label(page, 'T.a.v. bosd')) && !(await has('Holdings'))))
+      // toolbar "+ Next line" twice: the text box takes each new line (review P0)
+      await clickWord(page, m.page, runOf(k0).words[0], 'dbl')
+      await page.waitForSelector('[data-testid=et-input]', { timeout: 15_000 })
+      await page.click('[data-testid=et-next-tool]')
+      await page.waitForSelector('[data-testid=et-para]', { timeout: 15_000 })
+      await page.click('[data-testid=et-next-tool]')
+      await page.waitForTimeout(200)
+      const val3 = await valueOf(page)
+      check('multiline: + Next line twice shows all three lines', val3 === textOfRows(k0, k0 + 2), JSON.stringify(val3))
+      await page.press('[data-testid=et-para]', 'Escape')
+      await ctx.close()
+    }
+    {
+      // phone: tap a line, "+ Next line" adds the line below, Apply
+      const { ctx, page } = await open(rel, { phone: true })
+      await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
+      await clickWord(page, m.page, runOf(k0).words[0], 'tap')
+      await page.waitForSelector('[data-testid=et-next-line]', { timeout: 15_000 })
+      await page.click('[data-testid=et-next-line]')
+      await page.waitForTimeout(200)
+      const val = await valueOf(page)
+      check('multiline phone: + Next line opens this line and the next', val === textOfRows(k0, k0 + 1), JSON.stringify(val))
+      const v0 = await version(page)
+      const text = grown(val ?? '')
+      await page.fill('[data-testid=et-para]', text)
+      await page.click('[data-testid=et-apply]')
+      check('multiline phone: applied', await waitVersion(page, v0 + 1))
+      await shot(page, 'multiline-390')
+      const { out } = await runAndDownload(page)
+      const got = squash((await textOf(out)).join(' '))
+      check('multiline phone: output has the new lines and the line below', got.includes(squash(text)) && got.includes('Fakestreet46'), got.slice(0, 120))
+      await ctx.close()
+    }
+  }
+
   // ---------- flipkart: Sold By line, longer billing line ----------
   if (want('flip')) {
     const rel = 'invoices/flipkart-invoice.pdf'
@@ -1014,7 +1104,8 @@ try {
       if (phone) {
         check('noparagraph 390: the bar has no Paragraph button', !!(await page.$('[data-testid=et-bar]')) && !(await page.$('[data-testid=et-para-btn]')))
         const btns = await page.$$eval('[data-testid=et-bar] button', (bs) => bs.map((b) => b.textContent.trim()))
-        check('noparagraph 390: the bar shows Cancel and Apply only', btns.join(',') === 'Cancel,Apply', btns.join(','))
+        // unit D: "+ Next line" joins them on a line that has one below
+        check('noparagraph 390: the bar shows Cancel and Apply (and + Next line)', /^(\+ Next line,)?Cancel,Apply$/.test(btns.join(',')), btns.join(','))
         await shot(page, 'bar-noparagraph-390')
       } else {
         check('noparagraph 1440: triple-click opens the whole line, no paragraph editor', val === run.text && !para, `"${val.slice(0, 50)}"`)

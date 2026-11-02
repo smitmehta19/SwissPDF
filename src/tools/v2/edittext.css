@@ -48,6 +48,16 @@
   background: none;
 }
 
+/* lines selected with Shift+Down / Up, edited together on Enter */
+.et-sel {
+  z-index: 1;
+  pointer-events: none;
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--signal) 8%, transparent);
+}
+
 /* reason for a line that cannot be edited: after a short pause on hover,
    at once on focus or tap */
 .et-tip {

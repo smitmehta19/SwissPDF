@@ -1,5 +1,19 @@
 # Decision log
 
+## 2026-11-02 - Edit text: several lines edited as one (unit D)
+- Decision: Shift+click a second line, Shift+Down/Up on a focused line, or "+ Next line" (toolbar, phone sheet) opens up to 12 lines of one block in the paragraph text box. The lines are laid out again from the first line's start; the lines below move whole (up or down), as a spill does. Plan `docs/plans/2026-11-02-edit-text-multiline.md`.
+- Line breaks: a ragged block keeps every line end as a break (an address stays an address); a justified block keeps only short lines (under 85% of the width) as breaks. A ragged range may wrap 10% past the widest line where that is clear.
+- Refused, nothing changed: a word split by a hyphen inside the range ("split-word"), over 12 lines, a link / highlight / see-through text on a line that would move ("range-blocked"), more lines with no blank space below ("no-room-below"), a link or other text in the way of the new lines ("range-no-fit"), a result that would not read back ("range-readback"), text changed meanwhile ("stale").
+- Taking out a shown line break is a real change (the lines join where they fit).
+- Also changed: in a spill the link and highlight check now runs before the room check (a link counted as taken space, so it read as "no room").
+- Why: the user's own choice of lines is safer than paragraph re-wrap (still parked): nothing outside the chosen lines is redrawn.
+- Plan deviation: tracemonkey grow/shrink rows replaced by attention (shrink, close) and saeco/fdic (grow): tracemonkey's ranges are mostly hyphen-split or have no room below, both covered by refusal rows.
+- Impact and reversibility: UI entry points can be hidden (blocks: [] in the model) without touching the engine.
+- Review round 1: reject (P0: the text box kept the old lines when "+ Next line" grew the range, so the extra line would be deleted; P1: a removed line break was ignored but reported as applied; the UI test used the wrong text box; refusal reasons too coarse). All fixed: editor keyed by range, shown breaks count as old breaks, new reasons range-no-fit / range-readback, highlight check also when the line count stays, selection cleared on open and on file change, Shift+click no longer makes the clicked line the range start.
+- Confirm round: approve. Its one open P1 (a line after a kept break started at the run-on indent, so a list item could move) fixed: such a line starts where its own row started.
+- Blind test (fresh agent, UI only, 5 files): no P0 (saved files checked: new text present, nothing outside the selection changed). Fixed: split-word and range-no-fit wording. Parked: reading order in the saved file can put re-laid lines before the line above (known limit: new text drawn after the page content); typed lines re-wrapped at the block width (question for Smit); focus after Ctrl+Enter; refusal note over the text above while the box is open.
+- Evidence: range fuzz 10 files, 540 edits, 289 applied, 0 bad (characters, word order, rows above and below); single-line spill regression vs HEAD 216 edits, only the intended reason changes.
+
 ## 2026-11-02 - Edit text: real spaces between moved words (unit C)
 - Decision: words on spilled rows get an invisible space between them (standard Helvetica, text mode 3, stretched to the gap), drawn outside the word's own span. Copy, search and the read-back check now see real spaces.
 - Problem that prompted it: after a wide glyph the gap read as no space ("Euros −B"), so the read-back check made such spills fall back (free-fiber's footer line was refused).

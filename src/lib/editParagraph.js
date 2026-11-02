@@ -518,24 +518,26 @@ export function layoutWindow(g, items, units, { r0, tail, firstId, s = 1 }) {
   return { rows, last: synced ? r - 1 : n - 1 }
 }
 
-// A line edit that spills (or empties its line): only row r0 is laid out
-// again, onto as many lines as it needs; every later row moves whole, by the
-// rows gained or lost, its words where they were. No word of another row is
-// broken again.
+// A line edit that spills (or empties its line): only rows r0..r1 (one row,
+// or the lines a user selected) are laid out again, onto as many lines as
+// they need; every later row moves whole, by the rows gained or lost, its
+// words where they were. No word of another row is broken again. A hard
+// break (brk) inside the rows starts a new line.
 // units: as layoutWindow; `row(id)` the source row of a piece id (null: new).
-// -> { rows, last, delta } (delta: rows gained, -1 when r0 is now empty), or
-//    null when a word alone is wider than the column
-export function spillLayout(g, items, units, { r0, row, lead = g.leading }) {
+// -> { rows, last, delta } (delta: rows gained, negative when rows emptied),
+//    or null when a word alone is wider than the column
+// right: where lines wrap (default the paragraph's right edge)
+export function spillLayout(g, items, units, { r0, r1 = r0, row, lead = g.leading, right = g.R }) {
   const n = g.rows.length
   const { cont } = lineStarts(g)
   const gap = g.gap
-  // r0's own units come first; a word that goes on into r0 + 1 leaves its
-  // second half there
+  // the rows' own units come first; a word that goes on into r1 + 1 leaves
+  // its second half there
   const mine = []
   const later = []
   for (const u of units) {
     const r = u.ids[0] == null ? r0 : row(u.ids[0])
-    if (r > r0) later.push(u)
+    if (r > r1) later.push(u)
     else mine.push(u)
   }
   // a justified source line may sit tighter than the natural gap: words it
@@ -545,8 +547,11 @@ export function spillLayout(g, items, units, { r0, row, lead = g.leading }) {
   const fitGap = gs.length ? Math.max(0.6 * gap, Math.min(gap, ...gs)) : gap
   const out = []
   let line = null
-  const open = () => {
-    const x0 = out.length ? cont : g.rows[r0].x0
+  // a wrapped line starts at the paragraph's run-on indent; a line after a
+  // break starts where its first word's own row started (a list item)
+  const open = (u) => {
+    const r = u?.ids[0] == null ? null : row(u.ids[0])
+    const x0 = !out.length ? g.rows[r0].x0 : r != null ? g.rows[r].x0 : cont
     line = { x0, ids: [], width: 0, hard: false }
     out.push(line)
   }
@@ -554,27 +559,36 @@ export function spillLayout(g, items, units, { r0, row, lead = g.leading }) {
     line.width += (line.ids.length && !items[i].glue ? fitGap : 0) + items[i].w
     line.ids.push(i)
   }
-  const fits = (i) => !line.ids.length || line.width + (items[i].glue ? 0 : fitGap) + items[i].w <= g.R - line.x0 + 0.01
+  const fits = (i) => !line.ids.length || line.width + (items[i].glue ? 0 : fitGap) + items[i].w <= right - line.x0 + 0.01
   const carry = []
-  for (const u of mine) {
+  for (const [k, u] of mine.entries()) {
     const i = u.p1 != null ? u.p1 : u.i
-    if (!line || !fits(i)) open()
+    if (!line) open(out.length ? u : null)
+    else if (!fits(i)) open()
     put(i)
     if (u.p1 != null) carry.push({ i: u.p2, id: u.ids[1] })
+    else if (items[i].brk && k < mine.length - 1) {
+      // a line the user ended stays ragged
+      line.brkEnd = true
+      line = null
+    }
   }
   if (line) line.hard = true
   // a word wider than the column: not spilled (squeezed or refused as before)
-  if (out.some((ln) => ln.width > g.R - ln.x0 + 0.5)) return null
-  const delta = out.length - 1
+  if (out.some((ln) => ln.width > right - ln.x0 + 0.5)) return null
+  const delta = out.length - (r1 - r0 + 1)
   const r0v = g.rows[r0].v
+  // the paragraph goes on after r1 (no hard break there)
+  const goesOn = r1 < n - 1 && !g.words.some((w) => w.brk && w.rows[w.rows.length - 1] === r1)
   const rows = out.map((ln, j) => {
-    // the last line stays ragged, unless it is still the source's one line
-    // and that was a full justified line
-    const full = delta === 0 && r0 < n - 1 && !g.words.some((w) => w.brk && w.rows[w.rows.length - 1] === r0) && g.R - g.rows[r0].x1 < Math.max(1, 0.25 * g.size)
-    const spread = g.align === 'justify' && (j < out.length - 1 || full)
+    // the last line stays ragged, unless it is still the source's last line
+    // and that was a full justified line, or (several lines) the paragraph
+    // goes on and the line is nearly full
+    const full = goesOn && (delta === 0 ? g.R - g.rows[r1].x1 < Math.max(1, 0.25 * g.size) : r1 > r0 && ln.width >= 0.8 * (g.R - ln.x0))
+    const spread = g.align === 'justify' && !ln.brkEnd && (j < out.length - 1 || full)
     const gaps = ln.ids.slice(1).filter((i) => !items[i].glue).length
     // a ragged line takes the natural gap when that still fits
-    const g0 = !spread && ln.width + gaps * (gap - fitGap) <= g.R - ln.x0 + 0.01 ? gap : fitGap
+    const g0 = !spread && ln.width + gaps * (gap - fitGap) <= right - ln.x0 + 0.01 ? gap : fitGap
     const want = spread && gaps ? Math.max(0, (g.R - ln.x0 - ln.width) / gaps) : 0
     const extra = fitGap + want > 2 * gap ? 0 : want
     let x = ln.x0
@@ -587,7 +601,7 @@ export function spillLayout(g, items, units, { r0, row, lead = g.leading }) {
     return { k: r0 + j, v: r0v + j * lead, x0: ln.x0, width: x - ln.x0, items: placed }
   })
   // same number of lines: the rows below stay (a carried half included)
-  if (delta === 0) return { rows, last: r0, delta }
+  if (delta === 0) return { rows, last: r1, delta }
   // later rows as they were, moved by delta lines
   const byRow = new Map()
   const add = (r, i) => (byRow.get(r) ?? byRow.set(r, []).get(r)).push(i)
@@ -598,7 +612,7 @@ export function spillLayout(g, items, units, { r0, row, lead = g.leading }) {
       add(row(u.ids[1]), u.p2)
     } else add(row(u.ids[0]), u.i)
   }
-  for (let r = r0 + 1; r < n; r++) {
+  for (let r = r1 + 1; r < n; r++) {
     const ids = byRow.get(r) ?? []
     if (!ids.length) continue
     const placed = ids.map((i) => ({ i, x: items[i].x0, w: items[i].w })).sort((a, b) => a.x - b.x)

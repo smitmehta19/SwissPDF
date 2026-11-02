@@ -116,6 +116,20 @@ function Canvas({ files, options: o, setOptions, target, onTarget }) {
               Paragraph
             </button>
           )}
+          {!te.narrow && te.hasBlocks && (
+            // same: always there, enabled while an editor is open with nothing typed
+            <button
+              type="button"
+              className="btn btn-quiet btn-small"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={te.nextLine}
+              disabled={!te.canNextLine}
+              title="Edit the open text and the line after it together (Shift+click a line, or Shift+Down)"
+              data-testid="et-next-tool"
+            >
+              + Next line
+            </button>
+          )}
           <span className="et-status" aria-hidden={!te.busy} style={te.busy ? undefined : { visibility: 'hidden' }}>
             Applying…
           </span>

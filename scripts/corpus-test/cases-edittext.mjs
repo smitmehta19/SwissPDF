@@ -1280,6 +1280,79 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
   spillRow('fallback-no-room-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('is available, traditional compilers'), plus(' plus a lot of extra words'), { fallback: 'no blank space below' })
   spillRow('refused-no-room-below', 'reports/pdfjs-tracemonkey.pdf', (s) => s.startsWith('Categories and Subject Descriptors'), plus(' plus a lot of extra words to spill over the edge'), { fallback: 'no room', refused: 'no-room-below' })
   spillRow('fallback-arabic', 'intl/udhr-arabic.pdf', (s) => /[\u0600-\u06ff]{3}/u.test(s) && s.length > 20 && !/[\ufffd\ue000-\uf8ff\u0000-\u001f]/u.test(s), plus(' \u0643\u0644\u0645\u0627\u062a \u0623\u062e\u0631\u0649 \u0643\u062b\u064a\u0631\u0629 \u062c\u062f\u0627'), { fallback: 'right to left' })
+  // unit D: several lines of a block edited as one (rows r0..r1), laid out
+  // again; the lines below move whole. edit(old) -> new text
+  const rangeRow = (id, rel, start, count, edit, want, pageNum = 1) => {
+    let t = null
+    add({
+      id: `edittext-range-${id}`,
+      tool: 'edittext',
+      op: 'edittext:range',
+      files: [rel],
+      timeout: 3 * MIN,
+      quick: id === 'grow-saeco' || id === 'link',
+      async prepare() {
+        const m = await pageTextModel(readRel(rel), pageNum)
+        for (const b of m.blocks) {
+          const k = b.rows.findIndex((x) => x.text.startsWith(start))
+          if (k < 0 || k + count > b.rows.length) continue
+          const r1 = k + count - 1
+          const old = b.rows.slice(k, r1 + 1).map((x, j) => x.text + (j < r1 - k ? x.sep : '')).join('')
+          t = { pageNum, blockId: b.id, rows: [k, r1], old, next: b.rows[r1 + 1]?.text ?? null }
+          return { ...t, old: want.stale ? `${old} x` : old, edits: [{ name: 'ed', text: edit(old) }] }
+        }
+        return { skip: 'no target' }
+      },
+      async validate(ctx) {
+        const e = ctx.meta.edits[0]
+        const r = e.report
+        ctx.metric(`${t.blockId} rows ${t.rows.join('-')}: ${r.refused ?? 'ok'} spill ${JSON.stringify(r.spill)} ${e.ms}+${e.finalizeMs}ms`)
+        if (want.refused) {
+          ctx.check(`refused ${want.refused}`, r.refused === want.refused, r.refused)
+          ctx.check('file unchanged', e.unchanged === true, `unchanged ${e.unchanged}`)
+          return
+        }
+        ctx.check('applied', !r.refused, r.refused)
+        ctx.check(`lines ${want.lines >= 0 ? '+' : ''}${want.lines}`, r.spill?.lines === want.lines, JSON.stringify(r.spill))
+        ctx.check('no overflow, no squeeze', !r.overflow && !r.fit, JSON.stringify({ overflow: r.overflow, fit: r.fit }))
+        const idx = pageNum - 1
+        const input = readRel(rel)
+        const out = ctx.out('ed.pdf')
+        // every character on the page: before, minus the old lines, plus the new text
+        const count = (txt, m = new Map(), k = 1) => {
+          for (const ch of squash(txt).normalize('NFKC')) m.set(ch, (m.get(ch) ?? 0) + k)
+          return m
+        }
+        const wantChars = count(e.text, count(t.old, count(docText(input)[idx]), -1))
+        const gotChars = count(docText(out)[idx])
+        const off = [...new Set([...wantChars.keys(), ...gotChars.keys()])].filter((ch) => (gotChars.get(ch) ?? 0) !== (wantChars.get(ch) ?? 0))
+        ctx.check('page characters = before - old lines + new text', off.length === 0, off.slice(0, 8).map((ch) => `${ch}:${(gotChars.get(ch) ?? 0) - (wantChars.get(ch) ?? 0)}`).join(' '))
+        const flat = String(docText(out)[idx]).replace(/\s+/g, ' ')
+        for (const ph of want.reads ?? []) ctx.check(`reads "${ph}"`, flat.includes(ph), flat.slice(Math.max(0, flat.indexOf(ph.split(' ')[0]) - 10), 80))
+        if (t.next) ctx.check('the next line reads whole', squash(flat).includes(squash(t.next)), t.next.slice(0, 30))
+        if (!r.changedBox) return
+        const lost = movedOutside(glyphsOf(input, idx), glyphsOf(out, idx), r.changedBox, pageBounds(input, idx))
+        ctx.check('no glyph outside the changed box moved', lost.length === 0, lost.slice(0, 5).map((g) => g.c).join(''))
+        const diff = pixelsOutside(render(input, idx), render(out, idx), [r.changedBox])
+        ctx.check('no pixel changed outside the changed box', diff.outside === 0, `${diff.outside} px`)
+      },
+    })
+  }
+  rangeRow('grow-saeco', 'invoices/saeco.pdf', 'Strategic Corp', 3, (o) => o.replace('Corp', 'Corp International Holdings Group plus more'), { lines: 3, reads: ['T.a.v. bosd', 'Fakestreet 46'] })
+  // taking out a shown line break joins the lines (review round 1)
+  rangeRow('join-tam', 'reports/pdfjs-TAMReview.pdf', 'in TAM lacks', 2, (o) => o.replace('sufficient rigor and ', '').replace('\n', ' '), { lines: -1, reads: ['theory for the IS community'] })
+  rangeRow('grow-fdic', 'reports/fdic-quarterly-banking-profile-2023q4.pdf', 'FULL-YEAR NET INCOME DECLINED', 2, (o) => `${o} AND MORE WORDS HERE`, { lines: 1 })
+  // a ragged block keeps its line breaks: a longer line still fits on its row
+  rangeRow('breaks-kept-tam', 'reports/pdfjs-TAMReview.pdf', 'regarding its theoretical', 3, (o) => o.replace(' lacks', ' still lacks'), { lines: 0, reads: ['in TAM still lacks'] })
+  rangeRow('shrink-attention', 'reports/arxiv-1706.03762-attention.pdf', 'to-German translation task', 3, (o) => o.replace(/, including ensembles, by over 2 BLEU/, '').replace(/ On the WMT[^]*?task,/, ''), { lines: -1 })
+  rangeRow('close-attention', 'reports/arxiv-1706.03762-attention.pdf', 'best models from the literature', 2, () => '', { lines: -2 })
+  rangeRow('guard-control', SPILL, 'The quick brown', 2, (o) => o.replace(' keeps', ' keeps plus several extra words'), { lines: 1 }, 3)
+  rangeRow('link', SPILL, 'The quick brown', 2, (o) => o.replace(' keeps', ' keeps plus several extra words'), { refused: 'range-blocked' }, 1)
+  rangeRow('highlight', SPILL, 'The quick brown', 2, (o) => o.replace(/ and keeps[^]*/, ''), { refused: 'range-blocked' }, 2)
+  rangeRow('split-word-tracemonkey', 'reports/pdfjs-tracemonkey.pdf', 'pile than statically', 2, (o) => o.replace('pile', 'piles'), { refused: 'split-word' })
+  rangeRow('no-room-free-fiber', 'invoices/free-fiber.pdf', 'Pour vous informer', 2, (o) => `${o} plus several more inserted words here to push it over the edge`, { refused: 'no-room-below' })
+  rangeRow('stale', 'invoices/saeco.pdf', 'Strategic Corp', 3, (o) => o.replace('Corp', 'Corp B.V.'), { refused: 'stale', stale: true })
+
   // a whole line starts where it started: a leading space is dropped
   fixRow('trim-leading-space-saeco', 'invoices/saeco.pdf', (b) => lineRow(b, (s) => s === 'T.a.v. bosd'), [{ name: 'ed', text: '   bosd' }], async (ctx, t, meta) => {
     const r = meta.edits[0].report

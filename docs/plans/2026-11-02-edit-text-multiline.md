@@ -1,6 +1,6 @@
 # Edit text unit D: multi-line select editing
 
-Status: proposed 2026-11-02, waiting for Smit's OK. Units A, B, C are deployed (e0487ab, 34725a5, c189a99).
+Status: done 2026-11-02 (Smit: "do your best"). Review: round 1 reject, fixed; confirm approve. Blind test: no P0. Units A, B, C are deployed (e0487ab, 34725a5, c189a99).
 
 ## What the user gets
 Select 2 or more lines of one paragraph and change them in one box. The selected lines are laid out again. Lines after them move up or down as a whole, as a spill does today. Lines before them and other paragraphs are not touched.
@@ -65,4 +65,17 @@ Select 2 or more lines of one paragraph and change them in one box. The selected
 - **Main risk:** justified ranges ending mid-paragraph. The last laid-out line is ragged while the next untouched line is justified. Mitigation: if the range ends on a full justified line and the new text fills its last line to within 1 word, justify that last line too (same rule as spill).
 
 ## Parking lot
-(empty)
+- Joined lines that do not fit wrap back to the same lines: applied, but nothing visible changes (say "Nothing to change" instead).
+- API: rows [r, r] (one row) returns 'not-found' ("That text is no longer there"); the UI never sends it.
+- Joining hyphenated words inside the range (today: refused 'split-word').
+- free-fiber footer bullets (block p1-b27 rows 3-5): a shortened range is refused 'range-no-fit'; an unchanged row fails the room check, cause not traced.
+- Phone (390): the note after an edit can sit over text in another column (saeco right address block): unit B placement on narrow screens.
+- 'range-no-fit' copy also shows for a word wider than the column or glyphs that cannot be redrawn exactly.
+- Shift held on an already focused line leaves the Shift flag set until the next focus.
+- Blind test: copy/extraction order can put the re-laid lines before the line above them (TAM abstract); same known limit as line edits.
+- Blind test: typed lines wrap at the block width (+10%) even with clear space to the right; a ragged long line can run about 25 pt past the column (TAM). Question for Smit in decisions-pending.
+- Blind test: focus goes to the page after Ctrl+Enter (Esc returns it to the line).
+- Blind test: refusal note can cover the lines above while the box is open; the box can slightly overlap the next unselected line.
+- Blind test: "+ Next line" greys out once text is typed, with no hint why.
+- Blind test: a hyphen-split pair shows as "English- to-German" in the box (space added).
+- Note after a range edit with no line count change says only the font part (or nothing).

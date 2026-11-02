@@ -1,9 +1,10 @@
 # Decisions pending
 
 ## Needs Smit
-- 2026-11-02: OK to build edit text unit D (multi-line select) as planned in `docs/plans/2026-11-02-edit-text-multiline.md`? 1.5 to 2.5 days, high risk; hyphen inside the range refused in v1.
+- 2026-11-02: unit D re-wrap of typed lines: a ragged range wraps at the block width (+10%), so a typed line can split ("bosd, Fakestreet" / "48") although there is space to the right. Keep, or let typed lines run wider when the space is clear? (blind test P1 #4)
 
 ## Decided
+- 2026-11-02 (Smit: "do your best"): build edit text unit D (multi-line select) as planned. Built, reviewed (approve), blind test no P0: shipped without a flag.
 - 2026-10-29 (my call, per the logged rule): review 3 found a P0 in paragraph re-wrap ("Trace-Monkey" printed mid-line) plus 3 paragraph P1s. Paragraph editing is hidden (code kept behind a flag, parked with its findings); word/line edits, RTL, the leak fixes and the UI fixes ship.
 - 2026-10-29 (my call, replaces the box-cleanup call below): Redact boxes clean the page only, as before. Guessing terms from box contents renamed a form field and changed the title (review 3 P1-2). The result says to use Search to also clean properties and other places.
 - 2026-10-28 (my call, privacy, REVERTED 2026-10-29): Redact with hand-drawn boxes also cleans the boxed words (whole words) from document properties, XMP and other strings, like a search does.

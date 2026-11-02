@@ -167,6 +167,12 @@ const WHY = {
   'off-page': 'No room: the text would run off the page. Try shorter text',
   'crosses-drawing': 'No room: the text would run through a line or box border. Try shorter text',
   'tight-lines': 'The lines here are too close to change this safely',
+  // several lines edited as one
+  'split-word': 'A word in these lines is split by a hyphen and can only change on one line. Select lines before or after it, or edit one line at a time',
+  'range-too-long': 'Up to 12 lines can be edited together. Select fewer lines',
+  'range-blocked': 'These lines have a link, a highlight or see-through text that would not move with them. Edit them one at a time',
+  'range-no-fit': 'The new lines would run into a link or other text here. Select up to the end of the paragraph, or try shorter text',
+  'range-readback': 'These lines would not read back right after the change. Edit them one at a time',
   'inline-image': 'This page has an embedded image this edit would damage, so it is left as it is',
   unreadable: "This text can't be read as letters, so it can't be edited",
   layout: 'These lines sit side by side, like a table: edit them one line at a time',
@@ -298,6 +304,8 @@ function paraGeom(para, lines) {
 const overlaps = (a, b) => a && b && a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3]
 
 const fold = (s) => String(s ?? '').replace(/\s+/g, ' ').trim()
+// rows r0..r1 of a block (lines a multi-line edit can take) as one text
+const rangeText = (block, r0, r1) => block.rows.slice(r0, r1 + 1).map((x, j) => x.text + (j < r1 - r0 ? x.sep : '')).join('')
 // what an editor edits, for its draft after a refusal
 const draftKey = (ed) => (ed.kind === 'para' ? `p:${ed.para.id}` : `${ed.kind}:${ed.run.id}:${ed.wordIndex}`)
 
@@ -319,6 +327,11 @@ function bodyLook(lines) {
 // The same word, line or paragraph in a fresh page model (ids can move after
 // an edit).
 function remap(model, e) {
+  if (e.blockId) {
+    const [r0, r1] = e.rows
+    const b = model.blocks?.find((x) => x.rows.length > r1 && rangeText(x, r0, r1) === e.old)
+    return b ? { ...e, blockId: b.id } : null
+  }
   if (e.paragraphId) {
     const p = model.paragraphs?.find((x) => x.editable && fold(x.text) === fold(e.old) && overlaps(x.bbox, e.anchor))
     return p ? { ...e, paragraphId: p.id } : null
@@ -380,7 +393,7 @@ const pct = (v, total) => `${(v / total) * 100}%`
 // a highlight of what is being edited.
 const keepFocus = (e) => e.preventDefault() // bar buttons must not blur the field (blur applies)
 
-function InlineEditor({ ed, scale, size, busy, bar, onCommit, onCancel, onLine, onPara, onDirty }) {
+function InlineEditor({ ed, scale, size, busy, bar, onCommit, onCancel, onLine, onPara, onNext, onDirty }) {
   const ref = useRef(null)
   const barRef = useRef(null)
   const fitRef = useRef(null)
@@ -440,6 +453,11 @@ function InlineEditor({ ed, scale, size, busy, bar, onCommit, onCancel, onLine, 
   const toPara = () => {
     done.current = true
     onPara()
+  }
+  // the open text and the line after it, as one (nothing typed yet)
+  const toNext = () => {
+    done.current = true
+    onNext()
   }
   // refused for running off the page or through a border: the same text can
   // still go in squeezed to its old width
@@ -564,6 +582,11 @@ function InlineEditor({ ed, scale, size, busy, bar, onCommit, onCancel, onLine, 
           {onPara && !para && (
             <button type="button" className="btn btn-quiet et-sheet-para" onMouseDown={keepFocus} onClick={toPara} disabled={busy || value !== ed.text} data-testid="et-para-btn">
               Paragraph
+            </button>
+          )}
+          {onNext && (
+            <button type="button" className={`btn btn-quiet ${onPara && !para ? '' : 'et-sheet-para'}`} onMouseDown={keepFocus} onClick={toNext} disabled={busy || value !== ed.text} data-testid="et-next-line">
+              + Next line
             </button>
           )}
           <button type="button" className="btn btn-quiet" onMouseDown={keepFocus} onClick={() => finish('cancel')} data-testid="et-cancel">
@@ -742,6 +765,24 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
   }, [model, widgets])
   const paras = PARAGRAPH_EDIT ? (model?.paragraphs ?? []) : []
   const paraOf = (run) => (run ? paras.find((p) => p.runIds.includes(run.id)) : null)
+  // lines a multi-line edit can take: the block and row of a line
+  const blocks = model?.blocks ?? []
+  const rowOf = (run) => {
+    for (const block of blocks) {
+      const r = run ? block.rows.findIndex((x) => x.runIds.includes(run.id)) : -1
+      if (r >= 0) return { block, r }
+    }
+    return null
+  }
+  // the line a Shift+click or Shift+arrow selects from
+  const rangeFrom = useRef(null)
+  const shiftDown = useRef(false)
+  // lines selected with Shift+arrows: { blockId, a (start row), b (end row) }
+  const [sel, setSel] = useState(null)
+  useEffect(() => {
+    setSel(null)
+    rangeFrom.current = null
+  }, [id, page, bytes])
   const scanned = !!model?.page.scanned
   const editable = runs.some((r) => r.editable)
   const autoMode = model ? (editable || scanned ? 'text' : 'add') : null
@@ -947,6 +988,8 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
 
   function open(run, word) {
     if (!run.editable || busy) return
+    rangeFrom.current = run
+    setSel(null)
     if (model.signed && !signedOk.has(id)) {
       setAsk({ run, word })
       return
@@ -964,6 +1007,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
   // the whole paragraph a line belongs to
   function openPara(para) {
     if (!para || busy) return
+    setSel(null)
     const lines = para.runIds.map((rid) => runs.find((r) => r.id === rid)).filter((r) => r?.origin)
     const first = lines[0]
     if (!first) return
@@ -976,6 +1020,61 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
     if (why) return refuseNow(why, para.bbox, true, UNREAD_WHY.has(why) && readableWords(lines) ? { wordsOk: true } : {})
     setEdDirty(false)
     setEditing(withDraft({ kind: 'para', run: first, look: bodyLook(lines), para, wordIndex: null, text: para.text, box: para.bbox, geom: paraGeom(para, lines), rtl: isRtl(para.text, para) }))
+  }
+
+  // lines r0..r1 of a block, edited as one text (the paragraph editor)
+  function openRange(block, r0, r1) {
+    if (busy || !block || !(r1 > r0)) return
+    setSel(null)
+    const runIds = block.rows.slice(r0, r1 + 1).flatMap((x) => x.runIds)
+    const lines = runIds.map((rid) => runs.find((r) => r.id === rid)).filter((r) => r?.origin)
+    if (!lines.length) return
+    const box = [Math.min(...lines.map((r) => r.bbox[0])), Math.min(...lines.map((r) => r.bbox[1])), Math.max(...lines.map((r) => r.bbox[2])), Math.max(...lines.map((r) => r.bbox[3]))]
+    if (r1 - r0 + 1 > 12) return refuseNow('range-too-long', box, true)
+    if (model.signed && !signedOk.has(id)) {
+      setAsk({ range: [block, r0, r1] })
+      return
+    }
+    if (notes.length) setHidden((h) => new Set([...h, ...notes.map((n) => n.key)]))
+    const text = rangeText(block, r0, r1)
+    const locked = lines.find((r) => !r.editable)
+    if (locked || UNREADABLE.test(text)) return refuseNow(locked?.why ?? 'unreadable', box, true)
+    const para = { id: `${block.id}:${r0}-${r1}`, blockId: block.id, rows: [r0, r1], runIds, text, bbox: box, dir: 'ltr', editable: true }
+    rangeFrom.current = lines[0]
+    setEdDirty(false)
+    setEditing(withDraft({ kind: 'para', run: lines[0], look: bodyLook(lines), para, wordIndex: null, text, box, geom: paraGeom(para, lines), rtl: false }))
+  }
+  // the open word, line or lines and the line after them
+  const nextOf = (ed) => {
+    if (!ed) return null
+    if (ed.para?.blockId) {
+      const block = blocks.find((b) => b.id === ed.para.blockId)
+      return block && ed.para.rows[1] + 1 < block.rows.length ? [block, ed.para.rows[0], ed.para.rows[1] + 1] : null
+    }
+    if (ed.kind === 'para') return null
+    const at = rowOf(ed.run)
+    return at && at.r + 1 < at.block.rows.length ? [at.block, at.r, at.r + 1] : null
+  }
+  const canNextLine = !!editing && !edDirty && !busy && !!nextOf(editing)
+  // the Shift+arrow selection on the page, and said once it changes
+  const selBlock = sel && sel.a !== sel.b ? blocks.find((b) => b.id === sel.blockId) : null
+  const selRuns = selBlock ? selBlock.rows.slice(Math.min(sel.a, sel.b), Math.max(sel.a, sel.b) + 1).flatMap((x) => x.runIds).map((rid) => runs.find((r) => r.id === rid)).filter(Boolean) : []
+  const selBox = selRuns.length ? [Math.min(...selRuns.map((r) => r.bbox[0])), Math.min(...selRuns.map((r) => r.bbox[1])), Math.max(...selRuns.map((r) => r.bbox[2])), Math.max(...selRuns.map((r) => r.bbox[3]))] : null
+  const selCount = selBlock ? Math.abs(sel.a - sel.b) + 1 : 0
+  useEffect(() => {
+    if (selCount) setLive(`${selCount} lines selected. Press Enter to edit them together`)
+  }, [selCount])
+  const nextLine = () => {
+    const nx = nextOf(editing)
+    if (nx) openRange(...nx)
+  }
+  // Shift+click: the lines from the last one clicked to this one
+  const shiftRange = (run) => {
+    const a = rowOf(rangeFrom.current)
+    const b = rowOf(run)
+    if (!a || !b || a.block.id !== b.block.id || a.r === b.r) return false
+    openRange(a.block, Math.min(a.r, b.r), Math.max(a.r, b.r))
+    return true
   }
 
   const commit = (ed, value, extra) => {
@@ -995,7 +1094,8 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
     }
     if (value === ed.text) return drafts.current.delete(draftKey(ed))
     const from = { ed, value }
-    if (ed.kind === 'para') apply([{ pageNum: page, paragraphId: ed.para.id, text: value, old: ed.text, anchor: ed.box }], { from })
+    if (ed.para?.blockId) apply([{ pageNum: page, blockId: ed.para.blockId, rows: ed.para.rows, text: value, old: ed.text, anchor: ed.box }], { from })
+    else if (ed.kind === 'para') apply([{ pageNum: page, paragraphId: ed.para.id, text: value, old: ed.text, anchor: ed.box }], { from })
     else apply([{ pageNum: page, runId: ed.run.id, wordIndex: ed.wordIndex, text: value, old: ed.text, anchor: ed.box }], { from, fit: !!extra?.fit })
   }
 
@@ -1127,6 +1227,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
               pendingOpen.current = hit.p
               return
             }
+            if (e.shiftKey && shiftRange(hit.run)) return
             if (e.detail >= 3) paraOf(hit.run) ? openPara(paraOf(hit.run)) : open(hit.run, null)
             else open(hit.run, wordAt(hit.run, hit.p))
           }}
@@ -1159,12 +1260,38 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
                   pendingOpen.current = p
                   return
                 }
+                if (e.shiftKey && shiftRange(run)) return
                 if (e.detail >= 3) paraOf(run) ? openPara(paraOf(run)) : open(run, null)
                 else open(run, wordAt(run, p))
               }}
               onDoubleClick={() => run.editable && !busy && open(run, null)}
+              // a Shift+click focuses this line first: it must not become the
+              // start of the range
+              onMouseDown={(e) => (shiftDown.current = e.shiftKey)}
+              onFocus={() => {
+                // focus moved off the selected lines: the selection ends
+                if (sel && rowOf(run)?.block.id !== sel.blockId) setSel(null)
+                if (!sel && !shiftDown.current) rangeFrom.current = run
+                shiftDown.current = false
+              }}
               onKeyDown={(e) => {
-                if ((e.key === 'Enter' || e.key === ' ') && run.why === 'form-field' && !busy) {
+                const at = rowOf(run)
+                if (e.shiftKey && (e.key === 'ArrowDown' || e.key === 'ArrowUp') && at && run.editable && !busy) {
+                  // Shift+Down / Up: select the lines of this block from here
+                  e.preventDefault()
+                  const cur = sel?.blockId === at.block.id ? sel : { blockId: at.block.id, a: at.r, b: at.r }
+                  const b = clamp(cur.b + (e.key === 'ArrowDown' ? 1 : -1), 0, at.block.rows.length - 1)
+                  setSel({ ...cur, b })
+                  const to = runs.findIndex((r) => r.id === at.block.rows[b].runIds[0])
+                  if (to >= 0) lineEls.current[to]?.focus({ preventScroll: false })
+                } else if (e.key === 'Escape' && sel) {
+                  e.preventDefault()
+                  setSel(null)
+                } else if (e.key === 'Enter' && sel && sel.a !== sel.b && at?.block.id === sel.blockId) {
+                  e.preventDefault()
+                  focusIdx.current = null
+                  openRange(at.block, Math.min(sel.a, sel.b), Math.max(sel.a, sel.b))
+                } else if ((e.key === 'Enter' || e.key === ' ') && run.why === 'form-field' && !busy) {
                   e.preventDefault()
                   formHint(run.bbox)
                 } else if ((e.key === 'Enter' || e.key === ' ') && run.editable) {
@@ -1184,6 +1311,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
             </span>
           )
         })}
+        {selBox && <span className="g3-ov et-sel" aria-hidden="true" data-testid="et-sel" style={{ left: pct(selBox[0], size.width), top: pct(selBox[1], size.height), width: pct(selBox[2] - selBox[0], size.width), height: pct(selBox[3] - selBox[1], size.height) }} />}
         {busyMarks(size, scale)}
         {!applying && notes.map((n) => {
           // outside everything the edit changed (old and new text, moved
@@ -1206,7 +1334,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
                   Open Forms
                 </button>
               )}
-              {n.spill?.lines > 0 && !n.refused && n.entry && !n.paragraphId && (
+              {n.spill?.lines > 0 && !n.refused && n.entry && !n.paragraphId && !n.blockId && (
                 <button type="button" className="et-note-btn" data-testid="et-one-line" onClick={oneLineTop} disabled={busy}>
                   Keep on one line
                 </button>
@@ -1216,7 +1344,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
                   Fit to width
                 </button>
               )}
-              {n.overflow && !n.refused && n.entry && !n.entry.fit && !n.paragraphId && (
+              {n.overflow && !n.refused && n.entry && !n.entry.fit && !n.paragraphId && !n.blockId && (
                 <button type="button" className="et-note-btn" data-testid="et-fit" onClick={fitTop} disabled={busy}>
                   Fit to width
                 </button>
@@ -1239,7 +1367,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
         ))}
         {editing && (
           <InlineEditor
-            key={`${editing.kind}:${editing.run.id}:${editing.wordIndex}`}
+            key={`${editing.kind}:${editing.run.id}:${editing.wordIndex}:${editing.para?.id ?? ''}`}
             ed={editing}
             scale={scale}
             size={size}
@@ -1254,6 +1382,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
             }}
             onLine={() => open(editing.run, null)}
             onPara={editing.kind !== 'para' && paraOf(editing.run) ? () => openPara(paraOf(editing.run)) : null}
+            onNext={nextOf(editing) ? nextLine : null}
             onDirty={setEdDirty}
           />
         )}
@@ -1307,7 +1436,8 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
               const a = ask
               signedOk.add(id)
               setAsk(null)
-              if (a.para) openPara(a.para)
+              if (a.range) openRange(...a.range)
+              else if (a.para) openPara(a.para)
               else open(a.run, a.word)
             }}
           >
@@ -1341,6 +1471,11 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
     // (nothing typed yet) to its paragraph
     canParagraph: !!editing && editing.kind !== 'para' && !edDirty && !!paraOf(editing.run) && !busy,
     openParagraph: () => editing && openPara(paraOf(editing.run)),
+    // the toolbar's Next line button: the open text and the line after it,
+    // edited as one (nothing typed yet)
+    hasBlocks: blocks.length > 0,
+    canNextLine,
+    nextLine,
   }
 }
 
@@ -1384,6 +1519,13 @@ function noteBody(n, byUser = false) {
   const beforeColumn = n.noPush === 'collision' && squeezed(n)
   // a long line went on below it; an emptied line closed up
   const k = n.spill?.lines ?? 0
+  if (n.blockId) {
+    // several lines edited as one: they take more or fewer lines
+    if (k > 0) parts.push(`Now ${k} more line${k > 1 ? 's' : ''}${n.spill.moved ? '; the lines below moved down' : ''}`)
+    if (k < 0) parts.push(`Now ${-k} line${k < -1 ? 's' : ''} fewer${n.spill.moved ? '; the lines below moved up' : ''}`)
+    if (n.font === 'mixed' && n.fallbackName) parts.push(`New words in the closest match: ${n.fallbackName}`)
+    return parts.join('. ')
+  }
   if (k > 0) parts.push(`Continued on ${k} new line${k > 1 ? 's' : ''}${n.spill.moved ? '; the lines below moved down' : ''}`)
   if (k < 0) parts.push('The lines below moved up')
   // runs over, squeezed or both: one sentence, ending with the fix

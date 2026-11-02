@@ -87,6 +87,20 @@
 //   it re-wraps; more lines use free space below, then a squeeze to 85%,
 //   then 'no-room'. Layout math lives in editParagraph.js.
 //
+// Several lines as one text: the model also has
+//   blocks: [{ id 'p<n>-b<k>', rows: [{ runIds, text, sep }] }] (sep: '\n' a
+//     break kept, ' ' or '' joins the next row), and editText takes
+//   { pageNum, blockId, rows: [r0, r1], text, old? }, alone on its page per
+//   call. The rows are laid out again (wrapping inside the paragraph); the
+//   lines below move whole. Report: { blockId, rows, font, fallbackName, lines,
+//   refused, box, changedBox, spill: { lines (+ more, - fewer), moved },
+//   order }. Refusals: 'split-word' (a word broken over a row edge),
+//   'range-too-long' (over 12 rows), 'range-blocked' (a link, highlight or
+//   see-through text would not move along), 'no-room-below' (more lines, no
+//   blank space for them), 'range-no-fit' (a link or other text in the way of
+//   the new lines), 'range-readback' (would not read back), 'stale',
+//   'not-found'. Removing a shown line break is a change.
+//
 // finalizeEdits(bytes) -> { bytes, ms }: garbage-collected save that drops
 //   every earlier version and loose object (old text included).
 //
@@ -2546,14 +2560,21 @@ async function editPage(mupdf, doc, P, list, { fit }, usage, scratch, decide = n
 // squeezed, or refused for room), or that empties a line with lines below:
 // -> { g, r0, words } for editParagraph's spill mode, or null (edit as before).
 // Paragraphs here keep hyphen breaks as they are (no hyphen lookup).
+// paragraphs read with every line-end hyphen kept (no lookup): what a spill
+// and a multi-line edit lay out again
+// most lines one multi-line edit takes
+const MAX_RANGE = 12
+const keepParas = (P) => (P.parasKeep ??= findParagraphs(ownLinesHome(P), P.runs, { bad: (c) => BAD_CHAR.test(c.c), covered: (c) => coveredChar(P.F, c), stuck: (c) => !canRedraw(P, c), bold: (c) => isBold(c.font), hyphen: () => 'keep', pageBox: P.bounds }))
+// a paragraph whose lines can be laid out again (spill, multi-line edit)
+const reflowable = (g) => g.editable && !g.frame.rtl && (g.align === 'start' || g.align === 'justify') && g.leading > 0.9 * g.size && g.leading < 2.2 * g.size && Math.abs(g.frame.flow[1]) < 0.01 && g.frame.flow[0] > 0
+
 function spillPlan(P, t) {
   if (t.rep.refused && t.rep.refused !== 'no-room') return null
   if (t.rtl || RTL.test(t.text) || Math.abs(t.dir[1]) > 0.01 || t.dir[0] < 0) return null
   const vis = t.line.chars.filter((c) => c.c.trim())
   const whole = t.chars.includes(vis[0]) && t.chars.includes(vis[vis.length - 1])
   const emptied = whole && !t.text.trim()
-  P.parasKeep ??= findParagraphs(ownLinesHome(P), P.runs, { bad: (c) => BAD_CHAR.test(c.c), covered: (c) => coveredChar(P.F, c), stuck: (c) => !canRedraw(P, c), bold: (c) => isBold(c.font), hyphen: () => 'keep', pageBox: P.bounds })
-  const g = P.parasKeep.find((x) => x.lineIdx.includes(t.li))
+  const g = keepParas(P).find((x) => x.lineIdx.includes(t.li))
   if (!g || !g.editable || g.frame.rtl || (g.align !== 'start' && g.align !== 'justify')) return null
   if (!(g.leading > 0.9 * g.size && g.leading < 2.2 * g.size)) return null
   const n = g.rows.length
@@ -2588,6 +2609,12 @@ function spillPlan(P, t) {
     if (!S.endsWith(z) || (S.length > z.length && S[S.length - z.length - 1] !== ' ')) return null
     S = S.slice(0, S.length - z.length)
   }
+  return rowsPlan(P, g, r0, r0, { W, i0, i1, head, tail, S })
+}
+
+// The words of rows r0..r1 replaced by S (head / tail: a hyphenated word
+// that starts above or goes on below; S holds neither). -> spill plan
+function rowsPlan(P, g, r0, r1, { W, i0, i1, head, tail, S }) {
   const mid = splitWords(joinAccents(S.trim()))
   if (mid.length && !tail) mid[mid.length - 1].brk = !!W[W.length - 1].brk
   const keep = (w) => ({ text: w.text, brk: !!w.brk, glue: !!w.glue })
@@ -2612,7 +2639,83 @@ function spillPlan(P, t) {
   // the edited row's own baseline (row v is on a 0.2 pt grid): new words sit on it
   const vs = g.rows[r0].lines.flatMap((li) => P.lines[li].chars.filter((c) => c.c.trim()).map((c) => dot(c.origin, g.frame.down))).sort((a, b) => a - b)
   const v0 = vs.length ? vs[vs.length >> 1] : null
-  return { g, r0, words, diff, lead, v0 }
+  return { g, r0, r1, words, diff, lead, v0 }
+}
+
+// Text of each row of a paragraph, as a multi-line edit shows it: the row's
+// words (or its piece of a hyphenated word); sep: what joins it to the next
+// row ('\n' a line break, '' text without spaces, else ' '). Only full rows
+// of a justified paragraph flow into each other: every row end of ragged
+// text (an address, a name over a title) and a justified row that ends well
+// before the edge is a break, kept by the edit unless the user joins it.
+// piece(w, k): the part of word w on row k
+function rowTexts(P, g) {
+  const sets = g.rows.map((r) => new Set(r.lines.flatMap((li) => P.lines[li].chars)))
+  const piece = (w, k) => textOf(w.chars.filter((c) => sets[k].has(c)))
+  const out = g.rows.map((r, k) => {
+    const ws = g.words.filter((w) => w.rows.includes(k))
+    const text = ws.map((w, j) => (j > 0 && !w.glue ? ' ' : '') + piece(w, k)).join('')
+    const lastW = ws[ws.length - 1]
+    const next = g.words.find((w) => w.rows[0] === k + 1)
+    const brk = lastW?.brk && lastW.rows[lastW.rows.length - 1] === k
+    const short = k < g.rows.length - 1 && !lastW?.joined && (g.align !== 'justify' || g.R - r.x1 > 0.15 * (g.R - g.L))
+    const sep = brk || short ? '\n' : next?.glue ? '' : ' '
+    return { text, sep }
+  })
+  out.piece = piece
+  return out
+}
+
+// Paragraphs whose lines a multi-line edit can take (pageTextModel blocks).
+function rangeBlocks(P) {
+  return keepParas(P)
+    .filter((g) => reflowable(g) && g.rows.length >= 2)
+    .map((g) => {
+      const rt = rowTexts(P, g)
+      return {
+        id: `p${P.idx + 1}-b${g.k}`,
+        rows: g.rows.map((r, k) => ({ runIds: r.lines.map((li) => `p${P.idx + 1}-l${li}`), text: rt[k].text, sep: rt[k].sep })),
+      }
+    })
+}
+
+// A multi-line edit: rows r0..r1 of a block take `text` ('\n' starts a new
+// line). old: the rows' text as rangeBlocks gave it. -> plan, or { refused }
+function rangePlan(P, blockId, r0, r1, text, old) {
+  const g = keepParas(P).find((x) => `p${P.idx + 1}-b${x.k}` === blockId)
+  if (!g || !reflowable(g) || !(r0 >= 0 && r1 > r0 && r1 < g.rows.length)) return { refused: 'not-found' }
+  if (r1 - r0 + 1 > MAX_RANGE) return { refused: 'range-too-long' }
+  const rt = rowTexts(P, g)
+  const was = rt.slice(r0, r1 + 1).map((x, j) => x.text + (j < r1 - r0 ? x.sep : '')).join('')
+  if (old != null && old !== was) return { refused: 'stale' }
+  const W = g.words.filter((w) => w.rows.some((r) => r >= r0 && r <= r1))
+  if (!W.length) return { refused: 'not-found' }
+  const i0 = g.words.indexOf(W[0])
+  const i1 = g.words.indexOf(W[W.length - 1])
+  if (i1 - i0 + 1 !== W.length) return { refused: 'not-found' }
+  // a line end shown as a break is an old break: taking it out is a change
+  for (let k = r0; k < r1; k++) {
+    const last = W.findLast((w) => w.rows[w.rows.length - 1] === k)
+    if (rt[k].sep === '\n' && last) last.brk = true
+  }
+  const head = W[0].joined && W[0].rows[0] < r0 ? W[0] : null
+  const tail = W[W.length - 1].joined && W[W.length - 1].rows[W[W.length - 1].rows.length - 1] > r1 ? W[W.length - 1] : null
+  // a word split over two of the chosen lines (or over both ends): left alone
+  if (head === tail && head) return { refused: 'split-word' }
+  if (W.some((w) => w !== head && w !== tail && w.rows.length > 1)) return { refused: 'split-word' }
+  const piece = (w) => rt.piece(w, w === head ? r0 : r1)
+  let S = String(text).replace(/[ \t\u00a0]+/g, ' ').replace(/ ?\n ?/g, '\n').trim()
+  if (head) {
+    const h = piece(head)
+    if (!S.startsWith(h) || (S.length > h.length && !/\s/.test(S[h.length]))) return { refused: 'split-word' }
+    S = S.slice(h.length)
+  }
+  if (tail) {
+    const z = piece(tail)
+    if (!S.endsWith(z) || (S.length > z.length && !/\s/.test(S[S.length - z.length - 1]))) return { refused: 'split-word' }
+    S = S.slice(0, S.length - z.length)
+  }
+  return rowsPlan(P, g, r0, r1, { W, i0, i1, head, tail, S })
 }
 
 // ---------- one paragraph ----------
@@ -2902,17 +3005,23 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch,
   let spilled = null
   if (spill && units.length) {
     const pieceRow = new Map(flat.map((pc) => [pc.id, pc.row]))
-    const w = spillLayout(g, items, units, { r0, row: (id) => pieceRow.get(id), lead: spill.lead })
-    if (!w) return refuse('spill-blocked')
+    const lay = (right) => spillLayout(g, items, units, { r0, r1: spill.r1 ?? r0, row: (id) => pieceRow.get(id), lead: spill.lead, right })
+    // several ragged lines: a line may run 10% past the widest one (as a
+    // line edit may) where that is clear, else they wrap at the widest one
+    const wide = spill.r1 > r0 && g.align === 'start' ? lay(g.R + 0.1 * (g.R - g.L)) : null
+    const w = wide && wide.rows.every((row) => rowOk(row, wide.last)) ? wide : lay(g.R)
+    if (!w) return refuse('spill-blocked', { layout: true })
     // moved rows keep every glyph as it was
-    if (w.rows.some((row) => row.kept != null && row.items.some((p) => items[p.i].kind !== 'exact'))) return refuse('spill-blocked')
-    if (!w.rows.every((row) => rowOk(row, w.last))) return refuse('no-room')
+    if (w.rows.some((row) => row.kept != null && row.items.some((p) => items[p.i].kind !== 'exact'))) return refuse('spill-blocked', { layout: true })
     // a link or comment on a moved row would stay behind, and what is drawn
-    // under a row (a highlight, a cell fill) must be the same where it goes
+    // under a row (a highlight, a cell fill) must be the same where it goes.
+    // Checked before the room: a link counts as taken space, so it would
+    // read as no room
     const under = (bx) => F.paints.filter((p) => p.seq < firstSeq && overlaps(p.box, bx))
-    const src0 = under(unionBox(rowChars[r0].map((c) => qbox(c.quad))))
+    const src0 = under(unionBox(rowChars.slice(r0, (spill.r1 ?? r0) + 1).flat().map((c) => qbox(c.quad))))
     for (const row of w.rows) {
-      if (w.delta === 0) break
+      // (several lines: words change rows even when the count stays)
+      if (w.delta === 0 && !(spill.r1 > r0)) break
       let from = src0
       let to = rowBox(row, Math.max(...row.items.map((p) => items[p.i].size)))
       if (row.kept != null) {
@@ -2925,6 +3034,7 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch,
       const at = under(to)
       if (at.length !== from.length || at.some((p) => !from.includes(p))) return refuse('spill-blocked')
     }
+    if (!w.rows.every((row) => rowOk(row, w.last))) return refuse('no-room', { delta: w.delta })
     // new words on the re-laid rows: on the row's real baseline
     const nudge = spill.v0 != null && Math.abs(spill.v0 - g.rows[r0].v) < 0.2 ? spill.v0 - g.rows[r0].v : 0
     for (const row of w.rows) if (row.kept == null) row.nv = row.v + nudge
@@ -3479,6 +3589,7 @@ export async function pageTextModel(bytes, pageNum, { paragraphs = false } = {})
         signed: signedFields(doc).size > 0,
         runs: [...P.runs.map((r) => publicRun(P, r)), ...fieldRuns(P)],
         paragraphs: paragraphs ? paragraphsOf(P).map((g) => publicParagraph(P, g)) : [],
+        blocks: dynamicXfa(doc) ? [] : rangeBlocks(P),
       }
     } finally {
       P.page.destroy?.()
@@ -3529,7 +3640,9 @@ export async function editText(bytes, edits, { fit = false, final = false, spill
   const t0 = Date.now()
   const mupdf = await getMupdf()
   const report = edits.map((e) =>
-    e.paragraphId != null
+    e.blockId != null
+      ? { blockId: e.blockId, rows: e.rows, font: null, fallbackName: null, lines: 0, overflow: false, refused: null, fit: null, box: null, changedBox: null, spill: null }
+      : e.paragraphId != null
       ? { paragraphId: e.paragraphId, font: null, fallbackName: null, lines: 0, overflow: false, refused: null, fit: null, box: null, changedBox: null }
       : { runId: e.runId, wordIndex: e.wordIndex ?? null, font: null, fallbackName: null, overflow: false, noPush: null, refused: null, fit: null, shift: 0, pushed: 0, box: null, changedBox: null },
   )
@@ -3565,7 +3678,31 @@ export async function editText(bytes, edits, { fit = false, final = false, spill
         // one paragraph edit per page per call; line edits on that page wait
         // for the next call (the paragraph changes their ids)
         const paras = list.filter((x) => x.e.paragraphId != null)
-        if (paras.length) {
+        const ranges = list.filter((x) => x.e.blockId != null)
+        if (ranges.length) {
+          // a multi-line edit: alone on its page in this call, like a paragraph
+          for (const x of list) if (x !== ranges[0]) x.rep.refused = 'conflict'
+          const { e, rep } = ranges[0]
+          const plan = rangePlan(P, e.blockId, e.rows?.[0], e.rows?.[1], e.text, e.old)
+          if (plan.refused) rep.refused = plan.refused
+          else {
+            const prep = {}
+            if (await editParagraph(mupdf, doc, P, { e: { words: plan.words, diff: plan.diff }, rep: prep }, { fit: false }, usage, scratch, plan)) {
+              Object.assign(rep, { font: prep.font, fallbackName: prep.fallbackName, lines: prep.lines, box: prep.box, changedBox: prep.changedBox, order: prep.order, spill: prep.spill })
+              applied += 1
+            } else {
+              // no room for more lines; else something on the lines (a link,
+              // other text) is in the way, or the result would not read back
+              rep.refused =
+                prep.refused === 'no-room' ? (prep.delta > 0 ? 'no-room-below' : 'range-no-fit')
+                : prep.refused !== 'spill-blocked' ? prep.refused
+                : prep.readBack ? 'range-readback'
+                : prep.layout ? 'range-no-fit'
+                : 'range-blocked'
+              if (prep.char) rep.char = prep.char
+            }
+          }
+        } else if (paras.length) {
           for (const x of list) if (x !== paras[0]) x.rep.refused = 'conflict'
           applied += await editParagraph(mupdf, doc, P, paras[0], { fit }, usage, scratch)
         } else {
