@@ -277,7 +277,7 @@ try {
     const r = await typeApply(page, newText, rel, 'line')
     check('trace: whole-line edit applied', r.ok, r.ms ? `${r.ms.total} ms` : '')
     const note = await page.waitForSelector('[data-testid=et-note]', { timeout: 10_000 }).then((h) => h.textContent()).catch(() => '')
-    check('trace: overflow note with Fit to width', /Runs past the margin/.test(note) && !!(await page.$('[data-testid=et-fit]')), note)
+    check('trace: overflow note with Fit to width', /No room on the line|still runs past/.test(note) && !!(await page.$('[data-testid=et-fit]')), note)
     // P2-7: the note sits outside the edited line, not on it
     {
       const nb = await page.locator('[data-testid=et-note]').first().boundingBox().catch(() => null)
@@ -300,7 +300,7 @@ try {
     await waitVersion(page, v)
     await page.waitForTimeout(300)
     const note2 = await page.$$eval('[data-testid=et-note]', (ns) => ns.map((n) => n.textContent).join(' | ')).catch(() => '')
-    check('trace: Fit to width replaces the version, overflow gone, says squeezed', (await version(page)) === v && !/Runs past/.test(note2) && /Squeezed/.test(note2), `version ${await version(page)}, notes "${note2}"`)
+    check('trace: Fit to width replaces the version, overflow gone, says squeezed', (await version(page)) === v && !/No room on the line|still runs past/.test(note2) && /Squeezed/.test(note2), `version ${await version(page)}, notes "${note2}"`)
     const { out } = await runAndDownload(page)
     const text = squash((await textOf(out)).join(' '))
     check('trace: output has the new line (pdf.js)', text.includes(squash(newText)))
@@ -319,10 +319,27 @@ try {
       await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })
       await clickWord(page, m.page, run.words[0], 'dbl')
       const newText = `${run.text} plus several extra words to spill`
+      // unit B: a busy sign while it applies (shown after 300 ms: the CPU is
+      // slowed so this apply takes longer), gone once the page shows the edit
+      const cdp = await page.context().newCDPSession(page)
+      await cdp.send('Emulation.setCPUThrottlingRate', { rate: 6 })
+      const sawBusy = page.waitForSelector('[data-testid=et-busy]', { timeout: 20_000 }).then((h) => h.textContent()).catch(() => '')
       const r = await typeApply(page, newText, rel, 'line spill')
+      await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 })
       check('spill: long line applied', r.ok, r.ms ? `${r.ms.total} ms` : '')
+      const busyText = await sawBusy
       const note = await page.waitForSelector('[data-testid=et-note]', { timeout: 10_000 }).then((h) => h.textContent()).catch(() => '')
+      check('spill: "Applying the edit" shows while it applies, then goes', /Applying the edit/.test(busyText) && !(await page.$('[data-testid=et-busy]')), `"${busyText}"`)
       check('spill: note says it continued below, with Keep on one line', /Continued on \d new lines?; the lines below moved down/.test(note) && !!(await page.$('[data-testid=et-one-line]')), note)
+      // unit B: the note covers no text line (moved lines included)
+      const covered = await page.evaluate(() => {
+        const n = document.querySelector('[data-testid=et-note]').getBoundingClientRect()
+        return [...document.querySelectorAll('[data-testid=et-line]')]
+          .map((l) => ({ t: l.textContent || l.dataset.run, r: l.getBoundingClientRect() }))
+          .filter(({ r }) => Math.min(n.right, r.right) - Math.max(n.left, r.left) > 1 && Math.min(n.bottom, r.bottom) - Math.max(n.top, r.top) > 1)
+          .map(({ t }) => t)
+      })
+      check('spill: the note covers no text', covered.length === 0, covered.slice(0, 3).join(' | '))
       await shot(page, 'spill-1440')
       const v = await version(page)
       const ms0 = await page.getAttribute('[data-testid=et-live]', 'data-apply-ms')
@@ -382,8 +399,10 @@ try {
     const note = await page.waitForSelector('[data-testid=et-note]', { timeout: 10_000 }).then((h) => h.textContent()).catch(() => '')
     const nb = await page.locator('[data-testid=et-note]').first().boundingBox().catch(() => null)
     const sb = await stage(page).boundingBox()
-    const nearWord = nb && Math.abs(nb.x - (sb.x + (bill.bbox[0] / m.page.width) * sb.width)) < 40
-    check('flip: longer line says it runs over or was squeezed, at the edit', r.ok && /Runs past|Squeezed/.test(note) && nearWord, `${note}; near ${nearWord}`)
+    // beside the edited line (notes go to the nearest place that covers no text)
+    const lb = [sb.x + (bill.bbox[0] / m.page.width) * sb.width, sb.y + (bill.bbox[1] / m.page.height) * sb.height, sb.x + (bill.bbox[2] / m.page.width) * sb.width, sb.y + (bill.bbox[3] / m.page.height) * sb.height]
+    const nearWord = nb && Math.max(0, lb[0] - (nb.x + nb.width), nb.x - lb[2]) < 120 && Math.max(0, lb[1] - (nb.y + nb.height), nb.y - lb[3]) < 120
+    check('flip: longer line says it runs over or was squeezed, at the edit', r.ok && /No room on the line|Squeezed/.test(note) && nearWord, `${note}; near ${nearWord}`)
     await shot(page, 'overflow-flip-1440')
     await ctx.close()
   }
@@ -864,7 +883,7 @@ try {
               if (!why) await page.waitForTimeout(100)
             }
             const kept = await page.inputValue('[data-testid=et-para]').catch(() => '')
-            check('para: too long is refused in plain words, nothing changes', /Not changed: Not enough room/.test(why) && (await version(page)) === 1, `${why}; version ${await version(page)}`)
+            check('para: too long is refused in plain words, nothing changes', /Not changed: No room for this text in the paragraph/.test(why) && (await version(page)) === 1, `${why}; version ${await version(page)}`)
             check('para: the refused text stays in the editor to shorten (P1-6)', kept === tooLong, `${kept.length} of ${tooLong.length} chars`)
             await shot(page, 'paragraph-refusal-1440')
             await page.keyboard.press('Escape')

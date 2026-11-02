@@ -5,7 +5,7 @@
 // in the tool options (options.versions[fileId] = { stack, at }) so undo/redo,
 // summary() and run() all see them. A paragraph (model.paragraphs) is edited
 // as one text and re-wrapped by the engine.
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { callOp } from '../../app/jobs.js'
 import { Dialog } from '../../app/controls.jsx'
@@ -124,6 +124,8 @@ function widgetsOf(src, pageNum) {
   return m.get(pageNum)
 }
 
+const NO_BOXES = []
+
 function useWidgets(file, page, bytes, enabled) {
   const [st, setSt] = useState({ key: null, boxes: [] })
   const key = `${file?.id}:${page}`
@@ -138,7 +140,7 @@ function useWidgets(file, page, bytes, enabled) {
       on = false
     }
   }, [key, bytes, enabled]) // eslint-disable-line react-hooks/exhaustive-deps
-  return st.key === key ? st.boxes : []
+  return st.key === key ? st.boxes : NO_BOXES
 }
 
 // ---------- plain words ----------
@@ -159,10 +161,11 @@ const WHY = {
   conflict: 'Two edits overlap: change one at a time',
   'no-glyph': 'No font here can draw that text',
   covered: 'Something is drawn over this text, so it is left as it is',
-  'no-room': 'No room for this text here, even squeezed: try shorter text',
-  'no-room-below': 'No room below this paragraph. Try shorter text, or use PDF to Word for bigger rewrites',
-  'off-page': 'This would run off the page. Try shorter text',
-  'crosses-drawing': 'This would run through a line or box border. Try shorter text',
+  // every lack of room reads "No room ...", says where, then the fix
+  'no-room': 'No room for this text on its line, even squeezed. Try shorter text',
+  'no-room-below': 'No room below this paragraph for new lines. Try shorter text, or use PDF to Word for bigger rewrites',
+  'off-page': 'No room: the text would run off the page. Try shorter text',
+  'crosses-drawing': 'No room: the text would run through a line or box border. Try shorter text',
   'tight-lines': 'The lines here are too close to change this safely',
   'inline-image': 'This page has an embedded image this edit would damage, so it is left as it is',
   unreadable: "This text can't be read as letters, so it can't be edited",
@@ -176,7 +179,7 @@ const WHY = {
 }
 // paragraphs: the engine looks for room below the paragraph, not on the line
 const WHY_PARA = {
-  'no-room': 'Not enough room for this text, even squeezed: try shorter text',
+  'no-room': 'No room for this text in the paragraph, even squeezed. Try shorter text',
 }
 export const reasonText = (why, char, para = false) =>
   why === 'unsupported-char' ? `No font here has the character "${char ?? '?'}"` : (para && WHY_PARA[why]) || WHY[why] || "This text can't be edited"
@@ -582,10 +585,12 @@ function InlineEditor({ ed, scale, size, busy, bar, onCommit, onCancel, onLine, 
   )
 }
 
-// Notes sit under the edit; one that would be cut off by the edge of the
-// visible canvas (a heading at the right edge, the page bottom) moves left
-// or above the text.
-function Note({ n, b, size, scale, className, children }) {
+// Notes sit near the edit: under it when that covers no text, else the
+// closest free place around it (narrower if need be), on the page and in
+// view. With no free place, the one that covers least, kept close. Moved
+// lines count as text, so a spill's note never hides them. Placed when the
+// note, the page or the zoom changes; it then scrolls with the page.
+function Note({ n, b, size, scale, avoid, className, testid = 'et-note', children }) {
   const ref = useRef(null)
   useLayoutEffect(() => {
     const el = ref.current
@@ -594,33 +599,84 @@ function Note({ n, b, size, scale, className, children }) {
     if (!el || !wrap || !stage) return undefined
     const fit = () => {
       el.style.translate = ''
+      el.style.maxWidth = ''
       const w = wrap.getBoundingClientRect()
       const s = stage.getBoundingClientRect()
-      const r = el.getBoundingClientRect()
       const left = Math.max(w.left + wrap.clientLeft, s.left, 0) + 4
       const right = Math.min(w.left + wrap.clientLeft + wrap.clientWidth, s.right, window.innerWidth) - 4
-      let dx = 0
-      if (r.right > right) dx = right - r.right
-      if (r.left + dx < left) dx = left - r.left
-      // past the page bottom: above the text instead
-      const boxPx = (b[3] - b[1]) * scale
-      const dy = r.bottom > s.bottom - 2 && r.top - boxPx - r.height - 8 >= s.top ? -(boxPx + r.height + 8) : 0
+      const px = (q) => [s.left + (q[0] / size.width) * s.width, s.top + (q[1] / size.height) * s.height, s.left + (q[2] / size.width) * s.width, s.top + (q[3] / size.height) * s.height]
+      const edit = px(b)
+      const all = [edit, ...(avoid ?? []).map(px)]
+      // seen part of the page (a place out of view comes last)
+      const viewTop = Math.max(s.top, w.top)
+      const viewBottom = Math.min(s.bottom, w.bottom)
+      const area = (a, o) => Math.max(0, Math.min(a[2], o[2]) - Math.max(a[0], o[0])) * Math.max(0, Math.min(a[3], o[3]) - Math.max(a[1], o[1]))
+      // gap between the note and the edit (0 when touching)
+      const gap = (a) => Math.hypot(Math.max(0, edit[0] - a[2], a[0] - edit[2]), Math.max(0, edit[1] - a[3], a[1] - edit[3]))
+      const search = () => {
+        const r = el.getBoundingClientRect()
+        const bw = edit[2] - edit[0]
+        const bh = edit[3] - edit[1]
+        // a grid around the edit, plus the places just beside it
+        const steps = (from, to, by, extra) => [...new Set([...Array.from({ length: Math.floor((to - from) / by) + 1 }, (_, i) => from + i * by), ...extra])]
+        const dys = steps(-(bh + r.height + 104), 96, 8, [0, -(bh + 4), -(bh + r.height + 8)])
+        const dxs = steps(-(r.width + 8), bw + 8, 16, [0, bw + 8])
+        // only boxes the search area can touch (dense pages have hundreds)
+        const zone = [r.left + dxs[0], r.top + dys[0], r.right + bw + 8, r.bottom + 96]
+        const covers = all.filter((o) => o[2] > zone[0] && o[0] < zone[2] && o[3] > zone[1] && o[1] < zone[3])
+        let best = null
+        for (const dy of dys) {
+          for (const dx of dxs) {
+            const a = [r.left + dx, r.top + dy, r.right + dx, r.bottom + dy]
+            if (a[0] < left || a[2] > right || a[1] < s.top - 2 || a[3] > s.bottom + 2) continue
+            let over = 0
+            for (const o of covers) {
+              over += area(a, o)
+              if (over > 0 && best && best.cost < 1e6) break // a free place is known
+            }
+            // free places first, then the nearest (under the edit wins ties);
+            // else the least covered, kept close; out of view last
+            const out = a[1] < viewTop - 2 || a[3] > viewBottom + 2 ? 1e9 : 0
+            const cost = out + (over > 0 ? 1e6 + over + 20 * gap(a) : gap(a) + (dx === 0 && dy === 0 ? -1 : 0))
+            if (!best || cost < best.cost) best = { dx, dy, cost }
+          }
+        }
+        return best
+      }
+      let best = search()
+      // covered (not just out of view): try a narrower note
+      if (!best || (best.cost >= 1e6 && best.cost < 1e9)) {
+        el.style.maxWidth = '240px'
+        const narrow = search()
+        if (narrow && (!best || narrow.cost < best.cost)) best = narrow
+        else el.style.maxWidth = ''
+      }
+      if (!best) {
+        // nowhere on the page and in view: under the edit, kept in view
+        const r = el.getBoundingClientRect()
+        best = { dx: r.right > right ? right - r.right : r.left < left ? left - r.left : 0, dy: 0 }
+      }
+      const { dx, dy } = best
       if (dx || dy) el.style.translate = `${Math.round(dx)}px ${Math.round(dy)}px`
     }
     fit()
-    const ro = new ResizeObserver(fit)
+    // once per frame at most while resizing
+    let frame = 0
+    const later = () => {
+      if (!frame) frame = requestAnimationFrame(() => ((frame = 0), fit()))
+    }
+    const ro = new ResizeObserver(later)
     ro.observe(stage)
     ro.observe(wrap)
-    wrap.addEventListener('scroll', fit, { passive: true })
-    window.addEventListener('resize', fit)
+    window.addEventListener('resize', later)
     return () => {
+      cancelAnimationFrame(frame)
       ro.disconnect()
-      wrap.removeEventListener('scroll', fit)
-      window.removeEventListener('resize', fit)
+      window.removeEventListener('resize', later)
     }
-  }, [n.key, b[0], b[1], b[3], scale]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [n.key, b[0], b[1], b[2], b[3], scale, avoid]) // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <div ref={ref} className={`g3-ov et-note ${className}`} style={{ left: pct(b[0], size.width), top: `calc(${pct(b[3], size.height)} + 4px)` }} data-g3-control data-testid="et-note">
+    <div ref={ref} className={`g3-ov et-note ${className}`} style={{ left: pct(b[0], size.width), top: `calc(${pct(b[3], size.height)} + 4px)` }} data-g3-control data-testid={testid}>
       {children}
     </div>
   )
@@ -637,9 +693,30 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
   const [edDirty, setEdDirty] = useState(false) // the open editor has typed changes
   const narrow = useNarrow()
   const [busy, setBusy] = useState(false)
+  // the edit being applied (its box), shown until its new page image is on
+  // screen: an apply takes 1 to 4 s on big pages
+  const [applying, setApplying] = useState(null)
+  // shown after 300 ms only: a quick apply does not flash it
+  const [slow, setSlow] = useState(false)
+  useEffect(() => {
+    if (!applying) return undefined
+    const t = setTimeout(() => setSlow(true), 300)
+    return () => {
+      clearTimeout(t)
+      setSlow(false)
+    }
+  }, [applying])
   const [refused, setRefused] = useState(null) // { bytes, page, notes, edits } of an apply that changed nothing (edits kept when Fit can help)
   // a refusal belongs to the file it was made on
   useEffect(() => setRefused(null), [id])
+  // the busy sign ends with the new page image; never left on if that image
+  // does not come (another page or file, or nothing to draw again)
+  useEffect(() => setApplying(null), [id, page])
+  useEffect(() => {
+    if (!applying || busy) return undefined
+    const t = setTimeout(() => setApplying(null), 8000)
+    return () => clearTimeout(t)
+  }, [applying, busy])
   const [hidden, setHidden] = useState(() => new Set()) // dismissed notes
   const [ask, setAsk] = useState(null) // signed file: the activation waiting for a yes
   const [timing, setTiming] = useState(null) // { engine, total } ms of the last apply
@@ -655,6 +732,14 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
 
   const widgets = useWidgets(file, page, bytes, !!file && active && !!model)
   const runs = model ? readingOrder(model.runs) : []
+  // text, pictures and form fields a note should not cover (the last ones
+  // known while the page is read again after an edit)
+  const lastBoxes = useRef([])
+  const textBoxes = useMemo(() => {
+    if (!model) return lastBoxes.current
+    lastBoxes.current = [...model.runs.map((r) => r.bbox), ...(model.page?.images ?? []), ...widgets].filter((x) => Array.isArray(x) && x.length === 4)
+    return lastBoxes.current
+  }, [model, widgets])
   const paras = PARAGRAPH_EDIT ? (model?.paragraphs ?? []) : []
   const paraOf = (run) => (run ? paras.find((p) => p.runIds.includes(run.id)) : null)
   const scanned = !!model?.page.scanned
@@ -781,6 +866,8 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
     const parent = replace ? top.parentBytes : (top?.bytes ?? file.bytes ?? (await getBytes(id)))
     setRefused(null)
     setLive('Applying')
+    setApplying(edits[0]?.anchor ?? null)
+    let applied = false
     const t0 = performance.now()
     try {
       const send = (list) => callOp('editText', [parent, list.map(({ anchor, ...e }) => e), { fit, spill: !oneLine }])
@@ -824,11 +911,13 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
         return { stack: [...keep, entry], at: keep.length + 1 }
       })
       setLive(res.signatureRemoved ? 'Edit applied. The digital signature was removed.' : res.xfaRemoved ? `Edit applied. ${XFA_NOTE}` : 'Edit applied')
+      applied = true
     } catch (err) {
       if (!err.cancelled) refusedWith([{ refused: 'error', message: err.message, anchor: edits[0]?.anchor }], parent, from)
     } finally {
       setBusy(false)
       setTextBusy(false)
+      if (!applied) setApplying(null)
     }
   }
 
@@ -836,6 +925,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
     const p = pendingRender.current
     if (!p || src !== p.bytes) return
     pendingRender.current = null
+    setApplying(null)
     setTiming({ engine: Math.round(p.engine ?? 0), total: Math.round(performance.now() - p.t0) })
   }
 
@@ -843,6 +933,7 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
   // editor closes, so a note and an editor never show together
   const refuseNow = (why, anchor, para = false, extra = {}) => {
     setEditing(null)
+    setApplying(null)
     setRefused({ id: ++entrySeq, bytes, page, notes: [{ refused: why, anchor, ...(para ? { paragraphId: true } : {}), ...extra }] })
     setLive(noteText({ refused: why, ...(para ? { paragraphId: true } : {}), ...extra }))
   }
@@ -917,6 +1008,8 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
     const s = stackNow()
     if (s.at === 0 || busy) return
     setRefused(null)
+    pendingRender.current = null
+    setApplying(null)
     setStack(id, (cur) => ({ ...cur, at: Math.max(0, cur.at - 1) }))
     setLive('Undone')
   }
@@ -924,6 +1017,8 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
     const s = stackNow()
     if (s.at >= s.stack.length || busy) return
     setRefused(null)
+    pendingRender.current = null
+    setApplying(null)
     setStack(id, (cur) => ({ ...cur, at: Math.min(cur.stack.length, cur.at + 1) }))
     setLive('Redone')
   }
@@ -961,9 +1056,23 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
   // a spilled edit again, on its own line as before
   const oneLineTop = () => top && apply(top.edits, { replace: true, oneLine: true })
 
+  // the busy sign: on until the new page image shows, also while the page
+  // model is read again (no lines yet)
+  const busyMarks = (size, scale) =>
+    applying &&
+    slow && (
+      <>
+        <span className="g3-ov et-busy-hl" aria-hidden="true" style={{ left: pct(applying[0], size.width), top: pct(applying[1], size.height), width: pct(applying[2] - applying[0], size.width), height: pct(applying[3] - applying[1], size.height) }} />
+        <Note n={{ key: 'applying' }} b={applying} size={size} scale={scale} avoid={textBoxes} className="is-busy" testid="et-busy">
+          <span className="et-busy-dot" aria-hidden="true" />
+          <span className="et-note-text">Applying the edit</span>
+        </Note>
+      </>
+    )
+
   const layer = ({ size, scale }) => {
     lineEls.current = []
-    if (!model) return null
+    if (!model) return busyMarks(size, scale) || null
     // Mouse: clicks near a line count as on it: every line gets a target at
     // least 24 px tall (WCAG 2.5.8) without covering its neighbours' own
     // boxes. Finger (or a narrow screen): the closest editable line within
@@ -1075,14 +1184,15 @@ export function useTextEdit({ file, page, options: o, setOptions, active }) {
             </span>
           )
         })}
-        {notes.map((n) => {
+        {busyMarks(size, scale)}
+        {!applying && notes.map((n) => {
           // outside everything the edit changed (old and new text, moved
           // text), so the note never hides the change
           const boxes = [n.box, n.changedBox, n.anchor].filter((x) => Array.isArray(x) && x.length === 4)
           if (!boxes.length) return null
           const b = boxes.reduce((u, x) => [Math.min(u[0], x[0]), Math.min(u[1], x[1]), Math.max(u[2], x[2]), Math.max(u[3], x[3])])
           return (
-            <Note key={n.key} n={n} b={b} size={size} scale={scale} className={n.action ? '' : n.refused ? 'is-refused' : n.overflow || squeezed(n) ? 'is-warn' : ''}>
+            <Note key={n.key} n={n} b={b} size={size} scale={scale} avoid={textBoxes} className={n.action ? '' : n.refused ? 'is-refused' : n.overflow || squeezed(n) ? 'is-warn' : ''}>
               <span className="et-note-text">{noteText(n, !!n.entry?.fit)}</span>
               {n.action === 'forms' && (
                 <button
@@ -1276,8 +1386,10 @@ function noteBody(n, byUser = false) {
   const k = n.spill?.lines ?? 0
   if (k > 0) parts.push(`Continued on ${k} new line${k > 1 ? 's' : ''}${n.spill.moved ? '; the lines below moved down' : ''}`)
   if (k < 0) parts.push('The lines below moved up')
-  if (n.overflow) parts.push('Runs past the margin or into the next text')
-  if (squeezed(n)) parts.push(byUser ? 'Squeezed to the old width' : beforeColumn ? 'Squeezed to fit before the next column' : n.noPush && n.noPush !== 'rtl' && n.noPush !== 'aligned' ? 'Squeezed to fit: the rest of the line could not move' : 'Squeezed to fit before the next column')
+  // runs over, squeezed or both: one sentence, ending with the fix
+  if (n.overflow && squeezed(n) && !byUser) parts.push('Squeezed, but it still runs past the column edge or into other text. Fit to width keeps it to the old width')
+  else if (n.overflow) parts.push('No room on the line: it runs past the column edge or into other text. Fit to width keeps it to the old width')
+  if (squeezed(n) && !(n.overflow && !byUser)) parts.push(byUser ? 'Squeezed to the old width' : beforeColumn ? 'Squeezed to fit before the next column' : n.noPush && n.noPush !== 'rtl' && n.noPush !== 'aligned' ? 'Squeezed to fit: the rest of the line could not move' : 'Squeezed to fit before the next column')
   if (n.align === 'centre' && !n.refused && n.fit == null && n.font) parts.push('Kept centred')
   if (n.font === 'fallback' && n.fallbackName) parts.push(`Closest match: ${n.fallbackName}`)
   // a spill keeps the moved words; only new ones may take a stand-in

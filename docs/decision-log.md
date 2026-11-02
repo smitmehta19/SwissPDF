@@ -1,5 +1,14 @@
 # Decision log
 
+## 2026-11-02 - Edit text: note and feedback polish (unit B)
+- Decision: one "No room..." wording for every room refusal and overflow note, each ending with what to do; the note card after an edit is placed where it covers no text line, picture or form field (grid search around the edit, narrower card if needed, under the edit as a last resort); the focused line gets a 1 px inset ring so it no longer hides the first spilled line; "Applying the edit" shows (note + soft tint) when an apply takes over 300 ms.
+- Problem that prompted it: 3 wordings for the same refusal; the note covered moved lines; no sign during 1 to 4 s applies (plan `docs/plans/2026-11-01-edit-text-next.md`, unit B).
+- Why this was chosen: UI only, no engine risk; the engine already knows the boxes (pictures added to the page model).
+- Alternatives rejected: a spinner on the Apply button (the apply starts from the page, not the button); moving the note to the side panel only (loses the link to the edit).
+- Impact and reversibility: UI only; revert the jsx/css changes.
+- Review: round 1 approve with fixes (busy sign hidden while the page reloads, copy, placement speed, form fields, undo/redo clearing, ring, close X wrapping): all fixed. Confirm round: approve; 2 small perf fixes done.
+- Status: edittext rows 113/113, edittext-ui green (busy sign checked under CPU throttling), test:quick 200/200, build ok.
+
 ## 2026-11-01 - Edit text: refuse line edits that run off the page or through a drawing (unit A)
 - Decision: a line edit that cannot spill and would grow past the visible page, or into a box border, rule or fill it did not touch (or out of a box it sat in), is refused with "This would run off the page" or "This would run through a line or box border". Nothing on the page changes. A spill is still tried first; the refusal offers "Fit to width" (squeeze to the old width).
 - Problem that prompted it: such edits were applied and then clipped by the page edge or drawn across borders (plan `docs/plans/2026-11-01-edit-text-next.md`, unit A).

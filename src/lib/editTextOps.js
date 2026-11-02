@@ -25,7 +25,8 @@
 // the visible page (rotation and CropBox applied), as pdf.js renders at scale 1.
 //
 // pageTextModel(bytes, pageNum) -> {
-//   page: { width, height, rotate, box: [x0, y0, x1, y1] (user space), scanned },
+//   page: { width, height, rotate, box: [x0, y0, x1, y1] (user space), scanned,
+//           images: [[x0, y0, x1, y1]] (pictures, view space; clip not applied) },
 //   signed: boolean, // a signed signature field: editing removes it
 //   runs: [{ id, text, bbox: [x0, y0, x1, y1], baseline, origin: [x, y], dir: [dx, dy],
 //            fontName, fontSize, color: [r, g, b] (0..1), bold, italic, script,
@@ -1656,9 +1657,10 @@ function paintFacts(mupdf, page, region = null) {
   const ga = (alpha) => groups.reduce((x, g) => x * g, alpha ?? 1)
   // white: a white fill (gray 1, RGB 1 1 1, CMYK 0 0 0 0), unseen on a white
   // page (report-style invoices put one under each field)
-  const paint = (box, alpha, white = false) => {
+  // (image: a picture, for the UI to keep notes off it)
+  const paint = (box, alpha, kind = null) => {
     seq++
-    if (!masking && ga(alpha) >= 0.5) paints.push(white ? { seq, box, white } : { seq, box })
+    if (!masking && ga(alpha) >= 0.5) paints.push(kind ? { seq, box, [kind]: true } : { seq, box })
   }
   const isWhite = (cs, color) => {
     // a spot colour at tint 1 is full ink: only device colour spaces count
@@ -1692,7 +1694,7 @@ function paintFacts(mupdf, page, region = null) {
       release(text)
     },
     fillPath(path, evenOdd, ctm, cs, color, alpha) {
-      paint(path.getBounds(null, ctm), alpha, isWhite(cs, color))
+      paint(path.getBounds(null, ctm), alpha, isWhite(cs, color) ? 'white' : null)
       release(path, cs)
     },
     strokePath(path, stroke, ctm, cs, color, alpha) {
@@ -1713,7 +1715,7 @@ function paintFacts(mupdf, page, region = null) {
     },
     fillImage(image, ctm, alpha) {
       borrowed(mupdf, image)
-      paint(imgBox(ctm), alpha)
+      paint(imgBox(ctm), alpha, 'image')
     },
     fillImageMask(image, ctm, cs, color, alpha) {
       borrowed(mupdf, image)
@@ -3423,6 +3425,17 @@ function dynamicXfa(doc) {
   return fields === 0
 }
 
+// pictures on the page (not a page-filling scan or background), page
+// coordinates like run boxes: the UI keeps notes off them
+function pictures(P) {
+  const b = P.bounds
+  const pageArea = (b[2] - b[0]) * (b[3] - b[1])
+  return P.F.paints
+    .filter((p) => p.image)
+    .map((p) => [Math.max(p.box[0], b[0]) - b[0], Math.max(p.box[1], b[1]) - b[1], Math.min(p.box[2], b[2]) - b[0], Math.min(p.box[3], b[3]) - b[1]].map(r2))
+    .filter((q) => q[2] > q[0] && q[3] > q[1] && (q[2] - q[0]) * (q[3] - q[1]) < 0.5 * pageArea)
+}
+
 // ---------- entry points ----------
 // opts.paragraphs: also group paragraphs (costs a read of nearby pages for
 // line-end hyphens); off by default.
@@ -3438,7 +3451,7 @@ export async function pageTextModel(bytes, pageNum, { paragraphs = false } = {})
       if (dynamicXfa(doc)) for (const r of P.runs) r.why = 'xfa-dynamic'
       const b = P.bounds
       return {
-        page: { width: r2(b[2] - b[0]), height: r2(b[3] - b[1]), ...pageBoxes(P), scanned: P.scanned },
+        page: { width: r2(b[2] - b[0]), height: r2(b[3] - b[1]), ...pageBoxes(P), scanned: P.scanned, images: pictures(P) },
         signed: signedFields(doc).size > 0,
         runs: [...P.runs.map((r) => publicRun(P, r)), ...fieldRuns(P)],
         paragraphs: paragraphs ? paragraphsOf(P).map((g) => publicParagraph(P, g)) : [],

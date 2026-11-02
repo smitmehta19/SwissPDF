@@ -1,6 +1,6 @@
 # Edit text: next units after spill (for Smit's pick)
 
-Status: A built 2026-11-01 (refuses 'off-page' / 'crosses-drawing'); B, C, D proposed. Each is its own sprint.
+Status: A built 2026-11-01 (refuses 'off-page' / 'crosses-drawing'); B built 2026-11-02 (wording, note placement, focus ring, busy sign); C, D next (Smit: finish all). Each is its own sprint.
 
 | # | Unit | What the user gets | Size | Risk |
 |---|---|---|---|---|
@@ -23,3 +23,8 @@ Out of scope here: paragraph re-wrap (parked), RTL/vertical spill, moving links 
 - Phone editor: Tab order from the Fit button cycles inside the sheet.
 - Alignment detection: irs-fw9 "Taxpayer Identification Number (TIN)" is treated as right-aligned and grows left (now refused, it would draw over the black "Part I" box).
 - Missing tests: RTL push off the left edge, mixed RTL/LTR line, a collision squeeze crossing a cell border, Fit by mouse, in the phone editor and on the note card.
+
+## Parking lot (from unit B reviews, 2026-11-02)
+- Picture boxes for note placement ignore clipping: a cropped picture is avoided by its full box.
+- On a dense phone page there is no free spot; the note sits above or under the line and covers text there.
+- A note that only fits out of view does not try the narrower card.
