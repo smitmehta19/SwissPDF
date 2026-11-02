@@ -1,7 +1,7 @@
 # Decisions pending
 
 ## Needs Smit
-(none)
+- 2026-11-02: OK to build edit text unit D (multi-line select) as planned in `docs/plans/2026-11-02-edit-text-multiline.md`? 1.5 to 2.5 days, high risk; hyphen inside the range refused in v1.
 
 ## Decided
 - 2026-10-29 (my call, per the logged rule): review 3 found a P0 in paragraph re-wrap ("Trace-Monkey" printed mid-line) plus 3 paragraph P1s. Paragraph editing is hidden (code kept behind a flag, parked with its findings); word/line edits, RTL, the leak fixes and the UI fixes ship.

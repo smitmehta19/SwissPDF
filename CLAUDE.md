@@ -34,8 +34,8 @@ Privacy-first PDF toolkit that runs fully in the browser: files never leave the 
 Understand → Plan → Build → Review → Report (see global CLAUDE.md). One unit per sprint from the unit map; new ideas go to the plan's Parking lot.
 
 ## Current phase / Next step
-- **Phase:** 2026-11-02 deployed e0487ab: edit text unit A (overflow guard): line edits that would run off the page or through a box border are refused, with a Fit to width button. `HANDOFF.md` is stale.
-- **Done:** edittext rows 113/113, edittext-ui green, quick 200/200, 2 review rounds (round 2 approve), live Health 49/49
-- **Open:** units B, C, D in `docs/plans/2026-11-01-edit-text-next.md`; unit A parking lot in the same plan
-- **Next step:** Smit picks B (note polish, recommended), C or D
+- **Phase:** 2026-11-02 edit text units A, B, C deployed (e0487ab overflow guard, 34725a5 note polish, c189a99 real spaces on spilled lines). `HANDOFF.md` is stale.
+- **Done:** edittext rows 114/114, edittext-ui green, quick 200/200, live Health 49/49; each unit reviewed by a separate agent (B and C approve)
+- **Open:** unit D (multi-line select editing) planned in `docs/plans/2026-11-02-edit-text-multiline.md`; parking lots for A, B, C in `docs/plans/2026-11-01-edit-text-next.md`
+- **Next step:** Smit OKs the unit D plan, then build
 - **Updated:** 2026-11-02
