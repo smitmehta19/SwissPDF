@@ -3006,10 +3006,41 @@ async function editParagraph(mupdf, doc, P, { e, rep }, { fit }, usage, scratch,
   if (spill && units.length) {
     const pieceRow = new Map(flat.map((pc) => [pc.id, pc.row]))
     const lay = (right) => spillLayout(g, items, units, { r0, r1: spill.r1 ?? r0, row: (id) => pieceRow.get(id), lead: spill.lead, right })
-    // several ragged lines: a line may run 10% past the widest one (as a
-    // line edit may) where that is clear, else they wrap at the widest one
-    const wide = spill.r1 > r0 && g.align === 'start' ? lay(g.R + 0.1 * (g.R - g.L)) : null
-    const w = wide && wide.rows.every((row) => rowOk(row, wide.last)) ? wide : lay(g.R)
+    // several ragged lines: they use the blank space to their right, out to
+    // the right edge of the page's text but not into text beside them (another
+    // column), with an em of blank paper after them (no border, panel edge or
+    // grid line in it); else they wrap at the widest line. Upright pages only
+    let w = null
+    const upright = Math.abs(dir[0] - 1) < 1e-6 && Math.abs(dir[1]) < 1e-6
+    if (spill.r1 > r0 && g.align === 'start' && upright) {
+      const near = g.R + 0.1 * (g.R - g.L)
+      const top = srcRows[r0][1]
+      const bot = Math.min(b[3] - PAGE_MARGIN, paraBox[3] + 4 * (spill.lead ?? g.leading))
+      let far = Math.min(b[2] - PAGE_MARGIN, pageChars.reduce((m, c) => Math.max(m, qbox(c.quad)[2]), near))
+      // text beside the paragraph (lines below it are checked as drawn)
+      for (const c of pageOthers) {
+        const q = qbox(c.quad)
+        if (q[3] > top && q[1] < paraBox[3] && q[0] > g.R + 0.5) far = Math.min(far, q[0] - g.size)
+      }
+      if (far > near + 0.01) {
+        const area = renderArea(mupdf, P.page, [g.R + 0.5, top, far + g.size, bot])
+        const clear = (lw) =>
+          lw.rows.every((row) => {
+            if (!rowOk(row, lw.last)) return false
+            if (row.x0 + row.width <= g.R + 0.01) return true
+            const box = rowBox(row, Math.max(...row.items.map((p) => items[p.i].size), g.size))
+            return areaBlank(area, [g.R + 0.5, box[1], box[2] + g.size, box[3]])
+          })
+        // widest first, in up to 24 even steps
+        const step = Math.max(g.size, (far - near) / 24)
+        for (let right = far; !w; right = Math.max(near, right - step)) {
+          const lw = lay(right)
+          if (lw && clear(lw)) w = lw
+          if (right <= near + 0.01) break
+        }
+      }
+    }
+    w ??= lay(g.R)
     if (!w) return refuse('spill-blocked', { layout: true })
     // moved rows keep every glyph as it was
     if (w.rows.some((row) => row.kept != null && row.items.some((p) => items[p.i].kind !== 'exact'))) return refuse('spill-blocked', { layout: true })
@@ -3259,6 +3290,46 @@ function stripBlank(mupdf, page, box) {
   }
   const c = [px[0], px[1], px[2]]
   for (let i = 0; i < px.length; i += 3) if (Math.abs(px[i] - c[0]) > 24 || Math.abs(px[i + 1] - c[1]) > 24 || Math.abs(px[i + 2] - c[2]) > 24) return false
+  return true
+}
+
+// The page drawn once over an area (page space, 2 px per point), for many
+// blank checks inside it (areaBlank).
+function renderArea(mupdf, page, box) {
+  const k = 2
+  const r = [Math.floor(box[0] * k), Math.floor(box[1] * k), Math.ceil(box[2] * k), Math.ceil(box[3] * k)]
+  if (r[2] <= r[0] || r[3] <= r[1]) return null
+  const pix = new mupdf.Pixmap(mupdf.ColorSpace.DeviceRGB, r, false)
+  try {
+    pix.clear(255)
+    const dev = new mupdf.DrawDevice(mupdf.Matrix.scale(k, k), pix)
+    try {
+      page.run(dev, mupdf.Matrix.identity)
+    } finally {
+      dev.close()
+      dev.destroy?.()
+    }
+    return { k, r, w: r[2] - r[0], px: new Uint8Array(pix.getPixels()) }
+  } finally {
+    pix.destroy?.()
+  }
+}
+
+// One colour all over box (as stripBlank), inside a renderArea; false when
+// box reaches outside the area.
+function areaBlank(area, box) {
+  if (!area) return false
+  const { k, r, w, px } = area
+  const x0 = Math.floor(box[0] * k), y0 = Math.floor(box[1] * k), x1 = Math.ceil(box[2] * k), y1 = Math.ceil(box[3] * k)
+  if (x0 < r[0] || y0 < r[1] || x1 > r[2] || y1 > r[3]) return false
+  const at = (x, y) => ((y - r[1]) * w + (x - r[0])) * 3
+  const c = at(x0, y0)
+  for (let y = y0; y < y1; y++) {
+    for (let x = x0; x < x1; x++) {
+      const i = at(x, y)
+      if (Math.abs(px[i] - px[c]) > 24 || Math.abs(px[i + 1] - px[c + 1]) > 24 || Math.abs(px[i + 2] - px[c + 2]) > 24) return false
+    }
+  }
   return true
 }
 

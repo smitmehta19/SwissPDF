@@ -1,5 +1,13 @@
 # Decision log
 
+## 2026-11-03 - Edit text: typed lines use the space to their right
+- Decision: in a multi-line edit of a ragged (left-aligned) block, lines may run into the clear space to their right, out to the right edge of the page's text, keeping an em clear of anything beside them; only then do they wrap. Widest edge first, 24 steps down to the old limit (10% past the widest line), else the block width as before.
+- Problem that prompted it: blind test P1 #4: "bosd, Fakestreet 48" split into "bosd, Fakestreet" / "48" with empty space beside it. Smit: "if there is empty space to the right it should move there".
+- Scope: ranges only (single-line spills and justified blocks unchanged).
+- Evidence: saeco long name stays on one line, a longer one wraps before the other address; aws Bill to stops before the Invoice Summary box. Range fuzz 540 edits 0 bad (295 applied, was 289).
+- Review round 1: reject (P0: lines ran through a box border, panel edge or cell line to the right; P1: across a column gutter; P1: rotated or RTL pages could widen the wrong way). Fixed: upright left-to-right pages only; the area to the right is rendered once and each widened line plus an em must be blank paper; text beside the block caps the width an em before it. New fixture `derived/edittext-range-box.pdf` (box, panel, grid, two columns) with rows that check the new lines end before the border.
+- Confirm round: approve, no P0/P1. Two P2s and one nit parked in the unit D plan (gap in a second column beside the block, very long additions fall back to the narrow wrap, no 10% extra for the page's widest block).
+
 ## 2026-11-02 - Edit text: several lines edited as one (unit D)
 - Decision: Shift+click a second line, Shift+Down/Up on a focused line, or "+ Next line" (toolbar, phone sheet) opens up to 12 lines of one block in the paragraph text box. The lines are laid out again from the first line's start; the lines below move whole (up or down), as a spill does. Plan `docs/plans/2026-11-02-edit-text-multiline.md`.
 - Line breaks: a ragged block keeps every line end as a break (an address stays an address); a justified block keeps only short lines (under 85% of the width) as breaks. A ragged range may wrap 10% past the widest line where that is clear.

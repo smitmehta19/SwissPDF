@@ -309,6 +309,27 @@ function buildSpillAlpha() {
     doc.destroy?.()
   }
 }
+// a 3-line ragged paragraph in a stroked box (page 1), on a filled panel
+// (2), in a 2-cell grid stroked as one path (3), and beside a second column
+// with a gap at its middle row (4); a header far right on each page. Lines
+// that grow must not run through the border, panel edge, cell line or into
+// the other column. R_BOX: right end of the widest line
+const RANGE_BOX = 'derived/edittext-range-box.pdf'
+const R_LINES = ['Alpha beta gamma delta', 'epsilon zeta eta theta iota', 'kappa lambda']
+const R_BOX = (() => {
+  const font = new mupdf.Font('Helvetica')
+  return 72 + Math.max(...R_LINES.map((t) => [...t].reduce((w, ch) => w + font.advanceGlyph(font.encodeCharacter(ch.charCodeAt(0)), 0), 0) * 12))
+})()
+function buildRangeBox() {
+  const text = `${R_LINES.map((l, i) => `BT /F1 12 Tf 72 ${700 - 14 * i} Td (${l}) Tj ET`).join('\n')}\nBT /F1 10 Tf 470 760 Td (Header far right) Tj ET`
+  const w = (R_BOX - 72 + 20).toFixed(2)
+  buildPages(RANGE_BOX, [
+    `0 G 1 w 66 620 ${w} 100 re S\n${text}`,
+    `0.85 0.9 1 rg 66 620 ${w} 100 re f\n0 g\n${text}`,
+    `0 G 1 w 66 620 ${w} 100 re ${(66 + +w).toFixed(2)} 620 200 100 re S\n${text}`,
+    `${text}\nBT /F1 12 Tf ${(R_BOX + 30).toFixed(2)} 714 Td (Right column first line here) Tj ET\nBT /F1 12 Tf ${(R_BOX + 30).toFixed(2)} 658 Td (Right column after gap) Tj ET`,
+  ])
+}
 const tightPage = (lead) =>
   ['line one alpha bravo charlie', 'line two delta echo foxtrot', 'Kilo middle Lima word here', 'line four golf hotel india', 'line five juliet mike oscar']
     .map((l, i) => `BT /F1 10 Tf 72 ${700 - i * lead} Td (${l}) Tj ET`)
@@ -326,6 +347,7 @@ try {
   buildSpill()
   buildSpillAlpha()
   buildAligned()
+  buildRangeBox()
   for (const [k, c] of Object.entries(DECOR)) buildPages(`derived/edittext-decor-${k}.pdf`, [c])
   // inline images with an abbreviated Indexed colour space and ASCIIHex data
   buildPages(INLINE, ['BT /F1 12 Tf 72 700 Td (Inline image test line here) Tj ET q 200 0 0 10 72 670 cm BI /W 4 /H 1 /BPC 8 /CS [/I /RGB 3 <FF000000FF000000FFFFFFFF>] /F /AHx ID 00010203> EI Q q 200 0 0 10 72 640 cm BI /W 2 /H 1 /BPC 8 /CS /G /F /AHx ID 40C0> EI Q BT /F1 12 Tf 72 620 Td (Second line below images) Tj ET'])
@@ -1315,6 +1337,7 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
         ctx.check('applied', !r.refused, r.refused)
         ctx.check(`lines ${want.lines >= 0 ? '+' : ''}${want.lines}`, r.spill?.lines === want.lines, JSON.stringify(r.spill))
         ctx.check('no overflow, no squeeze', !r.overflow && !r.fit, JSON.stringify({ overflow: r.overflow, fit: r.fit }))
+        if (want.maxRight != null) ctx.check(`new lines end by x ${want.maxRight.toFixed(1)}`, r.box && r.box[2] <= want.maxRight, `${r.box?.[2]?.toFixed(1)}`)
         const idx = pageNum - 1
         const input = readRel(rel)
         const out = ctx.out('ed.pdf')
@@ -1338,7 +1361,17 @@ export default function register({ add, checkPdf, inputFacts, readRel, MIN }) {
       },
     })
   }
-  rangeRow('grow-saeco', 'invoices/saeco.pdf', 'Strategic Corp', 3, (o) => o.replace('Corp', 'Corp International Holdings Group plus more'), { lines: 3, reads: ['T.a.v. bosd', 'Fakestreet 46'] })
+  // a ragged line runs into the clear space to its right (up to an em before
+  // the other address), then wraps
+  rangeRow('wide-saeco', 'invoices/saeco.pdf', 'Strategic Corp', 3, (o) => o.replace('Corp', 'Corp International Holdings Group plus more'), { lines: 0, reads: ['Strategic Corp International Holdings Group plus more T.a.v. bosd'] })
+  rangeRow('grow-saeco', 'invoices/saeco.pdf', 'Strategic Corp', 3, (o) => o.replace('Corp', 'Corp International Holdings Group with a much longer name that goes on and on past the other column'), { lines: 1, reads: ['T.a.v. bosd', 'Fakestreet 46'] })
+  rangeRow('wide-aws', 'invoices/aws-invoice.pdf', 'ATTN', 2, (o) => `${o.replace('\n', ' ')} and more`, { lines: 0, reads: ['ATTN: iViveLabs Limited 93B Sai Yu Chung'] })
+  // ...but not through a box border, panel edge or cell line, nor into the
+  // next column (review of the wider wrap: these ran through)
+  const boxGrow = (o) => o.replace('delta', 'delta plus some more words that run on')
+  for (const [k, page, lines, maxRight] of [['box', 1, 2, R_BOX + 3], ['panel', 2, 2, R_BOX + 3], ['grid', 3, 2, R_BOX + 3], ['cols', 4, 1, R_BOX + 30 - 11]]) {
+    rangeRow(`inside-${k}`, RANGE_BOX, 'Alpha', 3, boxGrow, { lines, maxRight }, page)
+  }
   // taking out a shown line break joins the lines (review round 1)
   rangeRow('join-tam', 'reports/pdfjs-TAMReview.pdf', 'in TAM lacks', 2, (o) => o.replace('sufficient rigor and ', '').replace('\n', ' '), { lines: -1, reads: ['theory for the IS community'] })
   rangeRow('grow-fdic', 'reports/fdic-quarterly-banking-profile-2023q4.pdf', 'FULL-YEAR NET INCOME DECLINED', 2, (o) => `${o} AND MORE WORDS HERE`, { lines: 1 })

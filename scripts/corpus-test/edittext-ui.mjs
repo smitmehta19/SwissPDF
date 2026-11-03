@@ -388,7 +388,8 @@ try {
       for (const t = Date.now(); Date.now() - t < ms; await new Promise((r) => setTimeout(r, 100))) if (await fn()) return true
       return false
     }
-    const grown = (t) => t.replace('Corp', 'Corp International Holdings Group plus more')
+    // long enough to wrap after the clear space to the right
+    const grown = (t) => t.replace('Corp', 'Corp International Holdings Group with a much longer name that goes on and on past the other column')
     {
       const { ctx, page } = await open(rel)
       await page.waitForSelector('[data-testid=et-line]', { timeout: 30_000 })

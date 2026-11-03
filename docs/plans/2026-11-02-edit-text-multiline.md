@@ -73,9 +73,11 @@ Select 2 or more lines of one paragraph and change them in one box. The selected
 - 'range-no-fit' copy also shows for a word wider than the column or glyphs that cannot be redrawn exactly.
 - Shift held on an already focused line leaves the Shift flag set until the next focus.
 - Blind test: copy/extraction order can put the re-laid lines before the line above them (TAM abstract); same known limit as line edits.
-- Blind test: typed lines wrap at the block width (+10%) even with clear space to the right; a ragged long line can run about 25 pt past the column (TAM). Question for Smit in decisions-pending.
 - Blind test: focus goes to the page after Ctrl+Enter (Esc returns it to the line).
 - Blind test: refusal note can cover the lines above while the box is open; the box can slightly overlap the next unselected line.
 - Blind test: "+ Next line" greys out once text is typed, with no hint why.
 - Blind test: a hyphen-split pair shows as "English- to-German" in the box (space added).
+- Wider wrap (review P2): text beside the block is only looked for from the first edited row down to the block's end, so a gap in a second column beside the block lets lines run into that column's x range (nothing overlapped). Ragged multi-column pages only.
+- Wider wrap (review P2): the blank-paper check covers only 4 lines below the block, so a very long addition falls back to the old narrow wrap (taller).
+- Wider wrap: a block holding the page's widest line no longer gets the old 10% extra width (stays out of the margin).
 - Note after a range edit with no line count change says only the font part (or nothing).
