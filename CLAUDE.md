@@ -34,8 +34,8 @@ Privacy-first PDF toolkit that runs fully in the browser: files never leave the 
 Understand → Plan → Build → Review → Report (see global CLAUDE.md). One unit per sprint from the unit map; new ideas go to the plan's Parking lot.
 
 ## Current phase / Next step
-- **Phase:** 2026-11-02 edit text units A, B, C, D deployed (e0487ab overflow guard, 34725a5 note polish, c189a99 real spaces on spilled lines, 06a10c1 several lines edited as one); live Health 49/49. `HANDOFF.md` is stale.
-- **Done:** edittext rows 126/126, edittext-ui 95/95, quick 202/202, range fuzz 540 edits 0 bad; D review approve (after 1 fix round), blind test no P0
-- **Open:** parking lots: D in `docs/plans/2026-11-02-edit-text-multiline.md`, A/B/C in `docs/plans/2026-11-01-edit-text-next.md`; 1 question in `docs/decisions-pending.md` (typed-line re-wrap)
-- **Next step:** Smit answers the re-wrap question, or picks the next unit from the parity unit map
-- **Updated:** 2026-11-02
+- **Phase:** edit text units A, B, C, D deployed, plus e144f0f (2026-11-03): typed lines in a multi-line edit use the clear space to their right; live Health 49/49. `HANDOFF.md` is stale.
+- **Done:** edittext rows 132/132, edittext-ui multiline green, quick 203/203, range fuzz 15 pages 0 bad; wider wrap review approve after 1 fix round
+- **Open:** parking lots: D (incl. 2 wider-wrap P2s) in `docs/plans/2026-11-02-edit-text-multiline.md`, A/B/C in `docs/plans/2026-11-01-edit-text-next.md`; no pending questions
+- **Next step:** Smit picks the next unit from the parity unit map or a parking-lot item
+- **Updated:** 2026-11-03
